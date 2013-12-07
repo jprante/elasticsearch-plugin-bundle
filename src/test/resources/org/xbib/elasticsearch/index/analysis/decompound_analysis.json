@@ -1,0 +1,17 @@
+{
+    "index":{
+        "analysis":{
+            "filter":{
+                "decomp":{
+                    "type":"decompound"
+                }
+            },
+            "tokenizer" : {
+                "decomp" : {
+                   "type":"standard",
+                   "filter" : "decomp"
+                }            
+            }
+        }
+    }
+}

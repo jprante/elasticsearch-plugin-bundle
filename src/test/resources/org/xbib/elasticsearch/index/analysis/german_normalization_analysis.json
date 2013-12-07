@@ -1,0 +1,17 @@
+{
+    "index":{
+        "analysis":{
+            "filter":{
+                "umlaut":{
+                    "type":"german_normalize"
+                }
+            },
+            "tokenizer" : {
+                "umlaut" : {
+                   "type":"standard",
+                   "filter" : "umlaut"
+                }            
+            }
+        }
+    }
+}
