@@ -1,10 +1,9 @@
 
-
 package org.xbib.elasticsearch.index.analysis.combo;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.util.Version;
-import org.elasticsearch.ElasticSearchIllegalArgumentException;
+import org.elasticsearch.ElasticsearchIllegalArgumentException;
 import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.analysis.AnalysisService;
@@ -13,14 +12,9 @@ import org.elasticsearch.index.analysis.NamedAnalyzer;
 import java.io.Reader;
 import java.util.ArrayList;
 
-/**
- * ElasticSearch ComboAnalyzerWrapper wrapper over Lucene ComboAnalyzerWrapper.
- */
 public final class ComboAnalyzerWrapper extends Analyzer {
 
     public static final String NAME = "combo";
-
-    //private final ESLogger logger;
 
     private final Injector injector;
 
@@ -56,7 +50,7 @@ public final class ComboAnalyzerWrapper extends Analyzer {
         String[] sub = settings.getAsArray("sub_analyzers");
         ArrayList<Analyzer> subAnalyzers = new ArrayList<Analyzer>();
         if (sub == null) {
-            throw new ElasticSearchIllegalArgumentException("Analyzer [" + name + "] analyzer of type [" + NAME + "], must have a \"sub_analyzers\" list property");
+            throw new ElasticsearchIllegalArgumentException("Analyzer [" + name + "] analyzer of type [" + NAME + "], must have a \"sub_analyzers\" list property");
         }
 
         for (String subname : sub) {

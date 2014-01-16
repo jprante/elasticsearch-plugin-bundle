@@ -2,7 +2,7 @@
 package org.xbib.elasticsearch.index.analysis.langdetect;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.elasticsearch.ElasticSearchException;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.common.component.AbstractLifecycleComponent;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -57,21 +57,21 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
         try {
             loadDefaultProfiles();
         } catch (IOException e) {
-            throw new ElasticSearchException(e.getMessage());
+            throw new ElasticsearchException(e.getMessage());
         }
         reset();
     }
 
     @Override
-    protected void doStart() throws ElasticSearchException {
+    protected void doStart() throws ElasticsearchException {
     }
 
     @Override
-    protected void doStop() throws ElasticSearchException {
+    protected void doStop() throws ElasticsearchException {
     }
 
     @Override
-    protected void doClose() throws ElasticSearchException {
+    protected void doClose() throws ElasticsearchException {
     }
 
     public void loadDefaultProfiles() throws IOException {

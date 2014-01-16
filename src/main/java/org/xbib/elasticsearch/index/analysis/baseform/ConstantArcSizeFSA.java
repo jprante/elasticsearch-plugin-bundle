@@ -1,3 +1,4 @@
+
 package org.xbib.elasticsearch.index.analysis.baseform;
 
 import java.util.Collections;

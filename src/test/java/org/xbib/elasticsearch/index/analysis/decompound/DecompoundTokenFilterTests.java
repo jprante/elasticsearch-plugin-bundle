@@ -73,7 +73,7 @@ public class DecompoundTokenFilterTests {
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 
-    public AnalysisService createAnalysisService() {
+    private AnalysisService createAnalysisService() {
         Settings settings = ImmutableSettings.settingsBuilder().loadFromClasspath("org/xbib/elasticsearch/index/analysis/decompound_analysis.json").build();
 
         Index index = new Index("test");
@@ -95,8 +95,7 @@ public class DecompoundTokenFilterTests {
         return injector.getInstance(AnalysisService.class);
     }
 
-    public static void assertSimpleTSOutput(TokenStream stream,
-            String[] expected) throws IOException {
+    private void assertSimpleTSOutput(TokenStream stream, String[] expected) throws IOException {
         stream.reset();
         CharTermAttribute termAttr = stream.getAttribute(CharTermAttribute.class);
         Assert.assertNotNull(termAttr);
@@ -106,5 +105,6 @@ public class DecompoundTokenFilterTests {
             Assert.assertEquals(expected[i++], termAttr.toString(), "expected different term at index " + i);
         }
         Assert.assertEquals(i, expected.length, "not all tokens produced");
+        stream.close();
     }
 }

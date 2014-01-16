@@ -1,7 +1,7 @@
+
 package org.xbib.elasticsearch.index.analysis.langdetect;
 
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
-import org.apache.lucene.document.Document;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.collect.Maps;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -15,6 +15,7 @@ import org.elasticsearch.index.codec.docvaluesformat.DocValuesFormatService;
 import org.elasticsearch.index.codec.postingsformat.PostingsFormatService;
 import org.elasticsearch.index.mapper.DocumentMapper;
 import org.elasticsearch.index.mapper.DocumentMapperParser;
+import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.similarity.SimilarityLookupService;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -59,7 +60,7 @@ public class LangdetectMappingTest extends Assert {
 
         String sampleText = copyToStringFromClasspath("/english.txt");
         BytesReference json = jsonBuilder().startObject().field("_id", 1).field("someField", sampleText).endObject().bytes();
-        Document doc = docMapper.parse(json).rootDoc();
+        ParseContext.Document doc = docMapper.parse(json).rootDoc();
 
         assertEquals(doc.get(docMapper.mappers().smartName("someField").mapper().names().indexName()), sampleText);
         assertEquals(doc.getFields("someField.lang").length, 1);
@@ -86,7 +87,7 @@ public class LangdetectMappingTest extends Assert {
         String sampleText = copyToStringFromClasspath("/base64-decoded.txt");
 
         BytesReference json = jsonBuilder().startObject().field("_id", 1).field("someField", sampleBinary).endObject().bytes();
-        Document doc = docMapper.parse(json).rootDoc();
+        ParseContext.Document doc = docMapper.parse(json).rootDoc();
 
         assertEquals(doc.get(docMapper.mappers().smartName("someField").mapper().names().indexName()), sampleText);
         assertEquals(doc.getFields("someField.lang").length, 1);

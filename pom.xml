@@ -7,7 +7,7 @@
 
     <groupId>org.xbib.elasticsearch.plugin</groupId>
     <artifactId>elasticsearch-analysis-german</artifactId>
-    <version>1.0.0.Beta2.1</version>
+    <version>1.0.0.RC1.1</version>
 
     <packaging>jar</packaging>
 
@@ -84,8 +84,8 @@
     <properties>
         <github.global.server>github</github.global.server>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <elasticsearch.version>1.0.0.Beta2</elasticsearch.version>
-        <lucene.version>4.6.0</lucene.version>
+        <elasticsearch.version>1.0.0.RC1</elasticsearch.version>
+        <lucene.icu.version>4.6.0</lucene.icu.version>
         <jackson.version>2.2.2</jackson.version>
     </properties>
 
@@ -101,7 +101,7 @@
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-analyzers-icu</artifactId>
-            <version>${lucene.version}</version>
+            <version>${lucene.icu.version}</version>
             <scope>compile</scope>
         </dependency>
 

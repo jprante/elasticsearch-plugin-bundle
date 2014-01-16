@@ -1,3 +1,4 @@
+
 package org.xbib.elasticsearch.indices.analysis.icu;
 
 import com.ibm.icu.text.Collator;

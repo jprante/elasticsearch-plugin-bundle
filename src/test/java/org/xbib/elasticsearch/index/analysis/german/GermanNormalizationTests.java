@@ -59,7 +59,7 @@ public class GermanNormalizationTests extends Assert {
 
     }
 
-    public AnalysisService createAnalysisService() {
+    private AnalysisService createAnalysisService() {
         Settings settings = ImmutableSettings.settingsBuilder().loadFromClasspath("org/xbib/elasticsearch/index/analysis/german_normalization_analysis.json").build();
 
         Index index = new Index("test");
@@ -81,8 +81,7 @@ public class GermanNormalizationTests extends Assert {
         return injector.getInstance(AnalysisService.class);
     }
 
-    public static void assertSimpleTSOutput(TokenStream stream,
-            String[] expected) throws IOException {
+    private void assertSimpleTSOutput(TokenStream stream, String[] expected) throws IOException {
         stream.reset();
         CharTermAttribute termAttr = stream.getAttribute(CharTermAttribute.class);
         assertNotNull(termAttr);
@@ -92,5 +91,6 @@ public class GermanNormalizationTests extends Assert {
             assertEquals(expected[i++], termAttr.toString(), "expected different term at index " + i);
         }
         assertEquals(i, expected.length, "not all tokens produced");
+        stream.close();
     }
 }
