@@ -68,7 +68,7 @@ public class BaseformTokenFilterTests extends Assert {
             "kosten"
         };
 
-        Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_46, new StringReader(source));
+        Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_48, new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
 
     }
@@ -96,7 +96,7 @@ public class BaseformTokenFilterTests extends Assert {
                 "transportieren"
         };
 
-        Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_46, new StringReader(source));
+        Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_48, new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 

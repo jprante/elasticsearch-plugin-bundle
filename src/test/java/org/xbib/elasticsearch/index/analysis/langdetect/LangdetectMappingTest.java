@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import static org.elasticsearch.common.io.Streams.copyToStringFromClasspath;
-import static org.elasticsearch.common.settings.ImmutableSettings.settingsBuilder;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 public class LangdetectMappingTest extends Assert {
@@ -38,15 +37,15 @@ public class LangdetectMappingTest extends Assert {
         Map<String, AnalyzerProviderFactory> analyzerFactoryFactories = Maps.newHashMap();
         analyzerFactoryFactories.put("keyword",
                 new PreBuiltAnalyzerProviderFactory("keyword", AnalyzerScope.INDEX, new KeywordAnalyzer()));
+        Settings settings = ImmutableSettings.Builder.EMPTY_SETTINGS;
         AnalysisService analysisService = new AnalysisService(index,
-                ImmutableSettings.Builder.EMPTY_SETTINGS, null, analyzerFactoryFactories, null, null, null);
+                settings, null, analyzerFactoryFactories, null, null, null);
         mapperParser = new DocumentMapperParser(index,
+                settings,
                 analysisService,
                 new PostingsFormatService(index),
                 new DocValuesFormatService(index),
-                new SimilarityLookupService(index, ImmutableSettings.Builder.EMPTY_SETTINGS));
-        Settings settings = settingsBuilder()
-                .build();
+                new SimilarityLookupService(index, settings));
         LangdetectService detector = new LangdetectService(settings);
         detector.start();
         mapperParser.putTypeParser(LangdetectMapper.CONTENT_TYPE,

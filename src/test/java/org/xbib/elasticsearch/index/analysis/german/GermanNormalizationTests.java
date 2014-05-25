@@ -53,7 +53,7 @@ public class GermanNormalizationTests extends Assert {
             "Strassenecke"
         };
 
-        Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_46, new StringReader(source));
+        Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_48, new StringReader(source));
 
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
 

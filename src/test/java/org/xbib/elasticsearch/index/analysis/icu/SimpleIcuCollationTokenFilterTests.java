@@ -29,6 +29,8 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.io.StringReader;
 
+import static org.hamcrest.Matchers.equalTo;
+
 public class SimpleIcuCollationTokenFilterTests extends BaseTokenStreamTest {
 
     /*
@@ -41,29 +43,25 @@ public class SimpleIcuCollationTokenFilterTests extends BaseTokenStreamTest {
     public void testBasicUsage() throws Exception {
         Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
-                .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
-                .put("index.analysis.analyzer.myAnalyzer.language", "tr")
-                .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
+                .put("index.analysis.filter.myCollator.type", "icu_collation")
+                .put("index.analysis.filter.myCollator.language", "tr")
+                .put("index.analysis.filter.myCollator.strength", "primary")
                 .build();
         AnalysisService analysisService = createAnalysisService(index, settings);
-
-        Analyzer analyzer = analysisService.analyzer("myAnalyzer");
 
         String turkishUpperCase = "I WİLL USE TURKİSH CASING";
         String turkishLowerCase = "ı will use turkish casıng";
 
-        assertAnalyzesTo(analyzer, turkishUpperCase, new String[]{"I WİLL USE TURKİSH CASING"});
-        assertAnalyzesTo(analyzer, turkishLowerCase, new String[]{"ı will use turkish casıng"});
-
-        TokenStream tsUpper = analyzer.tokenStream("test", new StringReader(turkishUpperCase));
-        assertTokenStreamContents(tsUpper, new String[]{"I WİLL USE TURKİSH CASING"});
-        //TokenStream tsLower = analyzer.tokenStream("test", new StringReader(turkishLowerCase));
-        //assertCollatesToSame(tsUpper, tsLower);
+        TokenFilterFactory filterFactory = analysisService.tokenFilter("myCollator");
+        TokenStream tsUpper = filterFactory.create(new KeywordTokenizer(new StringReader(turkishUpperCase)));
+        TokenStream tsLower = filterFactory.create(new KeywordTokenizer(new StringReader(turkishLowerCase)));
+        assertCollatesToSame(tsUpper, tsLower);
     }
 
     /*
     * Test usage of the decomposition option for unicode normalization.
     */
+    @Test
     public void testNormalization() throws IOException {
         Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
@@ -86,6 +84,7 @@ public class SimpleIcuCollationTokenFilterTests extends BaseTokenStreamTest {
     /*
     * Test secondary strength, for english case is not significant.
     */
+    @Test
     public void testSecondaryStrength() throws IOException {
         Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
@@ -109,6 +108,7 @@ public class SimpleIcuCollationTokenFilterTests extends BaseTokenStreamTest {
     * Setting alternate=shifted to shift whitespace, punctuation and symbols
     * to quaternary level
     */
+    @Test
     public void testIgnorePunctuation() throws IOException {
         Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
@@ -132,6 +132,7 @@ public class SimpleIcuCollationTokenFilterTests extends BaseTokenStreamTest {
     * Setting alternate=shifted and variableTop to shift whitespace, but not
     * punctuation or symbols, to quaternary level
     */
+    @Test
     public void testIgnoreWhitespace() throws IOException {
         Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
@@ -161,6 +162,7 @@ public class SimpleIcuCollationTokenFilterTests extends BaseTokenStreamTest {
     * Setting numeric to encode digits with numeric value, so that
     * foobar-9 sorts before foobar-10
     */
+    @Test
     public void testNumerics() throws IOException {
         Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
@@ -183,6 +185,7 @@ public class SimpleIcuCollationTokenFilterTests extends BaseTokenStreamTest {
     * Setting caseLevel=true to create an additional case level between
     * secondary and tertiary
     */
+    @Test
     public void testIgnoreAccentsButNotCase() throws IOException {
         Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
@@ -217,6 +220,7 @@ public class SimpleIcuCollationTokenFilterTests extends BaseTokenStreamTest {
     * Setting caseFirst=upper to cause uppercase strings to sort
     * before lowercase ones.
     */
+    @Test
     public void testUpperCaseFirst() throws IOException {
         Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
@@ -243,6 +247,7 @@ public class SimpleIcuCollationTokenFilterTests extends BaseTokenStreamTest {
     * The default is DIN 5007-1, this shows how to tailor a collator to get DIN 5007-2 behavior.
     *  http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4423383
     */
+    @Test
     public void testCustomRules() throws Exception {
         RuleBasedCollator baseCollator = (RuleBasedCollator) Collator.getInstance(new ULocale("de_DE"));
         String DIN5007_2_tailorings =
@@ -285,21 +290,15 @@ public class SimpleIcuCollationTokenFilterTests extends BaseTokenStreamTest {
     }
 
     private void assertCollation(TokenStream stream1, TokenStream stream2, int comparison) throws IOException {
+        CharTermAttribute term1 = stream1.addAttribute(CharTermAttribute.class);
+        CharTermAttribute term2 = stream2.addAttribute(CharTermAttribute.class);
         stream1.reset();
         stream2.reset();
-        CharTermAttribute term1 = stream1
-                .addAttribute(CharTermAttribute.class);
-        CharTermAttribute term2 = stream2
-                .addAttribute(CharTermAttribute.class);
-        assertTrue(stream1.incrementToken());
-        assertTrue(stream2.incrementToken());
-        assertEquals(term1.toString(), term2.toString());
-        assertFalse(stream1.incrementToken());
-        assertFalse(stream2.incrementToken());
-        stream1.end();
-        stream2.end();
-        stream1.close();
-        stream2.close();
+        assertThat(stream1.incrementToken(), equalTo(true));
+        assertThat(stream2.incrementToken(), equalTo(true));
+        assertThat(Integer.signum(term1.toString().compareTo(term2.toString())), equalTo(Integer.signum(comparison)));
+        assertThat(stream1.incrementToken(), equalTo(false));
+        assertThat(stream2.incrementToken(), equalTo(false));
     }
 
 }

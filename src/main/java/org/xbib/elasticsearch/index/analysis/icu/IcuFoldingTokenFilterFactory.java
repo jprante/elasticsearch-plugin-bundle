@@ -1,5 +1,3 @@
-
-
 package org.xbib.elasticsearch.index.analysis.icu;
 
 import com.ibm.icu.text.FilteredNormalizer2;
@@ -24,7 +22,6 @@ import org.elasticsearch.index.settings.IndexSettings;
  * <p/>
  * <p>The <tt>unicodeSetFilter</tt> attribute can be used to provide the UniCodeSet for filtering.
  *
- * @author kimchy (shay.banon)
  */
 public class IcuFoldingTokenFilterFactory extends AbstractTokenFilterFactory {
     private final String unicodeSetFilter;
@@ -37,7 +34,6 @@ public class IcuFoldingTokenFilterFactory extends AbstractTokenFilterFactory {
 
     @Override
     public TokenStream create(TokenStream tokenStream) {
-
         // The ICUFoldingFilter is in fact implemented as a ICUNormalizer2Filter.
         // ICUFoldingFilter lacks a constructor for adding filtering so we implemement it here
         if (unicodeSetFilter != null) {
@@ -45,7 +41,6 @@ public class IcuFoldingTokenFilterFactory extends AbstractTokenFilterFactory {
                     ICUFoldingFilter.class.getResourceAsStream("utr30.nrm"),
                     "utr30", Normalizer2.Mode.COMPOSE);
             UnicodeSet unicodeSet = new UnicodeSet(unicodeSetFilter);
-
             unicodeSet.freeze();
             Normalizer2 filtered = new FilteredNormalizer2(base, unicodeSet);
             return new org.apache.lucene.analysis.icu.ICUNormalizer2Filter(tokenStream, filtered);

@@ -11,21 +11,18 @@ import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.settings.IndexSettings;
 
-
 /**
  */
 public class IcuTransformTokenFilterFactory extends AbstractTokenFilterFactory {
 
-    private final String id;
-    private final int dir;
     private final Transliterator transliterator;
 
     @Inject
     public IcuTransformTokenFilterFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
-        this.id = settings.get("id", "Null");
+        String id = settings.get("id", "Null");
         String s = settings.get("dir", "forward");
-        this.dir = "forward".equals(s) ? Transliterator.FORWARD : Transliterator.REVERSE;
+        int dir = "forward".equals(s) ? Transliterator.FORWARD : Transliterator.REVERSE;
         this.transliterator = Transliterator.getInstance(id, dir);
     }
 

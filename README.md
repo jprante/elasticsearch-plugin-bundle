@@ -19,6 +19,13 @@ elasticsearch-analysis-combo
 
 elasticsearch-langdetect
 
+sortform (reduced string form for bibliographical sort, taking non-sort areas into account)
+
+Project docs
+------------
+
+The Maven project site is available at `Github <http://jprante.github.io/elasticsearch-analysis-german>`_
+
 License
 -------
 

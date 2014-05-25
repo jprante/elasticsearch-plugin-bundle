@@ -8,11 +8,14 @@ import org.elasticsearch.index.analysis.AnalysisModule;
 import org.elasticsearch.plugins.AbstractPlugin;
 import org.xbib.elasticsearch.index.analysis.baseform.BaseformTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.combo.ComboAnalysisBinderProcessor;
+import org.xbib.elasticsearch.index.analysis.concat.ConcatTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.decompound.DecompoundTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.german.GermanNormalizationFilterFactory;
 import org.xbib.elasticsearch.index.analysis.icu.IcuAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.langdetect.LangdetectService;
 import org.xbib.elasticsearch.index.analysis.langdetect.LangdetectModule;
+import org.xbib.elasticsearch.index.analysis.sortform.SortformAnalyzerProvider;
+import org.xbib.elasticsearch.index.analysis.sortform.SortformTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2Factory;
 import org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilterFactory;
 import org.xbib.elasticsearch.indices.analysis.icu.IcuIndicesAnalysisModule;
@@ -25,7 +28,9 @@ public class AnalysisGermanPlugin extends AbstractPlugin {
 
     @Override
     public String name() {
-        return "analysis-german";
+        return "analysis-german-" +
+                Build.getInstance().getVersion() + "-" +
+                Build.getInstance().getShortHash();
     }
 
     @Override
@@ -44,11 +49,14 @@ public class AnalysisGermanPlugin extends AbstractPlugin {
     public void onModule(AnalysisModule module) {
         module.addProcessor(new IcuAnalysisBinderProcessor());
         module.addProcessor(new ComboAnalysisBinderProcessor());
+        module.addAnalyzer("sortform", SortformAnalyzerProvider.class);
         module.addTokenFilter("german_normalize", GermanNormalizationFilterFactory.class);
         module.addTokenFilter("decompound", DecompoundTokenFilterFactory.class);
         module.addTokenFilter("baseform", BaseformTokenFilterFactory.class);
         module.addTokenFilter("worddelimiter", WordDelimiterFilterFactory.class);
         module.addTokenFilter("worddelimiter2", WordDelimiterFilter2Factory.class);
+        module.addTokenFilter("sortform", SortformTokenFilterFactory.class);
+        module.addTokenFilter("concat", ConcatTokenFilterFactory.class);
     }
 
     @Override
