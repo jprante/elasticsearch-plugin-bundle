@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.index.analysis.langdetect;
 
 import org.elasticsearch.common.io.stream.StreamInput;
@@ -16,11 +15,11 @@ public class Language implements Streamable {
         this.lang = lang;
         this.prob = prob;
     }
-    
+
     public String getLanguage() {
         return lang;
     }
-    
+
     public double getProbability() {
         return prob;
     }
@@ -28,7 +27,7 @@ public class Language implements Streamable {
     @Override
     public void readFrom(StreamInput in) throws IOException {
         this.lang = in.readString();
-        this.prob = in.readDouble();        
+        this.prob = in.readDouble();
     }
 
     @Override

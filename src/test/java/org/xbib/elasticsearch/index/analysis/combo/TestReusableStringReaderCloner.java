@@ -1,16 +1,11 @@
-
 package org.xbib.elasticsearch.index.analysis.combo;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
 
 import java.io.IOException;
 import java.io.Reader;
 
-/**
- * Testcase for {@link ReusableStringReaderCloner}
- */
-@Test
 public class TestReusableStringReaderCloner extends BaseTokenStreamTest {
 
     @Test

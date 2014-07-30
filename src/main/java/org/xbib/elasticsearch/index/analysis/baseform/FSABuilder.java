@@ -298,7 +298,7 @@ public final class FSABuilder {
 
     /**
      * @return The number of common prefix characters with the previous
-     *         sequence.
+     * sequence.
      */
     private int commonPrefix(byte[] sequence, int start, int len) {
         // Empty root state case.

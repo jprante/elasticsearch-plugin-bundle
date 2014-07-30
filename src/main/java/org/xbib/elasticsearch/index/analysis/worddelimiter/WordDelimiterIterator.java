@@ -15,7 +15,9 @@ import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterF
  */
 public final class WordDelimiterIterator {
 
-    /** Indicates the end of iteration */
+    /**
+     * Indicates the end of iteration
+     */
     public static final int DONE = -1;
 
     public static final byte[] DEFAULT_WORD_DELIM_TABLE;
@@ -23,14 +25,22 @@ public final class WordDelimiterIterator {
     char text[];
     int length;
 
-    /** start position of text, excluding leading delimiters */
+    /**
+     * start position of text, excluding leading delimiters
+     */
     int startBounds;
-    /** end position of text, excluding trailing delimiters */
+    /**
+     * end position of text, excluding trailing delimiters
+     */
     int endBounds;
 
-    /** Beginning of subword */
+    /**
+     * Beginning of subword
+     */
     int current;
-    /** End of subword */
+    /**
+     * End of subword
+     */
     int end;
 
     /* does this string end with a possessive such as 's */
@@ -57,7 +67,9 @@ public final class WordDelimiterIterator {
 
     private final byte[] charTypeTable;
 
-    /** if true, need to skip over a possessive found in the last call to next() */
+    /**
+     * if true, need to skip over a possessive found in the last call to next()
+     */
     private boolean skipPossessive = false;
 
     // TODO: should there be a WORD_DELIM category for chars that only separate words (no catenation of subwords will be
@@ -68,11 +80,9 @@ public final class WordDelimiterIterator {
             byte code = 0;
             if (Character.isLowerCase(i)) {
                 code |= LOWER;
-            }
-            else if (Character.isUpperCase(i)) {
+            } else if (Character.isUpperCase(i)) {
                 code |= UPPER;
-            }
-            else if (Character.isDigit(i)) {
+            } else if (Character.isDigit(i)) {
                 code |= DIGIT;
             }
             if (code == 0) {
@@ -86,9 +96,9 @@ public final class WordDelimiterIterator {
     /**
      * Create a new WordDelimiterIterator operating with the supplied rules.
      *
-     * @param charTypeTable table containing character types
-     * @param splitOnCaseChange if true, causes "PowerShot" to be two tokens; ("Power-Shot" remains two parts regards)
-     * @param splitOnNumerics if true, causes "j2se" to be three tokens; "j" "2" "se"
+     * @param charTypeTable         table containing character types
+     * @param splitOnCaseChange     if true, causes "PowerShot" to be two tokens; ("Power-Shot" remains two parts regards)
+     * @param splitOnNumerics       if true, causes "j2se" to be three tokens; "j" "2" "se"
      * @param stemEnglishPossessive if true, causes trailing "'s" to be removed for each subword: "O'Neil's" => "O", "Neil"
      */
     WordDelimiterIterator(byte[] charTypeTable, boolean splitOnCaseChange, boolean splitOnNumerics, boolean stemEnglishPossessive) {
@@ -165,7 +175,7 @@ public final class WordDelimiterIterator {
     /**
      * Reset the text to a new value, and reset all state
      *
-     * @param text New text
+     * @param text   New text
      * @param length length of the text
      */
     void setText(char text[], int length) {
@@ -182,7 +192,7 @@ public final class WordDelimiterIterator {
      * Determines whether the transition from lastType to type indicates a break
      *
      * @param lastType Last subword type
-     * @param type Current subword type
+     * @param type     Current subword type
      * @return {@code true} if the transition indicates a break, {@code false} otherwise
      */
     private boolean isBreak(int lastType, int type) {
@@ -212,8 +222,7 @@ public final class WordDelimiterIterator {
     boolean isSingleWord() {
         if (hasFinalPossessive) {
             return current == startBounds && end == endBounds - 2;
-        }
-        else {
+        } else {
             return current == startBounds && end == endBounds;
         }
     }
@@ -272,8 +281,10 @@ public final class WordDelimiterIterator {
      */
     public static byte getType(int ch) {
         switch (Character.getType(ch)) {
-            case Character.UPPERCASE_LETTER: return UPPER;
-            case Character.LOWERCASE_LETTER: return LOWER;
+            case Character.UPPERCASE_LETTER:
+                return UPPER;
+            case Character.LOWERCASE_LETTER:
+                return LOWER;
 
             case Character.TITLECASE_LETTER:
             case Character.MODIFIER_LETTER:
@@ -296,7 +307,7 @@ public final class WordDelimiterIterator {
             // case Character.PRIVATE_USE:
 
             case Character.SURROGATE:  // prevent splitting
-                return ALPHA|DIGIT;
+                return ALPHA | DIGIT;
 
             // case Character.DASH_PUNCTUATION:
             // case Character.START_PUNCTUATION:
@@ -310,7 +321,8 @@ public final class WordDelimiterIterator {
             // case Character.INITIAL_QUOTE_PUNCTUATION:
             // case Character.FINAL_QUOTE_PUNCTUATION:
 
-            default: return SUBWORD_DELIM;
+            default:
+                return SUBWORD_DELIM;
         }
     }
 }

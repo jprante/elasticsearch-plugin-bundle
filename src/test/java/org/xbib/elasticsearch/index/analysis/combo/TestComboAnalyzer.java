@@ -8,9 +8,9 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.util.Version;
 import org.elasticsearch.common.lucene.Lucene;
 import org.elasticsearch.index.analysis.AnalyzerScope;
+import org.junit.Test;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
 import org.elasticsearch.index.analysis.NamedAnalyzer;
-import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -25,7 +25,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 /**
  * Testcase for {@link ComboAnalyzer}
  */
-@Test
 public class TestComboAnalyzer extends BaseTokenStreamTest {
 
     private Version TEST_VERSION_CURRENT = Lucene.ANALYZER_VERSION;

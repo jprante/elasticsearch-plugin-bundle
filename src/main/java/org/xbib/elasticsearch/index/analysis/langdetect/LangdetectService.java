@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.index.analysis.langdetect;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -85,7 +84,7 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
         int size = bundle.keySet().size();
         while (en.hasMoreElements()) {
             String line = en.nextElement();
-            InputStream in = getClass().getResourceAsStream("/langdetect/"+ line);
+            InputStream in = getClass().getResourceAsStream("/langdetect/" + line);
             if (in == null) {
                 throw new IOException("i/o error in profile locading");
             }
@@ -135,7 +134,7 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
         this.priorMap = null;
         this.alpha = ALPHA_DEFAULT;
         this.n_trial = 7;
-    }    
+    }
 
     /**
      * Set smoothing parameter. The default value is 0.5(i.e. Expected
@@ -187,7 +186,7 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
     public String detect(String text) throws LanguageDetectionException {
         List<Language> probabilities =
                 detectAll(text.replaceAll(word.pattern(), " "));
-              //detectAll(normalize(text));
+        //detectAll(normalize(text));
         if (probabilities.size() > 0) {
             return probabilities.get(0).getLanguage();
         }
@@ -213,7 +212,7 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
         for (int t = 0; t < n_trial; ++t) {
             double[] prob = initProbability();
             double a = this.alpha + rand.nextGaussian() * ALPHA_WIDTH;
-            for (int i = 0;; ++i) {
+            for (int i = 0; ; ++i) {
                 int r = rand.nextInt(ngrams.size());
                 updateLangProb(prob, ngrams.get(r), a);
                 if (i % 5 == 0) {

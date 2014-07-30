@@ -1,42 +1,53 @@
-
 package org.xbib.elasticsearch.index.analysis.icu;
 
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
 import com.ibm.icu.util.ULocale;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.collation.ICUCollationKeyFilter;
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.core.KeywordTokenizer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.collation.ICUCollationAttributeFactory;
+import org.apache.lucene.collation.tokenattributes.ICUCollatedTermAttributeImpl;
 import org.elasticsearch.ElasticsearchIllegalArgumentException;
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.env.FailedToResolveConfigException;
-import org.elasticsearch.index.Index;
-import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
-import org.elasticsearch.index.settings.IndexSettings;
 
 import java.io.IOException;
+import java.io.Reader;
 
-/**
- * An ICU based collation token filter. There are two ways to configure collation:
- * <p/>
- * <p>The first is simply specifying the locale (defaults to the default locale). The <tt>language</tt>
- * parameter is the lowercase two-letter ISO-639 code. An additional <tt>country</tt> and <tt>variant</tt>
- * can be provided.
- * <p/>
- * <p>The second option is to specify collation rules as defined in the <a href="http://www.icu-project.org/userguide/Collate_Customization.html">
- * Collation customization</a> chapter in icu docs. The <tt>rules</tt> parameter can either embed the rules definition
- * in the settings or refer to an external location (preferable located under the <tt>config</tt> location, relative to it).
- */
-public class IcuCollationTokenFilterFactory extends AbstractTokenFilterFactory {
+public class IcuCollationTokenizer extends Tokenizer {
 
-    private final Collator collator;
+    private final TokenStream tokenStream;
 
-    @Inject
-    public IcuCollationTokenFilterFactory(Index index, @IndexSettings Settings indexSettings, Environment environment, @Assisted String name, @Assisted Settings settings) {
-        super(index, indexSettings, name, settings);
+    protected IcuCollationTokenizer(Environment environment, Settings settings, Reader input) {
+        super(new ICUCollationAttributeFactory(makeCollator(environment, settings)), input);
+        this.tokenStream = new KeywordTokenizer(input);
+    }
 
+    @Override
+    public final boolean incrementToken() throws IOException {
+        if (tokenStream.incrementToken()) {
+            CharTermAttribute termAtt = getAttribute(CharTermAttribute.class);
+            ICUCollatedTermAttributeImpl icutermAtt = getAttribute(ICUCollatedTermAttributeImpl.class);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void reset() throws IOException {
+        super.reset();
+        tokenStream.reset();
+    }
+
+    public void close() throws IOException {
+        super.close();
+        tokenStream.close();
+    }
+
+    private static Collator makeCollator(Environment environment, Settings settings) {
         Collator collator;
         String rules = settings.get("rules");
         if (rules != null) {
@@ -72,6 +83,7 @@ public class IcuCollationTokenFilterFactory extends AbstractTokenFilterFactory {
                 } else {
                     locale = new ULocale(language);
                 }
+                System.err.println("locale=" + locale);
                 collator = Collator.getInstance(locale);
             } else {
                 collator = Collator.getInstance();
@@ -142,22 +154,10 @@ public class IcuCollationTokenFilterFactory extends AbstractTokenFilterFactory {
             rbc.setNumericCollation(numeric);
         }
 
-        String variableTop = settings.get("variableTop");
-        if (variableTop != null) {
-            rbc.setVariableTop(variableTop);
-        }
-
-        Boolean hiraganaQuaternaryMode = settings.getAsBoolean("hiraganaQuaternaryMode", null);
-        if (hiraganaQuaternaryMode != null) {
-            rbc.setHiraganaQuaternary(hiraganaQuaternaryMode);
-        }
-
-        this.collator = collator;
+        int maxVariable = settings.getAsInt("variableTop", Collator.ReorderCodes.DEFAULT);
+        rbc.setMaxVariable(maxVariable);
+        System.err.println("collator created " + collator);
+        return collator;
     }
 
-    @Override
-    public TokenStream create(TokenStream tokenStream) {
-        // TODO use analyzer instead
-        return new ICUCollationKeyFilter(tokenStream, collator);
-    }
 }

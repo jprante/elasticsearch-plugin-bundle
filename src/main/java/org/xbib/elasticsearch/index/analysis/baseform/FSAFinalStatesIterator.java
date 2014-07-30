@@ -83,7 +83,7 @@ public final class FSAFinalStatesIterator implements Iterator<ByteBuffer> {
 
     /**
      * @return Returns a {@link java.nio.ByteBuffer} with the sequence corresponding to
-     *         the next final state in the automaton.
+     * the next final state in the automaton.
      */
     @Override
     public ByteBuffer next() {

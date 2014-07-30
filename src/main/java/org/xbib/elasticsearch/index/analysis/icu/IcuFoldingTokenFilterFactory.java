@@ -21,7 +21,6 @@ import org.elasticsearch.index.settings.IndexSettings;
  * E.g national chars that should be retained (filter : "[^åäöÅÄÖ]").
  * <p/>
  * <p>The <tt>unicodeSetFilter</tt> attribute can be used to provide the UniCodeSet for filtering.
- *
  */
 public class IcuFoldingTokenFilterFactory extends AbstractTokenFilterFactory {
     private final String unicodeSetFilter;

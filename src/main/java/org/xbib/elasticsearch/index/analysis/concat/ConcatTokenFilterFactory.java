@@ -9,12 +9,12 @@ import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.settings.IndexSettings;
 
-public class ConcatTokenFilterFactory extends AbstractTokenFilterFactory  {
+public class ConcatTokenFilterFactory extends AbstractTokenFilterFactory {
 
     @Inject
     public ConcatTokenFilterFactory(Index index,
-                                        @IndexSettings Settings indexSettings, Environment env,
-                                        @Assisted String name, @Assisted Settings settings) {
+                                    @IndexSettings Settings indexSettings, Environment env,
+                                    @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
     }
 

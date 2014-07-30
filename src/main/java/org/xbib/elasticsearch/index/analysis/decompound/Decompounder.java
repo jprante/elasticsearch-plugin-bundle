@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.index.analysis.decompound;
 
 import java.io.IOException;
@@ -34,7 +33,7 @@ public class Decompounder {
         kompvhTree = kompvh;
         grfTree = gfred;
     }
-    
+
     private String reverse(String torev) {
         String ret = "";
         for (int i = torev.length(); i > 0; i--) {
@@ -154,8 +153,7 @@ public class Decompounder {
                 } else if (vhpart2.length() > vvpart2.length()) {
                     list.add(vvpart2);
                 }
-            }
-            else {
+            } else {
                 list.add(vvpart1);
                 list.add(word.substring(vvpart1.length() + suffixvv.length(), word.length() - numvh));
                 list.add(vhpart2);
@@ -180,8 +178,7 @@ public class Decompounder {
                 l = decompound(s);
                 retvec2.addAll(l);
             }
-        }
-        else {
+        } else {
             retvec2 = list;
         }
         return retvec2;

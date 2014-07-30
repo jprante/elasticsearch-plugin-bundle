@@ -22,16 +22,13 @@ import org.elasticsearch.index.settings.IndexSettingsModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import org.xbib.elasticsearch.plugin.analysis.german.AnalysisGermanPlugin;
 
 import java.io.IOException;
 import java.io.StringReader;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
 
 public class BaseformTokenFilterTests extends Assert {
 
@@ -39,7 +36,6 @@ public class BaseformTokenFilterTests extends Assert {
     public void testOne() throws IOException {
         AnalysisService analysisService = createAnalysisService();
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("baseform");
-        assertThat(tokenFilter, instanceOf(BaseformTokenFilterFactory.class));
 
         String source = "Die Jahresfeier der Rechtsanwaltskanzleien auf dem Donaudampfschiff hat viel Ökosteuer gekostet";
 
@@ -68,7 +64,7 @@ public class BaseformTokenFilterTests extends Assert {
             "kosten"
         };
 
-        Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_48, new StringReader(source));
+        Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_4_9, new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
 
     }
@@ -77,7 +73,6 @@ public class BaseformTokenFilterTests extends Assert {
     public void testTwo() throws IOException {
         AnalysisService analysisService = createAnalysisService();
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("baseform");
-        assertThat(tokenFilter, instanceOf(BaseformTokenFilterFactory.class));
 
         String source = "Das sind Autos, die Nudeln transportieren.";
 
@@ -96,7 +91,7 @@ public class BaseformTokenFilterTests extends Assert {
                 "transportieren"
         };
 
-        Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_48, new StringReader(source));
+        Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_4_9, new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 
@@ -130,9 +125,10 @@ public class BaseformTokenFilterTests extends Assert {
         int i = 0;
         while (stream.incrementToken()) {
             assertTrue(i < expected.length);
-            assertEquals(expected[i++], termAttr.toString(), "expected different term at index " + i);
+            assertEquals(expected[i], termAttr.toString());
+            i++;
         }
-        assertEquals(i, expected.length, "not all tokens produced");
+        assertEquals(i, expected.length);
         stream.close();
     }
 }

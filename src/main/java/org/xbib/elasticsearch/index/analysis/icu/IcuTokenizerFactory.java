@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.index.analysis.icu;
 
 import org.apache.lucene.analysis.Tokenizer;

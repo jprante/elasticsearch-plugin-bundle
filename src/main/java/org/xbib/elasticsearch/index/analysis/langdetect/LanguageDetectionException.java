@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.index.analysis.langdetect;
 
 import java.io.IOException;

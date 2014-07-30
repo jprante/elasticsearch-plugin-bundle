@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.index.analysis.icu;
 
 import com.ibm.icu.text.Collator;
@@ -34,7 +33,7 @@ import java.io.IOException;
  */
 public class IcuCollationAnalyzerProvider extends AbstractIndexAnalyzerProvider<ICUCollationKeyAnalyzer> {
 
-    private final ICUCollationKeyAnalyzer analyzer;
+    private final Collator collator;
 
     @Inject
     public IcuCollationAnalyzerProvider(Index index,
@@ -44,7 +43,6 @@ public class IcuCollationAnalyzerProvider extends AbstractIndexAnalyzerProvider<
                                         @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
 
-        Collator collator;
         String rules = settings.get("rules");
         if (rules != null) {
             FailedToResolveConfigException failureToResolve = null;
@@ -149,21 +147,12 @@ public class IcuCollationAnalyzerProvider extends AbstractIndexAnalyzerProvider<
             rbc.setNumericCollation(numeric);
         }
 
-        String variableTop = settings.get("variableTop");
-        if (variableTop != null) {
-            rbc.setVariableTop(variableTop);
-        }
-
-        Boolean hiraganaQuaternaryMode = settings.getAsBoolean("hiraganaQuaternaryMode", null);
-        if (hiraganaQuaternaryMode != null) {
-            rbc.setHiraganaQuaternary(hiraganaQuaternaryMode);
-        }
-
-        this.analyzer = new ICUCollationKeyAnalyzer(version, collator);
+        int maxVariable = settings.getAsInt("variableTop", Collator.ReorderCodes.DEFAULT);
+        rbc.setMaxVariable(maxVariable);
     }
 
     @Override
     public ICUCollationKeyAnalyzer get() {
-        return analyzer;
+        return new ICUCollationKeyAnalyzer(version, collator);
     }
 }

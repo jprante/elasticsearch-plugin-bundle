@@ -17,9 +17,10 @@ import org.elasticsearch.index.mapper.DocumentMapper;
 import org.elasticsearch.index.mapper.DocumentMapperParser;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.similarity.SimilarityLookupService;
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.elasticsearch.script.ScriptService;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Map;
@@ -45,7 +46,9 @@ public class LangdetectMappingTest extends Assert {
                 analysisService,
                 new PostingsFormatService(index),
                 new DocValuesFormatService(index),
-                new SimilarityLookupService(index, settings));
+                new SimilarityLookupService(index, settings),
+                null
+        );
         LangdetectService detector = new LangdetectService(settings);
         detector.start();
         mapperParser.putTypeParser(LangdetectMapper.CONTENT_TYPE,

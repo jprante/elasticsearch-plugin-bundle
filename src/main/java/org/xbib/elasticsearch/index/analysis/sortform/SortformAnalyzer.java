@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.index.analysis.sortform;
 
 import org.apache.lucene.analysis.Analyzer;

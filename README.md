@@ -1,15 +1,13 @@
 elasticsearch-analysis-german
 =============================
 
-A plugin that consists of a compilation of useful Elasticsearch plugins
-related to indexing documents in german language and are not avaliable
-in Elasticsearch.
+A plugin that consists of a compilation of useful Elasticsearch plugins related to indexing and searching documents in german language that are not avaliable in Elasticsearch by default.
 
 German normalizer (Lucene)
 
 WordDelimiterFilter2 (Lucene)
 
-elasticsearch-analysis-icu (with ICU collation sort keys)
+elasticsearch-analysis-icu (with ICU collation analyzer compatible to Lucene 5.x)
 
 elasticsearch-analysis-baseform
 
@@ -19,7 +17,7 @@ elasticsearch-analysis-combo
 
 elasticsearch-langdetect
 
-sortform (reduced string form for bibliographical sort, taking non-sort areas into account)
+sortform (process string forms for bibliographical sort, taking non-sort areas into account)
 
 Project docs
 ------------

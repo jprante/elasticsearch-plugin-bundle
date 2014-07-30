@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.plugin.analysis.german;
 
 import java.io.ByteArrayOutputStream;

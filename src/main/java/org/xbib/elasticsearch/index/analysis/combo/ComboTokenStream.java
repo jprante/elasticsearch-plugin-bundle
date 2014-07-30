@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.index.analysis.combo;
 
 import org.apache.lucene.analysis.TokenStream;
@@ -12,7 +11,7 @@ import java.util.PriorityQueue;
 
 /**
  * A TokenStream combining the output of multiple sub-TokenStreams.
- *
+ * <p/>
  * This class copies the attributes from the last sub-TokenStream that
  * was read from. If attributes are not uniform between sub-TokenStreams,
  * extraneous attributes will stay untouched.

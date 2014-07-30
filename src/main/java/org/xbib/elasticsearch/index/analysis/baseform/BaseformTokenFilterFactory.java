@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.index.analysis.baseform;
 
 import org.apache.lucene.analysis.TokenStream;
@@ -20,8 +19,8 @@ public class BaseformTokenFilterFactory extends AbstractTokenFilterFactory {
 
     @Inject
     public BaseformTokenFilterFactory(Index index,
-                                        @IndexSettings Settings indexSettings, Environment env,
-                                        @Assisted String name, @Assisted Settings settings) {
+                                      @IndexSettings Settings indexSettings, Environment env,
+                                      @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
         this.dictionary = createDictionary(env, settings);
     }

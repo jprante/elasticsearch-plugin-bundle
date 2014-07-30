@@ -21,7 +21,7 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.testng.annotations.Test;
+import org.junit.Test;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
 
 import java.io.IOException;
@@ -29,7 +29,6 @@ import java.io.IOException;
 /**
  * Testcase for {@link ComboTokenStream}.
  */
-@Test
 public class TestComboTokenStream extends BaseTokenStreamTest {
 
     /**

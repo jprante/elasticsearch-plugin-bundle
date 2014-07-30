@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.index.analysis.decompound;
 
 import org.apache.lucene.analysis.TokenFilter;

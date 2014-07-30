@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.indices.analysis.icu;
 
 import org.elasticsearch.common.inject.AbstractModule;

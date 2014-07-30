@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.index.analysis.decompound;
 
 import org.apache.lucene.analysis.TokenStream;
@@ -19,8 +18,8 @@ public class DecompoundTokenFilterFactory extends AbstractTokenFilterFactory {
 
     @Inject
     public DecompoundTokenFilterFactory(Index index,
-            @IndexSettings Settings indexSettings, Environment env,
-            @Assisted String name, @Assisted Settings settings) {
+                                        @IndexSettings Settings indexSettings, Environment env,
+                                        @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
         this.decompounder = createDecompounder(env, settings);
     }

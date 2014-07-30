@@ -4,9 +4,9 @@ import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.util.ArrayUtil;
@@ -35,7 +35,7 @@ import java.io.IOException;
  * </ul>
  * </li>
  * </ul>
- *
+ * <p/>
  * The <b>combinations</b> parameter affects how subwords are combined:
  * <ul>
  * <li>combinations="0" causes no subword combinations: <code>"PowerShot"</code>
@@ -140,7 +140,6 @@ public final class WordDelimiterFilter extends TokenFilter {
 
     /**
      * If not null is the set of tokens to protect from being delimited
-     *
      */
     private final CharArraySet protWords;
 
@@ -183,10 +182,10 @@ public final class WordDelimiterFilter extends TokenFilter {
     /**
      * Creates a new WordDelimiterFilter
      *
-     * @param in TokenStream to be filtered
-     * @param charTypeTable table containing character types
+     * @param in                 TokenStream to be filtered
+     * @param charTypeTable      table containing character types
      * @param configurationFlags Flags configuring the filter
-     * @param protWords If not null is the set of tokens to protect from being delimited
+     * @param protWords          If not null is the set of tokens to protect from being delimited
      */
     public WordDelimiterFilter(TokenStream in, byte[] charTypeTable, int configurationFlags, CharArraySet protWords) {
         super(in);
@@ -200,9 +199,9 @@ public final class WordDelimiterFilter extends TokenFilter {
      * Creates a new WordDelimiterFilter using {@link WordDelimiterIterator#DEFAULT_WORD_DELIM_TABLE}
      * as its charTypeTable
      *
-     * @param in TokenStream to be filtered
+     * @param in                 TokenStream to be filtered
      * @param configurationFlags Flags configuring the filter
-     * @param protWords If not null is the set of tokens to protect from being delimited
+     * @param protWords          If not null is the set of tokens to protect from being delimited
      */
     public WordDelimiterFilter(TokenStream in, int configurationFlags, CharArraySet protWords) {
         this(in, WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE, configurationFlags, protWords);
@@ -521,7 +520,7 @@ public final class WordDelimiterFilter extends TokenFilter {
         /**
          * Appends the given text of the given length, to the concetenation at the given offset
          *
-         * @param text Text to append
+         * @param text   Text to append
          * @param offset Offset in the concetenation to add the text
          * @param length Length of the text to append
          */
@@ -545,8 +544,7 @@ public final class WordDelimiterFilter extends TokenFilter {
 
             if (hasIllegalOffsets) {
                 offsetAttribute.setOffset(savedStartOffset, savedEndOffset);
-            }
-            else {
+            } else {
                 offsetAttribute.setOffset(startOffset, endOffset);
             }
             posIncAttribute.setPositionIncrement(position(true));

@@ -20,21 +20,21 @@ import java.util.regex.Pattern;
 
 import static org.elasticsearch.common.collect.Maps.newTreeMap;
 import static org.elasticsearch.common.collect.Sets.newHashSet;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.GENERATE_WORD_PARTS;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.GENERATE_NUMBER_PARTS;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.CATENATE_WORDS;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.CATENATE_NUMBERS;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.CATENATE_ALL;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.SPLIT_ON_CASE_CHANGE;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.SPLIT_ON_NUMERICS;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.PRESERVE_ORIGINAL;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.STEM_ENGLISH_POSSESSIVE;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.LOWER;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.UPPER;
 import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.ALPHA;
 import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.ALPHANUM;
+import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.CATENATE_ALL;
+import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.CATENATE_NUMBERS;
+import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.CATENATE_WORDS;
 import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.DIGIT;
+import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.GENERATE_NUMBER_PARTS;
+import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.GENERATE_WORD_PARTS;
+import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.LOWER;
+import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.PRESERVE_ORIGINAL;
+import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.SPLIT_ON_CASE_CHANGE;
+import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.SPLIT_ON_NUMERICS;
+import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.STEM_ENGLISH_POSSESSIVE;
 import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.SUBWORD_DELIM;
+import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.UPPER;
 
 public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory {
 
@@ -101,68 +101,88 @@ public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory {
 
     // parses a list of MappingCharFilter style rules into a custom byte[] type table
     private byte[] parseTypes(List<String> rules) {
-        SortedMap<Character,Byte> typeMap = newTreeMap();
-        for( String rule : rules ){
+        SortedMap<Character, Byte> typeMap = newTreeMap();
+        for (String rule : rules) {
             Matcher m = typePattern.matcher(rule);
-            if( !m.find() )
+            if (!m.find()) {
                 throw new ElasticsearchIllegalArgumentException("invalid rule : [" + rule + "]");
+            }
             String lhs = parseString(m.group(1).trim());
             Byte rhs = parseType(m.group(2).trim());
-            if (lhs.length() != 1)
+            if (lhs.length() != 1) {
                 throw new ElasticsearchIllegalArgumentException("invalid rule : [" + rule + "]: only single character allowed");
-            if (rhs == null)
+            }
+            if (rhs == null) {
                 throw new ElasticsearchIllegalArgumentException("invalid rule : [" + rule + "]: type illegal");
+            }
             typeMap.put(lhs.charAt(0), rhs);
         }
 
         // ensure the table is always at least as big as DEFAULT_WORD_DELIM_TABLE for performance
         byte types[] = new byte[Math.max(typeMap.lastKey() + 1, WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE.length)];
-        for (int i = 0; i < types.length; i++)
+        for (int i = 0; i < types.length; i++) {
             types[i] = WordDelimiterIterator.getType(i);
-        for (Map.Entry<Character,Byte> mapping : typeMap.entrySet())
+        }
+        for (Map.Entry<Character, Byte> mapping : typeMap.entrySet()) {
             types[mapping.getKey()] = mapping.getValue();
+        }
         return types;
     }
 
     private Byte parseType(String s) {
-        if (s.equals("LOWER"))
+        if (s.equals("LOWER")) {
             return LOWER;
-        else if (s.equals("UPPER"))
+        } else if (s.equals("UPPER")) {
             return UPPER;
-        else if (s.equals("ALPHA"))
+        } else if (s.equals("ALPHA")) {
             return ALPHA;
-        else if (s.equals("DIGIT"))
+        } else if (s.equals("DIGIT")) {
             return DIGIT;
-        else if (s.equals("ALPHANUM"))
+        } else if (s.equals("ALPHANUM")) {
             return ALPHANUM;
-        else if (s.equals("SUBWORD_DELIM"))
+        } else if (s.equals("SUBWORD_DELIM")) {
             return SUBWORD_DELIM;
-        else
+        } else {
             return null;
+        }
     }
 
     private final char[] out = new char[256];
 
-    private String parseString(String s){
+    private String parseString(String s) {
         int readPos = 0;
         int len = s.length();
         int writePos = 0;
-        while( readPos < len ){
-            char c = s.charAt( readPos++ );
-            if( c == '\\' ){
-                if( readPos >= len )
+        while (readPos < len) {
+            char c = s.charAt(readPos++);
+            if (c == '\\') {
+                if (readPos >= len) {
                     throw new ElasticsearchIllegalArgumentException("invalid escaped char in [" + s + "]");
-                c = s.charAt( readPos++ );
-                switch( c ) {
-                    case '\\' : c = '\\'; break;
-                    case 'n' : c = '\n'; break;
-                    case 't' : c = '\t'; break;
-                    case 'r' : c = '\r'; break;
-                    case 'b' : c = '\b'; break;
-                    case 'f' : c = '\f'; break;
-                    case 'u' :
-                        if( readPos + 3 >= len )
+                }
+                c = s.charAt(readPos++);
+                switch (c) {
+                    case '\\':
+                        c = '\\';
+                        break;
+                    case 'n':
+                        c = '\n';
+                        break;
+                    case 't':
+                        c = '\t';
+                        break;
+                    case 'r':
+                        c = '\r';
+                        break;
+                    case 'b':
+                        c = '\b';
+                        break;
+                    case 'f':
+                        c = '\f';
+                        break;
+                    case 'u':
+                        if (readPos + 3 >= len) {
                             throw new ElasticsearchIllegalArgumentException("invalid escaped char in [" + s + "]");
+                        }
                         c = (char) Integer.parseInt(s.substring(readPos, readPos + 4), 16);
                         readPos += 4;
                         break;
@@ -170,6 +190,6 @@ public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory {
             }
             out[writePos++] = c;
         }
-        return new String( out, 0, writePos );
+        return new String(out, 0, writePos);
     }
 }

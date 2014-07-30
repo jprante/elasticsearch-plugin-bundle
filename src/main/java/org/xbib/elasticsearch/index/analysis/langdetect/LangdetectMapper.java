@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.index.analysis.langdetect;
 
 import org.elasticsearch.common.xcontent.XContentBuilder;
@@ -64,7 +63,7 @@ public class LangdetectMapper implements Mapper {
             this.detector = detector;
         }
 
-        @SuppressWarnings({"unchecked","rawtypes"})
+        @SuppressWarnings({"unchecked", "rawtypes"})
         @Override
         public Mapper.Builder parse(String name, Map<String, Object> node, ParserContext parserContext)
                 throws MapperParsingException {
@@ -143,7 +142,7 @@ public class LangdetectMapper implements Mapper {
                 context.externalValue(lang.getLanguage());
                 langMapper.parse(context);
             }
-        } catch(LanguageDetectionException e) {
+        } catch (LanguageDetectionException e) {
             context.externalValue("unknown");
             langMapper.parse(context);
         }

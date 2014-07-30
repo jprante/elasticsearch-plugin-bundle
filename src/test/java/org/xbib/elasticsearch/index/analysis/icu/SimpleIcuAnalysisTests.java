@@ -1,22 +1,3 @@
-/*
- * Licensed to ElasticSearch and Shay Banon under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. ElasticSearch licenses this
- * file to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-
 package org.xbib.elasticsearch.index.analysis.icu;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -35,11 +16,11 @@ import org.elasticsearch.index.analysis.TokenizerFactory;
 import org.elasticsearch.index.settings.IndexSettingsModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 import static org.elasticsearch.common.settings.ImmutableSettings.Builder.EMPTY_SETTINGS;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
 
 public class SimpleIcuAnalysisTests {
 
@@ -51,7 +32,8 @@ public class SimpleIcuAnalysisTests {
         Injector injector = new ModulesBuilder().add(
                 new IndexSettingsModule(index, EMPTY_SETTINGS),
                 new IndexNameModule(index),
-                new AnalysisModule(EMPTY_SETTINGS, parentInjector.getInstance(IndicesAnalysisService.class)).addProcessor(new IcuAnalysisBinderProcessor()))
+                new AnalysisModule(EMPTY_SETTINGS, parentInjector.getInstance(IndicesAnalysisService.class))
+                        .addProcessor(new IcuAnalysisBinderProcessor()))
                 .createChildInjector(parentInjector);
 
         AnalysisService analysisService = injector.getInstance(AnalysisService.class);
@@ -67,9 +49,6 @@ public class SimpleIcuAnalysisTests {
 
         filterFactory = analysisService.tokenFilter("icu_transform");
         assertThat(filterFactory, instanceOf(IcuTransformTokenFilterFactory.class));
-
-        filterFactory = analysisService.tokenFilter("icu_collation");
-        assertThat(filterFactory, instanceOf(IcuCollationTokenFilterFactory.class));
 
         Analyzer analyzer = analysisService.analyzer("icu_collation");
         assertThat(analyzer, instanceOf(NamedAnalyzer.class));

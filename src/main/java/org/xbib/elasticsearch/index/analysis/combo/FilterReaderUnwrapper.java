@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.index.analysis.combo;
 
 import java.io.FilterReader;

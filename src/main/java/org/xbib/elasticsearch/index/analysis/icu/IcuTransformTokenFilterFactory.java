@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.index.analysis.icu;
 
 import com.ibm.icu.text.Transliterator;

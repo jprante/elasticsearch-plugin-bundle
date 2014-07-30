@@ -1,17 +1,13 @@
-
 package org.xbib.elasticsearch.indices.analysis.icu;
 
-import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.Normalizer2;
 import com.ibm.icu.text.Transliterator;
-
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.icu.ICUFoldingFilter;
+import org.apache.lucene.analysis.icu.ICUNormalizer2Filter;
 import org.apache.lucene.analysis.icu.ICUTransformFilter;
 import org.apache.lucene.analysis.icu.segmentation.ICUTokenizer;
-import org.apache.lucene.collation.ICUCollationKeyFilter;
-
 import org.elasticsearch.common.component.AbstractComponent;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
@@ -53,10 +49,9 @@ public class IcuIndicesAnalysis extends AbstractComponent {
 
             @Override
             public TokenStream create(TokenStream tokenStream) {
-                return new org.apache.lucene.analysis.icu.ICUNormalizer2Filter(tokenStream, Normalizer2.getInstance(null, "nfkc_cf", Normalizer2.Mode.COMPOSE));
+                return new ICUNormalizer2Filter(tokenStream, Normalizer2.getInstance(null, "nfkc_cf", Normalizer2.Mode.COMPOSE));
             }
         }));
-
 
         indicesAnalysisService.tokenFilterFactories().put("icu_folding", new PreBuiltTokenFilterFactoryFactory(new TokenFilterFactory() {
             @Override
@@ -67,18 +62,6 @@ public class IcuIndicesAnalysis extends AbstractComponent {
             @Override
             public TokenStream create(TokenStream tokenStream) {
                 return new ICUFoldingFilter(tokenStream);
-            }
-        }));
-
-        indicesAnalysisService.tokenFilterFactories().put("icu_collation", new PreBuiltTokenFilterFactoryFactory(new TokenFilterFactory() {
-            @Override
-            public String name() {
-                return "icu_collation";
-            }
-
-            @Override
-            public TokenStream create(TokenStream tokenStream) {
-                return new ICUCollationKeyFilter(tokenStream, Collator.getInstance());
             }
         }));
 

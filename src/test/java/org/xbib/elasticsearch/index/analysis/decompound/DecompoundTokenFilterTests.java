@@ -20,23 +20,19 @@ import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.index.settings.IndexSettingsModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 import org.xbib.elasticsearch.plugin.analysis.german.AnalysisGermanPlugin;
 
 import java.io.IOException;
 import java.io.StringReader;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-
-public class DecompoundTokenFilterTests {
+public class DecompoundTokenFilterTests extends Assert {
 
     @Test
     public void test() throws IOException {
         AnalysisService analysisService = createAnalysisService();
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("decomp");
-        assertThat(tokenFilter, instanceOf(DecompoundTokenFilterFactory.class));
 
         String source = "Die Jahresfeier der Rechtsanwaltskanzleien auf dem Donaudampfschiff hat viel Ökosteuer gekostet";
 
@@ -69,7 +65,7 @@ public class DecompoundTokenFilterTests {
             "gekostet",
             "gekosten"
         };
-        Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_48, new StringReader(source));
+        Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_4_9, new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 
@@ -101,10 +97,11 @@ public class DecompoundTokenFilterTests {
         Assert.assertNotNull(termAttr);
         int i = 0;
         while (stream.incrementToken()) {
-            Assert.assertTrue(i < expected.length);
-            Assert.assertEquals(expected[i++], termAttr.toString(), "expected different term at index " + i);
+            assertTrue(i < expected.length);
+            assertEquals(expected[i], termAttr.toString());
+            i++;
         }
-        Assert.assertEquals(i, expected.length, "not all tokens produced");
+        assertEquals(i, expected.length);
         stream.close();
     }
 }

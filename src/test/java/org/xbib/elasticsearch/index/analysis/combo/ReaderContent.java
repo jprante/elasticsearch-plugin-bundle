@@ -1,6 +1,7 @@
 package org.xbib.elasticsearch.index.analysis.combo;
 
-import org.testng.Assert;
+
+import org.junit.Assert;
 
 import java.io.IOException;
 import java.io.Reader;

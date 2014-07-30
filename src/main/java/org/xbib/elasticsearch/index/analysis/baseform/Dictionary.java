@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.index.analysis.baseform;
 
 import java.io.BufferedReader;
@@ -50,7 +49,7 @@ public class Dictionary {
         MatchResult match = matcher.match(buf.array(), buf.position(), buf.remaining(), fsa.getRootNode());
         switch (match.kind) {
             case SEQUENCE_IS_A_PREFIX: {
-                final int arc = fsa.getArc(match.node, (byte)'+');
+                final int arc = fsa.getArc(match.node, (byte) '+');
                 if (arc != 0 && !fsa.isArcFinal(arc)) {
                     FSAFinalStatesIterator finalStatesIterator = new FSAFinalStatesIterator(fsa, fsa.getRootNode());
                     finalStatesIterator.restartFrom(fsa.getEndNode(arc));

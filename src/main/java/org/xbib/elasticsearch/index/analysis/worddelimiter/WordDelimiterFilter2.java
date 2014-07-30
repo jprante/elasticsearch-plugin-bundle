@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.index.analysis.worddelimiter;
 
 import org.apache.lucene.analysis.TokenFilter;
@@ -16,35 +15,34 @@ import java.util.Set;
 /**
  * Splits words into subwords and performs optional transformations on subword groups.
  * Words are split into subwords with the following rules:
- *  - split on intra-word delimiters (by default, all non alpha-numeric characters).
- *     - "Wi-Fi" -> "Wi", "Fi"
- *  - split on case transitions
- *     - "PowerShot" -> "Power", "Shot"
- *  - split on letter-number transitions
- *     - "SD500" -> "SD", "500"
- *  - leading and trailing intra-word delimiters on each subword are ignored
- *     - "//hello---there, 'dude'" -> "hello", "there", "dude"
- *  - trailing "'s" are removed for each subword
- *     - "O'Neil's" -> "O", "Neil"
- *     - Note: this step isn't performed in a separate filter because of possible subword combinations.
- *
+ * - split on intra-word delimiters (by default, all non alpha-numeric characters).
+ * - "Wi-Fi" -> "Wi", "Fi"
+ * - split on case transitions
+ * - "PowerShot" -> "Power", "Shot"
+ * - split on letter-number transitions
+ * - "SD500" -> "SD", "500"
+ * - leading and trailing intra-word delimiters on each subword are ignored
+ * - "//hello---there, 'dude'" -> "hello", "there", "dude"
+ * - trailing "'s" are removed for each subword
+ * - "O'Neil's" -> "O", "Neil"
+ * - Note: this step isn't performed in a separate filter because of possible subword combinations.
+ * <p/>
  * The <b>combinations</b> parameter affects how subwords are combined:
- *  - combinations="0" causes no subword combinations.
- *     - "PowerShot" -> 0:"Power", 1:"Shot"  (0 and 1 are the token positions)
- *  - combinations="1" means that in addition to the subwords, maximum runs of non-numeric subwords are catenated and produced at the same position of the last subword in the run.
- *     - "PowerShot" -> 0:"Power", 1:"Shot" 1:"PowerShot"
- *     - "A's+B's&C's" -> 0:"A", 1:"B", 2:"C", 2:"ABC"
- *     - "Super-Duper-XL500-42-AutoCoder!" -> 0:"Super", 1:"Duper", 2:"XL", 2:"SuperDuperXL", 3:"500" 4:"42", 5:"Auto", 6:"Coder", 6:"AutoCoder"
- *
- *  One use for WordDelimiterFilter2 is to help match words with different subword delimiters.
- *  For example, if the source text contained "wi-fi" one may want "wifi" "WiFi" "wi-fi" "wi+fi" queries to all match.
- *  One way of doing so is to specify combinations="1" in the analyzer used for indexing, and combinations="0" (the default)
- *  in the analyzer used for querying.  Given that the current StandardTokenizer immediately removes many intra-word
- *  delimiters, it is recommended that this filter be used after a tokenizer that does not do this (such as WhitespaceTokenizer).
- *
- *  The difference with WordDelimiterFilter is the new ALL_PARTS_AT_SAME_POSITION flag.
- *  It permits to analyze "PowerShot" into 0:"Power", 0:"Shot", where 0: stands for the token positions.
- *
+ * - combinations="0" causes no subword combinations.
+ * - "PowerShot" -> 0:"Power", 1:"Shot"  (0 and 1 are the token positions)
+ * - combinations="1" means that in addition to the subwords, maximum runs of non-numeric subwords are catenated and produced at the same position of the last subword in the run.
+ * - "PowerShot" -> 0:"Power", 1:"Shot" 1:"PowerShot"
+ * - "A's+B's&C's" -> 0:"A", 1:"B", 2:"C", 2:"ABC"
+ * - "Super-Duper-XL500-42-AutoCoder!" -> 0:"Super", 1:"Duper", 2:"XL", 2:"SuperDuperXL", 3:"500" 4:"42", 5:"Auto", 6:"Coder", 6:"AutoCoder"
+ * <p/>
+ * One use for WordDelimiterFilter2 is to help match words with different subword delimiters.
+ * For example, if the source text contained "wi-fi" one may want "wifi" "WiFi" "wi-fi" "wi+fi" queries to all match.
+ * One way of doing so is to specify combinations="1" in the analyzer used for indexing, and combinations="0" (the default)
+ * in the analyzer used for querying.  Given that the current StandardTokenizer immediately removes many intra-word
+ * delimiters, it is recommended that this filter be used after a tokenizer that does not do this (such as WhitespaceTokenizer).
+ * <p/>
+ * The difference with WordDelimiterFilter is the new ALL_PARTS_AT_SAME_POSITION flag.
+ * It permits to analyze "PowerShot" into 0:"Power", 0:"Shot", where 0: stands for the token positions.
  */
 
 public final class WordDelimiterFilter2 extends TokenFilter {
@@ -130,7 +128,6 @@ public final class WordDelimiterFilter2 extends TokenFilter {
 
     /**
      * If not null is the set of tokens to protect from being delimited
-     *
      */
     private final Set<String> protWords;
 
@@ -173,10 +170,10 @@ public final class WordDelimiterFilter2 extends TokenFilter {
     /**
      * Creates a new WordDelimiterFilter2
      *
-     * @param in TokenStream to be filtered
-     * @param charTypeTable table containing character types
+     * @param in                 TokenStream to be filtered
+     * @param charTypeTable      table containing character types
      * @param configurationFlags Flags configuring the filter
-     * @param protWords If not null is the set of tokens to protect from being delimited
+     * @param protWords          If not null is the set of tokens to protect from being delimited
      */
     public WordDelimiterFilter2(TokenStream in, byte[] charTypeTable, int configurationFlags, Set<String> protWords) {
         super(in);
@@ -190,9 +187,9 @@ public final class WordDelimiterFilter2 extends TokenFilter {
      * Creates a new WordDelimiterFilter2 using {@link org.apache.lucene.analysis.miscellaneous.WordDelimiterIterator#DEFAULT_WORD_DELIM_TABLE}
      * as its charTypeTable
      *
-     * @param in TokenStream to be filtered
+     * @param in                 TokenStream to be filtered
      * @param configurationFlags Flags configuring the filter
-     * @param protWords If not null is the set of tokens to protect from being delimited
+     * @param protWords          If not null is the set of tokens to protect from being delimited
      */
     public WordDelimiterFilter2(TokenStream in, int configurationFlags, Set<String> protWords) {
         this(in, WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE, configurationFlags, protWords);
@@ -511,7 +508,7 @@ public final class WordDelimiterFilter2 extends TokenFilter {
         /**
          * Appends the given text of the given length, to the concetenation at the given offset
          *
-         * @param text Text to append
+         * @param text   Text to append
          * @param offset Offset in the concetenation to add the text
          * @param length Length of the text to append
          */
@@ -535,8 +532,7 @@ public final class WordDelimiterFilter2 extends TokenFilter {
 
             if (hasIllegalOffsets) {
                 offsetAttribute.setOffset(savedStartOffset, savedEndOffset);
-            }
-            else {
+            } else {
                 offsetAttribute.setOffset(startOffset, endOffset);
             }
             posIncAttribute.setPositionIncrement(position(true));

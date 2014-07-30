@@ -22,28 +22,28 @@ import java.util.Set;
 public abstract class FSA implements Iterable<ByteBuffer> {
     /**
      * @return Returns the identifier of the root node of this automaton.
-     *         Returns 0 if the start node is also the end node (the automaton
-     *         is empty).
+     * Returns 0 if the start node is also the end node (the automaton
+     * is empty).
      */
     public abstract int getRootNode();
 
     /**
      * @return Returns the identifier of the first arc leaving <code>node</code>
-     *         or 0 if the node has no outgoing arcs.
+     * or 0 if the node has no outgoing arcs.
      */
     public abstract int getFirstArc(int node);
 
     /**
      * @return Returns the identifier of the next arc after <code>arc</code> and
-     *         leaving <code>node</code>. Zero is returned if no more arcs are
-     *         available for the node.
+     * leaving <code>node</code>. Zero is returned if no more arcs are
+     * available for the node.
      */
     public abstract int getNextArc(int arc);
 
     /**
      * @return Returns the identifier of an arc leaving <code>node</code> and
-     *         labeled with <code>label</code>. An identifier equal to 0 means
-     *         the node has no outgoing arc labeled <code>label</code>.
+     * labeled with <code>label</code>. An identifier equal to 0 means
+     * the node has no outgoing arc labeled <code>label</code>.
      */
     public abstract int getArc(int node, byte label);
 
@@ -80,8 +80,8 @@ public abstract class FSA implements Iterable<ByteBuffer> {
 
     /**
      * @return Returns the number of sequences reachable from the given state if
-     *         the automaton was compiled with {@link FSAFlags#NUMBERS}. The size of
-     *         the right language of the state, in other words.
+     * the automaton was compiled with {@link FSAFlags#NUMBERS}. The size of
+     * the right language of the state, in other words.
      * @throws UnsupportedOperationException If the automaton was not compiled with
      *                                       {@link FSAFlags#NUMBERS}. The value can then be computed by manual count
      *                                       of {@link #getSequences(int)}.

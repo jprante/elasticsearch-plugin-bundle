@@ -30,9 +30,9 @@ public final class FSATraversal {
      * @param start  Start index in the sequence array.
      * @param length Length of the byte sequence, must be at least 1.
      * @return Returns a unique integer assigned to the input sequence in the automaton (reflecting
-     *         the number of that sequence in the input used to build the automaton). Returns a negative
-     *         integer if the input sequence was not part of the input from which the automaton was created.
-     *         The type of mismatch is a constant defined in {@link MatchResult}.
+     * the number of that sequence in the input used to build the automaton). Returns a negative
+     * integer if the input sequence was not part of the input from which the automaton was created.
+     * The type of mismatch is a constant defined in {@link MatchResult}.
      */
     public int perfectHash(byte[] sequence, int start, int length, int node) {
         assert fsa.getFlags().contains(FSAFlags.NUMBERS) : "FSA not built with NUMBERS option.";
@@ -97,7 +97,7 @@ public final class FSATraversal {
      * produced.
      *
      * @return The same object as <code>result</code>, but with reset internal
-     *         type and other fields.
+     * type and other fields.
      */
     public MatchResult match(MatchResult result,
                              byte[] sequence, int start, int length, int node) {
@@ -111,7 +111,7 @@ public final class FSATraversal {
             final int arc = fsa.getArc(node, sequence[i]);
             if (arc != 0) {
                 if (fsa.isArcFinal(arc) && i + 1 == end) {
-					/* The automaton has an exact match of the input sequence. */
+                    /* The automaton has an exact match of the input sequence. */
                     result.reset(EXACT_MATCH, i, node);
                     return result;
                 }

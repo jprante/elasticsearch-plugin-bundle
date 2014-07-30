@@ -21,21 +21,21 @@ class Node {
         this.classes = new ArrayList();
         this.children = new ArrayList();
     }
-    
+
     public Node classes(List<String> classes) {
         this.classes = classes;
         return this;
     }
-    
+
     public List<String> classes() {
         return classes;
     }
-    
+
     public Node children(List<Node> children) {
         this.children = children;
         return this;
     }
-    
+
     public List<Node> children() {
         return children;
     }

@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.plugin.analysis.german;
 
 import org.elasticsearch.common.collect.ImmutableList;
@@ -12,8 +11,8 @@ import org.xbib.elasticsearch.index.analysis.concat.ConcatTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.decompound.DecompoundTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.german.GermanNormalizationFilterFactory;
 import org.xbib.elasticsearch.index.analysis.icu.IcuAnalysisBinderProcessor;
-import org.xbib.elasticsearch.index.analysis.langdetect.LangdetectService;
 import org.xbib.elasticsearch.index.analysis.langdetect.LangdetectModule;
+import org.xbib.elasticsearch.index.analysis.langdetect.LangdetectService;
 import org.xbib.elasticsearch.index.analysis.sortform.SortformAnalyzerProvider;
 import org.xbib.elasticsearch.index.analysis.sortform.SortformTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2Factory;

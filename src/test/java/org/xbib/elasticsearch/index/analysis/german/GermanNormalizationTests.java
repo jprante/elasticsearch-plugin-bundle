@@ -20,15 +20,12 @@ import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.index.settings.IndexSettingsModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 import org.xbib.elasticsearch.plugin.analysis.german.AnalysisGermanPlugin;
 
 import java.io.IOException;
 import java.io.StringReader;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
 
 public class GermanNormalizationTests extends Assert {
 
@@ -36,7 +33,6 @@ public class GermanNormalizationTests extends Assert {
     public void test() throws IOException {
         AnalysisService analysisService = createAnalysisService();
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("umlaut");
-        assertThat(tokenFilter, instanceOf(GermanNormalizationFilterFactory.class));
 
         String source = "Ein schöner Tag in Köln im Café an der Straßenecke";
 
@@ -53,7 +49,7 @@ public class GermanNormalizationTests extends Assert {
             "Strassenecke"
         };
 
-        Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_48, new StringReader(source));
+        Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_4_9, new StringReader(source));
 
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
 
@@ -88,9 +84,10 @@ public class GermanNormalizationTests extends Assert {
         int i = 0;
         while (stream.incrementToken()) {
             assertTrue(i < expected.length);
-            assertEquals(expected[i++], termAttr.toString(), "expected different term at index " + i);
+            assertEquals(expected[i], termAttr.toString());
+            i++;
         }
-        assertEquals(i, expected.length, "not all tokens produced");
+        assertEquals(i, expected.length);
         stream.close();
     }
 }

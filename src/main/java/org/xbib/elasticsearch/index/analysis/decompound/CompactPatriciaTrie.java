@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.index.analysis.decompound;
 
 import java.io.IOException;
@@ -52,7 +51,7 @@ public class CompactPatriciaTrie {
     }
 
     public CompactPatriciaTrie(int sc, int ec, int az, int ak, int eow, boolean rv,
-            boolean ic, char[] stringtree) {
+                               boolean ic, char[] stringtree) {
         this.root = null;
         this.stringtree = stringtree;
         this.startchar = sc;
@@ -93,8 +92,8 @@ public class CompactPatriciaTrie {
             return classifyString(word);
         }
         return classifyObject(word);
-    }    
-    
+    }
+
     public void setStartChar(int c) {
         if (c < 0) {
             throw new IllegalArgumentException("Character number must be greater than 0");
@@ -672,7 +671,7 @@ public class CompactPatriciaTrie {
     }
 
     private void addStringToMap(Map m, char[] treestring, int pos,
-            StringBuilder content) {
+                                StringBuilder content) {
         int i = pos;
         i++;
         i++;
@@ -722,7 +721,7 @@ public class CompactPatriciaTrie {
     }
 
     private void addStringToKeySet(Set s, char[] treestring, int pos,
-            StringBuilder currentContent) {
+                                   StringBuilder currentContent) {
         int i = pos;
         i++;
         i++;
@@ -751,7 +750,7 @@ public class CompactPatriciaTrie {
     }
 
     private void addObjectToKeySet(Set s, Node node,
-            StringBuilder content) {
+                                   StringBuilder content) {
         content.append(node.content);
         s.add(content.toString());
         for (Node aktKind : node.children()) {
@@ -772,7 +771,7 @@ public class CompactPatriciaTrie {
     }
 
     private void addStringNodesEntriesString(StringBuilder s, char[] treestring,
-            int pos, StringBuilder content) {
+                                             int pos, StringBuilder content) {
         int i = pos;
         i++;
         i++;
@@ -806,7 +805,7 @@ public class CompactPatriciaTrie {
     }
 
     private void addObjectNodesEntriesString(StringBuilder s, Node node,
-            StringBuilder content) {
+                                             StringBuilder content) {
         content.append(node.content);
         s.append(content);
         s.append(TAB);
