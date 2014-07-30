@@ -7,7 +7,6 @@ public class IcuAnalysisBinderProcessor extends AnalysisModule.AnalysisBinderPro
     @Override
     public void processTokenizers(TokenizersBindings tokenizersBindings) {
         tokenizersBindings.processTokenizer("icu_tokenizer", IcuTokenizerFactory.class);
-        tokenizersBindings.processTokenizer("icu_collation", IcuCollationTokenizerFactory.class);
     }
 
     @Override
