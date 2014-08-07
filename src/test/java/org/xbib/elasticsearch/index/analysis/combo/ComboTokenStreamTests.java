@@ -29,7 +29,7 @@ import java.io.IOException;
 /**
  * Testcase for {@link ComboTokenStream}.
  */
-public class TestComboTokenStream extends BaseTokenStreamTest {
+public class ComboTokenStreamTests extends BaseTokenStreamTest {
 
     /**
      * A TokenStream that takes the same input as the assertTokenStreamContents() function,

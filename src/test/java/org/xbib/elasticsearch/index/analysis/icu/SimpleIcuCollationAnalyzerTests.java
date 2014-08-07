@@ -24,8 +24,10 @@ import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 import org.junit.Test;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
+import org.xbib.elasticsearch.index.analysis.HexDump;
 
 import java.io.IOException;
+import java.io.StringWriter;
 
 public class SimpleIcuCollationAnalyzerTests extends BaseTokenStreamTest {
 
@@ -242,9 +244,7 @@ public class SimpleIcuCollationAnalyzerTests extends BaseTokenStreamTest {
     public void testCustomRules() throws Exception {
         RuleBasedCollator baseCollator = (RuleBasedCollator) Collator.getInstance(new ULocale("de_DE"));
         String DIN5007_2_tailorings =
-                "& ae , a\u0308 & AE , A\u0308" +
-                        "& oe , o\u0308 & OE , O\u0308" +
-                        "& ue , u\u0308 & UE , u\u0308";
+                "& ae , a\u0308 & AE , A\u0308& oe , o\u0308 & OE , O\u0308& ue , u\u0308 & UE , u\u0308";
 
         RuleBasedCollator tailoredCollator = new RuleBasedCollator(baseCollator.getRules() + DIN5007_2_tailorings);
         String tailoredRules = tailoredCollator.getRules();
@@ -258,12 +258,22 @@ public class SimpleIcuCollationAnalyzerTests extends BaseTokenStreamTest {
         AnalysisService analysisService = createAnalysisService(index, settings);
         Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
         String germanUmlaut = "Töne";
-        String germanOE = "Toene";
+        String germanExpandedUmlaut = "Toene";
+        String germanBase = "Tone";
         TokenStream tsUmlaut = analyzer.tokenStream(null, germanUmlaut);
         BytesRef b1 = bytesFromTokenStream(tsUmlaut);
-        TokenStream tsOE = analyzer.tokenStream(null, germanOE);
-        BytesRef b2 = bytesFromTokenStream(tsOE);
+        TokenStream tsExpanded = analyzer.tokenStream(null, germanExpandedUmlaut);
+        BytesRef b2 = bytesFromTokenStream(tsExpanded);
+        TokenStream tsBase = analyzer.tokenStream(null, germanBase);
+        BytesRef b3 = bytesFromTokenStream(tsBase);
         assertTrue(compare(b1.bytes, b2.bytes) == 0);
+        StringWriter w = new StringWriter();
+        HexDump.dump(b2.bytes, w);
+        System.err.println("b2="+w);
+        StringWriter w2 = new StringWriter();
+        HexDump.dump(b3.bytes, w2);
+        System.err.println("b3="+w2);
+//        assertTrue(compare(b2.bytes, b3.bytes) == 0);
     }
 
     private AnalysisService createAnalysisService(Index index, Settings settings) {

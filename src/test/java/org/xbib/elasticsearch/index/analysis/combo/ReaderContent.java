@@ -1,6 +1,5 @@
 package org.xbib.elasticsearch.index.analysis.combo;
 
-
 import org.junit.Assert;
 
 import java.io.IOException;

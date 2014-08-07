@@ -1,5 +1,4 @@
-elasticsearch-analysis-german
-=============================
+# Elasticsearch German Analysis
 
 A plugin that consists of a compilation of useful Elasticsearch plugins related to indexing and searching documents in german language that are not avaliable in Elasticsearch by default.
 
@@ -19,13 +18,11 @@ elasticsearch-langdetect
 
 sortform (process string forms for bibliographical sort, taking non-sort areas into account)
 
-Project docs
-------------
+# Project docs
 
-The Maven project site is available at `Github <http://jprante.github.io/elasticsearch-analysis-german>`_
+The Maven project site is available at [Github](http://jprante.github.io/elasticsearch-analysis-german)
 
-License
--------
+# License
 
 elasticsearch-analysis-german - a compilation of useful plugins for german
 

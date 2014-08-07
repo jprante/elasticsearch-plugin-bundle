@@ -22,10 +22,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 
-/**
- * Testcase for {@link ComboAnalyzer}
- */
-public class TestComboAnalyzer extends BaseTokenStreamTest {
+public class ComboAnalyzerTests extends BaseTokenStreamTest {
 
     private Version TEST_VERSION_CURRENT = Lucene.ANALYZER_VERSION;
 
