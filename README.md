@@ -2,25 +2,49 @@
 
 A plugin that consists of a compilation of useful Elasticsearch plugins related to indexing and searching documents in german language that are not avaliable in Elasticsearch by default.
 
-German normalizer (Lucene)
+- German normalizer (Lucene)
 
-WordDelimiterFilter2 (Lucene)
+- WordDelimiterFilter2 (Lucene)
 
-elasticsearch-analysis-icu (with ICU collation analyzer compatible to Lucene 5.x)
+- elasticsearch-analysis-icu (with ICU collation analyzer compatible to Lucene 5.x)
 
-elasticsearch-analysis-baseform
+- elasticsearch-analysis-baseform
 
-elasticsearch-analysis-decompund
+- elasticsearch-analysis-decompund
 
-elasticsearch-analysis-combo
+- elasticsearch-analysis-combo
 
-elasticsearch-langdetect
+- elasticsearch-langdetect
 
-sortform (process string forms for bibliographical sort, taking non-sort areas into account)
+- sortform (process string forms for bibliographical sorting, taking non-sort areas into account)
 
-# Project docs
+- year (token filter for 4-digit sequences)
+
+## Versions
+
+| Elasticsearch version    | Plugin      | Release date |
+| ------------------------ | ----------- | -------------|
+| 1.3.1                    | 1.3.0.2     | Aug 11, 2014 |
+
+## Installation
+
+    ./bin/plugin -install analysis-german -url http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-analysis-german/1.3.0.2/elasticsearch-analysis-german-1.3.0.2.zip
+
+Do not forget to restart the node after installing.
+
+## Checksum
+
+| File                                          | SHA1                                     |
+| --------------------------------------------- | -----------------------------------------|
+| elasticsearch-analysis-german-1.3.0.2.zip     | 063a89e4016af637330c5a3d7f51d84c7056b182 |
+
+## Project docs
 
 The Maven project site is available at [Github](http://jprante.github.io/elasticsearch-analysis-german)
+
+## Issues
+
+All feedback is welcome! If you find issues, please post them at [Github](https://github.com/jprante/elasticsearch-analysis-german/issues)
 
 # License
 

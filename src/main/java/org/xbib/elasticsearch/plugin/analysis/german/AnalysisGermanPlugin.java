@@ -17,6 +17,7 @@ import org.xbib.elasticsearch.index.analysis.sortform.SortformAnalyzerProvider;
 import org.xbib.elasticsearch.index.analysis.sortform.SortformTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2Factory;
 import org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilterFactory;
+import org.xbib.elasticsearch.index.analysis.year.GregorianYearTokenFilterFactory;
 import org.xbib.elasticsearch.indices.analysis.icu.IcuIndicesAnalysisModule;
 
 import java.util.Collection;
@@ -56,6 +57,7 @@ public class AnalysisGermanPlugin extends AbstractPlugin {
         module.addTokenFilter("worddelimiter2", WordDelimiterFilter2Factory.class);
         module.addTokenFilter("sortform", SortformTokenFilterFactory.class);
         module.addTokenFilter("concat", ConcatTokenFilterFactory.class);
+        module.addTokenFilter("year", GregorianYearTokenFilterFactory.class);
     }
 
     @Override
