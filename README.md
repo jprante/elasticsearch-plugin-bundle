@@ -28,15 +28,15 @@ A plugin that consists of a compilation of useful Elasticsearch plugins related 
 
 ## Installation
 
-    ./bin/plugin -install analysis-german -url http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-analysis-german/1.3.0.2/elasticsearch-analysis-german-1.3.0.2.zip
+    ./bin/plugin -install analysis-german -url http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-analysis-german/1.3.0.2/elasticsearch-analysis-german-1.3.0.2-plugin.zip
 
 Do not forget to restart the node after installing.
 
 ## Checksum
 
-| File                                          | SHA1                                     |
-| --------------------------------------------- | -----------------------------------------|
-| elasticsearch-analysis-german-1.3.0.2.zip     | 063a89e4016af637330c5a3d7f51d84c7056b182 |
+| File                                                 | SHA1                                     |
+| ---------------------------------------------------- | -----------------------------------------|
+| elasticsearch-analysis-german-1.3.0.2-plugin.zip     | 063a89e4016af637330c5a3d7f51d84c7056b182 |
 
 ## Project docs
 
