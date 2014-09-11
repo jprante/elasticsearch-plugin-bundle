@@ -8,7 +8,6 @@ import org.apache.lucene.util.AttributeSource;
 
 import java.io.IOException;
 import java.util.Stack;
-import java.util.regex.Pattern;
 
 /**
  * The hyphen token filter removes hyphens in a token and builds an expanded token list
@@ -52,8 +51,6 @@ public class HyphenTokenFilter extends TokenFilter {
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
     private final PositionIncrementAttribute posIncrAtt = addAttribute(PositionIncrementAttribute.class);
 
-    private final static Pattern punctPattern = Pattern.compile("[\\p{IsPunct}]", Pattern.UNICODE_CHARACTER_CLASS);
-
     private Stack<String> stack;
 
     private AttributeSource.State current;
@@ -92,12 +89,11 @@ public class HyphenTokenFilter extends TokenFilter {
         while (pos > 0) {
             head = head + s.substring(0, pos);
             tail = s.substring(pos+1);
-            String cleanHead = punctPattern.matcher(head).replaceAll("");
-            if (cleanHead.length() > 1) {
-                stack.push(cleanHead);
+            if (head.length() > 1) {
+                stack.push(head);
             }
             stack.push(tail);
-            stack.push(cleanHead + tail);
+            stack.push(head + tail);
             s = tail;
             pos = s.indexOf('-');
         }
