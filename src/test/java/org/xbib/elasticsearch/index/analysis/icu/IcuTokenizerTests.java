@@ -27,7 +27,7 @@ import java.io.StringReader;
 public class IcuTokenizerTests extends Assert {
 
     @Test
-    public void testOne() throws IOException {
+    public void testLetterNonBreak() throws IOException {
         AnalysisService analysisService = createAnalysisService();
 
         String source = "Das ist ein Bindestrich-Wort, oder etwa nicht? Jetzt kommen wir zum Ende.";
@@ -47,6 +47,20 @@ public class IcuTokenizerTests extends Assert {
                 "Ende"
         };
 
+        Tokenizer tokenizer = analysisService.tokenizer("my_icu_tokenizer").create(new StringReader(source));
+        assertSimpleTSOutput(tokenizer, expected);
+    }
+
+    @Test
+    public void testIdentifierNonBreak() throws IOException {
+        AnalysisService analysisService = createAnalysisService();
+
+        String source = "ISBN 3-428-84350-9";
+
+        String[] expected = {
+                "ISBN",
+                "3-428-84350-9"
+        };
         Tokenizer tokenizer = analysisService.tokenizer("my_icu_tokenizer").create(new StringReader(source));
         assertSimpleTSOutput(tokenizer, expected);
     }

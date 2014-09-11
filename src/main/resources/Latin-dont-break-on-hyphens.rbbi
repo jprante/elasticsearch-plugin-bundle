@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 # Based on Default.rbbi, the default RBBI rules, based on UAX#29.
-# Added dashes to $MidLetter, so that words aren't broken on single dashes.
+# Added dashes to $MidLetter and $Midnum, so that words and identifiers aren't broken on single dashes.
 #
 
 !!chain;
@@ -39,8 +39,8 @@ $Dash         = [\N{HYPHEN-MINUS}
                  \N{MINUS SIGN}
                  \N{SMALL HYPHEN-MINUS}
                  \N{FULLWIDTH HYPHEN-MINUS}];
-$MidLetter    = [\p{Word_Break = MidLetter}$Dash]; # Don't break on (single) hyphen
-$MidNum       = [\p{Word_Break = MidNum}];
+$MidLetter    = [\p{Word_Break = MidLetter}$Dash]; # Don't break letters on (single) hyphen
+$MidNum       = [\p{Word_Break = MidNum}$Dash]; # Don't break numbers on (single) hyphen
 $Numeric      = [\p{Word_Break = Numeric}[[:Decomposition_Type=Wide:]&[:General_Category=Decimal_Number:]]];
 $ExtendNumLet = [\p{Word_Break = ExtendNumLet}];
 
