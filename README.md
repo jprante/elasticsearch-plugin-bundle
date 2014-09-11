@@ -2,33 +2,36 @@
 
 A plugin that consists of a compilation of useful Elasticsearch plugins related to indexing and searching documents in german language that are not avaliable in Elasticsearch by default.
 
-- German normalizer (Lucene)
+- German normalizer: taken from Lucene
 
-- WordDelimiterFilter2 (Lucene)
+- WordDelimiterFilter2: taken from Lucene
 
-- elasticsearch-analysis-icu (with ICU collation analyzer compatible to Lucene 5.x)
+- elasticsearch-analysis-icu: improved with ICU collation analyzer compatible to Lucene 5.x and rbbi ICU rule file support in ICU tokenizer
 
-- elasticsearch-analysis-baseform
+- elasticsearch-analysis-baseform: index also base forms of words (german, english)
 
-- elasticsearch-analysis-decompund
+- elasticsearch-analysis-decompound: decompose words if possible (german) 
 
-- elasticsearch-analysis-combo
+- elasticsearch-analysis-combo: apply more than one analyzer on a field
 
-- elasticsearch-langdetect
+- elasticsearch-langdetect: index language code of detected languages
 
-- sortform (process string forms for bibliographical sorting, taking non-sort areas into account)
+- hyphen: token filter for shingling and combining hyphenated words (german: Bindestrichwörter), the opposite of the decompound token filter
 
-- year (token filter for 4-digit sequences)
+- sortform: process string forms for bibliographical sorting, taking non-sort areas into account
+
+- year: token filter for 4-digit sequences
 
 ## Versions
 
 | Elasticsearch version    | Plugin      | Release date |
 | ------------------------ | ----------- | -------------|
+| 1.3.2                    | 1.3.2.0     | Sep 11, 2014 |
 | 1.3.1                    | 1.3.0.2     | Aug 11, 2014 |
 
 ## Installation
 
-    ./bin/plugin -install analysis-german -url http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-analysis-german/1.3.0.2/elasticsearch-analysis-german-1.3.0.2-plugin.zip
+    ./bin/plugin -install analysis-german -url http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-analysis-german/1.3.2.0/elasticsearch-analysis-german-1.3.2.0-plugin.zip
 
 Do not forget to restart the node after installing.
 
@@ -36,6 +39,7 @@ Do not forget to restart the node after installing.
 
 | File                                                 | SHA1                                     |
 | ---------------------------------------------------- | -----------------------------------------|
+| elasticsearch-analysis-german-1.3.2.0-plugin.zip     | ffd66b08b2b45ce37fbbfdbe31b52151e4f9f1ab |
 | elasticsearch-analysis-german-1.3.0.2-plugin.zip     | 063a89e4016af637330c5a3d7f51d84c7056b182 |
 
 ## Project docs

@@ -22,7 +22,7 @@ import static org.elasticsearch.common.settings.ImmutableSettings.Builder.EMPTY_
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class SimpleIcuAnalysisTests {
+public class IcuAnalysisTests {
 
     @Test
     public void testDefaultsIcuAnalysis() {

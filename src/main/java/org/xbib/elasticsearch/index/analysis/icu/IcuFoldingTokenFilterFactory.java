@@ -12,7 +12,6 @@ import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.settings.IndexSettings;
 
-
 /**
  * Uses the {@link org.apache.lucene.analysis.icu.ICUFoldingFilter}.
  * Applies foldings from UTR#30 Character Foldings.
@@ -23,6 +22,7 @@ import org.elasticsearch.index.settings.IndexSettings;
  * <p>The <tt>unicodeSetFilter</tt> attribute can be used to provide the UniCodeSet for filtering.
  */
 public class IcuFoldingTokenFilterFactory extends AbstractTokenFilterFactory {
+
     private final String unicodeSetFilter;
 
     @Inject
@@ -33,11 +33,10 @@ public class IcuFoldingTokenFilterFactory extends AbstractTokenFilterFactory {
 
     @Override
     public TokenStream create(TokenStream tokenStream) {
-        // The ICUFoldingFilter is in fact implemented as a ICUNormalizer2Filter.
-        // ICUFoldingFilter lacks a constructor for adding filtering so we implemement it here
         if (unicodeSetFilter != null) {
-            Normalizer2 base = Normalizer2.getInstance(
-                    ICUFoldingFilter.class.getResourceAsStream("utr30.nrm"),
+            // The ICUFoldingFilter is in fact implemented as a ICUNormalizer2Filter.
+            // ICUFoldingFilter lacks a constructor for adding filtering so we implemement it here
+            Normalizer2 base = Normalizer2.getInstance(ICUFoldingFilter.class.getResourceAsStream("utr30.nrm"),
                     "utr30", Normalizer2.Mode.COMPOSE);
             UnicodeSet unicodeSet = new UnicodeSet(unicodeSetFilter);
             unicodeSet.freeze();

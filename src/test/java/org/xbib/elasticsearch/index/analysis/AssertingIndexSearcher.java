@@ -1,4 +1,4 @@
-package org.xbib.elasticsearch.index.analysis.icu;
+package org.xbib.elasticsearch.index.analysis;
 
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.IndexReader;

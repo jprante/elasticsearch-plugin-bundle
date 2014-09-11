@@ -70,7 +70,8 @@ public class DecompoundTokenFilterTests extends Assert {
     }
 
     private AnalysisService createAnalysisService() {
-        Settings settings = ImmutableSettings.settingsBuilder().loadFromClasspath("org/xbib/elasticsearch/index/analysis/decompound_analysis.json").build();
+        Settings settings = ImmutableSettings.settingsBuilder()
+                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/decompound_analysis.json").build();
 
         Index index = new Index("test");
 

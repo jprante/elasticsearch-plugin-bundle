@@ -29,7 +29,7 @@ import org.xbib.elasticsearch.index.analysis.HexDump;
 import java.io.IOException;
 import java.io.StringWriter;
 
-public class SimpleIcuCollationAnalyzerTests extends BaseTokenStreamTest {
+public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
 
     /*
     * Turkish has some funny casing.
@@ -257,23 +257,16 @@ public class SimpleIcuCollationAnalyzerTests extends BaseTokenStreamTest {
                 .build();
         AnalysisService analysisService = createAnalysisService(index, settings);
         Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
+
         String germanUmlaut = "Töne";
-        String germanExpandedUmlaut = "Toene";
-        String germanBase = "Tone";
         TokenStream tsUmlaut = analyzer.tokenStream(null, germanUmlaut);
         BytesRef b1 = bytesFromTokenStream(tsUmlaut);
+
+        String germanExpandedUmlaut = "Toene";
         TokenStream tsExpanded = analyzer.tokenStream(null, germanExpandedUmlaut);
         BytesRef b2 = bytesFromTokenStream(tsExpanded);
-        TokenStream tsBase = analyzer.tokenStream(null, germanBase);
-        BytesRef b3 = bytesFromTokenStream(tsBase);
+
         assertTrue(compare(b1.bytes, b2.bytes) == 0);
-        StringWriter w = new StringWriter();
-        HexDump.dump(b2.bytes, w);
-        System.err.println("b2="+w);
-        StringWriter w2 = new StringWriter();
-        HexDump.dump(b3.bytes, w2);
-        System.err.println("b3="+w2);
-//        assertTrue(compare(b2.bytes, b3.bytes) == 0);
     }
 
     private AnalysisService createAnalysisService(Index index, Settings settings) {

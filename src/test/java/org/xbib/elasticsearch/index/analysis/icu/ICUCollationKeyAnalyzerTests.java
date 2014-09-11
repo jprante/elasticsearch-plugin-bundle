@@ -10,7 +10,7 @@ import org.junit.Test;
 import java.util.Locale;
 import java.util.Random;
 
-public class ICUCollationKeyAnalyzerTests extends CollationTestBase {
+public class IcuCollationKeyAnalyzerTests extends CollationTestBase {
 
     private Collator collator = Collator.getInstance(new Locale("fa"));
 

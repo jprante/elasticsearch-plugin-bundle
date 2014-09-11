@@ -18,12 +18,15 @@ public class IcuNormalizerCharFilterFactory extends AbstractCharFilterFactory {
     @Inject
     public IcuNormalizerCharFilterFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name);
-        String name1 = settings.get("name", "nfkc_cf");
-        String mode = settings.get("mode");
-        if (!"compose".equals(mode) && !"decompose".equals(mode)) {
-            mode = "compose";
+        String normalizationName = settings.get("name", "nfkc_cf");
+        Normalizer2.Mode normalizationMode;
+        switch (settings.get("mode", "compose")) {
+            case "compose_contiguous" : normalizationMode = Normalizer2.Mode.COMPOSE_CONTIGUOUS; break;
+            case "decompose" : normalizationMode = Normalizer2.Mode.DECOMPOSE; break;
+            case "fcd" : normalizationMode = Normalizer2.Mode.FCD; break;
+            default: normalizationMode = Normalizer2.Mode.COMPOSE; break;
         }
-        this.normalizer = Normalizer2.getInstance(null, name1, "compose".equals(mode) ? Normalizer2.Mode.COMPOSE : Normalizer2.Mode.DECOMPOSE);
+        this.normalizer =  Normalizer2.getInstance(null, normalizationName, normalizationMode);
     }
 
     @Override
