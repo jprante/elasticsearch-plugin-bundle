@@ -41,7 +41,7 @@ Do not forget to restart the node after installing.
 
 | File                                                 | SHA1                                     |
 | ---------------------------------------------------- | -----------------------------------------|
-| elasticsearch-analysis-german-1.3.2.3-plugin.zip     |  |
+| elasticsearch-analysis-german-1.3.2.3-plugin.zip     | aeb6174ba54861b3ec81bb43a20073779f5c98e4 |
 | elasticsearch-analysis-german-1.3.0.2-plugin.zip     | 063a89e4016af637330c5a3d7f51d84c7056b182 |
 
 ## Project docs
