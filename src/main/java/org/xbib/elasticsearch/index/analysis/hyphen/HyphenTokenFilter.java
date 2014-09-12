@@ -4,10 +4,12 @@ import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
+import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.util.AttributeSource;
 
 import java.io.IOException;
 import java.util.Stack;
+import java.util.regex.Pattern;
 
 /**
  * The hyphen token filter removes hyphens in a token and builds an expanded token list
@@ -15,7 +17,7 @@ import java.util.Stack;
  *
  * No word fragment will be created if a word fragment length is 1.
  *
- * It works best with ICU tokenizer on Latin-dont-break-on-hyphens.rbbi, a tokenizer which preserves hyphens in words.
+ * It works best with the hyphen tokenizer, a tokenizer which preserves hyphens (and other sperataors) in words.
  *
  * This is useful for german language analysis, where words in texts are often composed by adding hyphens between
  * words.
@@ -39,25 +41,31 @@ import java.util.Stack;
  *    Center-Mitarbeiterin,
  *    Service
  *
- * Auf-die-lange-Bank-Schieben =>
- *     Auf, Aufdie-lange-Bank-Schieben,
- *     Aufdie, Aufdielange-Bank-Schieben,
- *     Aufdielange, AufdielangeBank-Schieben,
- *     AufdielangeBank, AufdielangeBankSchieben
  *
  */
 public class HyphenTokenFilter extends TokenFilter {
 
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
     private final PositionIncrementAttribute posIncrAtt = addAttribute(PositionIncrementAttribute.class);
+    private final TypeAttribute typeAtt = addAttribute(TypeAttribute.class);
 
-    private Stack<String> stack;
+    // TODO use TypeAttribute, LETTER_COMP or something
+    private final static Pattern letter = Pattern.compile("\\p{L}+", Pattern.UNICODE_CHARACTER_CLASS);
+
+    private final Stack<String> stack;
+
+    private final char[] hyphenchars;
 
     private AttributeSource.State current;
 
     protected HyphenTokenFilter(TokenStream input) {
+        this(input, new char[]{'-'});
+    }
+
+    protected HyphenTokenFilter(TokenStream input, char[] hyphenchars) {
         super(input);
-        stack = new Stack<String>();
+        this.stack = new Stack<String>();
+        this.hyphenchars = hyphenchars;
     }
 
     @Override
@@ -79,25 +87,30 @@ public class HyphenTokenFilter extends TokenFilter {
     }
 
     private boolean addToStack() throws IOException {
-        String s = termAtt.toString();
-        int pos = s.indexOf('-');
-        if (pos <= 0) {
-            return false;
-        }
-        String head = "";
-        String tail;
-        while (pos > 0) {
-            head = head + s.substring(0, pos);
-            tail = s.substring(pos+1);
-            if (head.length() > 1) {
-                stack.push(head);
+        for (char ch : hyphenchars) {
+            String s = termAtt.toString();
+            int pos = s.indexOf(ch);
+            if (pos <= 0) {
+                continue;
             }
-            stack.push(tail);
-            stack.push(head + tail);
-            s = tail;
-            pos = s.indexOf('-');
+            String head = "";
+            String tail;
+            while (pos > 0) {
+                head = head + s.substring(0, pos);
+                tail = s.substring(pos + 1);
+                // only words, no numbers
+                if (letter.matcher(head).matches()) {
+                    if (head.length() > 1) {
+                        stack.push(head);
+                    }
+                    stack.push(tail);
+                    stack.push(head + tail);
+                }
+                s = tail;
+                pos = s.indexOf(ch);
+            }
         }
-        return true;
+        return !stack.isEmpty();
     }
 
 }

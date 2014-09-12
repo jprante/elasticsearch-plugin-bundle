@@ -6,8 +6,15 @@ import com.ibm.icu.util.ULocale;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.TermToBytesRefAttribute;
-import org.apache.lucene.collation.ICUCollationKeyAnalyzer;
 import org.apache.lucene.util.BytesRef;
+import org.elasticsearch.common.base.Supplier;
+import org.elasticsearch.common.collect.Maps;
+import org.elasticsearch.common.collect.Multimap;
+import org.elasticsearch.common.collect.Multimaps;
+import org.elasticsearch.common.collect.Multiset;
+import org.elasticsearch.common.collect.SetMultimap;
+import org.elasticsearch.common.collect.Sets;
+import org.elasticsearch.common.collect.SortedSetMultimap;
 import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.inject.ModulesBuilder;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -24,10 +31,18 @@ import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 import org.junit.Test;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
-import org.xbib.elasticsearch.index.analysis.HexDump;
 
 import java.io.IOException;
-import java.io.StringWriter;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
 
 public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
 
@@ -267,6 +282,42 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
         BytesRef b2 = bytesFromTokenStream(tsExpanded);
 
         assertTrue(compare(b1.bytes, b2.bytes) == 0);
+    }
+
+    @Test
+    public void testCustomFromJson() throws Exception {
+
+        Index index = new Index("test");
+        Settings settings = ImmutableSettings.settingsBuilder()
+                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/icu_collation.json").build();
+        AnalysisService analysisService = createAnalysisService(index, settings);
+        Analyzer analyzer = analysisService.analyzer("icu_german_collate").analyzer();
+
+        String[] words = new String[]{
+                "Göbel",
+                "Goethe",
+                "Goldmann",
+                "Göthe",
+                "Götz"
+        };
+
+        SetMultimap<BytesRef,String> bytesRefMap =
+                Multimaps.newSetMultimap(new TreeMap<BytesRef, Collection<String>>(), new Supplier<Set<String>>() {
+                    @Override
+                    public Set<String> get() {
+                        return Sets.newTreeSet();
+                    }
+                });
+
+        for (String s : words) {
+            TokenStream ts = analyzer.tokenStream(null, s);
+            bytesRefMap.put(bytesFromTokenStream(ts), s);
+        }
+        Iterator<Collection<String>> it =  bytesRefMap.asMap().values().iterator();
+        assertEquals("[Göbel]",it.next().toString());
+        assertEquals("[Goethe, Göthe]",it.next().toString());
+        assertEquals("[Götz]",it.next().toString());
+        assertEquals("[Goldmann]",it.next().toString());
     }
 
     private AnalysisService createAnalysisService(Index index, Settings settings) {

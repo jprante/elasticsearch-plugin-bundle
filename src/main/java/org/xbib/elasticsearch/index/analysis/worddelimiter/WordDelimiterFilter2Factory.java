@@ -20,28 +20,11 @@ import java.util.regex.Pattern;
 
 import static org.elasticsearch.common.collect.Maps.newTreeMap;
 import static org.elasticsearch.common.collect.Sets.newHashSet;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.ALL_PARTS_AT_SAME_POSITION;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.ALPHA;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.ALPHANUM;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.CATENATE_ALL;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.CATENATE_NUMBERS;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.CATENATE_WORDS;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.DIGIT;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.GENERATE_NUMBER_PARTS;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.GENERATE_WORD_PARTS;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.LOWER;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.PRESERVE_ORIGINAL;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.SPLIT_ON_CASE_CHANGE;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.SPLIT_ON_NUMERICS;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.STEM_ENGLISH_POSSESSIVE;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.SUBWORD_DELIM;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.UPPER;
-
 
 /**
  * Factory for {@link WordDelimiterFilter2}.
  */
-public class WordDelimiterFilter2Factory extends AbstractTokenFilterFactory {
+public class WordDelimiterFilter2Factory extends AbstractTokenFilterFactory implements WordDelimiterFlags {
 
     private Set<String> protectedWords = null;
     private int flags;

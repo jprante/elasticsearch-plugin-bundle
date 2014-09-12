@@ -20,23 +20,8 @@ import java.util.regex.Pattern;
 
 import static org.elasticsearch.common.collect.Maps.newTreeMap;
 import static org.elasticsearch.common.collect.Sets.newHashSet;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.ALPHA;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.ALPHANUM;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.CATENATE_ALL;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.CATENATE_NUMBERS;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.CATENATE_WORDS;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.DIGIT;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.GENERATE_NUMBER_PARTS;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.GENERATE_WORD_PARTS;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.LOWER;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.PRESERVE_ORIGINAL;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.SPLIT_ON_CASE_CHANGE;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.SPLIT_ON_NUMERICS;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.STEM_ENGLISH_POSSESSIVE;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.SUBWORD_DELIM;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter.UPPER;
 
-public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory {
+public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory implements WordDelimiterFlags {
 
     private Set<String> protectedWords = null;
     private int flags;

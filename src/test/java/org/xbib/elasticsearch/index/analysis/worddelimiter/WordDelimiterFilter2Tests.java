@@ -1,21 +1,33 @@
-
 package org.xbib.elasticsearch.index.analysis.worddelimiter;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.StopFilter;
-import org.apache.lucene.analysis.miscellaneous.*;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.util.Version;
+import org.elasticsearch.common.inject.Injector;
+import org.elasticsearch.common.inject.ModulesBuilder;
 import org.elasticsearch.common.lucene.Lucene;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.settings.SettingsModule;
+import org.elasticsearch.env.Environment;
+import org.elasticsearch.env.EnvironmentModule;
+import org.elasticsearch.index.Index;
+import org.elasticsearch.index.IndexNameModule;
+import org.elasticsearch.index.analysis.AnalysisModule;
+import org.elasticsearch.index.analysis.AnalysisService;
+import org.elasticsearch.index.settings.IndexSettingsModule;
+import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
+import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 import org.junit.Test;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
 import org.xbib.elasticsearch.index.analysis.MockTokenizer;
+import org.xbib.elasticsearch.plugin.analysis.german.AnalysisGermanPlugin;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -32,7 +44,6 @@ import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterF
 import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.SPLIT_ON_CASE_CHANGE;
 import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.SPLIT_ON_NUMERICS;
 import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.STEM_ENGLISH_POSSESSIVE;
-import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE;
 
 public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
 
@@ -40,87 +51,49 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
 
     @Test
     public void testOffsets() throws IOException {
-        int flags = GENERATE_WORD_PARTS | GENERATE_NUMBER_PARTS | CATENATE_ALL | SPLIT_ON_CASE_CHANGE | SPLIT_ON_NUMERICS | STEM_ENGLISH_POSSESSIVE;
-        // test that subwords and catenated subwords have
-        // the correct offsets.
-        WordDelimiterFilter2 wdf = new WordDelimiterFilter2(new SingleTokenTokenStream(new Token("foo-bar", 5, 12)), DEFAULT_WORD_DELIM_TABLE, flags, null);
+        Settings settings = ImmutableSettings.settingsBuilder()
+                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/worddelimiter.json").build();
+        AnalysisService analysisService = createAnalysisService(settings);
+        Tokenizer tokenizer = analysisService.tokenizer("keyword").create(new StringReader("foo-bar"));
+        TokenStream ts = analysisService.tokenFilter("wd").create(tokenizer);
 
-        assertTokenStreamContents(wdf,
-                new String[] { "foo", "bar", "foobar" },
-                new int[] { 5, 9, 5 },
-                new int[] { 8, 12, 12 },
-                null, null, null, null, false);
-
-        wdf = new WordDelimiterFilter2(new SingleTokenTokenStream(new Token("foo-bar", 5, 6)), DEFAULT_WORD_DELIM_TABLE, flags, null);
-
-        assertTokenStreamContents(wdf,
-                new String[] { "foo", "bar", "foobar" },
-                new int[] { 5, 5, 5 },
-                new int[] { 6, 6, 6 },
+        assertTokenStreamContents(ts,
+                new String[]{"foo", "bar", "foobar" },
+                new int[]{0, 4, 0},
+                new int[]{3, 7, 7},
                 null, null, null, null, false);
     }
 
     @Test
     public void testOffsetChange() throws Exception {
-        int flags = GENERATE_WORD_PARTS | GENERATE_NUMBER_PARTS | CATENATE_ALL | SPLIT_ON_CASE_CHANGE | SPLIT_ON_NUMERICS | STEM_ENGLISH_POSSESSIVE;
-        WordDelimiterFilter2 wdf = new WordDelimiterFilter2(new SingleTokenTokenStream(new Token("übelkeit)", 7, 16)), DEFAULT_WORD_DELIM_TABLE, flags, null);
+        Settings settings = ImmutableSettings.settingsBuilder()
+                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/worddelimiter.json").build();
+        AnalysisService analysisService = createAnalysisService(settings);
+        Tokenizer tokenizer = analysisService.tokenizer("keyword").create(new StringReader("übelkeit"));
+        TokenStream ts = analysisService.tokenFilter("wd").create(tokenizer);
 
-        assertTokenStreamContents(wdf,
-                new String[] { "übelkeit" },
-                new int[] { 7 },
-                new int[] { 15 });
-    }
-
-    @Test
-    public void testOffsetChange2() throws Exception {
-        int flags = GENERATE_WORD_PARTS | GENERATE_NUMBER_PARTS | CATENATE_ALL | SPLIT_ON_CASE_CHANGE | SPLIT_ON_NUMERICS | STEM_ENGLISH_POSSESSIVE;
-        WordDelimiterFilter2 wdf = new WordDelimiterFilter2(new SingleTokenTokenStream(new Token("(übelkeit", 7, 17)), DEFAULT_WORD_DELIM_TABLE, flags, null);
-
-        assertTokenStreamContents(wdf,
-                new String[] { "übelkeit" },
-                new int[] { 8 },
-                new int[] { 17 });
-    }
-
-    @Test
-    public void testOffsetChange3() throws Exception {
-        int flags = GENERATE_WORD_PARTS | GENERATE_NUMBER_PARTS | CATENATE_ALL | SPLIT_ON_CASE_CHANGE | SPLIT_ON_NUMERICS | STEM_ENGLISH_POSSESSIVE;
-        WordDelimiterFilter2 wdf = new WordDelimiterFilter2(new SingleTokenTokenStream(new Token("(übelkeit", 7, 16)), DEFAULT_WORD_DELIM_TABLE, flags, null);
-
-        assertTokenStreamContents(wdf,
-                new String[] { "übelkeit" },
-                new int[] { 8 },
-                new int[] { 16 });
-    }
-
-    @Test
-    public void testOffsetChange4() throws Exception {
-        int flags = GENERATE_WORD_PARTS | GENERATE_NUMBER_PARTS | CATENATE_ALL | SPLIT_ON_CASE_CHANGE | SPLIT_ON_NUMERICS | STEM_ENGLISH_POSSESSIVE;
-        WordDelimiterFilter2 wdf = new WordDelimiterFilter2(new SingleTokenTokenStream(new Token("(foo,bar)", 7, 16)), DEFAULT_WORD_DELIM_TABLE, flags, null);
-
-        assertTokenStreamContents(wdf,
-                new String[] { "foo", "bar", "foobar"},
-                new int[] { 8, 12, 8 },
-                new int[] { 11, 15, 15 },
-                null, null, null, null, false);
+        assertTokenStreamContents(ts,
+                new String[]{"übelkeit" },
+                new int[]{0},
+                new int[]{8});
     }
 
     public void doSplit(final String input, String... output) throws Exception {
         int flags = GENERATE_WORD_PARTS | GENERATE_NUMBER_PARTS | SPLIT_ON_CASE_CHANGE | SPLIT_ON_NUMERICS | STEM_ENGLISH_POSSESSIVE;
         WordDelimiterFilter2 wdf = new WordDelimiterFilter2(new MockTokenizer(
-                new StringReader(input), MockTokenizer.KEYWORD, false), org.apache.lucene.analysis.miscellaneous.WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE, flags, null);
+                new StringReader(input), MockTokenizer.KEYWORD, false), WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE, flags, null);
 
         assertTokenStreamContents(wdf, output);
     }
 
     @Test
     public void testSplits() throws Exception {
-        doSplit("basic-split","basic","split");
-        doSplit("camelCase","camel","Case");
+        doSplit("basic-split", "basic", "split");
+        doSplit("camelCase", "camel", "Case");
 
         // non-space marking symbol shouldn't cause split
         // this is an example in Thai
-        doSplit("\u0e1a\u0e49\u0e32\u0e19","\u0e1a\u0e49\u0e32\u0e19");
+        doSplit("\u0e1a\u0e49\u0e32\u0e19", "\u0e1a\u0e49\u0e32\u0e19");
         // possessive followed by delimiter
         doSplit("test's'", "test");
 
@@ -180,8 +153,9 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
         @Override
         public boolean incrementToken() throws IOException {
             if (input.incrementToken()) {
-                if (termAtt.toString().equals("largegap") || termAtt.toString().equals("/"))
+                if (termAtt.toString().equals("largegap") || termAtt.toString().equals("/")) {
                     posIncAtt.setPositionIncrement(10);
+                }
                 return true;
             } else {
                 return false;
@@ -206,36 +180,36 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
         };
 
     /* in this case, works as expected. */
-        assertAnalyzesTo(a, "LUCENE / SOLR", new String[] { "LUCENE", "SOLR" },
-                new int[] { 0, 9 },
-                new int[] { 6, 13 },
+        assertAnalyzesTo(a, "LUCENE / SOLR", new String[]{"LUCENE", "SOLR" },
+                new int[]{0, 9},
+                new int[]{6, 13},
                 null,
-                new int[] { 1, 1 },
+                new int[]{1, 1},
                 null,
                 false);
 
     /* only in this case, posInc of 2 ?! */
-        assertAnalyzesTo(a, "LUCENE / solR", new String[] { "LUCENE", "sol", "R", "solR" },
-                new int[] { 0, 9, 12, 9 },
-                new int[] { 6, 12, 13, 13 },
+        assertAnalyzesTo(a, "LUCENE / solR", new String[]{"LUCENE", "sol", "R", "solR" },
+                new int[]{0, 9, 12, 9},
+                new int[]{6, 12, 13, 13},
                 null,
-                new int[] { 1, 1, 1, 0 },
-                null,
-                false);
-
-        assertAnalyzesTo(a, "LUCENE / NUTCH SOLR", new String[] { "LUCENE", "NUTCH", "SOLR" },
-                new int[] { 0, 9, 15 },
-                new int[] { 6, 14, 19 },
-                null,
-                new int[] { 1, 1, 1 },
+                new int[]{1, 1, 1, 0},
                 null,
                 false);
 
-        assertAnalyzesTo(a, "LUCENE4.0.0", new String[] { "LUCENE", "4", "0", "0", "LUCENE400" },
-                new int[] { 0, 6, 8, 10, 0 },
-                new int[] { 6, 7, 9, 11, 11 },
+        assertAnalyzesTo(a, "LUCENE / NUTCH SOLR", new String[]{"LUCENE", "NUTCH", "SOLR" },
+                new int[]{0, 9, 15},
+                new int[]{6, 14, 19},
                 null,
-                new int[] { 1, 1, 1, 1, 0 },
+                new int[]{1, 1, 1},
+                null,
+                false);
+
+        assertAnalyzesTo(a, "LUCENE4.0.0", new String[]{"LUCENE", "4", "0", "0", "LUCENE400" },
+                new int[]{0, 6, 8, 10, 0},
+                new int[]{6, 7, 9, 11, 11},
+                null,
+                new int[]{1, 1, 1, 1, 0},
                 null,
                 false);
 
@@ -251,37 +225,37 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
         };
 
     /* increment of "largegap" is preserved */
-        assertAnalyzesTo(a2, "LUCENE largegap SOLR", new String[] { "LUCENE", "largegap", "SOLR" },
-                new int[] { 0, 7, 16 },
-                new int[] { 6, 15, 20 },
+        assertAnalyzesTo(a2, "LUCENE largegap SOLR", new String[]{"LUCENE", "largegap", "SOLR" },
+                new int[]{0, 7, 16},
+                new int[]{6, 15, 20},
                 null,
-                new int[] { 1, 10, 1 },
+                new int[]{1, 10, 1},
                 null,
                 false);
 
     /* the "/" had a position increment of 10, where did it go?!?!! */
-        assertAnalyzesTo(a2, "LUCENE / SOLR", new String[] { "LUCENE", "SOLR" },
-                new int[] { 0, 9 },
-                new int[] { 6, 13 },
+        assertAnalyzesTo(a2, "LUCENE / SOLR", new String[]{"LUCENE", "SOLR" },
+                new int[]{0, 9},
+                new int[]{6, 13},
                 null,
-                new int[] { 1, 11 },
+                new int[]{1, 11},
                 null,
                 false);
 
     /* in this case, the increment of 10 from the "/" is carried over */
-        assertAnalyzesTo(a2, "LUCENE / solR", new String[] { "LUCENE", "sol", "R", "solR" },
-                new int[] { 0, 9, 12, 9 },
-                new int[] { 6, 12, 13, 13 },
+        assertAnalyzesTo(a2, "LUCENE / solR", new String[]{"LUCENE", "sol", "R", "solR" },
+                new int[]{0, 9, 12, 9},
+                new int[]{6, 12, 13, 13},
                 null,
-                new int[] { 1, 11, 1, 0 },
+                new int[]{1, 11, 1, 0},
                 null,
                 false);
 
-        assertAnalyzesTo(a2, "LUCENE / NUTCH SOLR", new String[] { "LUCENE", "NUTCH", "SOLR" },
-                new int[] { 0, 9, 15 },
-                new int[] { 6, 14, 19 },
+        assertAnalyzesTo(a2, "LUCENE / NUTCH SOLR", new String[]{"LUCENE", "NUTCH", "SOLR" },
+                new int[]{0, 9, 15},
+                new int[]{6, 14, 19},
                 null,
-                new int[] { 1, 11, 1 },
+                new int[]{1, 11, 1},
                 null,
                 false);
 
@@ -297,21 +271,21 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
         };
 
         assertAnalyzesTo(a3, "lucene.solr",
-                new String[] { "lucene", "solr", "lucenesolr" },
-                new int[] { 0, 7, 0 },
-                new int[] { 6, 11, 11 },
+                new String[]{"lucene", "solr", "lucenesolr" },
+                new int[]{0, 7, 0},
+                new int[]{6, 11, 11},
                 null,
-                new int[] { 1, 1, 0 },
+                new int[]{1, 1, 0},
                 null,
                 false);
 
     /* the stopword should add a gap here */
         assertAnalyzesTo(a3, "the lucene.solr",
-                new String[] { "lucene", "solr", "lucenesolr" },
-                new int[] { 4, 11, 4 },
-                new int[] { 10, 15, 15 },
+                new String[]{"lucene", "solr", "lucenesolr" },
+                new int[]{4, 11, 4},
+                new int[]{10, 15, 15},
                 null,
-                new int[] { 2, 1, 0 },
+                new int[]{2, 1, 0},
                 null,
                 false);
 
@@ -326,11 +300,11 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
                 return new TokenStreamComponents(tokenizer, new WordDelimiterFilter2(filter, flags4, protWords));
             }
         };
-        assertAnalyzesTo(a4, "LUCENE4.0.0", new String[] { "LUCENE", "4", "0", "0", "LUCENE400" },
-                new int[] { 0, 6, 8, 10, 0 },
-                new int[] { 6, 7, 9, 11, 11 },
+        assertAnalyzesTo(a4, "LUCENE4.0.0", new String[]{"LUCENE", "4", "0", "0", "LUCENE400" },
+                new int[]{0, 6, 8, 10, 0},
+                new int[]{6, 7, 9, 11, 11},
                 null,
-                new int[] { 1, 1, 1, 1, 0 },
+                new int[]{1, 1, 1, 1, 0},
                 null,
                 false);
     }
@@ -352,32 +326,32 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
         };
 
     /* in this case, works as expected. */
-        assertAnalyzesTo(a, "LUCENE / SOLR", new String[] { "LUCENE", "SOLR" },
-                new int[] { 0, 9 },
-                new int[] { 6, 13 },
+        assertAnalyzesTo(a, "LUCENE / SOLR", new String[]{"LUCENE", "SOLR" },
+                new int[]{0, 9},
+                new int[]{6, 13},
                 null,
-                new int[] { 1, 1 });
+                new int[]{1, 1});
 
     /* only in this case, posInc of 2 ?! */
-        assertAnalyzesTo(a, "LUCENE / solR", new String[] { "LUCENE", "sol", "R", "solR" },
-                new int[] { 0, 9, 12, 9 },
-                new int[] { 6, 12, 13, 13 },
+        assertAnalyzesTo(a, "LUCENE / solR", new String[]{"LUCENE", "sol", "R", "solR" },
+                new int[]{0, 9, 12, 9},
+                new int[]{6, 12, 13, 13},
                 null,
-                new int[] { 1, 1, 0, 0 },
+                new int[]{1, 1, 0, 0},
                 null,
                 false);
 
-        assertAnalyzesTo(a, "LUCENE / NUTCH SOLR", new String[] { "LUCENE", "NUTCH", "SOLR" },
-                new int[] { 0, 9, 15 },
-                new int[] { 6, 14, 19 },
+        assertAnalyzesTo(a, "LUCENE / NUTCH SOLR", new String[]{"LUCENE", "NUTCH", "SOLR" },
+                new int[]{0, 9, 15},
+                new int[]{6, 14, 19},
                 null,
-                new int[] { 1, 1, 1 });
+                new int[]{1, 1, 1});
 
-        assertAnalyzesTo(a, "LUCENE4.0.0", new String[] { "LUCENE", "4", "0", "0", "LUCENE400" },
-                new int[] { 0, 6, 8, 10, 0 },
-                new int[] { 6, 7, 9, 11, 11 },
+        assertAnalyzesTo(a, "LUCENE4.0.0", new String[]{"LUCENE", "4", "0", "0", "LUCENE400" },
+                new int[]{0, 6, 8, 10, 0},
+                new int[]{6, 7, 9, 11, 11},
                 null,
-                new int[] { 1, 0, 0, 0, 0 },
+                new int[]{1, 0, 0, 0, 0},
                 null,
                 false);
 
@@ -393,33 +367,33 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
         };
 
     /* increment of "largegap" is preserved */
-        assertAnalyzesTo(a2, "LUCENE largegap SOLR", new String[] { "LUCENE", "largegap", "SOLR" },
-                new int[] { 0, 7, 16 },
-                new int[] { 6, 15, 20 },
+        assertAnalyzesTo(a2, "LUCENE largegap SOLR", new String[]{"LUCENE", "largegap", "SOLR" },
+                new int[]{0, 7, 16},
+                new int[]{6, 15, 20},
                 null,
-                new int[] { 1, 10, 1 });
+                new int[]{1, 10, 1});
 
     /* the "/" had a position increment of 10, where did it go?!?!! */
-        assertAnalyzesTo(a2, "LUCENE / SOLR", new String[] { "LUCENE", "SOLR" },
-                new int[] { 0, 9 },
-                new int[] { 6, 13 },
+        assertAnalyzesTo(a2, "LUCENE / SOLR", new String[]{"LUCENE", "SOLR" },
+                new int[]{0, 9},
+                new int[]{6, 13},
                 null,
-                new int[] { 1, 11 });
+                new int[]{1, 11});
 
     /* in this case, the increment of 10 from the "/" is carried over */
-        assertAnalyzesTo(a2, "LUCENE / solR", new String[] { "LUCENE", "sol", "R", "solR" },
-                new int[] { 0, 9, 12, 9 },
-                new int[] { 6, 12, 13, 13 },
+        assertAnalyzesTo(a2, "LUCENE / solR", new String[]{"LUCENE", "sol", "R", "solR" },
+                new int[]{0, 9, 12, 9},
+                new int[]{6, 12, 13, 13},
                 null,
-                new int[] { 1, 11, 0, 0 },
+                new int[]{1, 11, 0, 0},
                 null,
                 false);
 
-        assertAnalyzesTo(a2, "LUCENE / NUTCH SOLR", new String[] { "LUCENE", "NUTCH", "SOLR" },
-                new int[] { 0, 9, 15 },
-                new int[] { 6, 14, 19 },
+        assertAnalyzesTo(a2, "LUCENE / NUTCH SOLR", new String[]{"LUCENE", "NUTCH", "SOLR" },
+                new int[]{0, 9, 15},
+                new int[]{6, 14, 19},
                 null,
-                new int[] { 1, 11, 1 });
+                new int[]{1, 11, 1});
 
         Analyzer a3 = new Analyzer() {
             @Override
@@ -433,21 +407,21 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
         };
 
         assertAnalyzesTo(a3, "lucene.solr",
-                new String[] { "lucene", "solr", "lucenesolr" },
-                new int[] { 0, 7, 0 },
-                new int[] { 6, 11, 11 },
+                new String[]{"lucene", "solr", "lucenesolr" },
+                new int[]{0, 7, 0},
+                new int[]{6, 11, 11},
                 null,
-                new int[] { 1, 0, 0 },
+                new int[]{1, 0, 0},
                 null,
                 false);
 
     /* the stopword should add a gap here */
         assertAnalyzesTo(a3, "the lucene.solr",
-                new String[] { "lucene", "solr", "lucenesolr" },
-                new int[] { 4, 11, 4 },
-                new int[] { 10, 15, 15 },
+                new String[]{"lucene", "solr", "lucenesolr" },
+                new int[]{4, 11, 4},
+                new int[]{10, 15, 15},
                 null,
-                new int[] { 2, 0, 0 },
+                new int[]{2, 0, 0},
                 null,
                 false);
 
@@ -462,13 +436,27 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
                 return new TokenStreamComponents(tokenizer, new WordDelimiterFilter2(filter, flags4, protWords));
             }
         };
-        assertAnalyzesTo(a4, "LUCENE4.0.0", new String[] { "LUCENE", "4", "0", "0", "LUCENE400" },
-                new int[] { 0, 6, 8, 10, 0 },
-                new int[] { 6, 7, 9, 11, 11 },
+        assertAnalyzesTo(a4, "LUCENE4.0.0", new String[]{"LUCENE", "4", "0", "0", "LUCENE400" },
+                new int[]{0, 6, 8, 10, 0},
+                new int[]{6, 7, 9, 11, 11},
                 null,
-                new int[] { 1, 0, 0, 0, 0 },
+                new int[]{1, 0, 0, 0, 0},
                 null,
                 false);
     }
 
+    private AnalysisService createAnalysisService(Settings settings) {
+        Index index = new Index("test");
+        Injector parentInjector = new ModulesBuilder().add(new SettingsModule(settings),
+                new EnvironmentModule(new Environment(settings)),
+                new IndicesAnalysisModule())
+                .createInjector();
+        AnalysisModule analysisModule = new AnalysisModule(settings, parentInjector.getInstance(IndicesAnalysisService.class));
+        new AnalysisGermanPlugin().onModule(analysisModule);
+        Injector injector = new ModulesBuilder().add(
+                new IndexSettingsModule(index, settings),
+                new IndexNameModule(index), analysisModule)
+                .createChildInjector(parentInjector);
+        return injector.getInstance(AnalysisService.class);
+    }
 }

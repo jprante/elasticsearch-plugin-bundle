@@ -30,8 +30,6 @@ $Newline      = [\p{Word_Break = Newline}];
 $Extend       = [\p{Word_Break = Extend}];
 $Format       = [\p{Word_Break = Format}];
 $Katakana     = [\p{Word_Break = Katakana}];
-$ALetter      = [\p{Word_Break = ALetter}];
-$MidNumLet    = [\p{Word_Break = MidNumLet}];
 # Don't use [:Dash:] here - it contains lots of chars that should continue to trigger word breaks
 $Dash         = [\N{HYPHEN-MINUS}
                  \N{HYPHEN}
@@ -39,6 +37,8 @@ $Dash         = [\N{HYPHEN-MINUS}
                  \N{MINUS SIGN}
                  \N{SMALL HYPHEN-MINUS}
                  \N{FULLWIDTH HYPHEN-MINUS}];
+$ALetter      = [\p{Word_Break = ALetter}];
+$MidNumLet    = [\p{Word_Break = MidNumLet}$Dash];
 $MidLetter    = [\p{Word_Break = MidLetter}$Dash]; # Don't break letters on (single) hyphen
 $MidNum       = [\p{Word_Break = MidNum}$Dash]; # Don't break numbers on (single) hyphen
 $Numeric      = [\p{Word_Break = Numeric}[[:Decomposition_Type=Wide:]&[:General_Category=Decimal_Number:]]];

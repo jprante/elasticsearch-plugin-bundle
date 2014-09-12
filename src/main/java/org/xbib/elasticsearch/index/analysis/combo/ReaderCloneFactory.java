@@ -22,7 +22,7 @@ import java.util.WeakHashMap;
  * <p/>
  * Therefore you should understand the importance of having a proper implementation for
  * any optimizable {@link java.io.Reader}. For instance, {@link StringReaderCloner} gains access
- * to the underlying String in order to avoid copies. A generic BufferedReader
+ * to the underlying String in order to avoid copies.
  */
 public class ReaderCloneFactory {
 
@@ -131,6 +131,7 @@ public class ReaderCloneFactory {
      * @param <T>      The base handled class of the ReaderUnwrapper to return.
      * @return The bond ReaderUnwrapper, or null.
      */
+    @SuppressWarnings("unchecked")
     public static <T extends Reader> ReaderUnwrapper<T> getUnwrapperStrict(Class<? extends T> forClass) {
         return unwrapperTypeMap.get(forClass);
     }
@@ -142,6 +143,7 @@ public class ReaderCloneFactory {
      * @param <T>      The base handled class of the ReaderCloner to return.
      * @return The bond ReaderCloner, or null.
      */
+    @SuppressWarnings("unchecked")
     public static <T extends Reader> ReaderCloner<T> getClonerStrict(Class<? extends T> forClass) {
         WeakReference<Class<? extends ReaderCloner>> refClonerClass = typeMap.get(forClass);
         if (refClonerClass != null) {
@@ -164,6 +166,7 @@ public class ReaderCloneFactory {
      * @param <T>       The base handled class of the ReaderCloner to return.
      * @return The bond, initialized ReaderCloner, or null.
      */
+    @SuppressWarnings("unchecked")
     public static <T extends Reader> ReaderCloner<T> getClonerStrict(T forReader) {
         ReaderCloner<T> rtn = ReaderCloneFactory.<T>getClonerStrict((Class<? extends T>) forReader.getClass());
         if (rtn != null) {
@@ -193,6 +196,7 @@ public class ReaderCloneFactory {
      * @param <S>       The class of the given Reader to handle
      * @return An initialized ReaderCloner suitable for the givenReader, or null.
      */
+    @SuppressWarnings("unchecked")
     public static <T extends Reader, S extends T> ReaderCloner<T> getCloner(Class<T> baseClass, Class<S> forClass, final S forReader) {
         final Class<S> originalForClass = forClass;
         // Loop through each super class
@@ -293,6 +297,7 @@ public class ReaderCloneFactory {
      * @param <S>       The class of the given Reader
      * @return An initialized ReaderCloner suitable for given Reader, or null.
      */
+    @SuppressWarnings("unchecked")
     public static <S extends Reader> ReaderCloner<Reader> getCloner(S forReader) {
         if (forReader != null) {
             return ReaderCloneFactory.<Reader, S>getCloner(Reader.class, (Class<S>) forReader.getClass(), forReader);

@@ -12,6 +12,7 @@ public class IcuAnalysisBinderProcessor extends AnalysisModule.AnalysisBinderPro
     @Override
     public void processTokenizers(TokenizersBindings tokenizersBindings) {
         tokenizersBindings.processTokenizer("icu_tokenizer", IcuTokenizerFactory.class);
+        tokenizersBindings.processTokenizer("icu_collation_tokenizer", IcuCollationTokenizerFactory.class);
     }
 
     @Override
@@ -23,6 +24,6 @@ public class IcuAnalysisBinderProcessor extends AnalysisModule.AnalysisBinderPro
 
     @Override
     public void processAnalyzers(AnalyzersBindings analyzersBindings) {
-        analyzersBindings.processAnalyzer("icu_collation", IcuCollationAnalyzerProvider.class);
+        analyzersBindings.processAnalyzer("icu_collation", IcuCollationKeyAnalyzerProvider.class);
     }
 }

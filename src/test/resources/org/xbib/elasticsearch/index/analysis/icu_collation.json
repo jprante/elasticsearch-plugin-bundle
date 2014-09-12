@@ -1,0 +1,15 @@
+{
+    "index":{
+        "analysis":{
+            "analyzer" : {
+                "icu_german_collate" : {
+                   "type" : "icu_collation",
+                   "language" : "de",
+                   "country" : "DE",
+                   "strength" : "primary",
+                   "rules" : "& ae , a\u0308 & AE , A\u0308& oe , o\u0308 & OE , O\u0308& ue , u\u0308 & UE , u\u0308"
+                }
+            }
+        }
+    }
+}

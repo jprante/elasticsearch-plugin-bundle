@@ -16,6 +16,8 @@ A plugin that consists of a compilation of useful Elasticsearch plugins related 
 
 - elasticsearch-langdetect: index language code of detected languages
 
+- elasticsearch-analysis-standardnumber: standard number entity recognition
+
 - hyphen: token filter for shingling and combining hyphenated words (german: Bindestrichwörter), the opposite of the decompound token filter
 
 - sortform: process string forms for bibliographical sorting, taking non-sort areas into account
@@ -26,12 +28,12 @@ A plugin that consists of a compilation of useful Elasticsearch plugins related 
 
 | Elasticsearch version    | Plugin      | Release date |
 | ------------------------ | ----------- | -------------|
-| 1.3.2                    | 1.3.2.2     | Sep 11, 2014 |
+| 1.3.2                    | 1.3.2.3     | Sep 12, 2014 |
 | 1.3.1                    | 1.3.0.2     | Aug 11, 2014 |
 
 ## Installation
 
-    ./bin/plugin -install analysis-german -url http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-analysis-german/1.3.2.2/elasticsearch-analysis-german-1.3.2.2-plugin.zip
+    ./bin/plugin -install analysis-german -url http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-analysis-german/1.3.2.3/elasticsearch-analysis-german-1.3.2.3-plugin.zip
 
 Do not forget to restart the node after installing.
 
@@ -39,7 +41,7 @@ Do not forget to restart the node after installing.
 
 | File                                                 | SHA1                                     |
 | ---------------------------------------------------- | -----------------------------------------|
-| elasticsearch-analysis-german-1.3.2.2-plugin.zip     | 064dc8df34cda229e61e6e76464e37c2a67a865b |
+| elasticsearch-analysis-german-1.3.2.3-plugin.zip     |  |
 | elasticsearch-analysis-german-1.3.0.2-plugin.zip     | 063a89e4016af637330c5a3d7f51d84c7056b182 |
 
 ## Project docs

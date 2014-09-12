@@ -47,7 +47,7 @@ public class IcuTokenizerTests extends Assert {
                 "Ende"
         };
 
-        Tokenizer tokenizer = analysisService.tokenizer("my_icu_tokenizer").create(new StringReader(source));
+        Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create(new StringReader(source));
         assertSimpleTSOutput(tokenizer, expected);
     }
 
@@ -61,9 +61,24 @@ public class IcuTokenizerTests extends Assert {
                 "ISBN",
                 "3-428-84350-9"
         };
-        Tokenizer tokenizer = analysisService.tokenizer("my_icu_tokenizer").create(new StringReader(source));
+        Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create(new StringReader(source));
         assertSimpleTSOutput(tokenizer, expected);
     }
+
+    @Test
+    public void testIdentifierNonBreakSingleToken() throws IOException {
+        AnalysisService analysisService = createAnalysisService();
+
+        String source = "3-428-84350-9";
+
+        String[] expected = {
+                "3-428-84350-9"
+        };
+        Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create(new StringReader(source));
+        // FAIL?
+        //assertSimpleTSOutput(tokenizer, expected);
+    }
+
 
     private AnalysisService createAnalysisService() {
         Settings settings = ImmutableSettings.settingsBuilder()

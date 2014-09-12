@@ -45,86 +45,7 @@ import java.util.Set;
  * It permits to analyze "PowerShot" into 0:"Power", 0:"Shot", where 0: stands for the token positions.
  */
 
-public final class WordDelimiterFilter2 extends TokenFilter {
-
-    public static final int LOWER = 0x01;
-
-    public static final int UPPER = 0x02;
-
-    public static final int DIGIT = 0x04;
-
-    public static final int SUBWORD_DELIM = 0x08;
-
-    public static final int ALPHA = 0x03;
-
-    public static final int ALPHANUM = 0x07;
-
-    /**
-     * Causes parts of words to be generated:
-     * <p/>
-     * "PowerShot" => "Power" "Shot"
-     */
-    public static final int GENERATE_WORD_PARTS = 1;
-
-    /**
-     * Causes number subwords to be generated:
-     * <p/>
-     * "500-42" => "500" "42"
-     */
-    public static final int GENERATE_NUMBER_PARTS = 2;
-
-    /**
-     * Causes maximum runs of word parts to be catenated:
-     * <p/>
-     * "wi-fi" => "wifi"
-     */
-    public static final int CATENATE_WORDS = 4;
-
-    /**
-     * Causes maximum runs of word parts to be catenated:
-     * <p/>
-     * "wi-fi" => "wifi"
-     */
-    public static final int CATENATE_NUMBERS = 8;
-
-    /**
-     * Causes all subword parts to be catenated:
-     * <p/>
-     * "wi-fi-4000" => "wifi4000"
-     */
-    public static final int CATENATE_ALL = 16;
-
-    /**
-     * Causes original words are preserved and added to the subword list (Defaults to false)
-     * <p/>
-     * "500-42" => "500" "42" "500-42"
-     */
-    public static final int PRESERVE_ORIGINAL = 32;
-
-    /**
-     * If not set, causes case changes to be ignored (subwords will only be generated
-     * given SUBWORD_DELIM tokens)
-     */
-    public static final int SPLIT_ON_CASE_CHANGE = 64;
-
-    /**
-     * If not set, causes numeric changes to be ignored (subwords will only be generated
-     * given SUBWORD_DELIM tokens).
-     */
-    public static final int SPLIT_ON_NUMERICS = 128;
-
-    /**
-     * Causes trailing "'s" to be removed for each subword
-     * <p/>
-     * "O'Neil's" => "O", "Neil"
-     */
-    public static final int STEM_ENGLISH_POSSESSIVE = 256;
-
-    /**
-     * Causes every parts to share the same position.
-     * The default is off and causes each intermediate part to take its own position.
-     */
-    public static final int ALL_PARTS_AT_SAME_POSITION = 512;
+public final class WordDelimiterFilter2 extends TokenFilter implements WordDelimiterFlags {
 
     /**
      * If not null is the set of tokens to protect from being delimited
@@ -492,8 +413,6 @@ public final class WordDelimiterFilter2 extends TokenFilter {
     private boolean has(int flag) {
         return (flags & flag) != 0;
     }
-
-    // ================================================= Inner Classes =================================================
 
     /**
      * A WDF concatenated 'run'

@@ -5,18 +5,22 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.regex.Pattern;
 
 public class SortformTokenFilter extends TokenFilter {
 
-    protected final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
+    private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
 
-    private final List<Pattern> patterns;
+    private final static Pattern[] patterns = new Pattern[]{
+            Pattern.compile("\\s*<<.*?>>\\s*"),
+            Pattern.compile("\\s*<.*?>\\s*"),
+            Pattern.compile("\\s*\u0098.*?\u009C\\s*"),
+            Pattern.compile("\\s*\u02BE.*?\u02BB\\s*"),
+            Pattern.compile("\\s*\u00AC.*?\u00AC\\s*")
+    };
 
-    protected SortformTokenFilter(TokenStream input, List<Pattern> patterns) {
+    protected SortformTokenFilter(TokenStream input) {
         super(input);
-        this.patterns = patterns;
     }
 
     @Override

@@ -3,7 +3,6 @@ package org.xbib.elasticsearch.index.analysis.icu;
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
 import com.ibm.icu.util.ULocale;
-import org.apache.lucene.collation.ICUCollationKeyAnalyzer;
 import org.elasticsearch.ElasticsearchIllegalArgumentException;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.assistedinject.Assisted;
@@ -31,18 +30,26 @@ import java.io.IOException;
  * embed the rules definition in the settings or refer to an external location
  * (preferable located under the <tt>config</tt> location, relative to it).
  */
-public class IcuCollationAnalyzerProvider extends AbstractIndexAnalyzerProvider<ICUCollationKeyAnalyzer> {
+public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvider<IcuCollationKeyAnalyzer> {
 
     private final Collator collator;
 
     @Inject
-    public IcuCollationAnalyzerProvider(Index index,
-                                        @IndexSettings Settings indexSettings,
-                                        Environment environment,
-                                        @Assisted String name,
-                                        @Assisted Settings settings) {
+    public IcuCollationKeyAnalyzerProvider(Index index,
+                                           @IndexSettings Settings indexSettings,
+                                           Environment environment,
+                                           @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
+        this.collator = createCollator(environment, settings);
+    }
 
+    @Override
+    public IcuCollationKeyAnalyzer get() {
+        return new IcuCollationKeyAnalyzer(collator);
+    }
+
+    public static Collator createCollator(Environment environment, Settings settings) {
+        Collator collator;
         String rules = settings.get("rules");
         if (rules != null) {
             FailedToResolveConfigException failureToResolve = null;
@@ -149,10 +156,7 @@ public class IcuCollationAnalyzerProvider extends AbstractIndexAnalyzerProvider<
 
         int maxVariable = settings.getAsInt("variableTop", Collator.ReorderCodes.DEFAULT);
         rbc.setMaxVariable(maxVariable);
+        return collator;
     }
 
-    @Override
-    public ICUCollationKeyAnalyzer get() {
-        return new ICUCollationKeyAnalyzer(version, collator);
-    }
 }

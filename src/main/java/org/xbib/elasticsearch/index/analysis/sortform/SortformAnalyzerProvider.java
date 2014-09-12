@@ -5,8 +5,8 @@ import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractIndexAnalyzerProvider;
-import org.elasticsearch.index.analysis.KeywordTokenizerFactory;
 import org.elasticsearch.index.settings.IndexSettings;
+import org.xbib.elasticsearch.index.analysis.icu.IcuCollationTokenizerFactory;
 
 public class SortformAnalyzerProvider extends AbstractIndexAnalyzerProvider<SortformAnalyzer> {
 
@@ -14,7 +14,7 @@ public class SortformAnalyzerProvider extends AbstractIndexAnalyzerProvider<Sort
 
     @Inject
     public SortformAnalyzerProvider(Index index, @IndexSettings Settings indexSettings,
-                                    KeywordTokenizerFactory tokenizerFactory,
+                                    IcuCollationTokenizerFactory tokenizerFactory,
                                     SortformTokenFilterFactory sortformTokenFilterFactory,
                                     @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name, settings);

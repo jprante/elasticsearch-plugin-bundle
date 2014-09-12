@@ -12,14 +12,14 @@ class Node {
 
     public Node() {
         this.content = "";
-        this.classes = new ArrayList();
-        this.children = new ArrayList();
+        this.classes = new ArrayList<String>();
+        this.children = new ArrayList<Node>();
     }
 
     public Node(String content) {
         this.content = content;
-        this.classes = new ArrayList();
-        this.children = new ArrayList();
+        this.classes = new ArrayList<String>();
+        this.children = new ArrayList<Node>();
     }
 
     public Node classes(List<String> classes) {

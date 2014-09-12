@@ -16,7 +16,6 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenizerFactory;
 import org.elasticsearch.index.settings.IndexSettings;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +34,9 @@ public class IcuTokenizerFactory extends AbstractTokenizerFactory {
     private final ICUTokenizerConfig config;
 
     @Inject
-    public IcuTokenizerFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
+    public IcuTokenizerFactory(Index index,
+                               @IndexSettings Settings indexSettings,
+                               @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
         boolean cjkAsWords = settings.getAsBoolean("cjk_as_words", true);
         Map<Integer, String> tailored = newHashMap();
