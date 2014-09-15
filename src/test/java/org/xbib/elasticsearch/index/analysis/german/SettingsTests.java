@@ -99,7 +99,7 @@ public class SettingsTests extends Assert {
 
     private AnalysisService createAnalysisService() {
         Settings settings = ImmutableSettings.settingsBuilder()
-                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/test-settings.json").build();
+                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/german/test-settings.json").build();
 
         Index index = new Index("test");
 

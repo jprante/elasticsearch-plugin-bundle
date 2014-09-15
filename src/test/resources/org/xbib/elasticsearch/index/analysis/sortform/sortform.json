@@ -1,0 +1,19 @@
+{
+    "index":{
+        "analysis": {
+            "analyzer" : {
+                "german_phonebook_with_sortform" : {
+                   "type" : "sortform",
+                   "language" : "de",
+                   "country" : "DE",
+                   "strength" : "quaternary",
+                   "alternate" : "shifted",
+                   "rules" : "& ae , a\u0308 & AE , A\u0308 & oe , o\u0308 & OE , O\u0308 & ue , u\u0308 & UE , u\u0308 & ss , \u00df",
+                   "filter" : [
+                       "sortform"
+                   ]
+                }
+            }
+        }
+    }
+}

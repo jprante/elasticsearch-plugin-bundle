@@ -39,6 +39,7 @@ public class SortFormTests extends BaseTokenStreamTest {
     public void testBasicUsage() throws Exception {
         Settings settings = ImmutableSettings.settingsBuilder()
                 .put("index.analysis.analyzer.myanalyzer.type", "sortform")
+                .put("index.analysis.analyzer.myanalyzer.filter", "sortform")
                 .build();
         AnalysisService analysisService = createAnalysisService(settings);
         NamedAnalyzer myanalyzer = analysisService.analyzer("myanalyzer");
@@ -49,6 +50,7 @@ public class SortFormTests extends BaseTokenStreamTest {
     public void testUnicodeUsage() throws Exception {
         Settings settings = ImmutableSettings.settingsBuilder()
                 .put("index.analysis.analyzer.myanalyzer.type", "sortform")
+                .put("index.analysis.analyzer.myanalyzer.filter", "sortform")
                 .build();
         AnalysisService analysisService = createAnalysisService(settings);
         Analyzer myanalyzer = analysisService.analyzer("myanalyzer");
@@ -60,7 +62,7 @@ public class SortFormTests extends BaseTokenStreamTest {
     @Test
     public void testFromJson() throws Exception {
         Settings settings = ImmutableSettings.settingsBuilder()
-                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/sortform.json").build();
+                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/sortform/sortform.json").build();
         AnalysisService analysisService = createAnalysisService(settings);
         Analyzer analyzer = analysisService.analyzer("german_phonebook_with_sortform").analyzer();
 
@@ -70,8 +72,8 @@ public class SortFormTests extends BaseTokenStreamTest {
                 "¬Dr.¬ Goldmann",
                 "Göthe",
                 "¬Herr¬ Götz",
-                "Gross",
-                "Groß"
+                "Groß",
+                "Gross"
         };
 
         SetMultimap<BytesRef,String> bytesRefMap =
@@ -85,12 +87,15 @@ public class SortFormTests extends BaseTokenStreamTest {
             TokenStream ts = analyzer.tokenStream(null, s);
             bytesRefMap.put(bytesFromTokenStream(ts), s);
         }
+        // strength "quaternary" orders without punctuation and ensures unique entries.
         Iterator<Collection<String>> it = bytesRefMap.asMap().values().iterator();
         assertEquals("[¬Frau¬ Göbel]",it.next().toString());
-        assertEquals("[Goethe, Göthe]",it.next().toString());
+        assertEquals("[Goethe]",it.next().toString());
+        assertEquals("[Göthe]",it.next().toString());
         assertEquals("[¬Herr¬ Götz]",it.next().toString());
         assertEquals("[¬Dr.¬ Goldmann]",it.next().toString());
-        assertEquals("[Gross, Groß]",it.next().toString());
+        assertEquals("[Gross]",it.next().toString());
+        assertEquals("[Groß]",it.next().toString());
     }
 
     private AnalysisService createAnalysisService(Settings settings) {

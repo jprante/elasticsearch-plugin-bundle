@@ -10,59 +10,115 @@ import org.elasticsearch.common.settings.Settings;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
 public class LangdetectService extends AbstractLifecycleComponent<LangdetectService> {
 
-    private static final double ALPHA_DEFAULT = 0.5;
+    private final static Pattern word = Pattern.compile("[\\P{IsWord}]", Pattern.UNICODE_CHARACTER_CLASS);
 
-    private static final double ALPHA_WIDTH = 0.05;
-
-    private static final int ITERATION_LIMIT = 1000;
-
-    private static final double PROB_THRESHOLD = 0.1;
-
-    private static final double CONV_THRESHOLD = 0.99999;
-
-    private static final int BASE_FREQ = 10000;
-
-    private static final String UNKNOWN_LANG = "unknown";
+    private final static String[] DEFAULT_LANGUAGES = new String[] {
+            "af",
+            "ar",
+            "bg",
+            "bn",
+            "cs",
+            "da",
+            "de",
+            "el",
+            "en",
+            "es",
+            "et",
+            "fa",
+            "fi",
+            "fr",
+            "gu",
+            "he",
+            "hi",
+            "hr",
+            "hu",
+            "id",
+            "it",
+            "ja",
+            "kn",
+            "ko",
+            "lt",
+            "lv",
+            "mk",
+            "ml",
+            "mr",
+            "ne",
+            "nl",
+            "no",
+            "pa",
+            "pl",
+            "pt",
+            "ro",
+            "ru",
+            "sk",
+            "sl",
+            "so",
+            "sq",
+            "sv",
+            "sw",
+            "ta",
+            "te",
+            "th",
+            "tl",
+            "tr",
+            "uk",
+            "ur",
+            "vi",
+            "zh-cn",
+            "zh-tw"
+    };
 
     private Map<String, double[]> wordLangProbMap = new HashMap<String, double[]>();
 
     private List<String> langlist = new LinkedList<String>();
 
+    private Map<String,String> langmap = new HashMap<String,String>();
+
     private double alpha;
+
+    private double alpha_width;
 
     private int n_trial;
 
     private double[] priorMap;
 
-    public LangdetectService() {
-        super(ImmutableSettings.EMPTY);
-    }
+    private int iteration_limit;
+
+    private double prob_threshold;
+
+    private double conv_threshold;
+
+    private int base_freq;
+
+    private Pattern filterPattern;
 
     @Inject
     public LangdetectService(Settings settings) {
         super(settings);
-        try {
-            loadDefaultProfiles();
-        } catch (IOException e) {
-            throw new ElasticsearchException(e.getMessage());
-        }
-        reset();
     }
 
     @Override
     protected void doStart() throws ElasticsearchException {
+        load(settings);
+        this.priorMap = null;
+        this.n_trial = settings.getAsInt("number_of_trials", 7);
+        this.alpha = settings.getAsDouble("alpha", 0.5);
+        this.alpha_width = settings.getAsDouble("alpha_width", 0.05);
+        this.iteration_limit = settings.getAsInt("iteration_limit", 10000);
+        this.prob_threshold = settings.getAsDouble("prob_threshold", 0.1);
+        this.conv_threshold = settings.getAsDouble("conv_threshold",  0.99999);
+        this.base_freq = settings.getAsInt("base_freq", 10000);
+        this.filterPattern = settings.get("pattern") != null ?
+                Pattern.compile(settings.get("pattern"),Pattern.UNICODE_CHARACTER_CLASS) : null;
     }
 
     @Override
@@ -73,77 +129,73 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
     protected void doClose() throws ElasticsearchException {
     }
 
-    public void loadDefaultProfiles() throws IOException {
-        load(ResourceBundle.getBundle("langdetect.languages"));
-        reset();
+    public Settings getSettings() {
+        return settings;
     }
 
-    public void load(ResourceBundle bundle) throws IOException {
-        Enumeration<String> en = bundle.getKeys();
-        int index = 0;
-        int size = bundle.keySet().size();
-        while (en.hasMoreElements()) {
-            String line = en.nextElement();
-            InputStream in = getClass().getResourceAsStream("/langdetect/" + line);
-            if (in == null) {
-                throw new IOException("i/o error in profile locading");
+    private void load(Settings settings) {
+        try {
+            String[] keys = settings.getAsArray("languages");
+            if (keys == null || keys.length == 0) {
+                keys = DEFAULT_LANGUAGES;
             }
-            loadProfile(in, index++, size);
+            int index = 0;
+            int size = keys.length;
+            for (String key : keys) {
+                loadProfileFromResource(key, index++, size);
+            }
+            logger.debug("language detection service installed for {}", langlist);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new ElasticsearchException(e.getMessage());
+        }
+        try {
+            // map by settings
+            Settings map = ImmutableSettings.EMPTY;
+            if (settings.getByPrefix("map.") != null) {
+                map = ImmutableSettings.settingsBuilder().put(settings.getByPrefix("map.")).build();
+            }
+            if (map.getAsMap().isEmpty()) {
+                // is in "map" a resource name?
+                String s = settings.get("map") != null ? settings.get("map") : "/langdetect/language.json";
+                InputStream in = getClass().getResourceAsStream(s);
+                if (in != null) {
+                    map = ImmutableSettings.settingsBuilder().loadFromStream(s, in).build();
+                }
+            }
+            this.langmap = map.getAsMap();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new ElasticsearchException(e.getMessage());
         }
     }
 
-    public void loadProfile(InputStream in, int index, int langsize) throws IOException {
+    public void loadProfileFromResource(String resource, int index, int langsize) throws IOException {
+        InputStream in = getClass().getResourceAsStream("/langdetect/" + resource);
+        if (in == null) {
+            throw new IOException("profile '" + resource + "' not found");
+        }
         ObjectMapper mapper = new ObjectMapper();
         LangProfile profile = mapper.readValue(in, LangProfile.class);
         addProfile(profile, index, langsize);
     }
 
     public void addProfile(LangProfile profile, int index, int langsize) throws IOException {
-        String lang = profile.name;
+        String lang = profile.getName();
         if (langlist.contains(lang)) {
-            throw new IOException("duplicate the same language profile");
+            throw new IOException("duplicate of the same language profile: " + lang);
         }
         langlist.add(lang);
-        for (String word : profile.freq.keySet()) {
+        for (String word : profile.getFreq().keySet()) {
             if (!wordLangProbMap.containsKey(word)) {
                 wordLangProbMap.put(word, new double[langsize]);
             }
             int length = word.length();
             if (length >= 1 && length <= 3) {
-                double prob = profile.freq.get(word).doubleValue() / profile.n_words[length - 1];
+                double prob = profile.getFreq().get(word).doubleValue() / profile.getNWords()[length - 1];
                 wordLangProbMap.get(word)[index] = prob;
             }
         }
-    }
-
-    public LangdetectService setWordLangProbMap(Map<String, double[]> wordLangProbMap) {
-        this.wordLangProbMap = wordLangProbMap;
-        return this;
-    }
-
-    public LangdetectService setLangList(List<String> langlist) {
-        this.langlist = langlist;
-        return this;
-    }
-
-    public List<String> getLangList() {
-        return Collections.unmodifiableList(langlist);
-    }
-
-    public final void reset() {
-        this.priorMap = null;
-        this.alpha = ALPHA_DEFAULT;
-        this.n_trial = 7;
-    }
-
-    /**
-     * Set smoothing parameter. The default value is 0.5(i.e. Expected
-     * Likelihood Estimate).
-     *
-     * @param alpha the smoothing parameter
-     */
-    public void setAlpha(double alpha) {
-        this.alpha = alpha;
     }
 
     /**
@@ -174,49 +226,35 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
         }
     }
 
-    private final static Pattern word = Pattern.compile("[\\P{IsWord}]", Pattern.UNICODE_CHARACTER_CLASS);
-
-    /**
-     * Detect language of the target text and return the language name which has
-     * the highest probability.
-     *
-     * @return detected language name which has most probability.
-     * @throws LanguageDetectionException
-     */
-    public String detect(String text) throws LanguageDetectionException {
-        List<Language> probabilities =
-                detectAll(text.replaceAll(word.pattern(), " "));
-        //detectAll(normalize(text));
-        if (probabilities.size() > 0) {
-            return probabilities.get(0).getLanguage();
-        }
-        return UNKNOWN_LANG;
-    }
-
     public List<Language> detectAll(String text) throws LanguageDetectionException {
-        return sortProbability(detectBlock(/*normalize(text)*/text.replaceAll(word.pattern(), " ")));
+        List<Language> languages = new ArrayList<Language>();
+        if (filterPattern != null && !filterPattern.matcher(text).matches()) {
+            return languages;
+        }
+        List<String> list = new ArrayList<String>();
+        languages = sortProbability(languages, detectBlock(list, text));
+        return languages.subList(0, Math.min(languages.size(), settings.getAsInt("max", languages.size())));
     }
 
-    private double[] detectBlock(String text) throws LanguageDetectionException {
-        //text = clean(text);
-        List<String> ngrams = extractNGrams(text);
-        if (ngrams.isEmpty()) {
+    private double[] detectBlock(List<String> list, String text) throws LanguageDetectionException {
+        // clean all non-work characters from text
+        text = text.replaceAll(word.pattern(), " ");
+        extractNGrams(list, text);
+        if (list.isEmpty()) {
             throw new LanguageDetectionException("no features in text");
         }
         double[] langprob = new double[langlist.size()];
         Random rand = new Random();
         Long seed = 0L;
-        if (seed != null) {
-            rand.setSeed(seed);
-        }
+        rand.setSeed(seed);
         for (int t = 0; t < n_trial; ++t) {
             double[] prob = initProbability();
-            double a = this.alpha + rand.nextGaussian() * ALPHA_WIDTH;
+            double a = this.alpha + rand.nextGaussian() * alpha_width;
             for (int i = 0; ; ++i) {
-                int r = rand.nextInt(ngrams.size());
-                updateLangProb(prob, ngrams.get(r), a);
+                int r = rand.nextInt(list.size());
+                updateLangProb(prob, list.get(r), a);
                 if (i % 5 == 0) {
-                    if (normalizeProb(prob) > CONV_THRESHOLD || i >= ITERATION_LIMIT) {
+                    if (normalizeProb(prob) > conv_threshold || i >= iteration_limit) {
                         break;
                     }
                 }
@@ -231,9 +269,7 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
     private double[] initProbability() {
         double[] prob = new double[langlist.size()];
         if (priorMap != null) {
-            for (int i = 0; i < prob.length; ++i) {
-                prob[i] = priorMap[i];
-            }
+            System.arraycopy(priorMap, 0, prob, 0, prob.length);
         } else {
             for (int i = 0; i < prob.length; ++i) {
                 prob[i] = 1.0 / langlist.size();
@@ -242,8 +278,7 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
         return prob;
     }
 
-    private List<String> extractNGrams(String text) {
-        List<String> list = new ArrayList<String>();
+    private void extractNGrams(List<String> list, String text) {
         NGram ngram = new NGram();
         for (int i = 0; i < text.length(); ++i) {
             ngram.addChar(text.charAt(i));
@@ -254,7 +289,6 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
                 }
             }
         }
-        return list;
     }
 
     private boolean updateLangProb(double[] prob, String word, double alpha) {
@@ -262,7 +296,7 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
             return false;
         }
         double[] langProbMap = wordLangProbMap.get(word);
-        double weight = alpha / BASE_FREQ;
+        double weight = alpha / base_freq;
         for (int i = 0; i < prob.length; ++i) {
             prob[i] *= weight + langProbMap[i];
         }
@@ -284,14 +318,17 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
         return maxp;
     }
 
-    private List<Language> sortProbability(double[] prob) {
-        List<Language> list = new ArrayList<Language>();
+    private List<Language> sortProbability(List<Language> list, double[] prob) {
         for (int j = 0; j < prob.length; ++j) {
             double p = prob[j];
-            if (p > PROB_THRESHOLD) {
+            if (p > prob_threshold) {
                 for (int i = 0; i <= list.size(); ++i) {
                     if (i == list.size() || list.get(i).getProbability() < p) {
-                        list.add(i, new Language(langlist.get(j), p));
+                        String code = langlist.get(j);
+                        if (langmap != null && langmap.containsKey(code)) {
+                            code = langmap.get(code);
+                        }
+                        list.add(i, new Language(code, p));
                         break;
                     }
                 }

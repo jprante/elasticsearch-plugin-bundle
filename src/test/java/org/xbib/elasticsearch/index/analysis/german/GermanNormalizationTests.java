@@ -2,9 +2,7 @@ package org.xbib.elasticsearch.index.analysis.german;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.util.Version;
 import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.inject.ModulesBuilder;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -31,8 +29,6 @@ public class GermanNormalizationTests extends Assert {
 
     @Test
     public void test() throws IOException {
-        AnalysisService analysisService = createAnalysisService();
-        TokenFilterFactory tokenFilter = analysisService.tokenFilter("umlaut");
 
         String source = "Ein schöner Tag in Köln im Café an der Straßenecke";
 
@@ -49,14 +45,15 @@ public class GermanNormalizationTests extends Assert {
             "Strassenecke"
         };
 
-        Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_4_9, new StringReader(source));
-
+        AnalysisService analysisService = createAnalysisService();
+        TokenFilterFactory tokenFilter = analysisService.tokenFilter("umlaut");
+        Tokenizer tokenizer = analysisService.tokenizer("standard").create(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
-
     }
 
     private AnalysisService createAnalysisService() {
-        Settings settings = ImmutableSettings.settingsBuilder().loadFromClasspath("org/xbib/elasticsearch/index/analysis/german_normalization_analysis.json").build();
+        Settings settings = ImmutableSettings.settingsBuilder()
+                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/german/german_normalization_analysis.json").build();
 
         Index index = new Index("test");
 

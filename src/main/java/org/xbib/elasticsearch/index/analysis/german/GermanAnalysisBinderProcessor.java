@@ -6,7 +6,6 @@ import org.xbib.elasticsearch.index.analysis.concat.ConcatTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.decompound.DecompoundTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenizerFactory;
-import org.xbib.elasticsearch.index.analysis.icu.IcuCollationTokenizerFactory;
 import org.xbib.elasticsearch.index.analysis.sortform.SortformAnalyzerProvider;
 import org.xbib.elasticsearch.index.analysis.sortform.SortformTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.standardnumber.StandardNumberAnalyzerProvider;

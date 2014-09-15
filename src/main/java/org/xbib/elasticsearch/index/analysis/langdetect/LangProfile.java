@@ -1,15 +1,12 @@
 package org.xbib.elasticsearch.index.analysis.langdetect;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
+/**
+ * This class is used by ObjectMapper, it requires public attributes
+ */
 public class LangProfile {
-
-    private static final int MINIMUM_FREQ = 2;
-
-    private static final int LESS_FREQ_RATIO = 100000;
 
     public String name = null;
 
@@ -40,37 +37,28 @@ public class LangProfile {
         }
     }
 
-    public void omitLessFreq() {
-        if (name == null) {
-            return;
-        }
-        int threshold = n_words[0] / LESS_FREQ_RATIO;
-        if (threshold < MINIMUM_FREQ) {
-            threshold = MINIMUM_FREQ;
-        }
-        Set<String> keys = freq.keySet();
-        int roman = 0;
-        for (Iterator<String> i = keys.iterator(); i.hasNext(); ) {
-            String key = i.next();
-            int count = freq.get(key);
-            if (count <= threshold) {
-                n_words[key.length() - 1] -= count;
-                i.remove();
-            } else {
-                if (key.matches("^[A-Za-z]$")) {
-                    roman += count;
-                }
-            }
-        }
-        if (roman < n_words[0] / 3) {
-            Set<String> keys2 = freq.keySet();
-            for (Iterator<String> i = keys2.iterator(); i.hasNext(); ) {
-                String key = i.next();
-                if (key.matches(".*[A-Za-z].*")) {
-                    n_words[key.length() - 1] -= freq.get(key);
-                    i.remove();
-                }
-            }
-        }
+    public void setName(String name) {
+        this.name = name;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setNWords() {
+        this.n_words = n_words;
+    }
+
+    public int[] getNWords() {
+        return n_words;
+    }
+
+    public void setFreq(Map<String, Integer> freq) {
+        this.freq = freq;
+    }
+
+    public Map<String, Integer> getFreq() {
+        return freq;
+    }
+
 }

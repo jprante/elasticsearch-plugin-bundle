@@ -7,7 +7,7 @@
                 },
                 "my_hyphen_icu_tokenizer" : {
                    "type" : "icu_tokenizer",
-                   "rulefiles" : "Latn:Latin-dont-break-on-hyphens.rbbi"
+                   "rulefiles" : "Latn:icu/Latin-dont-break-on-hyphens.rbbi"
                 }
             }
         }

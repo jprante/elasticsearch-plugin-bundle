@@ -159,7 +159,7 @@ public class HyphenTokenizerTests extends Assert {
 
     private AnalysisService createAnalysisService() {
         Settings settings = ImmutableSettings.settingsBuilder()
-                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/hyphen_tokenizer.json").build();
+                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json").build();
         Index index = new Index("test");
         Injector parentInjector = new ModulesBuilder().add(new SettingsModule(settings),
                 new EnvironmentModule(new Environment(settings)),

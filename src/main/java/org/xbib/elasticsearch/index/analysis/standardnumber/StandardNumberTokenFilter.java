@@ -16,7 +16,7 @@ public class StandardNumberTokenFilter extends TokenFilter {
 
     private final LinkedList<PackedTokenAttributeImpl> tokens;
 
-    private final Detector detector;
+    private final StandardNumberService standardNumberService;
 
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
 
@@ -26,10 +26,10 @@ public class StandardNumberTokenFilter extends TokenFilter {
 
     private State current;
 
-    protected StandardNumberTokenFilter(TokenStream input, Detector detector) {
+    protected StandardNumberTokenFilter(TokenStream input, StandardNumberService standardNumberService) {
         super(input);
         this.tokens = new LinkedList<PackedTokenAttributeImpl>();
-        this.detector = detector;
+        this.standardNumberService = standardNumberService;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class StandardNumberTokenFilter extends TokenFilter {
 
     protected void detect() throws CharacterCodingException {
         CharSequence term = new String(termAtt.buffer(), 0, termAtt.length());
-        Collection<CharSequence> variants = detector.lookup(term);
+        Collection<CharSequence> variants = standardNumberService.lookup(term);
         for (CharSequence ch : variants) {
             if (ch != null) {
                 PackedTokenAttributeImpl token = new PackedTokenAttributeImpl();

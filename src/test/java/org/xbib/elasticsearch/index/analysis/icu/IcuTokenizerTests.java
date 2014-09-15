@@ -28,7 +28,6 @@ public class IcuTokenizerTests extends Assert {
 
     @Test
     public void testLetterNonBreak() throws IOException {
-        AnalysisService analysisService = createAnalysisService();
 
         String source = "Das ist ein Bindestrich-Wort, oder etwa nicht? Jetzt kommen wir zum Ende.";
 
@@ -46,7 +45,7 @@ public class IcuTokenizerTests extends Assert {
                 "zum",
                 "Ende"
         };
-
+        AnalysisService analysisService = createAnalysisService();
         Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create(new StringReader(source));
         assertSimpleTSOutput(tokenizer, expected);
     }
@@ -75,14 +74,14 @@ public class IcuTokenizerTests extends Assert {
                 "3-428-84350-9"
         };
         Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create(new StringReader(source));
-        // FAIL?
+        // THIS FAILS
         //assertSimpleTSOutput(tokenizer, expected);
     }
 
 
     private AnalysisService createAnalysisService() {
         Settings settings = ImmutableSettings.settingsBuilder()
-                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/icu_tokenizer.json").build();
+                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json").build();
         Index index = new Index("test");
 
         Injector parentInjector = new ModulesBuilder().add(new SettingsModule(settings),
@@ -110,7 +109,6 @@ public class IcuTokenizerTests extends Assert {
         while (stream.incrementToken()) {
             assertTrue(i < expected.length);
             assertEquals(expected[i], termAttr.toString());
-            //System.err.println(termAttr.toString());
             i++;
         }
         assertEquals(i, expected.length);

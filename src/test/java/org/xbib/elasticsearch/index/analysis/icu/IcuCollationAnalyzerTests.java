@@ -8,13 +8,9 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.TermToBytesRefAttribute;
 import org.apache.lucene.util.BytesRef;
 import org.elasticsearch.common.base.Supplier;
-import org.elasticsearch.common.collect.Maps;
-import org.elasticsearch.common.collect.Multimap;
 import org.elasticsearch.common.collect.Multimaps;
-import org.elasticsearch.common.collect.Multiset;
 import org.elasticsearch.common.collect.SetMultimap;
 import org.elasticsearch.common.collect.Sets;
-import org.elasticsearch.common.collect.SortedSetMultimap;
 import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.inject.ModulesBuilder;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -34,15 +30,9 @@ import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
-
 
 public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
 
@@ -289,7 +279,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
 
         Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
-                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/icu_collation.json").build();
+                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/icu/icu_collation.json").build();
         AnalysisService analysisService = createAnalysisService(index, settings);
         Analyzer analyzer = analysisService.analyzer("icu_german_collate").analyzer();
 
