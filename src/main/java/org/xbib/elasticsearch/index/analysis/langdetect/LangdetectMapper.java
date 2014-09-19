@@ -1,9 +1,33 @@
+/*
+ * Copyright (C) 2014 Jörg Prante
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, see http://www.gnu.org/licenses
+ * or write to the Free Software Foundation, Inc., 51 Franklin Street,
+ * Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * The interactive user interfaces in modified source and object code
+ * versions of this program must display Appropriate Legal Notices,
+ * as required under Section 5 of the GNU Affero General Public License.
+ *
+ */
 package org.xbib.elasticsearch.index.analysis.langdetect;
 
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
+import org.elasticsearch.index.fielddata.FieldDataType;
 import org.elasticsearch.index.mapper.FieldMapperListener;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
@@ -11,6 +35,7 @@ import org.elasticsearch.index.mapper.MergeContext;
 import org.elasticsearch.index.mapper.MergeMappingException;
 import org.elasticsearch.index.mapper.ObjectMapperListener;
 import org.elasticsearch.index.mapper.ParseContext;
+import org.elasticsearch.index.mapper.core.AbstractFieldMapper;
 import org.elasticsearch.index.mapper.core.StringFieldMapper;
 
 import java.io.IOException;
@@ -20,7 +45,7 @@ import java.util.Map;
 
 import static org.elasticsearch.index.mapper.MapperBuilders.stringField;
 
-public class LangdetectMapper implements Mapper {
+public class LangdetectMapper extends AbstractFieldMapper<Object> {
 
     public static final String CONTENT_TYPE = "langdetect";
 
@@ -118,7 +143,7 @@ public class LangdetectMapper implements Mapper {
             context.path().remove();
             LangdetectService detector = new LangdetectService(settingsBuilder.build());
             detector.start();
-            return new LangdetectMapper(name, contentMapper, langMapper, detector);
+            return new LangdetectMapper(new Names(name), contentMapper, langMapper, detector);
         }
     }
 
@@ -202,25 +227,33 @@ public class LangdetectMapper implements Mapper {
         }
     }
 
-    private final String name;
-
     private final StringFieldMapper contentMapper;
 
     private final StringFieldMapper langMapper;
 
     private final LangdetectService detector;
 
-    public LangdetectMapper(String name, StringFieldMapper contentMapper, StringFieldMapper langMapper,
+    public LangdetectMapper(Names names, StringFieldMapper contentMapper, StringFieldMapper langMapper,
                             LangdetectService detector) {
-        this.name = name;
+        super(names, 1.0f, Defaults.FIELD_TYPE, false, null, null, null, null, null, null, null, null, null, null);
         this.contentMapper = contentMapper;
         this.langMapper = langMapper;
         this.detector = detector;
     }
 
     @Override
-    public String name() {
-        return name;
+    public FieldType defaultFieldType() {
+        return Defaults.FIELD_TYPE;
+    }
+
+    @Override
+    public FieldDataType defaultFieldDataType() {
+        return null;
+    }
+
+    @Override
+    public Object value(Object value) {
+        return null;
     }
 
     @Override
@@ -258,6 +291,10 @@ public class LangdetectMapper implements Mapper {
     }
 
     @Override
+    protected void parseCreateField(ParseContext context, List<Field> fields) throws IOException {
+    }
+
+    @Override
     public void merge(Mapper mergeWith, MergeContext mergeContext) throws MergeMappingException {
     }
 
@@ -279,7 +316,7 @@ public class LangdetectMapper implements Mapper {
 
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
-        builder.startObject(name);
+        builder.startObject(name());
         builder.field("type", CONTENT_TYPE);
 
         builder.startObject("fields");
@@ -290,4 +327,10 @@ public class LangdetectMapper implements Mapper {
         builder.endObject();
         return builder;
     }
+
+    @Override
+    protected String contentType() {
+       return CONTENT_TYPE;
+    }
+
 }

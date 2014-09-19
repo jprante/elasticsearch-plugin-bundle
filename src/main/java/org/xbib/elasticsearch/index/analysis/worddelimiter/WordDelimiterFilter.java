@@ -432,8 +432,6 @@ public final class WordDelimiterFilter extends TokenFilter implements WordDelimi
         return (flags & flag) != 0;
     }
 
-    // ================================================= Inner Classes =================================================
-
     /**
      * A WDF concatenated 'run'
      */
