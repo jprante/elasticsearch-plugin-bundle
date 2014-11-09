@@ -3,6 +3,8 @@ package org.xbib.elasticsearch.index.analysis.hyphen;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.elasticsearch.Version;
+import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.inject.ModulesBuilder;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -178,6 +180,7 @@ public class HyphenTokenizerTests extends Assert {
 
     private AnalysisService createAnalysisService() {
         Settings settings = ImmutableSettings.settingsBuilder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .loadFromClasspath("org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json").build();
         Index index = new Index("test");
         Injector parentInjector = new ModulesBuilder().add(new SettingsModule(settings),

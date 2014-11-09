@@ -14,7 +14,7 @@ public class IcuCollationKeyAnalyzerTests extends CollationTestBase {
 
     private Collator collator = Collator.getInstance(new Locale("fa"));
 
-    private Analyzer analyzer = new ICUCollationKeyAnalyzer(Version.LUCENE_4_9, collator);
+    private Analyzer analyzer = new ICUCollationKeyAnalyzer(Version.LATEST, collator);
 
     private BytesRef firstRangeBeginning = new BytesRef(collator.getCollationKey(firstRangeBeginningOriginal).toByteArray());
     private BytesRef firstRangeEnd = new BytesRef(collator.getCollationKey(firstRangeEndOriginal).toByteArray());
@@ -42,10 +42,10 @@ public class IcuCollationKeyAnalyzerTests extends CollationTestBase {
 
     @Test
     public void testCollationKeySort() throws Exception {
-        Analyzer usAnalyzer = new ICUCollationKeyAnalyzer(Version.LUCENE_4_9, Collator.getInstance(Locale.ROOT));
-        Analyzer franceAnalyzer = new ICUCollationKeyAnalyzer(Version.LUCENE_4_9, Collator.getInstance(Locale.FRANCE));
-        Analyzer swedenAnalyzer = new ICUCollationKeyAnalyzer(Version.LUCENE_4_9, Collator.getInstance(new Locale("sv", "se")));
-        Analyzer denmarkAnalyzer = new ICUCollationKeyAnalyzer(Version.LUCENE_4_9, Collator.getInstance(new Locale("da", "dk")));
+        Analyzer usAnalyzer = new ICUCollationKeyAnalyzer(Version.LATEST, Collator.getInstance(Locale.US));
+        Analyzer franceAnalyzer = new ICUCollationKeyAnalyzer(Version.LATEST, Collator.getInstance(Locale.FRANCE));
+        Analyzer swedenAnalyzer = new ICUCollationKeyAnalyzer(Version.LATEST, Collator.getInstance(new Locale("sv", "se")));
+        Analyzer denmarkAnalyzer = new ICUCollationKeyAnalyzer(Version.LATEST, Collator.getInstance(new Locale("da", "dk")));
         testCollationKeySort(usAnalyzer, franceAnalyzer, swedenAnalyzer, denmarkAnalyzer,
                 "BFJHD", "ECAGI", "BJDFH", "BJDHF");
     }
@@ -57,7 +57,7 @@ public class IcuCollationKeyAnalyzerTests extends CollationTestBase {
             Locale locale = Locale.GERMAN;
             Collator collator = Collator.getInstance(locale);
             collator.setStrength(Collator.IDENTICAL);
-            assertThreadSafe(new Random(), new ICUCollationKeyAnalyzer(Version.LUCENE_4_9, collator));
+            assertThreadSafe(new Random(), new ICUCollationKeyAnalyzer(Version.LATEST, collator));
         }
     }
 }

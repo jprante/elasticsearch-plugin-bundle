@@ -1,6 +1,8 @@
 
 package org.xbib.elasticsearch.index.analysis.langdetect;
 
+import org.elasticsearch.Version;
+import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.inject.ModulesBuilder;
@@ -95,8 +97,12 @@ public class LangdetectMappingTests extends Assert {
         return createMapperParser(ImmutableSettings.EMPTY);
     }
 
-    private DocumentMapperParser createMapperParser(Settings settings) throws IOException {
+    private DocumentMapperParser createMapperParser(Settings fromSettings) throws IOException {
         Index index = new Index("test");
+        Settings settings = ImmutableSettings.settingsBuilder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
+                .put(fromSettings)
+                .build();
         Injector parentInjector = new ModulesBuilder().add(new SettingsModule(settings),
                 new EnvironmentModule(new Environment(settings)),
                 new IndicesAnalysisModule())

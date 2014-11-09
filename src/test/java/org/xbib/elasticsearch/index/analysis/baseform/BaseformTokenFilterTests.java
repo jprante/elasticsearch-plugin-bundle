@@ -6,6 +6,7 @@ import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.util.Version;
 
+import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.inject.ModulesBuilder;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -64,7 +65,7 @@ public class BaseformTokenFilterTests extends Assert {
             "kosten"
         };
 
-        Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_4_9, new StringReader(source));
+        Tokenizer tokenizer = new StandardTokenizer(Version.LATEST, new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
 
     }
@@ -91,12 +92,14 @@ public class BaseformTokenFilterTests extends Assert {
                 "transportieren"
         };
 
-        Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_4_9, new StringReader(source));
+        Tokenizer tokenizer = new StandardTokenizer(Version.LATEST, new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 
     private AnalysisService createAnalysisService() {
-        Settings settings = ImmutableSettings.EMPTY;
+        Settings settings = ImmutableSettings.settingsBuilder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, org.elasticsearch.Version.CURRENT)
+                .build();
 
         Index index = new Index("test");
 

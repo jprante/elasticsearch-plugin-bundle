@@ -1,8 +1,12 @@
 package org.xbib.elasticsearch.index.analysis.icu;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.elasticsearch.Version;
+import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.inject.ModulesBuilder;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.SettingsModule;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.env.EnvironmentModule;
@@ -26,13 +30,17 @@ public class IcuAnalysisTests {
 
     @Test
     public void testDefaultsIcuAnalysis() {
+        Settings settings = ImmutableSettings.settingsBuilder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
+                .build();
+
         Index index = new Index("test");
 
-        Injector parentInjector = new ModulesBuilder().add(new SettingsModule(EMPTY_SETTINGS), new EnvironmentModule(new Environment(EMPTY_SETTINGS)), new IndicesAnalysisModule()).createInjector();
+        Injector parentInjector = new ModulesBuilder().add(new SettingsModule(settings), new EnvironmentModule(new Environment(EMPTY_SETTINGS)), new IndicesAnalysisModule()).createInjector();
         Injector injector = new ModulesBuilder().add(
-                new IndexSettingsModule(index, EMPTY_SETTINGS),
+                new IndexSettingsModule(index, settings),
                 new IndexNameModule(index),
-                new AnalysisModule(EMPTY_SETTINGS, parentInjector.getInstance(IndicesAnalysisService.class))
+                new AnalysisModule(settings, parentInjector.getInstance(IndicesAnalysisService.class))
                         .addProcessor(new IcuAnalysisBinderProcessor()))
                 .createChildInjector(parentInjector);
 

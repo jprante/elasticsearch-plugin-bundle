@@ -18,15 +18,15 @@ public final class MockAnalyzer extends Analyzer {
     private boolean enableChecks = true;
     private int maxTokenLength = MockTokenizer.DEFAULT_MAX_TOKEN_LENGTH;
 
+    public MockAnalyzer(CharacterRunAutomaton runAutomaton, boolean lowerCase) {
+        this(runAutomaton, lowerCase, MockTokenFilter.EMPTY_STOPSET);
+    }
+
     public MockAnalyzer(CharacterRunAutomaton runAutomaton, boolean lowerCase, CharacterRunAutomaton filter) {
         super(PER_FIELD_REUSE_STRATEGY);
         this.runAutomaton = runAutomaton;
         this.lowerCase = lowerCase;
         this.filter = filter;
-    }
-
-    public MockAnalyzer(CharacterRunAutomaton runAutomaton, boolean lowerCase) {
-        this(runAutomaton, lowerCase, MockTokenFilter.EMPTY_STOPSET);
     }
 
     @Override

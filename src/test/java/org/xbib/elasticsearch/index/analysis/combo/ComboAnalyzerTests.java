@@ -6,7 +6,6 @@ import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.util.Version;
-import org.elasticsearch.common.lucene.Lucene;
 import org.elasticsearch.index.analysis.AnalyzerScope;
 import org.junit.Test;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
@@ -24,7 +23,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 
 public class ComboAnalyzerTests extends BaseTokenStreamTest {
 
-    private Version TEST_VERSION_CURRENT = Lucene.ANALYZER_VERSION;
+    private Version TEST_VERSION_CURRENT = Version.LATEST;
 
     @Test
     public void testSingleAnalyzer() throws IOException {

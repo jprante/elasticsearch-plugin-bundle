@@ -9,9 +9,9 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.util.Version;
+import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.inject.ModulesBuilder;
-import org.elasticsearch.common.lucene.Lucene;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.SettingsModule;
@@ -47,11 +47,12 @@ import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterF
 
 public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
 
-    private Version TEST_VERSION_CURRENT = Lucene.ANALYZER_VERSION;
+    private Version TEST_VERSION_CURRENT = Version.LATEST;
 
     @Test
     public void testOffsets() throws IOException {
         Settings settings = ImmutableSettings.settingsBuilder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, org.elasticsearch.Version.CURRENT)
                 .loadFromClasspath("org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json").build();
         AnalysisService analysisService = createAnalysisService(settings);
         Tokenizer tokenizer = analysisService.tokenizer("keyword").create(new StringReader("foo-bar"));
@@ -67,6 +68,7 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
     @Test
     public void testOffsetChange() throws Exception {
         Settings settings = ImmutableSettings.settingsBuilder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, org.elasticsearch.Version.CURRENT)
                 .loadFromClasspath("org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json").build();
         AnalysisService analysisService = createAnalysisService(settings);
         Tokenizer tokenizer = analysisService.tokenizer("keyword").create(new StringReader("übelkeit"));

@@ -7,6 +7,8 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.TermToBytesRefAttribute;
 import org.apache.lucene.util.BytesRef;
+import org.elasticsearch.Version;
+import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.base.Supplier;
 import org.elasticsearch.common.collect.Multimaps;
 import org.elasticsearch.common.collect.SetMultimap;
@@ -46,6 +48,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     public void testBasicUsage() throws Exception {
         Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "tr")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
@@ -67,6 +70,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     public void testNormalization() throws IOException {
         Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "tr")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
@@ -88,6 +92,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     public void testSecondaryStrength() throws IOException {
         Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "en")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "secondary")
@@ -110,6 +115,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     public void testIgnorePunctuation() throws IOException {
         Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "en")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
@@ -132,6 +138,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     public void testIgnoreWhitespace() throws IOException {
         Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "en")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
@@ -160,6 +167,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     public void testNumerics() throws IOException {
         Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "en")
                 .put("index.analysis.analyzer.myAnalyzer.numeric", true)
@@ -181,6 +189,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     public void testIgnoreAccentsButNotCase() throws IOException {
         Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "en")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
@@ -222,6 +231,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     public void testUpperCaseFirst() throws IOException {
         Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "en")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "tertiary")
@@ -256,6 +266,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
 
         Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.rules", tailoredRules)
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
@@ -279,6 +290,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
 
         Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .loadFromClasspath("org/xbib/elasticsearch/index/analysis/icu/icu_collation.json").build();
         AnalysisService analysisService = createAnalysisService(index, settings);
         Analyzer analyzer = analysisService.analyzer("icu_german_collate").analyzer();

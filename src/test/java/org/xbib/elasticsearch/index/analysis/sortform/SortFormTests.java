@@ -4,6 +4,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.TermToBytesRefAttribute;
 import org.apache.lucene.util.BytesRef;
+import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.base.Supplier;
 import org.elasticsearch.common.collect.Multimaps;
 import org.elasticsearch.common.collect.SetMultimap;
@@ -38,6 +39,7 @@ public class SortFormTests extends BaseTokenStreamTest {
     @Test
     public void testBasicUsage() throws Exception {
         Settings settings = ImmutableSettings.settingsBuilder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, org.elasticsearch.Version.CURRENT)
                 .put("index.analysis.analyzer.myanalyzer.type", "sortform")
                 .put("index.analysis.analyzer.myanalyzer.filter", "sortform")
                 .build();
@@ -49,6 +51,7 @@ public class SortFormTests extends BaseTokenStreamTest {
     @Test
     public void testUnicodeUsage() throws Exception {
         Settings settings = ImmutableSettings.settingsBuilder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, org.elasticsearch.Version.CURRENT)
                 .put("index.analysis.analyzer.myanalyzer.type", "sortform")
                 .put("index.analysis.analyzer.myanalyzer.filter", "sortform")
                 .build();
@@ -62,6 +65,7 @@ public class SortFormTests extends BaseTokenStreamTest {
     @Test
     public void testFromJson() throws Exception {
         Settings settings = ImmutableSettings.settingsBuilder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, org.elasticsearch.Version.CURRENT)
                 .loadFromClasspath("org/xbib/elasticsearch/index/analysis/sortform/sortform.json").build();
         AnalysisService analysisService = createAnalysisService(settings);
         Analyzer analyzer = analysisService.analyzer("german_phonebook_with_sortform").analyzer();

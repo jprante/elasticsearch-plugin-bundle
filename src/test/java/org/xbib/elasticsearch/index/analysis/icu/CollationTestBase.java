@@ -40,7 +40,7 @@ import java.util.Random;
  */
 public abstract class CollationTestBase extends LuceneTestCase {
 
-    protected Version TEST_VERSION_CURRENT = Version.LUCENE_4_9;
+    protected Version TEST_VERSION_CURRENT = Version.LATEST;
 
     protected String firstRangeBeginningOriginal = "\u062F";
     protected String firstRangeEndOriginal = "\u0698";
@@ -127,8 +127,7 @@ public abstract class CollationTestBase extends LuceneTestCase {
         // index Term below should NOT be returned by a TermRangeQuery
         // with a Farsi Collator (or an Arabic one for the case when Farsi is
         // not supported).
-        Query csrq
-                = new TermRangeQuery("content", firstBeg, firstEnd, true, true);
+        Query csrq = new TermRangeQuery("content", firstBeg, firstEnd, true, true);
         ScoreDoc[] result = search.search(csrq, null, 1000).scoreDocs;
         assertEquals("The index Term should not be included.", 0, result.length);
 
@@ -149,8 +148,8 @@ public abstract class CollationTestBase extends LuceneTestCase {
                                      String svResult,
                                      String dkResult) throws Exception {
         Directory indexStore = new RAMDirectory();
-        IndexWriter writer = new IndexWriter(indexStore, new IndexWriterConfig(
-                TEST_VERSION_CURRENT, new MockAnalyzer(MockTokenizer.WHITESPACE, false)));
+        IndexWriter writer = new IndexWriter(indexStore,
+                new IndexWriterConfig(TEST_VERSION_CURRENT, new MockAnalyzer(MockTokenizer.WHITESPACE, false)));
 
         String[][] sortData = new String[][]{
                 // tracer contents US                 France             Sweden (sv_SE)     Denmark (da_DK)
@@ -214,16 +213,15 @@ public abstract class CollationTestBase extends LuceneTestCase {
     private void assertMatches(IndexSearcher searcher, Query query, Sort sort,
                                String expectedResult) throws IOException {
         ScoreDoc[] result = searcher.search(query, null, 1000, sort).scoreDocs;
-        StringBuilder buff = new StringBuilder(10);
-        int n = result.length;
+        StringBuilder sb = new StringBuilder(10);
         for (ScoreDoc sd : result) {
             Document doc = searcher.doc(sd.doc);
             IndexableField[] v = doc.getFields("tracer");
             for (IndexableField aV : v) {
-                buff.append(aV.stringValue());
+                sb.append(aV.stringValue());
             }
         }
-        assertEquals(expectedResult, buff.toString());
+        assertEquals(expectedResult, sb.toString());
     }
 
     public void assertThreadSafe(final Random random, final Analyzer analyzer) throws Exception {

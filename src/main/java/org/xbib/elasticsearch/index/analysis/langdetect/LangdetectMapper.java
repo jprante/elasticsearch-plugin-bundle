@@ -49,14 +49,14 @@ public class LangdetectMapper extends AbstractFieldMapper<Object> {
 
     public static final String CONTENT_TYPE = "langdetect";
 
-    public static class Builder extends Mapper.Builder<Builder, LangdetectMapper> {
+    public static class Builder extends AbstractFieldMapper.Builder<Builder, LangdetectMapper> {
 
         private StringFieldMapper.Builder contentBuilder;
         private StringFieldMapper.Builder langBuilder;
         private ImmutableSettings.Builder settingsBuilder;
 
         public Builder(String name) {
-            super(name);
+            super(name, new FieldType(Defaults.FIELD_TYPE));
             this.builder = this;
             this.contentBuilder = stringField(name);
             this.langBuilder =  stringField("lang");
@@ -276,16 +276,16 @@ public class LangdetectMapper extends AbstractFieldMapper<Object> {
         if (content == null) {
             return;
         }
-        context.externalValue(content);
+        context = context.createExternalValueContext(content);
         contentMapper.parse(context);
         try {
             List<Language> langs = detector.detectAll(content);
             for (Language lang : langs) {
-                context.externalValue(lang.getLanguage());
+                context = context.createExternalValueContext(lang.getLanguage());
                 langMapper.parse(context);
             }
         } catch (LanguageDetectionException e) {
-            context.externalValue("unknown");
+            context = context.createExternalValueContext("unknown");
             langMapper.parse(context);
         }
     }
