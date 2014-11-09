@@ -48,8 +48,8 @@ ALPHANUM   = ({LETTER}|{THAI}|[:digit:])+
 // acronyms: U.S.A., I.B.M., etc. with dropped last punctuation char.
 // company names like AT&T
 // emails, product identifiers, hostnames
-MID = "." | "-" | "'" | "&" | "@" | "_"
-ALPHANUM_COMP = {ALPHANUM} {MID} {ALPHANUM} ({MID} {ALPHANUM})*
+ADJUNCT = "-" | "'" | "&" | "@" | "_" | "."
+ALPHANUM_COMP = {ALPHANUM} {ADJUNCT} {ALPHANUM} ({ADJUNCT} {ALPHANUM})*
 
 // floating point, serial, model numbers, ip addresses, etc.
 // every other segment must have at least one digit

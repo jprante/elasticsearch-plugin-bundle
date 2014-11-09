@@ -40,6 +40,7 @@ public class StandardNumberTokenFilterFactory extends AbstractTokenFilterFactory
                                             @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
         this.standardNumberService = new StandardNumberService(settings);
+        standardNumberService.start();
     }
 
     @Override

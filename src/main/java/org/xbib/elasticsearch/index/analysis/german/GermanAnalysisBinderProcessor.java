@@ -26,6 +26,7 @@ import org.elasticsearch.index.analysis.AnalysisModule;
 import org.xbib.elasticsearch.index.analysis.baseform.BaseformTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.concat.ConcatTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.decompound.DecompoundTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.hyphen.HyphenAnalyzerProvider;
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenizerFactory;
 import org.xbib.elasticsearch.index.analysis.sortform.SortformAnalyzerProvider;
@@ -61,5 +62,6 @@ public class GermanAnalysisBinderProcessor extends AnalysisModule.AnalysisBinder
     public void processAnalyzers(AnalyzersBindings analyzersBindings) {
         analyzersBindings.processAnalyzer("standardnumber", StandardNumberAnalyzerProvider.class);
         analyzersBindings.processAnalyzer("sortform", SortformAnalyzerProvider.class);
+        analyzersBindings.processAnalyzer("hyphen", HyphenAnalyzerProvider.class);
     }
 }

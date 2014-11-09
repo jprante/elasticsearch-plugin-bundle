@@ -157,6 +157,25 @@ public class HyphenTokenizerTests extends Assert {
     }
 
 
+    @Test
+    public void testSeven() throws IOException {
+        String source = "Procter & Gamble ist nicht schwarz - weiss";
+
+        String[] expected = {
+                "Procter",
+                "Gamble",
+                "ist",
+                "nicht",
+                "schwarz",
+                "weiss"
+        };
+
+        AnalysisService analysisService = createAnalysisService();
+        Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_tokenizer").create(new StringReader(source));
+        TokenFilterFactory tokenFilter = analysisService.tokenFilter("hyphen");
+        assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
+    }
+
     private AnalysisService createAnalysisService() {
         Settings settings = ImmutableSettings.settingsBuilder()
                 .loadFromClasspath("org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json").build();
