@@ -20,15 +20,24 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.index.analysis.german;
+package org.xbib.elasticsearch.index.analysis.hyphen;
 
 import org.elasticsearch.index.analysis.AnalysisModule;
 
-public class GermanAnalysisBinderProcessor extends AnalysisModule.AnalysisBinderProcessor {
+public class HyphenAnalysisBinderProcessor extends AnalysisModule.AnalysisBinderProcessor {
+
+    @Override
+    public void processTokenizers(TokenizersBindings tokenizersBindings) {
+        tokenizersBindings.processTokenizer("hyphen", HyphenTokenizerFactory.class);
+    }
 
     @Override
     public void processTokenFilters(TokenFiltersBindings tokenFiltersBindings) {
-        tokenFiltersBindings.processTokenFilter("german_normalize", GermanNormalizationFilterFactory.class);
+        tokenFiltersBindings.processTokenFilter("hyphen", HyphenTokenFilterFactory.class);
     }
 
+    @Override
+    public void processAnalyzers(AnalyzersBindings analyzersBindings) {
+        analyzersBindings.processAnalyzer("hyphen", HyphenAnalyzerProvider.class);
+    }
 }

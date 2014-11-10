@@ -20,7 +20,7 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.index.analysis.langdetect;
+package org.xbib.elasticsearch.index.mapper.langdetect;
 
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
@@ -37,6 +37,9 @@ import org.elasticsearch.index.mapper.ObjectMapperListener;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.mapper.core.AbstractFieldMapper;
 import org.elasticsearch.index.mapper.core.StringFieldMapper;
+import org.xbib.elasticsearch.module.langdetect.LangdetectService;
+import org.xbib.elasticsearch.index.analysis.langdetect.Language;
+import org.xbib.elasticsearch.index.analysis.langdetect.LanguageDetectionException;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

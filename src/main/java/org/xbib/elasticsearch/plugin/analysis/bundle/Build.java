@@ -20,7 +20,7 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.plugin.analysis.german;
+package org.xbib.elasticsearch.plugin.analysis.bundle;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -41,8 +41,8 @@ public class Build {
         String date = "NA";
 
         try {
-            String pluginName = AnalysisGermanPlugin.class.getName();
-            Enumeration<URL> e = AnalysisGermanPlugin.class.getClassLoader().getResources("es-plugin.properties");
+            String pluginName = BundlePlugin.class.getName();
+            Enumeration<URL> e = BundlePlugin.class.getClassLoader().getResources("es-plugin.properties");
             while (e.hasMoreElements()) {
                 URL url = e.nextElement();
                 InputStream in = url.openStream();

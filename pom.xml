@@ -6,15 +6,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.xbib.elasticsearch.plugin</groupId>
-    <artifactId>elasticsearch-analysis-german</artifactId>
-    <version>1.4.0.0</version>
+    <artifactId>elasticsearch-plugin-bundle</artifactId>
+    <version>1.4.0.1</version>
 
     <packaging>jar</packaging>
 
-    <name>elasticsearch-analysis-german</name>
-    <description>A german analysis pack for Elasticsearch</description>
+    <name>elasticsearch-plugin-bundle</name>
+    <description>A bundle of plugins for Elasticsearch</description>
 
-    <url>http://github.com/jprante/elasticsearch-analysis-german</url>
+    <url>http://github.com/jprante/elasticsearch-plugin-bundle</url>
 
     <inceptionYear>2013</inceptionYear>
 
@@ -40,14 +40,14 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git@github.com:jprante/elasticsearch-analysis-german.git</connection>
-        <developerConnection>scm:git:git@github.com:jprante/elasticsearch-analysis-german.git</developerConnection>
-        <url>http://github.com/jprante/elasticsearch-analysis-german</url>
+        <connection>scm:git:git@github.com:jprante/elasticsearch-plugin-bundle.git</connection>
+        <developerConnection>scm:git:git@github.com:jprante/elasticsearch-plugin-bundle.git</developerConnection>
+        <url>http://github.com/jprante/elasticsearch-plugin-bundle</url>
     </scm>
 
     <issueManagement>
         <system>Github Issue Tracker</system>
-        <url>https://github.com/jprante/elasticsearch-analysis-german/issues</url>
+        <url>https://github.com/jprante/elasticsearch-plugin-bundle/issues</url>
     </issueManagement>
 
     <distributionManagement>

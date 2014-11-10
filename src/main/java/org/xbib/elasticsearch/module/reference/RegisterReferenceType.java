@@ -20,15 +20,23 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.index.analysis.langdetect;
+package org.xbib.elasticsearch.module.reference;
 
-import org.elasticsearch.common.inject.Binder;
-import org.elasticsearch.common.inject.Module;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.common.inject.Inject;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.AbstractIndexComponent;
+import org.elasticsearch.index.Index;
+import org.elasticsearch.index.mapper.MapperService;
+import org.elasticsearch.index.settings.IndexSettings;
+import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapper;
 
-public class LangdetectModule implements Module {
+public class RegisterReferenceType extends AbstractIndexComponent {
 
-    @Override
-    public void configure(Binder binder) {
-        binder.bind(RegisterLangdetectType.class).asEagerSingleton();
+    @Inject
+    public RegisterReferenceType(Index index, @IndexSettings Settings indexSettings,
+                                 MapperService mapperService, Client client) {
+        super(index, indexSettings);
+        mapperService.documentMapperParser().putTypeParser("ref", new ReferenceMapper.TypeParser(client));
     }
 }

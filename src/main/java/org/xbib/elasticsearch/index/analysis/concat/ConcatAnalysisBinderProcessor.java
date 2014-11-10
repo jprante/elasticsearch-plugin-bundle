@@ -20,21 +20,14 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.index.analysis.langdetect;
+package org.xbib.elasticsearch.index.analysis.concat;
 
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.AbstractIndexComponent;
-import org.elasticsearch.index.Index;
-import org.elasticsearch.index.mapper.MapperService;
-import org.elasticsearch.index.settings.IndexSettings;
+import org.elasticsearch.index.analysis.AnalysisModule;
 
-public class RegisterLangdetectType extends AbstractIndexComponent {
+public class ConcatAnalysisBinderProcessor extends AnalysisModule.AnalysisBinderProcessor {
 
-    @Inject
-    public RegisterLangdetectType(Index index, @IndexSettings Settings indexSettings,
-                                  MapperService mapperService) {
-        super(index, indexSettings);
-        mapperService.documentMapperParser().putTypeParser("langdetect", new LangdetectMapper.TypeParser());
+    @Override
+    public void processTokenFilters(TokenFiltersBindings tokenFiltersBindings) {
+        tokenFiltersBindings.processTokenFilter("concat", ConcatTokenFilterFactory.class);
     }
 }

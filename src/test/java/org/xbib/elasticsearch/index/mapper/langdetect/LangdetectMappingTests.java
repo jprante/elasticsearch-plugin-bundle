@@ -1,8 +1,9 @@
 
-package org.xbib.elasticsearch.index.analysis.langdetect;
+package org.xbib.elasticsearch.index.mapper.langdetect;
 
 import org.elasticsearch.Version;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
+import org.elasticsearch.common.base.Charsets;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.inject.ModulesBuilder;
@@ -26,20 +27,21 @@ import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xbib.elasticsearch.plugin.analysis.german.AnalysisGermanPlugin;
+import org.xbib.elasticsearch.plugin.analysis.bundle.BundlePlugin;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 
-import static org.elasticsearch.common.io.Streams.copyToStringFromClasspath;
+import static org.elasticsearch.common.io.Streams.copyToString;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 public class LangdetectMappingTests extends Assert {
 
     @Test
     public void testSimpleMappings() throws Exception {
-        String mapping = copyToStringFromClasspath("/org/xbib/elasticsearch/index/analysis/langdetect/simple-mapping.json");
+        String mapping = copyToStringFromClasspath("simple-mapping.json");
         DocumentMapper docMapper = createMapperParser().parse(mapping);
-        String sampleText = copyToStringFromClasspath("/org/xbib/elasticsearch/index/analysis/langdetect/english.txt");
+        String sampleText = copyToStringFromClasspath("english.txt");
         BytesReference json = jsonBuilder().startObject().field("_id", 1).field("someField", sampleText).endObject().bytes();
         ParseContext.Document doc = docMapper.parse(json).rootDoc();
         assertEquals(doc.get(docMapper.mappers().smartName("someField").mapper().names().indexName()), sampleText);
@@ -59,10 +61,10 @@ public class LangdetectMappingTests extends Assert {
     @Test
     public void testBinary() throws Exception {
         Settings settings = ImmutableSettings.EMPTY;
-        String mapping = copyToStringFromClasspath("/org/xbib/elasticsearch/index/analysis/langdetect/base64-mapping.json");
+        String mapping = copyToStringFromClasspath("base64-mapping.json");
         DocumentMapper docMapper = createMapperParser(settings).parse(mapping);
-        String sampleBinary = copyToStringFromClasspath("/org/xbib/elasticsearch/index/analysis/langdetect/base64.txt");
-        String sampleText = copyToStringFromClasspath("/org/xbib/elasticsearch/index/analysis/langdetect/base64-decoded.txt");
+        String sampleBinary = copyToStringFromClasspath("base64.txt");
+        String sampleText = copyToStringFromClasspath("base64-decoded.txt");
         BytesReference json = jsonBuilder().startObject().field("_id", 1).field("someField", sampleBinary).endObject().bytes();
         ParseContext.Document doc = docMapper.parse(json).rootDoc();
         assertEquals(doc.get(docMapper.mappers().smartName("someField").mapper().names().indexName()), sampleText);
@@ -82,10 +84,10 @@ public class LangdetectMappingTests extends Assert {
     @Test
     public void testMappings() throws Exception {
         Settings settings = ImmutableSettings.settingsBuilder()
-                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/langdetect/settings.json").build();
-        String mapping = copyToStringFromClasspath("/org/xbib/elasticsearch/index/analysis/langdetect/mapping.json");
+                .loadFromClasspath("settings.json").build();
+        String mapping = copyToStringFromClasspath("mapping.json");
         DocumentMapper docMapper = createMapperParser(settings).parse(mapping);
-        String sampleText = copyToStringFromClasspath("/org/xbib/elasticsearch/index/analysis/langdetect/german.txt");
+        String sampleText = copyToStringFromClasspath("german.txt");
         BytesReference json = jsonBuilder().startObject().field("_id", 1).field("someField", sampleText).endObject().bytes();
         ParseContext.Document doc = docMapper.parse(json).rootDoc();
         assertEquals(doc.get(docMapper.mappers().smartName("someField").mapper().names().indexName()), sampleText);
@@ -108,7 +110,7 @@ public class LangdetectMappingTests extends Assert {
                 new IndicesAnalysisModule())
                 .createInjector();
         AnalysisModule analysisModule = new AnalysisModule(settings, parentInjector.getInstance(IndicesAnalysisService.class));
-        new AnalysisGermanPlugin().onModule(analysisModule);
+        new BundlePlugin(settings).onModule(analysisModule);
         Injector injector = new ModulesBuilder().add(
                 new IndexSettingsModule(index, settings),
                 new IndexNameModule(index),
@@ -127,6 +129,7 @@ public class LangdetectMappingTests extends Assert {
         return mapperParser;
     }
 
-
-
+    public String copyToStringFromClasspath(String path) throws IOException {
+        return copyToString(new InputStreamReader(getClass().getResource(path).openStream(), Charsets.UTF_8));
+    }
 }

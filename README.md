@@ -1,22 +1,22 @@
-# Elasticsearch German Analysis
+# A plugin bundle for Elastisearch
 
-A plugin that consists of a compilation of useful Elasticsearch plugins related to indexing and searching documents in german language that are not avaliable in Elasticsearch by default.
+A plugin that consists of a compilation of useful Elasticsearch plugins related to indexing and searching documents.
 
 - German normalizer: taken from Lucene
 
 - WordDelimiterFilter2: taken from Lucene
 
-- elasticsearch-analysis-icu: improved with ICU collation analyzer compatible to Lucene 5.x and rbbi ICU rule file support in ICU tokenizer
+- ICU: improved with ICU collation analyzer compatible to Lucene 5.x and rbbi ICU rule file support in ICU tokenizer
 
-- elasticsearch-analysis-baseform: index also base forms of words (german, english)
+- baseform: index also base forms of words (german, english)
 
-- elasticsearch-analysis-decompound: decompose words if possible (german) 
+- decompound: decompose words if possible (german) 
 
-- elasticsearch-analysis-combo: apply more than one analyzer on a field
+- combo: apply more than one analyzer on a field
 
-- elasticsearch-langdetect: index language code of detected languages
+- langdetect: find language code of detected languages
 
-- elasticsearch-analysis-standardnumber: standard number entity recognition
+- standardnumber: standard number entity recognition
 
 - hyphen: token filter for shingling and combining hyphenated words (german: Bindestrichwörter), the opposite of the decompound token filter
 
@@ -24,17 +24,17 @@ A plugin that consists of a compilation of useful Elasticsearch plugins related 
 
 - year: token filter for 4-digit sequences
 
+- reference: 
+
 ## Versions
 
 | Elasticsearch version    | Plugin      | Release date |
 | ------------------------ | ----------- | -------------|
-| 1.3.2                    | 1.3.2.5     | Sep 19, 2014 |
-|                          | 1.3.2.4     | Sep 15, 2014 |
-| 1.3.1                    | 1.3.0.2     | Aug 11, 2014 |
+| 1.4.0                    | 1.4.0.1     | Nov 10, 2014 |
 
 ## Installation
 
-    ./bin/plugin -install analysis-german -url http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-analysis-german/1.3.2.5/elasticsearch-analysis-german-1.3.2.5-plugin.zip
+    ./bin/plugin -install bundle -url http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/1.4.0.1/elasticsearch-plugin-bundle-1.4.0.1-plugin.zip
 
 Do not forget to restart the node after installing.
 
@@ -42,24 +42,21 @@ Do not forget to restart the node after installing.
 
 | File                                                 | SHA1                                     |
 | ---------------------------------------------------- | -----------------------------------------|
-| elasticsearch-analysis-german-1.3.2.5-plugin.zip     | 4b377f7641724e40788c79c4f838c361dd1eafd7 |
-| elasticsearch-analysis-german-1.3.2.4-plugin.zip     | 31847a81baa3334078b86f3d43061232027577dc |
-| elasticsearch-analysis-german-1.3.2.3-plugin.zip     | aeb6174ba54861b3ec81bb43a20073779f5c98e4 |
-| elasticsearch-analysis-german-1.3.0.2-plugin.zip     | 063a89e4016af637330c5a3d7f51d84c7056b182 |
+|      |  |
 
 ## Project docs
 
-The Maven project site is available at [Github](http://jprante.github.io/elasticsearch-analysis-german)
+The Maven project site is available at [Github](http://jprante.github.io/elasticsearch-plugin-bundle)
 
 ## Issues
 
-All feedback is welcome! If you find issues, please post them at [Github](https://github.com/jprante/elasticsearch-analysis-german/issues)
+All feedback is welcome! If you find issues, please post them at [Github](https://github.com/jprante/elasticsearch-plugin-bundle/issues)
 
 # License
 
-elasticsearch-analysis-german - a compilation of useful plugins for german
+elasticsearch-plugin-bundle - a compilation of useful plugins for Elasticsearch
 
-Copyright (C) 2013 Jörg Prante
+Copyright (C) 2014 Jörg Prante
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by

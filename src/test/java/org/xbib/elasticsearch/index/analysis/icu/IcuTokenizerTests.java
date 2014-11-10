@@ -21,7 +21,7 @@ import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xbib.elasticsearch.plugin.analysis.german.AnalysisGermanPlugin;
+import org.xbib.elasticsearch.plugin.analysis.bundle.BundlePlugin;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -86,15 +86,12 @@ public class IcuTokenizerTests extends Assert {
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .loadFromClasspath("org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json").build();
         Index index = new Index("test");
-
         Injector parentInjector = new ModulesBuilder().add(new SettingsModule(settings),
                 new EnvironmentModule(new Environment(settings)),
                 new IndicesAnalysisModule())
                 .createInjector();
-
         AnalysisModule analysisModule = new AnalysisModule(settings, parentInjector.getInstance(IndicesAnalysisService.class));
-        new AnalysisGermanPlugin().onModule(analysisModule);
-
+        new BundlePlugin(settings).onModule(analysisModule);
         Injector injector = new ModulesBuilder().add(
                 new IndexSettingsModule(index, settings),
                 new IndexNameModule(index),

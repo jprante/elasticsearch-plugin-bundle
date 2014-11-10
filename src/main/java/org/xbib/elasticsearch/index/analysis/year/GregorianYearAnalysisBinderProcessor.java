@@ -20,15 +20,14 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.index.analysis.german;
+package org.xbib.elasticsearch.index.analysis.year;
 
 import org.elasticsearch.index.analysis.AnalysisModule;
 
-public class GermanAnalysisBinderProcessor extends AnalysisModule.AnalysisBinderProcessor {
+public class GregorianYearAnalysisBinderProcessor extends AnalysisModule.AnalysisBinderProcessor {
 
     @Override
     public void processTokenFilters(TokenFiltersBindings tokenFiltersBindings) {
-        tokenFiltersBindings.processTokenFilter("german_normalize", GermanNormalizationFilterFactory.class);
+        tokenFiltersBindings.processTokenFilter("year", GregorianYearTokenFilterFactory.class);
     }
-
 }

@@ -1,0 +1,10 @@
+{
+    "title" : "A title",
+    "dc" : {
+        "creator" : "A creator"
+    },
+    "authorID" : "1",
+    "bib" : {
+        "contributor" : "A contributor"
+    }
+}

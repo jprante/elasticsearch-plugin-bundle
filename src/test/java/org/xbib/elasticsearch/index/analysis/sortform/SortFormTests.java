@@ -26,7 +26,7 @@ import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 import org.junit.Test;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
-import org.xbib.elasticsearch.plugin.analysis.german.AnalysisGermanPlugin;
+import org.xbib.elasticsearch.plugin.analysis.bundle.BundlePlugin;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -109,7 +109,7 @@ public class SortFormTests extends BaseTokenStreamTest {
                 new IndicesAnalysisModule())
                 .createInjector();
         AnalysisModule analysisModule = new AnalysisModule(settings, parentInjector.getInstance(IndicesAnalysisService.class));
-        new AnalysisGermanPlugin().onModule(analysisModule);
+        new BundlePlugin(settings).onModule(analysisModule);
         Injector injector = new ModulesBuilder().add(
                 new IndexSettingsModule(index, settings),
                 new IndexNameModule(index), analysisModule)

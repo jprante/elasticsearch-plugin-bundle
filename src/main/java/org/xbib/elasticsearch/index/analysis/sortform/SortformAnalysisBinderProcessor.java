@@ -20,15 +20,19 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.index.analysis.german;
+package org.xbib.elasticsearch.index.analysis.sortform;
 
 import org.elasticsearch.index.analysis.AnalysisModule;
 
-public class GermanAnalysisBinderProcessor extends AnalysisModule.AnalysisBinderProcessor {
+public class SortformAnalysisBinderProcessor extends AnalysisModule.AnalysisBinderProcessor {
 
     @Override
     public void processTokenFilters(TokenFiltersBindings tokenFiltersBindings) {
-        tokenFiltersBindings.processTokenFilter("german_normalize", GermanNormalizationFilterFactory.class);
+        tokenFiltersBindings.processTokenFilter("sortform", SortformTokenFilterFactory.class);
     }
 
+    @Override
+    public void processAnalyzers(AnalyzersBindings analyzersBindings) {
+        analyzersBindings.processAnalyzer("sortform", SortformAnalyzerProvider.class);
+    }
 }

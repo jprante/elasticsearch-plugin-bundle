@@ -20,15 +20,15 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.index.analysis.german;
+package org.xbib.elasticsearch.module.langdetect;
 
-import org.elasticsearch.index.analysis.AnalysisModule;
+import org.elasticsearch.common.inject.Binder;
+import org.elasticsearch.common.inject.Module;
 
-public class GermanAnalysisBinderProcessor extends AnalysisModule.AnalysisBinderProcessor {
+public class LangdetectModule implements Module {
 
     @Override
-    public void processTokenFilters(TokenFiltersBindings tokenFiltersBindings) {
-        tokenFiltersBindings.processTokenFilter("german_normalize", GermanNormalizationFilterFactory.class);
+    public void configure(Binder binder) {
+        binder.bind(RegisterLangdetectType.class).asEagerSingleton();
     }
-
 }

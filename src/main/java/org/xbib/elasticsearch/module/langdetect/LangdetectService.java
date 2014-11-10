@@ -20,7 +20,7 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.index.analysis.langdetect;
+package org.xbib.elasticsearch.module.langdetect;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.ElasticsearchException;
@@ -28,6 +28,10 @@ import org.elasticsearch.common.component.AbstractLifecycleComponent;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
+import org.xbib.elasticsearch.index.analysis.langdetect.LangProfile;
+import org.xbib.elasticsearch.index.analysis.langdetect.Language;
+import org.xbib.elasticsearch.index.analysis.langdetect.LanguageDetectionException;
+import org.xbib.elasticsearch.index.analysis.langdetect.NGram;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -224,7 +228,7 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
      * Set prior information about language probabilities.
      *
      * @param priorMap the priorMap to set
-     * @throws LanguageDetectionException
+     * @throws org.xbib.elasticsearch.index.analysis.langdetect.LanguageDetectionException
      */
     public void setPriorMap(HashMap<String, Double> priorMap) throws LanguageDetectionException {
         this.priorMap = new double[langlist.size()];

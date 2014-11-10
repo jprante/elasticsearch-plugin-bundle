@@ -20,15 +20,15 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.index.analysis.german;
+package org.xbib.elasticsearch.index.analysis.worddelimiter;
 
 import org.elasticsearch.index.analysis.AnalysisModule;
 
-public class GermanAnalysisBinderProcessor extends AnalysisModule.AnalysisBinderProcessor {
+public class WorddelimiterAnalysisBinderProcessor extends AnalysisModule.AnalysisBinderProcessor {
 
     @Override
     public void processTokenFilters(TokenFiltersBindings tokenFiltersBindings) {
-        tokenFiltersBindings.processTokenFilter("german_normalize", GermanNormalizationFilterFactory.class);
+        tokenFiltersBindings.processTokenFilter("worddelimiter", WordDelimiterFilterFactory.class);
+        tokenFiltersBindings.processTokenFilter("worddelimiter2", WordDelimiterFilter2Factory.class);
     }
-
 }
