@@ -32,14 +32,14 @@ import org.elasticsearch.index.analysis.UniqueTokenFilterFactory;
 import java.io.Reader;
 import java.util.Arrays;
 
-public class StandardNumberAnalyzer extends Analyzer {
+public class StandardnumberAnalyzer extends Analyzer {
 
     private final TokenizerFactory tokenizerFactory;
-    private final StandardNumberTokenFilterFactory stdnumTokenFilterFactory;
+    private final StandardnumberTokenFilterFactory stdnumTokenFilterFactory;
     private final UniqueTokenFilterFactory uniqueTokenFilterFactory;
 
-    public StandardNumberAnalyzer(TokenizerFactory tokenizerFactory,
-                                  StandardNumberTokenFilterFactory stdnumTokenFilterFactory,
+    public StandardnumberAnalyzer(TokenizerFactory tokenizerFactory,
+                                  StandardnumberTokenFilterFactory stdnumTokenFilterFactory,
                                   UniqueTokenFilterFactory uniqueTokenFilterFactory) {
         this.tokenizerFactory = tokenizerFactory;
         this.stdnumTokenFilterFactory = stdnumTokenFilterFactory;

@@ -179,7 +179,7 @@ public class ReferenceMappingTests extends Assert {
         MappingMetaData md = getMappingsResponse.getMappings().get("books").get("test");
         logger.info("mappings={}", md.getSourceAsMap());
 
-        // search in field 1,
+        // search in field 1
         SearchResponse searchResponse = client.search(new SearchRequest()
                 .indices("books")
                 .types("test")

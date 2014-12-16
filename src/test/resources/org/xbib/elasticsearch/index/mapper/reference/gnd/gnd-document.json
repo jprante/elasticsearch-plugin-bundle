@@ -1,0 +1,139 @@
+{
+  "rdf:type": "http://d-nb.info/standards/elementset/gnd#Pseudonym",
+  "foaf:page": "http://de.wikipedia.org/wiki/Kurt_Tucholsky",
+  "owl:sameAs": "http://dbpedia.org/resource/Kurt_Tucholsky",
+  "gnd:gndIdentifier": "11862444X",
+  "gnd:oldAuthorityNumber": [
+    "(DE-588a)11862444X",
+    "(DE-588a)13458970X",
+    "(DE-588a)12711131X",
+    "(DE-101c)310279704",
+    "(DE-588c)4061142-5"
+  ],
+  "gnd:variantNameForThePerson": [
+    "Grotius, Hugo",
+    "Hauser, Kaspar",
+    "Panter, Peter",
+    "Tiger, Theobald",
+    "Wrobel, Ignaz",
+    "Tucholsky, ...",
+    "Tucholʹskij, Kurt",
+    "Tukholʹskiĭ, Kurt",
+    "Tûkôlsqî, Qûrṭ",
+    "Tukôlsqî, Qûrṭ",
+    "Bünzly, Paulus",
+    "Körner, Theobald",
+    "Old Shatterhand",
+    "Тухольский, Курт",
+    "טוכולסקי, קורט",
+    "クルト・トゥホルスキー"
+  ],
+  "gnd:variantNameEntityForThePerson": [
+    {
+      "gnd:forename": "Hugo",
+      "gnd:surname": "Grotius"
+    },
+    {
+      "gnd:forename": "Kaspar",
+      "gnd:surname": "Hauser"
+    },
+    {
+      "gnd:forename": "Peter",
+      "gnd:surname": "Panter"
+    },
+    {
+      "gnd:forename": "Theobald",
+      "gnd:surname": "Tiger"
+    },
+    {
+      "gnd:forename": "Ignaz",
+      "gnd:surname": "Wrobel"
+    },
+    {
+      "gnd:forename": "...",
+      "gnd:surname": "Tucholsky"
+    },
+    {
+      "gnd:forename": "Kurt",
+      "gnd:surname": "Tucholʹskij"
+    },
+    {
+      "gnd:forename": "Kurt",
+      "gnd:surname": "Tukholʹskiĭ"
+    },
+    {
+      "gnd:forename": "Qûrṭ",
+      "gnd:surname": "Tûkôlsqî"
+    },
+    {
+      "gnd:forename": "Qûrṭ",
+      "gnd:surname": "Tukôlsqî"
+    },
+    {
+      "gnd:forename": "Paulus",
+      "gnd:surname": "Bünzly"
+    },
+    {
+      "gnd:forename": "Theobald",
+      "gnd:surname": "Körner"
+    },
+    {
+      "gnd:personalName": "Old Shatterhand"
+    },
+    {
+      "gnd:forename": "Курт",
+      "gnd:surname": "Тухольский"
+    },
+    {
+      "gnd:forename": "קורט",
+      "gnd:surname": "טוכולסקי"
+    },
+    {
+      "gnd:personalName": "クルト・トゥホルスキー"
+    }
+  ],
+  "gnd:preferredNameForThePerson": "Tucholsky, Kurt",
+  "gnd:preferredNameEntityForThePerson": {
+    "gnd:forename": "Kurt",
+    "gnd:surname": "Tucholsky"
+  },
+  "gnd:acquaintanceshipOrFriendship": "http://d-nb.info/gnd/116841508",
+  "gnd:professionOrOccupation": [
+    "http://d-nb.info/gnd/4053309-8",
+    "http://d-nb.info/gnd/4028781-6",
+    "http://d-nb.info/gnd/4333843-4",
+    "http://d-nb.info/gnd/4177827-3",
+    "http://d-nb.info/gnd/4165775-5",
+    "http://d-nb.info/gnd/4029050-5",
+    "http://d-nb.info/gnd/4055409-0",
+    "http://d-nb.info/gnd/4137384-4"
+  ],
+  "gnd:academicDegree": "Dr. jur.",
+  "gnd:relatedSubjectHeading": "http://d-nb.info/gnd/4079163-4",
+  "gnd:gndSubjectCategory": [
+    "http://d-nb.info/standards/vocab/gnd/gnd-sc#12.2p",
+    "http://d-nb.info/standards/vocab/gnd/gnd-sc#2.3p"
+  ],
+  "gnd:geographicAreaCode": [
+    "http://d-nb.info/standards/vocab/gnd/geographic-area-code#XA-DE",
+    "http://d-nb.info/standards/vocab/gnd/geographic-area-code#XA-FR",
+    "http://d-nb.info/standards/vocab/gnd/geographic-area-code#XA-SE"
+  ],
+  "gnd:publication": [
+    "Fromme Gesänge. - 1919",
+    "Das Kurt-Tucholsky-Chanson-Buch. - 1983",
+    "Schloß Gripsholm. - 1931",
+    "Träumereien an preussischen Kaminen. - 1920"
+  ],
+  "gnd:biographicalOrHistoricalInformation": "1915-1918 Soldat an der Ostfront, ab 1916 Herausgeber der Feldzeitung \"Der Flieger\"; 1924-1926 Korrespondent der \"Weltbühne\" und der \"Vossischen Zeitung\" in Paris; 1929 Emigration nach Schweden, 1933 ausgebürgert; starb an einer Überdosis von Barbituraten",
+  "gnd:placeOfBirth": "http://d-nb.info/gnd/4005728-8",
+  "gnd:placeOfActivity": [
+    "http://d-nb.info/gnd/4028557-1",
+    "http://d-nb.info/gnd/4005728-8",
+    "http://d-nb.info/gnd/4044660-8"
+  ],
+  "gnd:placeOfDeath": "http://d-nb.info/gnd/666060-5",
+  "gnd:gender": "http://d-nb.info/standards/vocab/gnd/Gender#male",
+  "gnd:dateOfBirth": "1890-01-09",
+  "gnd:dateOfDeath": "1935-12-21"
+}

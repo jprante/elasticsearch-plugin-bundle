@@ -52,12 +52,12 @@ import java.util.Set;
 
 import static org.elasticsearch.common.collect.Lists.newLinkedList;
 
-public class StandardNumberService extends AbstractLifecycleComponent<StandardNumberService>  {
+public class StandardnumberService extends AbstractLifecycleComponent<StandardnumberService>  {
 
     private final static ThreadLocal<Set<StandardNumber>> stdnums = new ThreadLocal<Set<StandardNumber>>();
 
     @Inject
-    public StandardNumberService(Settings settings) {
+    public StandardnumberService(Settings settings) {
         super(settings);
     }
 

@@ -20,19 +20,15 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.index.analysis.standardnumber;
+package org.xbib.elasticsearch.module.standardnumber;
 
-import org.elasticsearch.index.analysis.AnalysisModule;
+import org.elasticsearch.common.inject.Binder;
+import org.elasticsearch.common.inject.Module;
 
-public class StandardnumberAnalysisBinderProcessor extends AnalysisModule.AnalysisBinderProcessor {
-
-    @Override
-    public void processTokenFilters(TokenFiltersBindings tokenFiltersBindings) {
-        tokenFiltersBindings.processTokenFilter("standardnumber", StandardnumberTokenFilterFactory.class);
-    }
+public class StandardnumberIndexModule implements Module {
 
     @Override
-    public void processAnalyzers(AnalyzersBindings analyzersBindings) {
-        analyzersBindings.processAnalyzer("standardnumber", StandardnumberAnalyzerProvider.class);
+    public void configure(Binder binder) {
+        binder.bind(RegisterStandardnumberType.class).asEagerSingleton();
     }
 }

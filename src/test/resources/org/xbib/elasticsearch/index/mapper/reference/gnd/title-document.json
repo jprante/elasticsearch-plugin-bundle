@@ -1,0 +1,101 @@
+{
+    "type": "u",
+    "boost": "0.1",
+    "xbib": [
+      {
+        "uid": "(DE-605)HT007215476"
+      },
+      {
+        "uid": "(DE-605)008427902"
+      },
+      {
+        "identifier": [
+          "DE-61",
+          "DE-385"
+        ]
+      }
+    ],
+    "RecordIdentifier": {
+      "identifierForTheRecord": "(DE-605)HT007215476"
+    },
+    "RecordIdentifierSuper": {
+      "recordIdentifierSuper": "(DE-605)HT007215468"
+    },
+    "RecordCodes": [
+      "Autopsie",
+      "MAB-Zeichenvorrat",
+      "Unicode / ISO 10646 (UTF 8)",
+      "RAK-WB"
+    ],
+    "Language": {
+      "languageSource": "ger",
+      "language": "Deutsch"
+    },
+    "VolumeDesignation": {
+      "volumeDesignation": "3"
+    },
+    "SortableVolumeDesignation": {
+      "volumeDesignation": "3"
+    },
+    "Person": [
+      {
+        "personName": "Tucholsky, Kurt",
+        "personBio": "1890-1935",
+        "personIdentifier": "(DE-588)11862444X",
+        "identifierGND": "11862444X"
+      },
+      {
+        "personName": "Gerold-Tucholsky, Mary",
+        "personRole": "[Hrsg.]",
+        "personIdentifier": "(DE-588)188272283",
+        "identifierGND": "188272283"
+      }
+    ],
+    "TitleStatement": [
+      {
+        "titleMain": "1921 - 1924"
+      },
+      {
+        "titleMain": "Gesammelte Werke"
+      }
+    ],
+    "TitleAddendum": {
+      "title": "in 10 Bänden"
+    },
+    "CreatorStatement": {
+      "creatorStatement": "Kurt Tucholsky. Hrsg. von Mary Gerold-Tucholsky ..."
+    },
+    "Edition": {
+      "edition": "182. - 201. Tsd."
+    },
+    "PublicationPlace": {
+      "printingPlace": "Reinbek bei Hamburg"
+    },
+    "PublisherName": {
+      "printerName": "Rowohlt"
+    },
+    "DateProper": {
+      "date": "1995"
+    },
+    "Extent": {
+      "extent": "534 S."
+    },
+    "RecordSystemNumber": {
+      "systemNumber": "(DE-605)008427902"
+    },
+    "dc": [
+      {
+        "type": "keine Angabe"
+      },
+      {
+        "format": "keine Angabe"
+      },
+      {
+        "date": 1995
+      },
+      {
+        "language": "Deutsch"
+      }
+    ],
+    "collection": "hbz Verbundkatalog"
+}

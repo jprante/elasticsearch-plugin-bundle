@@ -25,8 +25,6 @@ package org.xbib.elasticsearch.plugin.analysis.bundle;
 import org.elasticsearch.common.component.LifecycleComponent;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.Module;
-import org.elasticsearch.common.logging.ESLogger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.analysis.AnalysisModule;
 import org.elasticsearch.plugins.AbstractPlugin;
@@ -40,18 +38,17 @@ import org.xbib.elasticsearch.index.analysis.icu.IcuAnalysisBinderProcessor;
 import org.xbib.elasticsearch.module.langdetect.LangdetectModule;
 import org.xbib.elasticsearch.module.langdetect.LangdetectService;
 import org.xbib.elasticsearch.index.analysis.sortform.SortformAnalysisBinderProcessor;
-import org.xbib.elasticsearch.index.analysis.standardnumber.StandardNumberAnalysisBinderProcessor;
+import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.worddelimiter.WorddelimiterAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.year.GregorianYearAnalysisBinderProcessor;
 import org.xbib.elasticsearch.module.reference.ReferenceModule;
+import org.xbib.elasticsearch.module.standardnumber.StandardnumberIndexModule;
 
 import java.util.Collection;
 
 import static org.elasticsearch.common.collect.Lists.newArrayList;
 
 public class BundlePlugin extends AbstractPlugin {
-
-    private final static ESLogger logger = ESLoggerFactory.getLogger(BundlePlugin.class.getSimpleName());
 
     private final Settings settings;
 
@@ -76,49 +73,38 @@ public class BundlePlugin extends AbstractPlugin {
      * Automatically called with the analysis module.
      */
     public void onModule(AnalysisModule module) {
-        if (settings.getAsBoolean("plugins.analysis.baseform.enabled", true)) {
+        if (settings.getAsBoolean("plugins.baseform.enabled", true)) {
             module.addProcessor(new BaseformAnalysisBinderProcessor());
-            logger.info("Baseform analysis plugin installed");
         }
-        if (settings.getAsBoolean("plugins.analysis.combo.enabled", true)) {
+        if (settings.getAsBoolean("plugins.combo.enabled", true)) {
             module.addProcessor(new ComboAnalysisBinderProcessor());
-            logger.info("Combo analysis plugin installed");
         }
-        if (settings.getAsBoolean("plugins.analysis.concat.enabled", true)) {
+        if (settings.getAsBoolean("plugins.concat.enabled", true)) {
             module.addProcessor(new ConcatAnalysisBinderProcessor());
-            logger.info("Concat analysis plugin installed");
         }
-        if (settings.getAsBoolean("plugins.analysis.decompound.enabled", true)) {
+        if (settings.getAsBoolean("plugins.decompound.enabled", true)) {
             module.addProcessor(new DecompoundAnalysisBinderProcessor());
-            logger.info("Decompound analysis plugin installed");
         }
-        if (settings.getAsBoolean("plugins.analysis.german.enabled", true)) {
+        if (settings.getAsBoolean("plugins.german.enabled", true)) {
             module.addProcessor(new GermanAnalysisBinderProcessor());
-            logger.info("german analysis plugin installed");
         }
-        if (settings.getAsBoolean("plugins.analysis.hyphen.enabled", true)) {
+        if (settings.getAsBoolean("plugins.hyphen.enabled", true)) {
             module.addProcessor(new HyphenAnalysisBinderProcessor());
-            logger.info("Hyphen analysis plugin installed");
         }
-        if (settings.getAsBoolean("plugins.analysis.icu.enabled", true)) {
+        if (settings.getAsBoolean("plugins.icu.enabled", true)) {
             module.addProcessor(new IcuAnalysisBinderProcessor());
-            logger.info("ICU analysis plugin installed");
         }
-        if (settings.getAsBoolean("plugins.analysis.sortform.enabled", true)) {
+        if (settings.getAsBoolean("plugins.sortform.enabled", true)) {
             module.addProcessor(new SortformAnalysisBinderProcessor());
-            logger.info("Sortform analysis plugin installed");
         }
-        if (settings.getAsBoolean("plugins.analysis.standardnumber.enabled", true)) {
-            module.addProcessor(new StandardNumberAnalysisBinderProcessor());
-            logger.info("Standardnumber analysis plugin installed");
+        if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
+            module.addProcessor(new StandardnumberAnalysisBinderProcessor());
         }
-        if (settings.getAsBoolean("plugins.analysis.worddelimiter.enabled", true)) {
+        if (settings.getAsBoolean("plugins.worddelimiter.enabled", true)) {
             module.addProcessor(new WorddelimiterAnalysisBinderProcessor());
-            logger.info("Word delimiter analysis plugin installed");
         }
-        if (settings.getAsBoolean("plugins.analysis.year.enabled", true)) {
+        if (settings.getAsBoolean("plugins.year.enabled", true)) {
             module.addProcessor(new GregorianYearAnalysisBinderProcessor());
-            logger.info("Gregorian year analysis plugin installed");
         }
     }
 
@@ -136,11 +122,12 @@ public class BundlePlugin extends AbstractPlugin {
         Collection<Class<? extends Module>> modules = newArrayList();
         if (settings.getAsBoolean("plugins.langdetect.enabled", true)) {
             modules.add(LangdetectModule.class);
-            logger.info("Langdetect plugin installed");
         }
         if (settings.getAsBoolean("plugins.reference.enabled", true)) {
             modules.add(ReferenceModule.class);
-            logger.info("Referencer plugin installed");
+        }
+        if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
+            modules.add(StandardnumberIndexModule.class);
         }
         return modules;
     }

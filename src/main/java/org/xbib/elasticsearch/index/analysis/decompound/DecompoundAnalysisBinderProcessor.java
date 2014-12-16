@@ -31,8 +31,8 @@ import org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenizerFactory;
 import org.xbib.elasticsearch.index.analysis.sortform.SortformAnalyzerProvider;
 import org.xbib.elasticsearch.index.analysis.sortform.SortformTokenFilterFactory;
-import org.xbib.elasticsearch.index.analysis.standardnumber.StandardNumberAnalyzerProvider;
-import org.xbib.elasticsearch.index.analysis.standardnumber.StandardNumberTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberAnalyzerProvider;
+import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2Factory;
 import org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilterFactory;
 import org.xbib.elasticsearch.index.analysis.year.GregorianYearTokenFilterFactory;
@@ -55,12 +55,12 @@ public class DecompoundAnalysisBinderProcessor extends AnalysisModule.AnalysisBi
         tokenFiltersBindings.processTokenFilter("concat", ConcatTokenFilterFactory.class);
         tokenFiltersBindings.processTokenFilter("year", GregorianYearTokenFilterFactory.class);
         tokenFiltersBindings.processTokenFilter("hyphen", HyphenTokenFilterFactory.class);
-        tokenFiltersBindings.processTokenFilter("standardnumber", StandardNumberTokenFilterFactory.class);
+        tokenFiltersBindings.processTokenFilter("standardnumber", StandardnumberTokenFilterFactory.class);
     }
 
     @Override
     public void processAnalyzers(AnalyzersBindings analyzersBindings) {
-        analyzersBindings.processAnalyzer("standardnumber", StandardNumberAnalyzerProvider.class);
+        analyzersBindings.processAnalyzer("standardnumber", StandardnumberAnalyzerProvider.class);
         analyzersBindings.processAnalyzer("sortform", SortformAnalyzerProvider.class);
         analyzersBindings.processAnalyzer("hyphen", HyphenAnalyzerProvider.class);
     }

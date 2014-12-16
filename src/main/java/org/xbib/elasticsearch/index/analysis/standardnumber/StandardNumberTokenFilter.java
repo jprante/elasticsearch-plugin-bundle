@@ -34,11 +34,11 @@ import java.nio.charset.CharacterCodingException;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class StandardNumberTokenFilter extends TokenFilter {
+public class StandardnumberTokenFilter extends TokenFilter {
 
     private final LinkedList<PackedTokenAttributeImpl> tokens;
 
-    private final StandardNumberService standardNumberService;
+    private final StandardnumberService standardnumberService;
 
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
 
@@ -48,10 +48,10 @@ public class StandardNumberTokenFilter extends TokenFilter {
 
     private State current;
 
-    protected StandardNumberTokenFilter(TokenStream input, StandardNumberService standardNumberService) {
+    protected StandardnumberTokenFilter(TokenStream input, StandardnumberService standardnumberService) {
         super(input);
         this.tokens = new LinkedList<PackedTokenAttributeImpl>();
-        this.standardNumberService = standardNumberService;
+        this.standardnumberService = standardnumberService;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class StandardNumberTokenFilter extends TokenFilter {
 
     protected void detect() throws CharacterCodingException {
         CharSequence term = new String(termAtt.buffer(), 0, termAtt.length());
-        Collection<CharSequence> variants = standardNumberService.lookup(term);
+        Collection<CharSequence> variants = standardnumberService.lookup(term);
         for (CharSequence ch : variants) {
             if (ch != null) {
                 PackedTokenAttributeImpl token = new PackedTokenAttributeImpl();
