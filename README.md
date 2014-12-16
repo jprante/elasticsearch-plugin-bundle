@@ -30,19 +30,14 @@ A plugin that consists of a compilation of useful Elasticsearch plugins related 
 
 | Elasticsearch version    | Plugin      | Release date |
 | ------------------------ | ----------- | -------------|
+| 1.4.0                    | 1.4.0.3     | Dec 16, 2014 |
 | 1.4.0                    | 1.4.0.1     | Nov 10, 2014 |
 
 ## Installation
 
-    ./bin/plugin -install bundle -url http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/1.4.0.1/elasticsearch-plugin-bundle-1.4.0.1-plugin.zip
+    ./bin/plugin -install bundle -url http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/1.4.0.3/elasticsearch-plugin-bundle-1.4.0.3-plugin.zip
 
 Do not forget to restart the node after installing.
-
-## Checksum
-
-| File                                                 | SHA1                                     |
-| ---------------------------------------------------- | -----------------------------------------|
-|      |  |
 
 ## Project docs
 
