@@ -1,0 +1,11 @@
+{
+    "index":{
+        "analysis":{
+            "char_filter" : {
+                "my_icu_folder" : {
+                   "type" : "icu_folding"
+                }
+            }
+        }
+    }
+}

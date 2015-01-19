@@ -29,6 +29,7 @@ public class IcuAnalysisBinderProcessor extends AnalysisModule.AnalysisBinderPro
     @Override
     public void processCharFilters(CharFiltersBindings charFiltersBindings) {
         charFiltersBindings.processCharFilter("icu_normalizer", IcuNormalizerCharFilterFactory.class);
+        charFiltersBindings.processCharFilter("icu_folding", IcuFoldingCharFilterFactory.class);
     }
 
     @Override
