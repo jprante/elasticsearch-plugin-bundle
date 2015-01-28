@@ -35,8 +35,7 @@ public class IcuCollationKeyAnalyzerTests extends CollationTestBase {
 
     @Test
     public void testFarsiTermRangeQuery() throws Exception {
-        testFarsiTermRangeQuery
-                (analyzer, firstRangeBeginning, firstRangeEnd,
+        testFarsiTermRangeQuery(analyzer, firstRangeBeginning, firstRangeEnd,
                         secondRangeBeginning, secondRangeEnd);
     }
 

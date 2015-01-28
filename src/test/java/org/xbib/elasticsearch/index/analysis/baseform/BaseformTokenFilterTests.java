@@ -96,6 +96,28 @@ public class BaseformTokenFilterTests extends Assert {
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 
+
+    @Test
+    public void testThree() throws IOException {
+        AnalysisService analysisService = createAnalysisService();
+        TokenFilterFactory tokenFilter = analysisService.tokenFilter("baseform");
+
+        String source = "wurde zum tollen gemacht";
+
+        String[] expected = {
+                "wurde",
+                "werden",
+                "zum",
+                "zum",
+                "tollen",
+                "tollen",
+                "gemacht",
+                "machen"
+        };
+        Tokenizer tokenizer = new StandardTokenizer(Version.LATEST, new StringReader(source));
+        assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
+    }
+
     private AnalysisService createAnalysisService() {
         Settings settings = ImmutableSettings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, org.elasticsearch.Version.CURRENT)

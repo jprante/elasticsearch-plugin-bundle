@@ -31,7 +31,6 @@ import org.apache.lucene.collation.ICUCollationAttributeFactory;
 import java.io.Reader;
 
 /**
- * <p>
  * Configures {@link KeywordTokenizer} with {@link ICUCollationAttributeFactory}.
  * <p>
  * Converts the token into its {@link com.ibm.icu.text.CollationKey}, and

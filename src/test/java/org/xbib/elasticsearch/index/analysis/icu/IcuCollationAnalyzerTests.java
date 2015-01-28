@@ -7,6 +7,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.TermToBytesRefAttribute;
 import org.apache.lucene.util.BytesRef;
+import org.apache.lucene.util.BytesRefBuilder;
 import org.elasticsearch.Version;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.base.Supplier;
@@ -342,9 +343,9 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
             termAttr.fillBytesRef();
         }
         stream.close();
-        BytesRef copy = new BytesRef();
-        copy.copyBytes(bytesRef);
-        return copy;
+        BytesRefBuilder bytesRefBuilder = new BytesRefBuilder();
+        bytesRefBuilder.append(bytesRef);
+        return bytesRefBuilder.toBytesRef();
     }
 
     private int compare(byte[] left, byte[] right) {

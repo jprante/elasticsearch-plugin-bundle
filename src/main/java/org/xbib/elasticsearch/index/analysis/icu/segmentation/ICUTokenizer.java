@@ -15,10 +15,8 @@ import java.io.Reader;
 /**
  * Breaks text into words according to UAX #29: Unicode Text Segmentation
  * (http://www.unicode.org/reports/tr29/)
- * <p/>
  * Words are broken across script boundaries, then segmented according to
  * the BreakIterator and typing provided by the {@link IcuTokenizerConfig}
- *
  * @see IcuTokenizerConfig
  */
 public final class IcuTokenizer extends Tokenizer {
