@@ -2,6 +2,7 @@ package org.xbib.elasticsearch.index.analysis.baseform;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -11,10 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.xbib.elasticsearch.index.analysis.baseform.MatchResult.EXACT_MATCH;
-import static org.xbib.elasticsearch.index.analysis.baseform.MatchResult.NO_MATCH;
-import static org.xbib.elasticsearch.index.analysis.baseform.MatchResult.SEQUENCE_IS_A_PREFIX;
-
 public class Dictionary {
 
     private final Charset UTF8 = Charset.forName("UTF-8");
@@ -22,6 +19,10 @@ public class Dictionary {
     private FSA fsa;
 
     private FSATraversal matcher;
+
+    public Dictionary load(String language) throws IOException {
+        return load(new InputStreamReader(this.getClass().getResourceAsStream(language + "-lemma-utf8.txt"), UTF8));
+    }
 
     public Dictionary load(Reader in) throws IOException {
         BufferedReader reader = new BufferedReader(in);
@@ -41,14 +42,24 @@ public class Dictionary {
         return this;
     }
 
-    public String lookup(CharSequence prefix) throws CharacterCodingException {
+    public CharSequence lookup(CharSequence prefix) throws CharacterCodingException {
+        if (prefix == null || prefix.length() == 0) {
+            return prefix;
+        }
         return lookup(UTF8.newEncoder().encode(CharBuffer.wrap(prefix)), prefix.toString());
     }
 
-    public String lookup(ByteBuffer buf, String result) {
+    public CharSequence lookup(ByteBuffer buf, String request) {
+        return lookup(buf, request, 0);
+    }
+
+    public CharSequence lookup(ByteBuffer buf, String request, int level) {
+        if (level > 3) {
+            return request;
+        }
         MatchResult match = matcher.match(buf.array(), buf.position(), buf.remaining(), fsa.getRootNode());
         switch (match.kind) {
-            case SEQUENCE_IS_A_PREFIX: {
+            case MatchResult.SEQUENCE_IS_A_PREFIX: {
                 final int arc = fsa.getArc(match.node, (byte) '+');
                 if (arc != 0 && !fsa.isArcFinal(arc)) {
                     FSAFinalStatesIterator finalStatesIterator = new FSAFinalStatesIterator(fsa, fsa.getRootNode());
@@ -56,19 +67,19 @@ public class Dictionary {
                     if (finalStatesIterator.hasNext()) {
                         buf = finalStatesIterator.next();
                         String s = new String(buf.array(), buf.position(), buf.remaining(), UTF8);
-                        return s.isEmpty() || s.equals(result) ? s : lookup(buf, s);
+                        return s.isEmpty() || s.equals(request) ? s : lookup(buf, s, level + 1);
                     }
                 }
                 break;
             }
-            case EXACT_MATCH: {
+            case MatchResult.EXACT_MATCH: {
                 break;
             }
-            case NO_MATCH: {
+            case MatchResult.NO_MATCH: {
                 break;
             }
         }
-        return result;
+        return request;
     }
 
 }

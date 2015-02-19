@@ -32,7 +32,7 @@ public class DictionaryTests extends Assert {
         int pos = line.indexOf("\t");
         String word = pos > 0 ? line.substring(0, pos) : line;
         try {
-            String baseform = dictionary.lookup(word);
+            CharSequence baseform = dictionary.lookup(word);
         } catch (StackOverflowError e) {
             System.err.println(line);
             return false;
