@@ -130,12 +130,9 @@ public class ISNI extends AbstractStandardNumber implements Comparable<ISNI>, St
 
     private boolean check() {
         if (createWithChecksum) {
-            this.value = check.encode(value.length() < 16 ? value : value.substring(0, value.length()-1));
+            this.value = check.encode(value.length() < 16 ? value : value.substring(0, value.length() - 1));
         }
-        if (value.length() < 16) {
-            return false;
-        }
-        return check.verify(value);
+        return value.length() >= 16 && check.verify(value);
     }
 
     private String clean(String isbn) {

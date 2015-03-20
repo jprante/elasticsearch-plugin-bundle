@@ -22,7 +22,12 @@ public class MOD9710 implements Digit {
 
     @Override
     public boolean verify(String digits) {
-        return new BigDecimal(digits != null ? digits : "0").remainder(CONSTANT_97).intValue() == 1;
+        try {
+            return new BigDecimal(digits != null ? digits : "0").remainder(CONSTANT_97).intValue() == 1;
+        } catch (NumberFormatException e) {
+            // invalid big decimal
+            return false;
+        }
     }
 
     @Override

@@ -96,7 +96,7 @@ public class IBAN extends AbstractStandardNumber implements Comparable<IBAN>, St
 
     @Override
     public boolean isValid() {
-        return value != null && !value.isEmpty() && check();
+        return check();
     }
 
     @Override
@@ -136,7 +136,7 @@ public class IBAN extends AbstractStandardNumber implements Comparable<IBAN>, St
     private final static MOD9710 check = new MOD9710();
 
     private boolean check() {
-        return value != null && !value.isEmpty() && check.verify(value);
+        return value != null && value.length() >= 15 && check.verify(value);
     }
 
     private String parse(String raw) {
