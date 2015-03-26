@@ -50,6 +50,294 @@ The Maven project site is available at [Github](http://jprante.github.io/elastic
 
 All feedback is welcome! If you find issues, please post them at [Github](https://github.com/jprante/elasticsearch-plugin-bundle/issues)
 
+# Examples
+
+## German normalizer
+
+    {
+        "index":{
+            "analysis":{
+                "filter":{
+                    "umlaut":{
+                        "type":"german_normalize"
+                    }
+                },
+                "tokenizer" : {
+                    "umlaut" : {
+                       "type":"standard",
+                       "filter" : "umlaut"
+                    }
+                }
+            }
+        }
+    }
+
+## WordDelimiterFilter2
+
+    {
+        "index":{
+            "analysis":{
+                "filter" : {
+                    "wd" : {
+                       "type" : "worddelimiter2",
+                       "generate_word_parts" : true,
+                       "generate_number_parts" : true,
+                       "catenate_all" : true,
+                       "split_on_case_change" : true,
+                       "split_on_numerics" : true,
+                       "stem_english_possessive" : true
+                    }
+                }
+            }
+        }
+    }
+
+## ICU
+
+    {
+        "index":{
+            "analysis":{
+                "analyzer" : {
+                    "icu_german_collate" : {
+                       "type" : "icu_collation",
+                       "language" : "de",
+                       "country" : "DE",
+                       "strength" : "primary",
+                       "rules" : "& ae , a\u0308 & AE , A\u0308& oe , o\u0308 & OE , O\u0308& ue , u\u0308 & UE , u\u0308"
+                    }
+                }
+            }
+        }
+    }
+
+    {
+        "index":{
+            "analysis":{
+                "char_filter" : {
+                    "my_icu_folder" : {
+                       "type" : "icu_folding"
+                    }
+                }
+            }
+        }
+    }
+
+    {
+        "index":{
+            "analysis":{
+                "tokenizer" : {
+                    "my_icu_tokenizer" : {
+                       "type" : "icu_tokenizer"
+                    },
+                    "my_hyphen_icu_tokenizer" : {
+                       "type" : "icu_tokenizer",
+                       "rulefiles" : "Latn:icu/Latin-dont-break-on-hyphens.rbbi"
+                    }
+                }
+            }
+        }
+    }
+
+
+## Baseform
+
+    {
+     "index":{
+        "analysis":{
+            "filter":{
+                "baseform":{
+                    "type" : "baseform",
+                    "language" : "de"
+                }
+            },
+            "tokenizer" : {
+                "baseform" : {
+                   "type" : "standard",
+                   "filter" : [ "baseform", "unique" ]
+                }
+            }
+        }
+     }
+    }
+
+
+## Decompound
+
+    {
+        "index" : {
+            "analysis" : {
+                "filter" : {
+                    "decomp" : {
+                        "type" : "decompound"
+                    }
+                },
+                "tokenizer" : {
+                    "decomp" : {
+                       "type" : "standard",
+                       "filter" : [ "decomp" ]
+                    }
+                }
+            }
+        }
+    }
+
+## Combo
+
+    {
+        "index" : {
+            "analysis" : {
+                "analyzer" : {
+                    "default" : {
+                        "type" : "custom",
+                        "tokenizer" : "icu_tokenizer",
+                        "filter" : [ "snowball", "icu_folding" ]
+                    },
+                    "combo" : {
+                        "type" : "combo",
+                        "sub_analyzers" : [ "standard", "default" ]
+                    }
+                },
+                "filter" : {
+                    "snowball" : {
+                        "type" : "snowball",
+                        "language" : "German2"
+                    }
+                }
+            }
+        }
+    }
+
+
+## Langdetect
+
+    curl -XDELETE 'localhost:9200/test'
+
+    curl -XPUT 'localhost:9200/test'
+
+    curl -XPOST 'localhost:9200/test/article/_mapping' -d '
+    {
+      "article" : {
+        "properties" : {
+           "content" : { "type" : "langdetect" }
+        }
+      }
+    }
+    '
+
+    curl -XPUT 'localhost:9200/test/article/1' -d '
+    {
+      "title" : "Some title",
+      "content" : "Oh, say can you see by the dawn`s early light, What so proudly we hailed at the twilight`s last gleaming?"
+    }
+    '
+
+    curl -XPUT 'localhost:9200/test/article/2' -d '
+    {
+      "title" : "Ein Titel",
+      "content" : "Einigkeit und Recht und Freiheit für das deutsche Vaterland!"
+    }
+    '
+
+    curl -XPUT 'localhost:9200/test/article/3' -d '
+    {
+      "title" : "Un titre",
+      "content" : "Allons enfants de la Patrie, Le jour de gloire est arrivé!"
+    }
+    '
+
+    curl -XGET 'localhost:9200/test/_refresh'
+
+    curl -XPOST 'localhost:9200/test/_search' -d '
+    {
+       "query" : {
+           "term" : {
+                "content.lang" : "en"
+           }
+       }
+    }
+    '
+    curl -XPOST 'localhost:9200/test/_search' -d '
+    {
+       "query" : {
+           "term" : {
+                "content.lang" : "de"
+           }
+       }
+    }
+    '
+
+    curl -XPOST 'localhost:9200/test/_search' -d '
+    {
+       "query" : {
+           "term" : {
+                "content.lang" : "fr"
+           }
+       }
+    }
+    '
+
+## Standardnumber
+
+    {
+       "index" : {
+          "analysis" : {
+              "filter" : {
+                  "standardnumber" : {
+                      "type" : "standardnumber"
+                  }
+              },
+              "analyzer" : {
+                  "standardnumber" : {
+                      "tokenizer" : "whitespace",
+                      "filter" : [ "standardnumber", "unique" ]
+                  }
+              }
+          }
+       }
+    }
+
+## Hyphen
+
+    {
+        "index":{
+            "analysis":{
+                "tokenizer" : {
+                    "my_icu_tokenizer" : {
+                       "type" : "icu_tokenizer",
+                       "rulefiles" : "Latn:icu/Latin-dont-break-on-hyphens.rbbi"
+                    },
+                    "my_hyphen_tokenizer" : {
+                        "type" : "hyphen"
+                    }
+                }
+            }
+        }
+    }
+
+
+## Sortform
+
+    {
+        "index":{
+            "analysis": {
+                "analyzer" : {
+                    "german_phonebook_with_sortform" : {
+                       "type" : "sortform",
+                       "language" : "de",
+                       "country" : "DE",
+                       "strength" : "quaternary",
+                       "alternate" : "shifted",
+                       "rules" : "& ae , a\u0308 & AE , A\u0308 & oe , o\u0308 & OE , O\u0308 & ue , u\u0308 & UE , u\u0308 & ss , \u00df",
+                       "filter" : [
+                           "sortform"
+                       ]
+                    }
+                }
+            }
+        }
+    }
+
+
 # License
 
 elasticsearch-plugin-bundle - a compilation of useful plugins for Elasticsearch
