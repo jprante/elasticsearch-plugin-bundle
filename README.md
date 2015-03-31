@@ -30,6 +30,7 @@ A plugin that consists of a compilation of useful Elasticsearch plugins related 
 
 | Elasticsearch version    | Plugin      | Release date |
 | ------------------------ | ----------- | -------------|
+| 1.5.0                    | 1.5.0.0     | Mar 31, 2015 |
 | 1.4.0                    | 1.4.0.6     | Feb 23, 2015 |
 | 1.4.0                    | 1.4.0.5     | Jan 28, 2015 |
 | 1.4.0                    | 1.4.0.4     | Jan 19, 2015 |
