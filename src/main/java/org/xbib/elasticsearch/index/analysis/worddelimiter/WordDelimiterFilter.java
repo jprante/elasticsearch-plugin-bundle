@@ -35,7 +35,6 @@ import java.io.IOException;
  * </ul>
  * </li>
  * </ul>
- * <p/>
  * The <b>combinations</b> parameter affects how subwords are combined:
  * <ul>
  * <li>combinations="0" causes no subword combinations: <code>"PowerShot"</code>
@@ -46,7 +45,7 @@ import java.io.IOException;
  * <ul>
  * <li><code>"PowerShot"</code> &#8594;
  * <code>0:"Power", 1:"Shot" 1:"PowerShot"</code></li>
- * <li><code>"A's+B's&C's"</code> -gt; <code>0:"A", 1:"B", 2:"C", 2:"ABC"</code>
+ * <li><code>"A's+B's&amp;C's"</code> -gt; <code>0:"A", 1:"B", 2:"C", 2:"ABC"</code>
  * </li>
  * <li><code>"Super-Duper-XL500-42-AutoCoder!"</code> &#8594;
  * <code>0:"Super", 1:"Duper", 2:"XL", 2:"SuperDuperXL", 3:"500" 4:"42", 5:"Auto", 6:"Coder", 6:"AutoCoder"</code>

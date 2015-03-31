@@ -11,15 +11,12 @@ import java.util.WeakHashMap;
 
 /**
  * Duplicates {@link java.io.Reader}s in order to feed multiple consumers.
- * <p/>
  * This class registers multiple implementations, and tries to resolve which one to use,
  * looking at the actual class of the Reader to clone, and matching with the most bond
  * handled classes for each {@link ReaderCloner} implementation.
- * <p/>
  * By default, a few {@link java.io.Reader} implementations are handled, including the
  * most used inside Lucene ({@link java.io.StringReader}), and a default, fallback implementation
  * that merely reads all the available content, and creates a String out of it.
- * <p/>
  * Therefore you should understand the importance of having a proper implementation for
  * any optimizable {@link java.io.Reader}. For instance, {@link StringReaderCloner} gains access
  * to the underlying String in order to avoid copies.
@@ -50,8 +47,7 @@ public class ReaderCloneFactory {
         /**
          * Initialize or reinitialize the cloner with the given reader.
          * The implementing class should have a default no arguments constructor.
-         * <p/>
-         * <P><B>Remark:</B> The given Reader is now controlled by this ReaderCloner, it may
+         * Remark: The given Reader is now controlled by this ReaderCloner, it may
          * be closed during a call to this method, or it may be returned
          * at first call to {@link #giveAClone()}.
          *
@@ -61,7 +57,7 @@ public class ReaderCloneFactory {
 
         /**
          * Returns a new {@link java.io.Reader}.
-         * <P><B>Remark:</B> The returned Reader should be closed.
+         * Remark: The returned Reader should be closed.
          * The original Reader, if not consumed by the {@link #init(java.io.Reader)} method,
          * should be returned at first call. Therefore it is important to
          * call this method at least once, or to be prepared to face possible
@@ -182,11 +178,9 @@ public class ReaderCloneFactory {
     /**
      * (Advanced) Returns an initialized ReaderCloner, associated with the given base class, for the given Reader.
      * If the initialization fails, this function returns null.
-     * <p/>
      * The function first tries to match the exact class of forReader, and initialize the ReaderCloner.
      * If no ReaderCloner or (tested second) ReaderUnwrapper matches, the resolution continues with the super class,
      * until the baseClass is reached, and tested.
-     * <p/>
      * If this process is not successful, <code>null</code> is returned.
      *
      * @param baseClass The baseClass, above which the resolution will not try to continue with the super class.
@@ -251,9 +245,7 @@ public class ReaderCloneFactory {
     /**
      * Returns a ReaderCloner suitable for handling general <code>S</code>s instances (inheriting <code>T</code>, itself
      * inheriting {@link java.io.Reader}).
-     * <p/>
      * Resolution starts on <code>forClass</code> (<code>S</code>), and does not go further than <code>baseClass</code>.
-     * <p/>
      * Not all optimizations can be ran, like unwrapping and failing initialization fallback.
      * However, for standard cases, when performance is really critical,
      * using this function can reduce a possible resolution overhead
@@ -271,9 +263,7 @@ public class ReaderCloneFactory {
 
     /**
      * Returns a ReaderCloner suitable for handling general <code>S</code>s instances (inheriting {@link java.io.Reader}).
-     * <p/>
-     * Calls <code>ReaderCloneFactory.<Reader,S>getCloner(Reader.class, forClass, (S)null)</code>.
-     * <p/>
+     * Calls <code>ReaderCloneFactory.getCloner(Reader.class, forClass, (S)null)</code>.
      * Not all optimizations can be ran, like unwrapping and failing initialization fallback.
      * However, for standard cases, when performance is really critical,
      * using this function can reduce a possible resolution overhead
@@ -289,8 +279,7 @@ public class ReaderCloneFactory {
 
     /**
      * Returns an initialized ReaderCloner, for the given Reader.
-     * <p/>
-     * Calls <code>ReaderCloneFactory.<Reader, S>getCloner(Reader.class, (Class<S>)forReader.getClass(), forReader)</code>.
+     * Calls <code>ReaderCloneFactory.getCloner(Reader.class, forReader.getClass(), forReader)</code>.
      * If <code>forReader</code> is <code>null</code>, works as {@link ReaderCloneFactory#getGenericCloner()}.
      *
      * @param forReader The Reader instance to return and initialize a ReaderCloner for. Can be null.
@@ -308,6 +297,7 @@ public class ReaderCloneFactory {
 
     /**
      * Returns a {@link ReaderCloner} suitable for any {@link java.io.Reader} instance.
+     * @return a reader cloner
      */
     public static ReaderCloner<Reader> getGenericCloner() {
         return ReaderCloneFactory.getCloner(Reader.class, Reader.class, null);

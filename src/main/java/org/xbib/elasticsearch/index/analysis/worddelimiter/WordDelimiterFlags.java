@@ -15,43 +15,37 @@ public interface WordDelimiterFlags {
 
     /**
      * Causes parts of words to be generated:
-     * <p/>
-     * "PowerShot" => "Power" "Shot"
+     * "PowerShot" =&gt; "Power" "Shot"
      */
     int GENERATE_WORD_PARTS = 1;
 
     /**
      * Causes number subwords to be generated:
-     * <p/>
-     * "500-42" => "500" "42"
+     * "500-42" =&gt; "500" "42"
      */
     int GENERATE_NUMBER_PARTS = 2;
 
     /**
      * Causes maximum runs of word parts to be catenated:
-     * <p/>
-     * "wi-fi" => "wifi"
+     * "wi-fi" =&gt; "wifi"
      */
     int CATENATE_WORDS = 4;
 
     /**
      * Causes maximum runs of word parts to be catenated:
-     * <p/>
-     * "wi-fi" => "wifi"
+     * "wi-fi" =&gt;"wifi"
      */
     int CATENATE_NUMBERS = 8;
 
     /**
      * Causes all subword parts to be catenated:
-     * <p/>
-     * "wi-fi-4000" => "wifi4000"
+     * "wi-fi-4000" =&gt; "wifi4000"
      */
     int CATENATE_ALL = 16;
 
     /**
      * Causes original words are preserved and added to the subword list (Defaults to false)
-     * <p/>
-     * "500-42" => "500" "42" "500-42"
+     * "500-42" =&gt; "500" "42" "500-42"
      */
     int PRESERVE_ORIGINAL = 32;
 
@@ -69,8 +63,7 @@ public interface WordDelimiterFlags {
 
     /**
      * Causes trailing "'s" to be removed for each subword
-     * <p/>
-     * "O'Neil's" => "O", "Neil"
+     * "O'Neil's" =&gt; "O", "Neil"
      */
     int STEM_ENGLISH_POSSESSIVE = 256;
 

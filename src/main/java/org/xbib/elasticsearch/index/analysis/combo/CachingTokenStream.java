@@ -12,12 +12,10 @@ import java.util.List;
  * This class can be used if the token attributes of a TokenStream
  * are intended to be consumed more than once. It caches
  * all token attribute states locally in a List.
- * <p/>
- * <P>CachingTokenStream implements the optional method
+ * CachingTokenStream implements the optional method
  * {@link org.apache.lucene.analysis.TokenStream#reset()}, which repositions the
  * stream to the first Token.
- * <p/>
- * <P>It differs from Lucene's {@link org.apache.lucene.analysis.CachingTokenFilter} in that it
+ * It differs from Lucene's {@link org.apache.lucene.analysis.CachingTokenFilter} in that it
  * creates a new AttributeSource, unrelated to the provided input.
  * This permits free reuse of the TokenStream, and after
  * {@link #fillCache()} has been called, the underlying input
@@ -88,7 +86,6 @@ public final class CachingTokenStream extends TokenStream {
 
     /**
      * Rewinds the iterator to the beginning of the cached list.
-     * <p/>
      * Note that this does not call reset() on the wrapped tokenstream ever, even
      * the first time. You should reset() the inner tokenstream before wrapping
      * it with CachingTokenStream.

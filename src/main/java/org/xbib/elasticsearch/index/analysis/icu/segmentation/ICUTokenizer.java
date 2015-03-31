@@ -47,9 +47,7 @@ public final class IcuTokenizer extends Tokenizer {
     /**
      * Construct a new ICUTokenizer that breaks text into words from the given
      * Reader.
-     * <p/>
      * The default script-specific handling is used.
-     * <p/>
      * The default attribute factory is used.
      *
      * @param input Reader containing text to tokenize.
@@ -62,7 +60,6 @@ public final class IcuTokenizer extends Tokenizer {
     /**
      * Construct a new ICUTokenizer that breaks text into words from the given
      * Reader, using a tailored BreakIterator configuration.
-     * <p/>
      * The default attribute factory is used.
      *
      * @param input  Reader containing text to tokenize.

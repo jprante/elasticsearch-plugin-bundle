@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  * It was developed within an ISO (International Organisation for Standardisation) TC46/SC9
  * working group. ISAN is managed and run by ISAN-IA.
  *
- * The ISAN standard (ISO standard 15706:2002 & ISO 15706-2) is recommended or required
+ * The ISAN standard (ISO standard 15706:2002 and ISO 15706-2) is recommended or required
  * as the audiovisual identifier of choice for producers, studios, broadcasters,
  * Internet media providers and video games publishers who need to encode, track, and
  * distribute video in a variety of formats.

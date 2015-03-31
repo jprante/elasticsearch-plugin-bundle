@@ -16,31 +16,28 @@ import java.util.Set;
  * Splits words into subwords and performs optional transformations on subword groups.
  * Words are split into subwords with the following rules:
  * - split on intra-word delimiters (by default, all non alpha-numeric characters).
- * - "Wi-Fi" -> "Wi", "Fi"
+ * - "Wi-Fi" -&gt; "Wi", "Fi"
  * - split on case transitions
- * - "PowerShot" -> "Power", "Shot"
+ * - "PowerShot" -&gt; "Power", "Shot"
  * - split on letter-number transitions
- * - "SD500" -> "SD", "500"
+ * - "SD500" -&gt; "SD", "500"
  * - leading and trailing intra-word delimiters on each subword are ignored
- * - "//hello---there, 'dude'" -> "hello", "there", "dude"
+ * - "//hello---there, 'dude'" -&gt; "hello", "there", "dude"
  * - trailing "'s" are removed for each subword
- * - "O'Neil's" -> "O", "Neil"
+ * - "O'Neil's" -&gt; "O", "Neil"
  * - Note: this step isn't performed in a separate filter because of possible subword combinations.
- * <p/>
- * The <b>combinations</b> parameter affects how subwords are combined:
+ * The combinations parameter affects how subwords are combined:
  * - combinations="0" causes no subword combinations.
- * - "PowerShot" -> 0:"Power", 1:"Shot"  (0 and 1 are the token positions)
+ * - "PowerShot" -&gt; 0:"Power", 1:"Shot"  (0 and 1 are the token positions)
  * - combinations="1" means that in addition to the subwords, maximum runs of non-numeric subwords are catenated and produced at the same position of the last subword in the run.
- * - "PowerShot" -> 0:"Power", 1:"Shot" 1:"PowerShot"
- * - "A's+B's&C's" -> 0:"A", 1:"B", 2:"C", 2:"ABC"
- * - "Super-Duper-XL500-42-AutoCoder!" -> 0:"Super", 1:"Duper", 2:"XL", 2:"SuperDuperXL", 3:"500" 4:"42", 5:"Auto", 6:"Coder", 6:"AutoCoder"
- * <p/>
+ * - "PowerShot" -&gt; 0:"Power", 1:"Shot" 1:"PowerShot"
+ * - "A's+B's&amp;C's" -&gt; 0:"A", 1:"B", 2:"C", 2:"ABC"
+ * - "Super-Duper-XL500-42-AutoCoder!" -&gt; 0:"Super", 1:"Duper", 2:"XL", 2:"SuperDuperXL", 3:"500" 4:"42", 5:"Auto", 6:"Coder", 6:"AutoCoder"
  * One use for WordDelimiterFilter2 is to help match words with different subword delimiters.
  * For example, if the source text contained "wi-fi" one may want "wifi" "WiFi" "wi-fi" "wi+fi" queries to all match.
  * One way of doing so is to specify combinations="1" in the analyzer used for indexing, and combinations="0" (the default)
  * in the analyzer used for querying.  Given that the current StandardTokenizer immediately removes many intra-word
  * delimiters, it is recommended that this filter be used after a tokenizer that does not do this (such as WhitespaceTokenizer).
- * <p/>
  * The difference with WordDelimiterFilter is the new ALL_PARTS_AT_SAME_POSITION flag.
  * It permits to analyze "PowerShot" into 0:"Power", 0:"Shot", where 0: stands for the token positions.
  */

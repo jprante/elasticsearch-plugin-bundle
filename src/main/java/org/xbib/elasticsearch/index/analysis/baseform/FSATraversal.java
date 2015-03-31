@@ -145,16 +145,10 @@ public final class FSATraversal {
         return match(new MatchResult(), sequence, start, length, node);
     }
 
-    /**
-     * @see #match(byte[], int, int, int)
-     */
     public MatchResult match(byte[] sequence, int node) {
         return match(sequence, 0, sequence.length, node);
     }
 
-    /**
-     * @see #match(byte[], int, int, int)
-     */
     public MatchResult match(byte[] sequence) {
         return match(sequence, fsa.getRootNode());
     }

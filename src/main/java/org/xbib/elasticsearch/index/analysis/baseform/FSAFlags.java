@@ -48,7 +48,6 @@ public enum FSAFlags {
      */
     public final int bits;
 
-    /** */
     private FSAFlags(int bits) {
         this.bits = bits;
     }
@@ -60,9 +59,6 @@ public enum FSAFlags {
         return (flags & flag.bits) != 0;
     }
 
-    /**
-     * Returns the set of flags encoded in a single short.
-     */
     public static short asShort(Set<FSAFlags> flags) {
         short value = 0;
         for (FSAFlags f : flags) {

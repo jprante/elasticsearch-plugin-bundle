@@ -6,19 +6,14 @@ import java.io.StringReader;
 
 /**
  * Default, memory costly but generic implementation of a {@link java.io.Reader} duplicator.
- * <p/>
  * This implementation makes no assumption on the initial Reader.
  * Therefore, only the read() functions are available to figure out
  * what was the original content provided to the initial Reader.
- * <p/>
  * After having read and filled a buffer with the whole content,
  * a String-based Reader implementation will be used and returned.
- * <p/>
  * This implementation is memory costly because the initial content is
  * forcefully duplicated once. Moreover, buffer size growth may cost
  * some more memory too.
- *
- * @author ofavre
  */
 public class ReaderClonerDefaultImpl implements ReaderCloneFactory.ReaderCloner<Reader> {
 

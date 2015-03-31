@@ -15,12 +15,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * An analyzer that combines multiple sub-analyzers into one.
- * <p/>
  * It internally uses {@link ReaderCloneFactory} in order to feed the multiple
  * sub-analyzers from a single input.
  * If you analyzer big inputs or have a performance critical application,
  * please see the remarks of the latter's documentation.
- * <p/>
  * The instances are thread safe with regards to the reused TokenStreams.
  * As duplicated sub-analyzer instance would break this safety,
  * there is a special case detection for it.
@@ -75,7 +73,6 @@ public class ComboAnalyzer extends Analyzer {
 
     /**
      * Enable or disable the systematic caching of {@link org.apache.lucene.analysis.Analyzer} {@link org.apache.lucene.analysis.TokenStream}s.
-     * <p/>
      * {@link org.apache.lucene.analysis.TokenStream}s gotten from the {@link org.apache.lucene.analysis.Analyzer}s will be cached upfront.
      * This helps with one of the {@link org.apache.lucene.analysis.Analyzer}s being reused before having completely
      * consumed our {@link ComboTokenStream}.

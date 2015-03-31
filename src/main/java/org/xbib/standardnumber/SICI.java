@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
  *   on the basis of all the preceding characters
  *
  *  Example:
- *  0095-4403(199502/03)21:3<12:WATIIB>2.0.TX;2-J
+ *  0095-4403(199502/03)21:3&lt;12:WATIIB&gt;2.0.TX;2-J
  *
  */
 public class SICI extends AbstractStandardNumber implements Comparable<SICI>, StandardNumber {

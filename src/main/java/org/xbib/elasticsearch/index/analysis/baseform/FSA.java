@@ -11,12 +11,8 @@ import java.util.Set;
  * automata are arc-based, a design described in Jan Daciuk's <i>Incremental
  * Construction of Finite-State Automata and Transducers, and Their Use in the
  * Natural Language Processing</i> (PhD thesis, Technical University of Gdansk).
- * <p/>
- * <p>
  * Concrete subclasses (implementations) provide varying tradeoffs and features:
  * traversal speed vs. memory size, for example.
- * </p>
- *
  * @see FSABuilder
  */
 public abstract class FSA implements Iterable<ByteBuffer> {
@@ -94,19 +90,13 @@ public abstract class FSA implements Iterable<ByteBuffer> {
      * Returns an iterator over all binary sequences starting at the given FSA
      * state (node) and ending in final nodes. This corresponds to a set of
      * suffixes of a given prefix from all sequences stored in the automaton.
-     * <p/>
-     * <p>
      * The returned iterator is a {@link java.nio.ByteBuffer} whose contents changes on
      * each call to {@link java.util.Iterator#next()}. The keep the contents between calls
      * to {@link java.util.Iterator#next()}, one must copy the buffer to some other
      * location.
-     * </p>
-     * <p/>
-     * <p>
-     * <b>Important.</b> It is guaranteed that the returned byte buffer is
+     * Important: it is guaranteed that the returned byte buffer is
      * backed by a byte array and that the content of the byte buffer starts at
      * the array's index 0.
-     * </p>
      *
      * @see Iterable
      */
@@ -135,14 +125,9 @@ public abstract class FSA implements Iterable<ByteBuffer> {
      * {@link java.nio.ByteBuffer} whose contents changes on each call to
      * {@link java.util.Iterator#next()}. The keep the contents between calls to
      * {@link java.util.Iterator#next()}, one must copy the buffer to some other location.
-     * <p/>
-     * <p>
-     * <b>Important.</b> It is guaranteed that the returned byte buffer is
+     * Important: It is guaranteed that the returned byte buffer is
      * backed by a byte array and that the content of the byte buffer starts at
      * the array's index 0.
-     * </p>
-     *
-     * @see Iterable
      */
     public final Iterator<ByteBuffer> iterator() {
         return getSequences().iterator();

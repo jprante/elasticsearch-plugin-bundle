@@ -5,11 +5,9 @@ import java.io.Reader;
 import java.io.StringReader;
 
 /**
- * A ReaderCloner specialized in duplicating Lucene's {@link org.apache.lucene.analysis.ReusableStringReader}.
- * <p/>
+ * A ReaderCloner specialized in duplicating Lucene's {@link ReusableStringReader}.
  * As this class is package private, this cloner has an additional function
  * to perform an {@code instanceof} check for you.
- * <p/>
  * The implementation exploits the fact that ReusableStringReader has a package
  * private field {@code String s}, storing the original content.
  * It is therefore sensitive to Lucene implementation changes.
@@ -30,10 +28,6 @@ public class ReusableStringReaderCloner implements ReaderCloneFactory.ReaderClon
         }
     }
 
-    /**
-     * Binds this ReaderCloner with the package-private {@link org.apache.lucene.analysis.ReusableStringReader} class
-     * into the {@link ReaderCloneFactory}, without giving access to the hidden class.
-     */
     public static void registerCloner() {
         ReaderCloneFactory.bindCloner(ReusableStringReader.class, ReusableStringReaderCloner.class);
     }

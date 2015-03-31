@@ -48,13 +48,13 @@ import java.util.regex.Pattern;
  *
  * Examples:
  *
- * Bindestrich-Wort =>
+ * Bindestrich-Wort =&gt;
  *     Bindestrich-Wort, BindestrichWort, Wort, Bindestrich
  *
- * E-Book =>
+ * E-Book =&gt;
  *     E-Book, EBook, Book
  *
- * Service-Center-Mitarbeiterin =>
+ * Service-Center-Mitarbeiterin =&gt;
  *    Service-Center-Mitarbeiterin,
  *    ServiceCenterMitarbeiterin,
  *    Mitarbeiterin,

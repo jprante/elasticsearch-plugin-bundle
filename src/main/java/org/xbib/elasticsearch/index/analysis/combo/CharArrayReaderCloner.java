@@ -7,11 +7,9 @@ import java.lang.reflect.Field;
 
 /**
  * A ReaderCloner specialized for CharArrayReader.
- * <p/>
  * The only efficient mean of retrieving the original content
  * from a CharArrayReader is to use introspection and access the
  * {@code private String str} field.
- * <p/>
  * Apart from being efficient, this code is also very sensitive
  * to the used JVM implementation.
  * If the introspection does not work, an {@link IllegalArgumentException}

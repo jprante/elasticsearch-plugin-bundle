@@ -12,7 +12,6 @@ import java.io.InputStream;
 /**
  * Default {@link IcuTokenizerConfig} that is generally applicable
  * to many languages.
- * <p/>
  * Generally tokenizes Unicode text according to UAX#29
  * ({@link BreakIterator#getWordInstance(ULocale) BreakIterator.getWordInstance(ULocale.ROOT)}),
  * but with the following tailorings:
