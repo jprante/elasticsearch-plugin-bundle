@@ -50,7 +50,6 @@ import java.util.Map;
 import static org.elasticsearch.common.collect.Lists.newLinkedList;
 import static org.elasticsearch.index.mapper.MapperBuilders.stringField;
 import static org.elasticsearch.index.mapper.core.TypeParsers.parseMultiField;
-import static org.elasticsearch.index.mapper.core.TypeParsers.parsePathType;
 
 public class ReferenceMapper extends AbstractFieldMapper<Object> {
 
@@ -60,8 +59,6 @@ public class ReferenceMapper extends AbstractFieldMapper<Object> {
 
     @SuppressWarnings({"rawtypes"})
     public static class Builder extends AbstractFieldMapper.Builder<Builder, ReferenceMapper> {
-
-        private ContentPath.Type pathType = Defaults.PATH_TYPE;
 
         private Mapper.Builder contentBuilder;
 
@@ -80,11 +77,6 @@ public class ReferenceMapper extends AbstractFieldMapper<Object> {
             this.contentBuilder = stringField(name);
             this.refBuilders = newLinkedList();
             this.client = client;
-        }
-
-        public Builder pathType(ContentPath.Type pathType) {
-            this.pathType = pathType;
-            return this;
         }
 
         public Builder content(Mapper.Builder content) {
@@ -132,7 +124,7 @@ public class ReferenceMapper extends AbstractFieldMapper<Object> {
             } else {
                 contentMapper = contentBuilder.build(context);
             }
-            return new ReferenceMapper(buildNames(context), pathType,
+            return new ReferenceMapper(buildNames(context),
                     multiFieldsBuilder.build(this, context), copyTo,
                     contentMapper,
                     refMappers,
@@ -183,9 +175,6 @@ public class ReferenceMapper extends AbstractFieldMapper<Object> {
                 String fieldName = entry.getKey();
                 Object fieldNode = entry.getValue();
                 switch (fieldName) {
-                    case "path":
-                        builder.pathType(parsePathType(name, fieldNode.toString()));
-                        break;
                     case "fields":
                         Map<String, Object> fieldsNode = (Map<String, Object>) fieldNode;
                         for (Map.Entry<String, Object> entry1 : fieldsNode.entrySet()) {
@@ -219,8 +208,6 @@ public class ReferenceMapper extends AbstractFieldMapper<Object> {
         }
     }
 
-    private final ContentPath.Type pathType;
-
     private final Mapper contentMapper;
 
     private final List<Mapper> refMappers;
@@ -233,7 +220,7 @@ public class ReferenceMapper extends AbstractFieldMapper<Object> {
 
     private String[] fields;
 
-    public ReferenceMapper(Names names, ContentPath.Type pathType,
+    public ReferenceMapper(Names names,
                            MultiFields multiFields, CopyTo copyTo,
                            Mapper contentMapper,
                            List<Mapper> refMappers,
@@ -243,7 +230,6 @@ public class ReferenceMapper extends AbstractFieldMapper<Object> {
                            String[] fields) {
         super(names, 1.0f, Defaults.FIELD_TYPE, false, null, null, null, null, null, null, null,
                 ImmutableSettings.EMPTY, multiFields, copyTo);
-        this.pathType = pathType;
         this.contentMapper = contentMapper;
         this.refMappers = refMappers;
         this.client = client;
@@ -281,20 +267,21 @@ public class ReferenceMapper extends AbstractFieldMapper<Object> {
                 if (token == XContentParser.Token.FIELD_NAME) {
                     currentFieldName = parser.currentName();
                 } else if (token == XContentParser.Token.VALUE_STRING) {
-                    switch (currentFieldName) {
-                        case "ref_id":
-                            content = parser.text();
-                            break;
-                        case "ref_index":
-                            index = parser.text();
-                            break;
-                        case "ref_type":
-                            type = parser.text();
-                            break;
-                        case "ref_fields":
-                            fields = new String[]{parser.text()};
-                            break;
-
+                    if (currentFieldName != null) {
+                        switch (currentFieldName) {
+                            case "ref_id":
+                                content = parser.text();
+                                break;
+                            case "ref_index":
+                                index = parser.text();
+                                break;
+                            case "ref_type":
+                                type = parser.text();
+                                break;
+                            case "ref_fields":
+                                fields = new String[]{parser.text()};
+                                break;
+                        }
                     }
                 } else if (token == XContentParser.Token.START_ARRAY) {
                     List<String> values = newLinkedList();
@@ -376,7 +363,6 @@ public class ReferenceMapper extends AbstractFieldMapper<Object> {
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject(name());
         builder.field("type", REF);
-        builder.field("path", pathType.name().toLowerCase());
         if (index != null) {
             builder.field("ref_index", index);
         }

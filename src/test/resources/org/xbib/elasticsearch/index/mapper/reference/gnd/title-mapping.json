@@ -398,14 +398,17 @@
                             "identifierGND": {
                                 "type": "string"
                             },
-                            "bib.nameConference": {
-                                "type": "string"
+                            "nameConference": {
+                                "type": "string",
+                                "copy_to": "bib.nameConference"
                             },
-                            "bib.nameCorporate": {
-                                "type": "string"
+                            "nameCorporate": {
+                                "type": "string",
+                                "copy_to": "bib.nameCorporate"
                             },
-                            "cql.allIndexes": {
-                                "type": "string"
+                            "allIndexes": {
+                                "type": "string",
+                                "copy_to": "cql.allIndexes"
                             }
                         }
                     },
@@ -521,11 +524,13 @@
                             "identifierGND": {
                                 "type": "string"
                             },
-                            "bib.nameCorporate": {
-                                "type": "string"
+                            "nameCorporate": {
+                                "type": "string",
+                                "copy_to": "bib.nameCorporate"
                             },
-                            "cql.allIndexes": {
-                                "type": "string"
+                            "allIndexes": {
+                                "type": "string",
+                                "copy_to": "cql.allIndexes"
                             }
                         }
                     },
@@ -1471,14 +1476,17 @@
                             "identifierGND": {
                                 "type": "string"
                             },
-                            "dc.subject": {
-                                "type": "string"
+                            "subject": {
+                                "type": "string",
+                                "copy_to": "dc.subject"
                             },
-                            "bib.nameCorporate": {
-                                "type": "string"
+                            "nameCorporate": {
+                                "type": "string",
+                                "copy_to": "bib.nameCorporate"
                             },
-                            "cql.allIndexes": {
-                                "type": "string"
+                            "allIndexes": {
+                                "type": "string",
+                                "copy_to": "cql.allIndexes"
                             }
                         }
                     },
@@ -2156,8 +2164,9 @@
                             "identifierGND": {
                                 "type": "string"
                             },
-                            "cql.allIndexes": {
-                                "type": "string"
+                            "allIndexes": {
+                                "type": "string",
+                                "copy_to": "cql.allIndexes"
                             }
                         }
                     },
@@ -2521,11 +2530,13 @@
                             "identifierGND": {
                                 "type": "string"
                             },
-                            "bib.namePersonal": {
-                                "type": "string"
+                            "namePersonal": {
+                                "type": "string",
+                                "copy_to": "bib.namePersonal"
                             },
-                            "cql.allIndexes": {
-                                "type": "string"
+                            "allIndexes": {
+                                "type": "string",
+                                "copy_to": "cql.allIndexes"
                             }
                         }
                     },
@@ -2610,11 +2621,13 @@
                             "identifierGND": {
                                 "type": "string"
                             },
-                            "bib.namePersonal": {
-                                "type": "string"
+                            "namePersonal": {
+                                "type": "string",
+                                "copy_to": "bib.namePersonal"
                             },
-                            "cql.allIndexes": {
-                                "type": "string"
+                            "allIndexes": {
+                                "type": "string",
+                                "copy_to": "cql.allIndexes"
                             }
                         }
                     },
@@ -2691,11 +2704,13 @@
                             "identifierGND": {
                                 "type": "string"
                             },
-                            "bib.namePersonal": {
-                                "type": "string"
+                            "namePersonal": {
+                                "type": "string",
+                                "copy_to": "bib.namePersonal"
                             },
-                            "cql.allIndexes": {
-                                "type": "string"
+                            "allIndexes": {
+                                "type": "string",
+                                "copy_to": "cql.allIndexes"
                             }
                         }
                     },
@@ -2780,11 +2795,13 @@
                             "identifierGND": {
                                 "type": "string"
                             },
-                            "bib.namePersonal": {
-                                "type": "string"
+                            "namePersonal": {
+                                "type": "string",
+                                "copy_to": "bib.namePersonal"
                             },
-                            "cql.allIndexes": {
-                                "type": "string"
+                            "allIndexes": {
+                                "type": "string",
+                                "copy_to":  "cql.allIndexes"
                             }
                         }
                     },
@@ -2877,11 +2894,13 @@
                             "identifierGND": {
                                 "type": "string"
                             },
-                            "bib.namePersonal": {
-                                "type": "string"
+                            "namePersonal": {
+                                "type": "string",
+                                "copy_to": "bib.namePersonal"
                             },
-                            "cql.allIndexes": {
-                                "type": "string"
+                            "allIndexes": {
+                                "type": "string",
+                                "copy_to": "cql.allIndexes"
                             }
                         }
                     },
@@ -3079,11 +3098,13 @@
                             "identifierGND": {
                                 "type": "string"
                             },
-                            "dc.subject": {
-                                "type": "string"
+                            "subject": {
+                                "type": "string",
+                                "copy_to": "dc.subject"
                             },
-                            "cql.allIndexes": {
-                                "type": "string"
+                            "allIndexes": {
+                                "type": "string",
+                                "copy_to": "cql.allIndexes"
                             }
                         }
                     },
