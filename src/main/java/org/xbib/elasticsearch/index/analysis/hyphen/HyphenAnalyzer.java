@@ -36,8 +36,8 @@ public class HyphenAnalyzer extends Analyzer {
     }
 
     @Override
-    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
-        Tokenizer tokenizer = tokenizerFactory.create(reader);
+    protected TokenStreamComponents createComponents(String fieldName) {
+        Tokenizer tokenizer = tokenizerFactory.create();
         return new TokenStreamComponents(tokenizer, tokenizer);
     }
 

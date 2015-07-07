@@ -4,12 +4,10 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.util.Version;
 
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.inject.ModulesBuilder;
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.SettingsModule;
 import org.elasticsearch.env.Environment;
@@ -65,7 +63,8 @@ public class BaseformTokenFilterTests extends Assert {
             "kosten"
         };
 
-        Tokenizer tokenizer = new StandardTokenizer(Version.LATEST, new StringReader(source));
+        Tokenizer tokenizer = new StandardTokenizer();
+        tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
 
     }
@@ -92,7 +91,8 @@ public class BaseformTokenFilterTests extends Assert {
                 "transportieren"
         };
 
-        Tokenizer tokenizer = new StandardTokenizer(Version.LATEST, new StringReader(source));
+        Tokenizer tokenizer = new StandardTokenizer();
+        tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 
@@ -114,13 +114,15 @@ public class BaseformTokenFilterTests extends Assert {
                 "gemacht",
                 "machen"
         };
-        Tokenizer tokenizer = new StandardTokenizer(Version.LATEST, new StringReader(source));
+        Tokenizer tokenizer = new StandardTokenizer();
+        tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 
     private AnalysisService createAnalysisService() {
-        Settings settings = ImmutableSettings.settingsBuilder()
+        Settings settings = Settings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, org.elasticsearch.Version.CURRENT)
+                .put("path.home", System.getProperty("path.home"))
                 .build();
         Index index = new Index("test");
         Injector parentInjector = new ModulesBuilder().add(new SettingsModule(settings),

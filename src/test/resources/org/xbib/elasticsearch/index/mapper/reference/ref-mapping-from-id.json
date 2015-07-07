@@ -1,15 +1,17 @@
 {
     "docs" : {
-        "properties" : {
+        "properties": {
             "authorID": {
-                "type" : "ref",
-                "ref_index" : "authorities",
-                "ref_type" : "persons",
-                "ref_fields" : [ "author" ],
-                "fields" : {
-                      "ref" : { "store" : true }
-                }
-             }
+                "type": "ref",
+                "ref_index": "authorities",
+                "ref_type": "persons",
+                "ref_fields": [
+                    "author"
+                ],
+                "to": [
+                    "ref"
+                ]
+            }
         }
     }
 }

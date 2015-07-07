@@ -23,7 +23,7 @@
 package org.xbib.elasticsearch.index.analysis.decompound;
 
 import org.apache.lucene.analysis.TokenStream;
-import org.elasticsearch.ElasticsearchIllegalArgumentException;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
@@ -53,18 +53,16 @@ public class DecompoundTokenFilterFactory extends AbstractTokenFilterFactory {
 
     private Decompounder createDecompounder(Environment env, Settings settings) {
         try {
-            String forward = settings.get("forward", "/decompound/kompVVic.tree");
-            String backward = settings.get("backward", "/decompound/kompVHic.tree");
-            String reduce = settings.get("reduce", "/decompound/grfExt.tree");
+            String forward = settings.get("forward", "decompound/kompVVic.tree");
+            String backward = settings.get("backward", "decompound/kompVHic.tree");
+            String reduce = settings.get("reduce", "decompound/grfExt.tree");
             double threshold = settings.getAsDouble("threshold", 0.51);
             return new Decompounder(env.resolveConfig(forward).openStream(),
                     env.resolveConfig(backward).openStream(),
                     env.resolveConfig(reduce).openStream(),
                     threshold);
-        } catch (ClassNotFoundException e) {
-            throw new ElasticsearchIllegalArgumentException("decompounder resources in settings not found: " + settings, e);
-        } catch (IOException e) {
-            throw new ElasticsearchIllegalArgumentException("decompounder resources in settings not found: " + settings, e);
+        } catch (Exception e) {
+            throw new ElasticsearchException("decompounder resources in settings not found: " + settings, e);
         }
     }
 }

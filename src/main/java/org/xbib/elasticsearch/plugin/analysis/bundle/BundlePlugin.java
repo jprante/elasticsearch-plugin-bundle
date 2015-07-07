@@ -29,7 +29,6 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.analysis.AnalysisModule;
 import org.elasticsearch.plugins.AbstractPlugin;
 import org.xbib.elasticsearch.index.analysis.baseform.BaseformAnalysisBinderProcessor;
-import org.xbib.elasticsearch.index.analysis.combo.ComboAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.concat.ConcatAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.decompound.DecompoundAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.german.GermanAnalysisBinderProcessor;
@@ -46,7 +45,7 @@ import org.xbib.elasticsearch.module.standardnumber.StandardnumberIndexModule;
 
 import java.util.Collection;
 
-import static org.elasticsearch.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.newArrayList;
 
 public class BundlePlugin extends AbstractPlugin {
 
@@ -75,9 +74,6 @@ public class BundlePlugin extends AbstractPlugin {
     public void onModule(AnalysisModule module) {
         if (settings.getAsBoolean("plugins.baseform.enabled", true)) {
             module.addProcessor(new BaseformAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.combo.enabled", true)) {
-            module.addProcessor(new ComboAnalysisBinderProcessor());
         }
         if (settings.getAsBoolean("plugins.concat.enabled", true)) {
             module.addProcessor(new ConcatAnalysisBinderProcessor());

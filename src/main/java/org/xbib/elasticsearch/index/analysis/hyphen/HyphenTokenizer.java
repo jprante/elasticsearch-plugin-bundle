@@ -24,7 +24,6 @@ package org.xbib.elasticsearch.index.analysis.hyphen;
 
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.standard.StandardTokenizerInterface;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
@@ -32,11 +31,10 @@ import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.util.AttributeFactory;
 
 import java.io.IOException;
-import java.io.Reader;
 
 public final class HyphenTokenizer extends Tokenizer {
 
-    private StandardTokenizerInterface scanner;
+    private HyphenTokenizerImpl scanner;
 
     public static final int ALPHANUM = 0;
     public static final int ALPHANUM_COMP = 1;
@@ -78,19 +76,17 @@ public final class HyphenTokenizer extends Tokenizer {
     /**
      * Creates a new instance of the {@link HyphenTokenizer}.  Attaches
      * the <code>input</code> to the newly created JFlex scanner.
-     *
-     * @param input The input reader
      */
-    public HyphenTokenizer(Reader input) {
-        super(input);
+    public HyphenTokenizer() {
+        super();
         init();
     }
 
     /**
      * Creates a new {@link HyphenTokenizer} with a given {@link org.apache.lucene.util.AttributeFactory}
      */
-    public HyphenTokenizer(AttributeFactory factory, Reader input) {
-        super(factory, input);
+    public HyphenTokenizer(AttributeFactory factory) {
+        super(factory);
         init();
     }
 
@@ -109,7 +105,7 @@ public final class HyphenTokenizer extends Tokenizer {
         skippedPositions = 0;
         while (true) {
             int tokenType = scanner.getNextToken();
-            if (tokenType == StandardTokenizerInterface.YYEOF) {
+            if (tokenType == HyphenTokenizerImpl.YYEOF) {
                 return false;
             }
             if (scanner.yylength() <= maxTokenLength) {

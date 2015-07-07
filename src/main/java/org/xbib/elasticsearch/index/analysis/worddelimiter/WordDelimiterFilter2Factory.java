@@ -18,8 +18,8 @@ import java.util.SortedMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.elasticsearch.common.collect.Maps.newTreeMap;
-import static org.elasticsearch.common.collect.Sets.newHashSet;
+import static com.google.common.collect.Maps.newTreeMap;
+import static com.google.common.collect.Sets.newHashSet;
 
 /**
  * Factory for {@link WordDelimiterFilter2}.

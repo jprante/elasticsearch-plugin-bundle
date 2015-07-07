@@ -36,6 +36,7 @@ public class RegisterLangdetectType extends AbstractIndexComponent {
     public RegisterLangdetectType(Index index, @IndexSettings Settings indexSettings,
                                   MapperService mapperService) {
         super(index, indexSettings);
-        mapperService.documentMapperParser().putTypeParser("langdetect", new LangdetectMapper.TypeParser());
+        mapperService.documentMapperParser().putTypeParser(LangdetectMapper.CONTENT_TYPE,
+                new LangdetectMapper.TypeParser());
     }
 }

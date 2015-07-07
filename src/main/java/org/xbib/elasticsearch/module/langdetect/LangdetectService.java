@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.common.component.AbstractLifecycleComponent;
 import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.xbib.elasticsearch.index.analysis.langdetect.LangProfile;
 import org.xbib.elasticsearch.index.analysis.langdetect.Language;
@@ -177,16 +176,16 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
         }
         try {
             // map by settings
-            Settings map = ImmutableSettings.EMPTY;
+            Settings map = Settings.EMPTY;
             if (settings.getByPrefix("map.") != null) {
-                map = ImmutableSettings.settingsBuilder().put(settings.getByPrefix("map.")).build();
+                map = Settings.settingsBuilder().put(settings.getByPrefix("map.")).build();
             }
             if (map.getAsMap().isEmpty()) {
                 // is in "map" a resource name?
                 String s = settings.get("map") != null ? settings.get("map") : "/langdetect/language.json";
                 InputStream in = getClass().getResourceAsStream(s);
                 if (in != null) {
-                    map = ImmutableSettings.settingsBuilder().loadFromStream(s, in).build();
+                    map = Settings.settingsBuilder().loadFromStream(s, in).build();
                 }
             }
             this.langmap = map.getAsMap();

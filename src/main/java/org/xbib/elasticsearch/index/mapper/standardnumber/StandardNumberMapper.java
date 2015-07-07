@@ -22,30 +22,57 @@
  */
 package org.xbib.elasticsearch.index.mapper.standardnumber;
 
+import org.apache.lucene.document.Field;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
-import org.elasticsearch.index.mapper.FieldMapperListener;
+import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
-import org.elasticsearch.index.mapper.MergeContext;
 import org.elasticsearch.index.mapper.MergeMappingException;
-import org.elasticsearch.index.mapper.ObjectMapperListener;
+import org.elasticsearch.index.mapper.MergeResult;
 import org.elasticsearch.index.mapper.ParseContext;
+import org.elasticsearch.index.mapper.core.AbstractFieldMapper;
 import org.elasticsearch.index.mapper.core.StringFieldMapper;
 import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberService;
 import org.xbib.standardnumber.StandardNumber;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import static org.elasticsearch.index.mapper.MapperBuilders.stringField;
 
-public class StandardnumberMapper implements Mapper {
+public class StandardnumberMapper extends AbstractFieldMapper {
 
     public static final String CONTENT_TYPE = "standardnumber";
 
-    public static class Builder extends Mapper.Builder<Builder, StandardnumberMapper> {
+    static final class StandardnumberFieldType extends MappedFieldType {
+
+        protected StandardnumberFieldType() {
+            super();
+        }
+
+        protected StandardnumberFieldType(StandardnumberMapper.StandardnumberFieldType ref) {
+            super(ref);
+        }
+
+        public StandardnumberMapper.StandardnumberFieldType clone() {
+            return new StandardnumberMapper.StandardnumberFieldType(this);
+        }
+
+        @Override
+        public String typeName() {
+            return "standardnumber";
+        }
+
+        public String value(Object value) {
+            return value == null ? null : value.toString();
+        }
+    }
+
+    public static class Builder extends AbstractFieldMapper.Builder<Builder, StandardnumberMapper> {
 
         private StringFieldMapper.Builder contentBuilder;
 
@@ -54,7 +81,7 @@ public class StandardnumberMapper implements Mapper {
         private StandardnumberService service;
 
         public Builder(String name, StandardnumberService service) {
-            super(name);
+            super(name, new StandardnumberFieldType());
             this.service = service;
             this.contentBuilder = stringField(name);
             this.builder = this;
@@ -76,7 +103,12 @@ public class StandardnumberMapper implements Mapper {
             StringFieldMapper contentMapper = contentBuilder.build(context);
             StringFieldMapper stdnumMapper = stdnumBuilder.build(context);
             context.path().remove();
-            return new StandardnumberMapper(name, service, contentMapper, stdnumMapper);
+            return new StandardnumberMapper(name,
+                    fieldType,
+                    defaultFieldType,
+                    service,
+                    contentMapper,
+                    stdnumMapper);
         }
     }
 
@@ -90,13 +122,14 @@ public class StandardnumberMapper implements Mapper {
 
         @SuppressWarnings({"unchecked","rawtypes"})
         @Override
-        public Mapper.Builder parse(String name, Map<String, Object> node, ParserContext parserContext)
+        public Mapper.Builder parse(String name, Map<String, Object> mapping, ParserContext parserContext)
                 throws MapperParsingException {
             StandardnumberMapper.Builder builder = new Builder(name, service);
-            for (Map.Entry<String, Object> entry : node.entrySet()) {
+            Iterator<Map.Entry<String, Object>> iterator = mapping.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, Object> entry = iterator.next();
                 String fieldName = entry.getKey();
                 Object fieldNode = entry.getValue();
-
                 if (fieldName.equals("fields")) {
                     Map<String, Object> fieldsNode = (Map<String, Object>) fieldNode;
                     for (Map.Entry<String, Object> fieldsEntry : fieldsNode.entrySet()) {
@@ -111,6 +144,7 @@ public class StandardnumberMapper implements Mapper {
                                     (Map<String, Object>) propNode, parserContext));
                         }
                     }
+                    iterator.remove();
                 }
             }
 
@@ -118,27 +152,24 @@ public class StandardnumberMapper implements Mapper {
         }
     }
 
-    private final String name;
     private final StandardnumberService service;
     private final StringFieldMapper contentMapper;
     private final StringFieldMapper stdnumMapper;
 
-    public StandardnumberMapper(String name, StandardnumberService service,
+    public StandardnumberMapper(String name,
+                                MappedFieldType fieldType,
+                                MappedFieldType defaultFieldType,
+                                StandardnumberService service,
                                 StringFieldMapper contentMapper,
                                 StringFieldMapper stdnumMapper) {
-        this.name = name;
+        super(name, fieldType, defaultFieldType, null, null,null);
         this.service = service;
         this.contentMapper = contentMapper;
         this.stdnumMapper = stdnumMapper;
     }
 
     @Override
-    public String name() {
-        return name;
-    }
-
-    @Override
-    public void parse(ParseContext context) throws IOException {
+    public Mapper parse(ParseContext context) throws IOException {
         String content = null;
 
         XContentParser parser = context.parser();
@@ -148,11 +179,10 @@ public class StandardnumberMapper implements Mapper {
             content = parser.text();
         }
         if (content == null) {
-            return;
+            return null;
         }
         context = context.createExternalValueContext(content);
         contentMapper.parse(context);
-
         try {
             Collection<StandardNumber> stdnums = service.detect(content);
             for (StandardNumber stdnum : stdnums) {
@@ -163,39 +193,31 @@ public class StandardnumberMapper implements Mapper {
             context = context.createExternalValueContext("unknown");
             stdnumMapper.parse(context);
         }
+        return null;
     }
 
     @Override
-    public void merge(Mapper mergeWith, MergeContext mergeContext) throws MergeMappingException {
+    protected void parseCreateField(ParseContext parseContext, List<Field> fields) throws IOException {
     }
 
     @Override
-    public void traverse(FieldMapperListener fieldMapperListener) {
-        contentMapper.traverse(fieldMapperListener);
-        stdnumMapper.traverse(fieldMapperListener);
-    }
-
-    @Override
-    public void traverse(ObjectMapperListener objectMapperListener) {
-    }
-
-    @Override
-    public void close() {
-        contentMapper.close();
-        stdnumMapper.close();
+    public void merge(Mapper mergeWith, MergeResult mergeResult) throws MergeMappingException {
     }
 
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
-        builder.startObject(name);
+        builder.startObject(name());
         builder.field("type", CONTENT_TYPE);
-
         builder.startObject("fields");
         contentMapper.toXContent(builder, params);
         stdnumMapper.toXContent(builder, params);
         builder.endObject();
-
         builder.endObject();
         return builder;
+    }
+
+    @Override
+    protected String contentType() {
+        return CONTENT_TYPE;
     }
 }

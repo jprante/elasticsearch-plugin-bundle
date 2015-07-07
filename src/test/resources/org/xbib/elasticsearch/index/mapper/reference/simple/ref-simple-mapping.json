@@ -1,0 +1,9 @@
+{
+  "ref" : {
+    "properties": {
+      "author": {
+        "type": "string"
+      }
+    }
+  }
+}

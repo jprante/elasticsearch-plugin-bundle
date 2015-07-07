@@ -1,9 +1,9 @@
 {
     "title" : "A title",
+    "authorID" : "1",
     "dc" : {
         "creator" : "A creator"
     },
-    "authorID" : "1",
     "bib" : {
         "contributor" : "A contributor"
     }

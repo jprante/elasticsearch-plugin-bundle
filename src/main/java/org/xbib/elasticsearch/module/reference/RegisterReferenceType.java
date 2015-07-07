@@ -37,6 +37,7 @@ public class RegisterReferenceType extends AbstractIndexComponent {
     public RegisterReferenceType(Index index, @IndexSettings Settings indexSettings,
                                  MapperService mapperService, Client client) {
         super(index, indexSettings);
-        mapperService.documentMapperParser().putTypeParser("ref", new ReferenceMapper.TypeParser(client));
+        mapperService.documentMapperParser().putTypeParser(ReferenceMapper.CONTENT_TYPE,
+                new ReferenceMapper.TypeParser(client));
     }
 }

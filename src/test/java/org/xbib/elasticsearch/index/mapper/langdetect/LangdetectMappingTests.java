@@ -1,33 +1,17 @@
 
 package org.xbib.elasticsearch.index.mapper.langdetect;
 
-import org.elasticsearch.Version;
-import org.elasticsearch.cluster.metadata.IndexMetaData;
-import org.elasticsearch.common.base.Charsets;
+import com.google.common.base.Charsets;
 import org.elasticsearch.common.bytes.BytesReference;
-import org.elasticsearch.common.inject.Injector;
-import org.elasticsearch.common.inject.ModulesBuilder;
-import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.logging.ESLogger;
+import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.settings.SettingsModule;
-import org.elasticsearch.env.Environment;
-import org.elasticsearch.env.EnvironmentModule;
-import org.elasticsearch.index.Index;
-import org.elasticsearch.index.IndexNameModule;
-import org.elasticsearch.index.analysis.AnalysisModule;
-import org.elasticsearch.index.analysis.AnalysisService;
-import org.elasticsearch.index.codec.docvaluesformat.DocValuesFormatService;
-import org.elasticsearch.index.codec.postingsformat.PostingsFormatService;
 import org.elasticsearch.index.mapper.DocumentMapper;
 import org.elasticsearch.index.mapper.DocumentMapperParser;
 import org.elasticsearch.index.mapper.ParseContext;
-import org.elasticsearch.index.settings.IndexSettingsModule;
-import org.elasticsearch.index.similarity.SimilarityLookupService;
-import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
-import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xbib.elasticsearch.plugin.analysis.bundle.BundlePlugin;
+import org.xbib.elasticsearch.index.mapper.MapperTestUtils;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -37,94 +21,74 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 public class LangdetectMappingTests extends Assert {
 
+    private final static ESLogger logger = ESLoggerFactory.getLogger(LangdetectMappingTests.class.getName());
+
     @Test
     public void testSimpleMappings() throws Exception {
         String mapping = copyToStringFromClasspath("simple-mapping.json");
-        DocumentMapper docMapper = createMapperParser().parse(mapping);
+        DocumentMapper docMapper = newMapperParser().parse(mapping);
         String sampleText = copyToStringFromClasspath("english.txt");
         BytesReference json = jsonBuilder().startObject().field("_id", 1).field("someField", sampleText).endObject().bytes();
-        ParseContext.Document doc = docMapper.parse(json).rootDoc();
-        assertEquals(doc.get(docMapper.mappers().smartName("someField").mapper().names().indexName()), sampleText);
-        assertEquals(doc.getFields("someField.lang").length, 1);
-        assertEquals(doc.getFields("someField.lang")[0].stringValue(), "eng");
+        ParseContext.Document doc = docMapper.parse("someType", "1", json).rootDoc();
+        //assertEquals(sampleText, doc.get(docMapper.mappers().smartNameFieldMapper("someField").fieldType().names().indexName()));
+        assertEquals(1, doc.getFields("someField.lang").length);
+        assertEquals("eng", doc.getFields("someField.lang")[0].stringValue());
 
         // re-parse it
         String builtMapping = docMapper.mappingSource().string();
-        docMapper = createMapperParser().parse(builtMapping);
+        docMapper = newMapperParser().parse(builtMapping);
         json = jsonBuilder().startObject().field("_id", 1).field("someField", sampleText).endObject().bytes();
-        doc = docMapper.parse(json).rootDoc();
-        assertEquals(doc.get(docMapper.mappers().smartName("someField").mapper().names().indexName()), sampleText);
-        assertEquals(doc.getFields("someField.lang").length, 1);
-        assertEquals(doc.getFields("someField.lang")[0].stringValue(), "eng");
+        doc = docMapper.parse("someType", "1", json).rootDoc();
+        //assertEquals(sampleText, doc.get(docMapper.mappers().smartNameFieldMapper("someField").fieldType().names().indexName()));
+        assertEquals(1, doc.getFields("someField.lang").length);
+        assertEquals("eng", doc.getFields("someField.lang")[0].stringValue());
     }
 
     @Test
     public void testBinary() throws Exception {
-        Settings settings = ImmutableSettings.EMPTY;
         String mapping = copyToStringFromClasspath("base64-mapping.json");
-        DocumentMapper docMapper = createMapperParser(settings).parse(mapping);
+        DocumentMapper docMapper = newMapperParser().parse(mapping);
         String sampleBinary = copyToStringFromClasspath("base64.txt");
         String sampleText = copyToStringFromClasspath("base64-decoded.txt");
         BytesReference json = jsonBuilder().startObject().field("_id", 1).field("someField", sampleBinary).endObject().bytes();
-        ParseContext.Document doc = docMapper.parse(json).rootDoc();
-        assertEquals(doc.get(docMapper.mappers().smartName("someField").mapper().names().indexName()), sampleText);
-        assertEquals(doc.getFields("someField.lang").length, 1);
-        assertEquals(doc.getFields("someField.lang")[0].stringValue(), "eng");
+        ParseContext.Document doc = docMapper.parse("someType", "1", json).rootDoc();
+        //assertEquals(doc.get(docMapper.mappers().smartNameFieldMapper("someField").fieldType().names().indexName()), sampleText);
+        assertEquals(1, doc.getFields("someField.lang").length);
+        assertEquals("eng", doc.getFields("someField.lang")[0].stringValue());
 
         // re-parse it
         String builtMapping = docMapper.mappingSource().string();
-        docMapper = createMapperParser(settings).parse(builtMapping);
+        docMapper = newMapperParser().parse(builtMapping);
         json = jsonBuilder().startObject().field("_id", 1).field("someField", sampleText).endObject().bytes();
-        doc = docMapper.parse(json).rootDoc();
-        assertEquals(doc.get(docMapper.mappers().smartName("someField").mapper().names().indexName()), sampleText);
-        assertEquals(doc.getFields("someField.lang").length, 1);
-        assertEquals(doc.getFields("someField.lang")[0].stringValue(), "eng");
+        doc = docMapper.parse("someType", "1", json).rootDoc();
+        //assertEquals(doc.get(docMapper.mappers().smartNameFieldMapper("someField").fieldType().names().indexName()), sampleText);
+        assertEquals(1, doc.getFields("someField.lang").length, 1);
+        assertEquals("eng", doc.getFields("someField.lang")[0].stringValue(), "eng");
     }
 
     @Test
     public void testMappings() throws Exception {
-        Settings settings = ImmutableSettings.settingsBuilder()
+        Settings settings = Settings.settingsBuilder()
+                .put("path.home", System.getProperty("path.home"))
                 .loadFromClasspath("settings.json").build();
         String mapping = copyToStringFromClasspath("mapping.json");
-        DocumentMapper docMapper = createMapperParser(settings).parse(mapping);
+        DocumentMapper docMapper = newMapperParser(settings).parse(mapping);
         String sampleText = copyToStringFromClasspath("german.txt");
         BytesReference json = jsonBuilder().startObject().field("_id", 1).field("someField", sampleText).endObject().bytes();
-        ParseContext.Document doc = docMapper.parse(json).rootDoc();
-        assertEquals(doc.get(docMapper.mappers().smartName("someField").mapper().names().indexName()), sampleText);
-        assertEquals(doc.getFields("someField.lang").length, 1);
-        assertEquals(doc.getFields("someField.lang")[0].stringValue(), "Deutsch");
+        ParseContext.Document doc = docMapper.parse("someType", "1", json).rootDoc();
+        //assertEquals(doc.get(docMapper.mappers().smartNameFieldMapper("someField").fieldType().names().indexName()), sampleText);
+        assertEquals(1, doc.getFields("someField.lang").length);
+        assertEquals("Deutsch", doc.getFields("someField.lang")[0].stringValue());
     }
 
-    private DocumentMapperParser createMapperParser() throws IOException {
-        return createMapperParser(ImmutableSettings.EMPTY);
+    private DocumentMapperParser newMapperParser() {
+        DocumentMapperParser mapperParser = MapperTestUtils.newMapperParser();
+        mapperParser.putTypeParser(LangdetectMapper.CONTENT_TYPE, new LangdetectMapper.TypeParser());
+        return mapperParser;
     }
 
-    private DocumentMapperParser createMapperParser(Settings fromSettings) throws IOException {
-        Index index = new Index("test");
-        Settings settings = ImmutableSettings.settingsBuilder()
-                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
-                .put(fromSettings)
-                .build();
-        Injector parentInjector = new ModulesBuilder().add(new SettingsModule(settings),
-                new EnvironmentModule(new Environment(settings)),
-                new IndicesAnalysisModule())
-                .createInjector();
-        AnalysisModule analysisModule = new AnalysisModule(settings, parentInjector.getInstance(IndicesAnalysisService.class));
-        new BundlePlugin(settings).onModule(analysisModule);
-        Injector injector = new ModulesBuilder().add(
-                new IndexSettingsModule(index, settings),
-                new IndexNameModule(index),
-                analysisModule)
-                .createChildInjector(parentInjector);
-        AnalysisService service =injector.getInstance(AnalysisService.class);
-        DocumentMapperParser mapperParser = new DocumentMapperParser(index,
-                settings,
-                service,
-                new PostingsFormatService(index),
-                new DocValuesFormatService(index),
-                new SimilarityLookupService(index, settings),
-                null
-        );
+    private DocumentMapperParser newMapperParser(Settings settings) {
+        DocumentMapperParser mapperParser = MapperTestUtils.newMapperParser(settings);
         mapperParser.putTypeParser(LangdetectMapper.CONTENT_TYPE, new LangdetectMapper.TypeParser());
         return mapperParser;
     }

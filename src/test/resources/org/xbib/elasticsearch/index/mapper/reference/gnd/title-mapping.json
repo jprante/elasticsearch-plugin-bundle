@@ -2,8 +2,7 @@
     "title": {
         "date_detection": false,
         "_timestamp": {
-            "enabled": true,
-            "store": true
+            "enabled": true
         },
         "properties": {
             "Abstract": {
@@ -305,9 +304,6 @@
             },
             "Conference": {
                 "properties": {
-                    "a": {
-                        "type": "string"
-                    },
                     "conferenceDate": {
                         "type": "string",
                         "copy_to": [
@@ -383,9 +379,15 @@
                         },
                         "analyzer": "keyword"
                     },
+                    "identifierZDB": {
+                        "type": "string",
+                        "norms": {
+                            "enabled": false
+                        },
+                        "analyzer": "keyword"
+                    },
                     "identifierGND": {
                         "type": "ref",
-                        "path": "full",
                         "ref_index": "gnd",
                         "ref_type": "gnd",
                         "ref_fields": [
@@ -399,25 +401,15 @@
                                 "type": "string"
                             },
                             "nameConference": {
-                                "type": "string",
-                                "copy_to": "bib.nameConference"
+                                "type": "string"
                             },
                             "nameCorporate": {
-                                "type": "string",
-                                "copy_to": "bib.nameCorporate"
+                                "type": "string"
                             },
                             "allIndexes": {
-                                "type": "string",
-                                "copy_to": "cql.allIndexes"
+                                "type": "string"
                             }
                         }
-                    },
-                    "identifierZDB": {
-                        "type": "string",
-                        "norms": {
-                            "enabled": false
-                        },
-                        "analyzer": "keyword"
                     }
                 }
             },
@@ -511,7 +503,6 @@
                     },
                     "identifierGND": {
                         "type": "ref",
-                        "path": "full",
                         "ref_index": "gnd",
                         "ref_type": "gnd",
                         "ref_fields": [
@@ -526,10 +517,12 @@
                             },
                             "nameCorporate": {
                                 "type": "string",
+                                "index": "no",
                                 "copy_to": "bib.nameCorporate"
                             },
                             "allIndexes": {
                                 "type": "string",
+                                "index": "no",
                                 "copy_to": "cql.allIndexes"
                             }
                         }
@@ -1465,7 +1458,6 @@
                     },
                     "identifierGND": {
                         "type": "ref",
-                        "path": "full",
                         "ref_index": "gnd",
                         "ref_type": "gnd",
                         "ref_fields": [
@@ -1478,14 +1470,17 @@
                             },
                             "subject": {
                                 "type": "string",
+                                "index": "no",
                                 "copy_to": "dc.subject"
                             },
                             "nameCorporate": {
                                 "type": "string",
+                                "index": "no",
                                 "copy_to": "bib.nameCorporate"
                             },
                             "allIndexes": {
                                 "type": "string",
+                                "index": "no",
                                 "copy_to": "cql.allIndexes"
                             }
                         }
@@ -2149,7 +2144,6 @@
                     },
                     "identifierGND": {
                         "type": "ref",
-                        "path": "full",
                         "ref_index": "gnd",
                         "ref_type": "gnd",
                         "ref_fields": [
@@ -2176,9 +2170,6 @@
                             "enabled": false
                         },
                         "analyzer": "keyword"
-                    },
-                    "m": {
-                        "type": "string"
                     },
                     "musicDate": {
                         "type": "string"
@@ -2519,7 +2510,6 @@
                     },
                     "identifierGND": {
                         "type": "ref",
-                        "path": "full",
                         "ref_index": "gnd",
                         "ref_type": "gnd",
                         "ref_fields": [
@@ -2610,7 +2600,6 @@
                     },
                     "identifierGND": {
                         "type": "ref",
-                        "path": "full",
                         "ref_index": "gnd",
                         "ref_type": "gnd",
                         "ref_fields": [
@@ -2693,7 +2682,6 @@
                     },
                     "identifierGND": {
                         "type": "ref",
-                        "path": "full",
                         "ref_index": "gnd",
                         "ref_type": "gnd",
                         "ref_fields": [
@@ -2784,7 +2772,6 @@
                     },
                     "identifierGND": {
                         "type": "ref",
-                        "path": "full",
                         "ref_index": "gnd",
                         "ref_type": "gnd",
                         "ref_fields": [
@@ -2883,7 +2870,6 @@
                     },
                     "identifierGND": {
                         "type": "ref",
-                        "path": "full",
                         "ref_index": "gnd",
                         "ref_type": "gnd",
                         "ref_fields": [
@@ -3078,7 +3064,6 @@
                     },
                     "identifierGND": {
                         "type": "ref",
-                        "path": "full",
                         "ref_index": "gnd",
                         "ref_type": "gnd",
                         "ref_fields": [

@@ -29,7 +29,6 @@ import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.index.analysis.TokenizerFactory;
 import org.elasticsearch.index.analysis.UniqueTokenFilterFactory;
 
-import java.io.Reader;
 import java.util.Arrays;
 
 public class StandardnumberAnalyzer extends Analyzer {
@@ -47,8 +46,8 @@ public class StandardnumberAnalyzer extends Analyzer {
     }
 
     @Override
-    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
-        Tokenizer tokenizer = tokenizerFactory.create(reader);
+    protected TokenStreamComponents createComponents(String fieldName) {
+        Tokenizer tokenizer = tokenizerFactory.create();
         TokenStream tokenStream = tokenizer;
         for (TokenFilterFactory tokenFilter : Arrays.asList(stdnumTokenFilterFactory, uniqueTokenFilterFactory)) {
             tokenStream = tokenFilter.create(tokenStream);

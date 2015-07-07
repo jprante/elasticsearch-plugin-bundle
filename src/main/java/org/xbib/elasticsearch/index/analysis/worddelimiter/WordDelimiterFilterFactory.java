@@ -1,7 +1,7 @@
 package org.xbib.elasticsearch.index.analysis.worddelimiter;
 
 import org.apache.lucene.analysis.TokenStream;
-import org.elasticsearch.ElasticsearchIllegalArgumentException;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
@@ -18,8 +18,8 @@ import java.util.SortedMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.elasticsearch.common.collect.Maps.newTreeMap;
-import static org.elasticsearch.common.collect.Sets.newHashSet;
+import static com.google.common.collect.Maps.newTreeMap;
+import static com.google.common.collect.Sets.newHashSet;
 
 public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory implements WordDelimiterFlags {
 
@@ -90,15 +90,15 @@ public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory imple
         for (String rule : rules) {
             Matcher m = typePattern.matcher(rule);
             if (!m.find()) {
-                throw new ElasticsearchIllegalArgumentException("invalid rule : [" + rule + "]");
+                throw new ElasticsearchException("invalid rule : [" + rule + "]");
             }
             String lhs = parseString(m.group(1).trim());
             Byte rhs = parseType(m.group(2).trim());
             if (lhs.length() != 1) {
-                throw new ElasticsearchIllegalArgumentException("invalid rule : [" + rule + "]: only single character allowed");
+                throw new ElasticsearchException("invalid rule : [" + rule + "]: only single character allowed");
             }
             if (rhs == null) {
-                throw new ElasticsearchIllegalArgumentException("invalid rule : [" + rule + "]: type illegal");
+                throw new ElasticsearchException("invalid rule : [" + rule + "]: type illegal");
             }
             typeMap.put(lhs.charAt(0), rhs);
         }
@@ -142,7 +142,7 @@ public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory imple
             char c = s.charAt(readPos++);
             if (c == '\\') {
                 if (readPos >= len) {
-                    throw new ElasticsearchIllegalArgumentException("invalid escaped char in [" + s + "]");
+                    throw new ElasticsearchException("invalid escaped char in [" + s + "]");
                 }
                 c = s.charAt(readPos++);
                 switch (c) {
@@ -166,7 +166,7 @@ public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory imple
                         break;
                     case 'u':
                         if (readPos + 3 >= len) {
-                            throw new ElasticsearchIllegalArgumentException("invalid escaped char in [" + s + "]");
+                            throw new ElasticsearchException("invalid escaped char in [" + s + "]");
                         }
                         c = (char) Integer.parseInt(s.substring(readPos, readPos + 4), 16);
                         readPos += 4;

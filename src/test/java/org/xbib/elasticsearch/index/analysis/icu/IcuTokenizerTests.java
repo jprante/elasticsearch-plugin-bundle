@@ -7,7 +7,6 @@ import org.elasticsearch.Version;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.inject.ModulesBuilder;
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.SettingsModule;
 import org.elasticsearch.env.Environment;
@@ -48,7 +47,8 @@ public class IcuTokenizerTests extends Assert {
                 "Ende"
         };
         AnalysisService analysisService = createAnalysisService();
-        Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create(new StringReader(source));
+        Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create();
+        tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenizer, expected);
     }
 
@@ -62,7 +62,8 @@ public class IcuTokenizerTests extends Assert {
                 "ISBN",
                 "3-428-84350-9"
         };
-        Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create(new StringReader(source));
+        Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create();
+        tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenizer, expected);
     }
 
@@ -75,15 +76,17 @@ public class IcuTokenizerTests extends Assert {
         String[] expected = {
                 "3-428-84350-9"
         };
-        Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create(new StringReader(source));
+        Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create();
+        tokenizer.setReader(new StringReader(source));
         // THIS FAILS
         //assertSimpleTSOutput(tokenizer, expected);
     }
 
 
     private AnalysisService createAnalysisService() {
-        Settings settings = ImmutableSettings.settingsBuilder()
+        Settings settings = Settings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
+                .put("path.home", System.getProperty("path.home"))
                 .loadFromClasspath("org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json").build();
         Index index = new Index("test");
         Injector parentInjector = new ModulesBuilder().add(new SettingsModule(settings),

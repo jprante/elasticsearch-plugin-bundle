@@ -1,0 +1,40 @@
+{
+  "nested" : {
+    "properties": {
+      "authorID": {
+        "type": "ref",
+        "ref_index": "authorities",
+        "ref_type": "persons",
+        "ref_fields": [
+          "author"
+        ],
+        "to": [
+          "dc.creator",
+          "bib.contributor"
+        ]
+      },
+      "person": {
+        "type": "object",
+        "properties": {
+          "authorName": {
+            "type": "string"
+          }
+        }
+      },
+      "dc": {
+        "properties": {
+          "creator": {
+            "type": "string"
+          }
+        }
+      },
+      "bib": {
+        "properties": {
+          "contributor": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

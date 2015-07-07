@@ -41,7 +41,7 @@ public class HyphenTokenizerFactory extends AbstractTokenizerFactory {
     }
 
     @Override
-    public Tokenizer create(Reader reader) {
-        return new HyphenTokenizer(reader);
+    public Tokenizer create() {
+        return new HyphenTokenizer();
     }
 }

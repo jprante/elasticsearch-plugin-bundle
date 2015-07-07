@@ -25,9 +25,10 @@ package org.xbib.elasticsearch.index.analysis.icu;
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
 import com.ibm.icu.util.ULocale;
-import org.elasticsearch.ElasticsearchIllegalArgumentException;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.assistedinject.Assisted;
+import org.elasticsearch.common.io.Streams;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.env.FailedToResolveConfigException;
@@ -36,6 +37,9 @@ import org.elasticsearch.index.analysis.AbstractIndexAnalyzerProvider;
 import org.elasticsearch.index.settings.IndexSettings;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
 
 /**
  * An ICU collation analyzer provider.
@@ -73,19 +77,22 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
         if (rules != null) {
             FailedToResolveConfigException failureToResolve = null;
             try {
-                rules = environment.resolveConfigAndLoadToString(rules);
+                URL url = environment.resolveConfig(rules);
+                Reader reader = new InputStreamReader(url.openStream());
+                rules = Streams.copyToString(reader);
+                reader.close();
             } catch (FailedToResolveConfigException e) {
                 failureToResolve = e;
             } catch (IOException e) {
-                throw new ElasticsearchIllegalArgumentException("Failed to load collation rules", e);
+                throw new ElasticsearchException("Failed to load collation rules", e);
             }
             try {
                 collator = new RuleBasedCollator(rules);
             } catch (Exception e) {
                 if (failureToResolve != null) {
-                    throw new ElasticsearchIllegalArgumentException("Failed to resolve collation rules location", failureToResolve);
+                    throw new ElasticsearchException("Failed to resolve collation rules location", failureToResolve);
                 } else {
-                    throw new ElasticsearchIllegalArgumentException("Failed to parse collation rules", e);
+                    throw new ElasticsearchException("Failed to parse collation rules", e);
                 }
             }
         } else {
@@ -123,7 +130,7 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
             } else if (strength.equalsIgnoreCase("identical")) {
                 collator.setStrength(Collator.IDENTICAL);
             } else {
-                throw new ElasticsearchIllegalArgumentException("Invalid strength: " + strength);
+                throw new ElasticsearchException("Invalid strength: " + strength);
             }
         }
 
@@ -135,7 +142,7 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
             } else if (decomposition.equalsIgnoreCase("canonical")) {
                 collator.setDecomposition(Collator.CANONICAL_DECOMPOSITION);
             } else {
-                throw new ElasticsearchIllegalArgumentException("Invalid decomposition: " + decomposition);
+                throw new ElasticsearchException("Invalid decomposition: " + decomposition);
             }
         }
 
@@ -148,7 +155,7 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
             } else if (alternate.equalsIgnoreCase("non-ignorable")) {
                 rbc.setAlternateHandlingShifted(false);
             } else {
-                throw new ElasticsearchIllegalArgumentException("Invalid alternate: " + alternate);
+                throw new ElasticsearchException("Invalid alternate: " + alternate);
             }
         }
 
@@ -164,7 +171,7 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
             } else if (caseFirst.equalsIgnoreCase("upper")) {
                 rbc.setUpperCaseFirst(true);
             } else {
-                throw new ElasticsearchIllegalArgumentException("Invalid caseFirst: " + caseFirst);
+                throw new ElasticsearchException("invalid caseFirst: " + caseFirst);
             }
         }
 

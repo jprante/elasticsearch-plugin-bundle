@@ -43,10 +43,18 @@ public class IcuNormalizerCharFilterFactory extends AbstractCharFilterFactory {
         String normalizationName = settings.get("name", "nfkc_cf");
         Normalizer2.Mode normalizationMode;
         switch (settings.get("mode", "compose")) {
-            case "compose_contiguous" : normalizationMode = Normalizer2.Mode.COMPOSE_CONTIGUOUS; break;
-            case "decompose" : normalizationMode = Normalizer2.Mode.DECOMPOSE; break;
-            case "fcd" : normalizationMode = Normalizer2.Mode.FCD; break;
-            default: normalizationMode = Normalizer2.Mode.COMPOSE; break;
+            case "compose_contiguous" :
+                normalizationMode = Normalizer2.Mode.COMPOSE_CONTIGUOUS;
+                break;
+            case "decompose" :
+                normalizationMode = Normalizer2.Mode.DECOMPOSE;
+                break;
+            case "fcd" :
+                normalizationMode = Normalizer2.Mode.FCD;
+                break;
+            default:
+                normalizationMode = Normalizer2.Mode.COMPOSE;
+                break;
         }
         this.normalizer =  Normalizer2.getInstance(null, normalizationName, normalizationMode);
     }

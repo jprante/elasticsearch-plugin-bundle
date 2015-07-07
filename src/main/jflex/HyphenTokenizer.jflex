@@ -1,12 +1,10 @@
 package org.xbib.elasticsearch.index.analysis.hyphen;
 
-import org.apache.lucene.analysis.standard.StandardTokenizerInterface;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 %%
 
 %class HyphenTokenizerImpl
-%implements StandardTokenizerInterface
 %unicode 3.0
 %integer
 %function getNextToken

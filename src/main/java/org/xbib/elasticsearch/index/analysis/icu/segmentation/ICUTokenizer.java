@@ -50,11 +50,10 @@ public final class IcuTokenizer extends Tokenizer {
      * The default script-specific handling is used.
      * The default attribute factory is used.
      *
-     * @param input Reader containing text to tokenize.
      * @see DefaultIcuTokenizerConfig
      */
-    public IcuTokenizer(Reader input) {
-        this(input, new DefaultIcuTokenizerConfig(true));
+    public IcuTokenizer() {
+        this(new DefaultIcuTokenizerConfig(true));
     }
 
     /**
@@ -62,11 +61,10 @@ public final class IcuTokenizer extends Tokenizer {
      * Reader, using a tailored BreakIterator configuration.
      * The default attribute factory is used.
      *
-     * @param input  Reader containing text to tokenize.
      * @param config Tailored BreakIterator configuration
      */
-    public IcuTokenizer(Reader input, IcuTokenizerConfig config) {
-        this(DEFAULT_TOKEN_ATTRIBUTE_FACTORY, input, config);
+    public IcuTokenizer(IcuTokenizerConfig config) {
+        this(DEFAULT_TOKEN_ATTRIBUTE_FACTORY, config);
     }
 
     /**
@@ -74,11 +72,10 @@ public final class IcuTokenizer extends Tokenizer {
      * Reader, using a tailored BreakIterator configuration.
      *
      * @param factory AttributeFactory to use
-     * @param input   Reader containing text to tokenize.
      * @param config  Tailored BreakIterator configuration
      */
-    public IcuTokenizer(AttributeFactory factory, Reader input, IcuTokenizerConfig config) {
-        super(factory, input);
+    public IcuTokenizer(AttributeFactory factory, IcuTokenizerConfig config) {
+        super(factory);
         this.config = config;
         breaker = new CompositeBreakIterator(config);
     }

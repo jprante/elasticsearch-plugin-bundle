@@ -1,15 +1,17 @@
 {
     "someType" : {
-        "properties" : {
+        "properties": {
             "someField": {
-                "type" : "ref",
-                "ref_index" : "test",
-                "ref_type" : "test",
-                "ref_fields" : [ "myfield" ],
-                "fields" : {
-                    "someField.ref" : { "type" : "string" }
-                }
-             }
+                "type": "ref",
+                "ref_index": "test",
+                "ref_type": "test",
+                "ref_fields": [
+                    "myfield"
+                ],
+                "to": [
+                    "someField.ref"
+                ]
+            }
         }
     }
 }

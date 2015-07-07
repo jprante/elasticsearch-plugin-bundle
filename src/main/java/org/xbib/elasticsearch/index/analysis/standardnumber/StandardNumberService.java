@@ -23,7 +23,6 @@
 package org.xbib.elasticsearch.index.analysis.standardnumber;
 
 import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.common.collect.Sets;
 import org.elasticsearch.common.component.AbstractLifecycleComponent;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
@@ -50,7 +49,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import static org.elasticsearch.common.collect.Lists.newLinkedList;
+import static com.google.common.collect.Lists.newLinkedList;
+import static com.google.common.collect.Sets.newLinkedHashSet;
+import static com.google.common.collect.Sets.newTreeSet;
 
 public class StandardnumberService extends AbstractLifecycleComponent<StandardnumberService>  {
 
@@ -76,8 +77,8 @@ public class StandardnumberService extends AbstractLifecycleComponent<Standardnu
     protected Collection<StandardNumber> getStdNums() {
         if (stdnums.get() == null) {
             String[] s = settings.getAsArray("number_types", null);
-            Set<String> types = s != null ? Sets.newTreeSet(Arrays.asList(s)) : null;
-            Set<StandardNumber> set = Sets.newLinkedHashSet();
+            Set<String> types = s != null ? newTreeSet(Arrays.asList(s)) : null;
+            Set<StandardNumber> set = newLinkedHashSet();
             set.addAll(types == null ? create() : create(types));
             stdnums.set(set);
         }

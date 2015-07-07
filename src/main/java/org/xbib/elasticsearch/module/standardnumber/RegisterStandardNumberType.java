@@ -37,7 +37,7 @@ public class RegisterStandardnumberType extends AbstractIndexComponent {
     public RegisterStandardnumberType(Index index, @IndexSettings Settings indexSettings,
                                       MapperService mapperService, StandardnumberService service) {
         super(index, indexSettings);
-        mapperService.documentMapperParser().putTypeParser("standardnumber",
+        mapperService.documentMapperParser().putTypeParser(StandardnumberMapper.CONTENT_TYPE,
                 new StandardnumberMapper.TypeParser(service));
     }
 }

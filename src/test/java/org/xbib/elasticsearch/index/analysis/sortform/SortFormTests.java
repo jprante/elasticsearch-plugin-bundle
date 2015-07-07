@@ -1,17 +1,18 @@
 package org.xbib.elasticsearch.index.analysis.sortform;
 
+import com.google.common.base.Supplier;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SetMultimap;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.TermToBytesRefAttribute;
 import org.apache.lucene.util.BytesRef;
+import org.apache.lucene.util.BytesRefBuilder;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
-import org.elasticsearch.common.base.Supplier;
-import org.elasticsearch.common.collect.Multimaps;
-import org.elasticsearch.common.collect.SetMultimap;
-import org.elasticsearch.common.collect.Sets;
 import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.inject.ModulesBuilder;
-import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.logging.ESLogger;
+import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.SettingsModule;
 import org.elasticsearch.env.Environment;
@@ -34,12 +35,17 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeMap;
 
+import static com.google.common.collect.Sets.newTreeSet;
+
 public class SortFormTests extends BaseTokenStreamTest {
+
+    private final static ESLogger logger = ESLoggerFactory.getLogger("sortform");
 
     @Test
     public void testBasicUsage() throws Exception {
-        Settings settings = ImmutableSettings.settingsBuilder()
+        Settings settings = Settings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, org.elasticsearch.Version.CURRENT)
+                .put("path.home", System.getProperty("path.home"))
                 .put("index.analysis.analyzer.myanalyzer.type", "sortform")
                 .put("index.analysis.analyzer.myanalyzer.filter", "sortform")
                 .build();
@@ -50,8 +56,9 @@ public class SortFormTests extends BaseTokenStreamTest {
 
     @Test
     public void testUnicodeUsage() throws Exception {
-        Settings settings = ImmutableSettings.settingsBuilder()
+        Settings settings = Settings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, org.elasticsearch.Version.CURRENT)
+                .put("path.home", System.getProperty("path.home"))
                 .put("index.analysis.analyzer.myanalyzer.type", "sortform")
                 .put("index.analysis.analyzer.myanalyzer.filter", "sortform")
                 .build();
@@ -64,8 +71,9 @@ public class SortFormTests extends BaseTokenStreamTest {
 
     @Test
     public void testFromJson() throws Exception {
-        Settings settings = ImmutableSettings.settingsBuilder()
+        Settings settings = Settings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, org.elasticsearch.Version.CURRENT)
+                .put("path.home", System.getProperty("path.home"))
                 .loadFromClasspath("org/xbib/elasticsearch/index/analysis/sortform/sortform.json").build();
         AnalysisService analysisService = createAnalysisService(settings);
         Analyzer analyzer = analysisService.analyzer("german_phonebook_with_sortform").analyzer();
@@ -80,19 +88,20 @@ public class SortFormTests extends BaseTokenStreamTest {
                 "Gross"
         };
 
-        SetMultimap<BytesRef,String> bytesRefMap =
+        SetMultimap<BytesRef,String> map =
                 Multimaps.newSetMultimap(new TreeMap<BytesRef, Collection<String>>(), new Supplier<Set<String>>() {
                     @Override
                     public Set<String> get() {
-                        return Sets.newTreeSet();
+                        return newTreeSet();
                     }
                 });
         for (String s : words) {
             TokenStream ts = analyzer.tokenStream(null, s);
-            bytesRefMap.put(bytesFromTokenStream(ts), s);
+            BytesRef sortKey = sortKeyFromTokenStream(ts);
+            map.put(sortKey, s);
         }
         // strength "quaternary" orders without punctuation and ensures unique entries.
-        Iterator<Collection<String>> it = bytesRefMap.asMap().values().iterator();
+        Iterator<Collection<String>> it = map.asMap().values().iterator();
         assertEquals("[¬Frau¬ Göbel]",it.next().toString());
         assertEquals("[Goethe]",it.next().toString());
         assertEquals("[Göthe]",it.next().toString());
@@ -117,7 +126,7 @@ public class SortFormTests extends BaseTokenStreamTest {
         return injector.getInstance(AnalysisService.class);
     }
 
-    private BytesRef bytesFromTokenStream(TokenStream stream) throws IOException {
+    private BytesRef sortKeyFromTokenStream(TokenStream stream) throws IOException {
         TermToBytesRefAttribute termAttr = stream.getAttribute(TermToBytesRefAttribute.class);
         BytesRef bytesRef = termAttr.getBytesRef();
         stream.reset();
@@ -125,8 +134,8 @@ public class SortFormTests extends BaseTokenStreamTest {
             termAttr.fillBytesRef();
         }
         stream.close();
-        BytesRef copy = new BytesRef();
-        copy.copyBytes(bytesRef);
-        return copy;
+        BytesRefBuilder b = new BytesRefBuilder();
+        b.append(bytesRef);
+        return b.get();
     }
 }

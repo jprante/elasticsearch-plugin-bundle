@@ -34,8 +34,6 @@ import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenizerFactory;
 import org.elasticsearch.index.settings.IndexSettings;
 
-import java.io.Reader;
-
 public class IcuCollationTokenizerFactory extends AbstractTokenizerFactory {
 
     private final ICUCollationAttributeFactory factory;
@@ -54,7 +52,7 @@ public class IcuCollationTokenizerFactory extends AbstractTokenizerFactory {
     }
 
     @Override
-    public Tokenizer create(Reader reader) {
-        return new KeywordTokenizer(factory, reader, bufferSize);
+    public Tokenizer create() {
+        return new KeywordTokenizer(factory, bufferSize);
     }
 }

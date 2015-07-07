@@ -1,7 +1,6 @@
 package org.xbib.elasticsearch.index.analysis;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.CharBuffer;
 import java.util.Random;
 
@@ -15,7 +14,7 @@ import org.apache.lucene.util.automaton.RegExp;
 /**
  * Tokenizer for testing.
  * <p>
- * This tokenizer is a replacement for {@link #WHITESPACE}, {@link #SIMPLE}, and {@link #KEYWORD}
+ * This tokenizer is a replacement for {@link #WHITESPACE} and {@link #KEYWORD}
  * tokenizers. If you are writing a component such as a TokenFilter, its a great idea to test
  * it wrapping this tokenizer instead for extra checks. This tokenizer has the following behavior:
  * <ul>
@@ -33,19 +32,22 @@ public class MockTokenizer extends Tokenizer {
      */
     public static final CharacterRunAutomaton KEYWORD =
             new CharacterRunAutomaton(new RegExp(".*").toAutomaton());
+
+    public static final int DEFAULT_MAX_TOKEN_LENGTH = Integer.MAX_VALUE;
+
     /** Acts like LetterTokenizer. */
     // the ugly regex below is incomplete Unicode 5.2 [:Letter:]
-    public static final CharacterRunAutomaton SIMPLE =
-            new CharacterRunAutomaton(new RegExp("[A-Za-zªµºÀ-ÖØ-öø-ˁ一-鿌]+").toAutomaton());
+    //public static final CharacterRunAutomaton SIMPLE =
+   //         new CharacterRunAutomaton(new RegExp("[A-Za-zªµºÀ-ÖØ-öø-ˁ一-鿌]+").toAutomaton());
 
     private final CharacterRunAutomaton runAutomaton;
     private final boolean lowerCase;
     private final int maxTokenLength;
-    public static final int DEFAULT_MAX_TOKEN_LENGTH = Integer.MAX_VALUE;
+    private final CharTermAttribute termAtt;
+    private final OffsetAttribute offsetAtt;
+
     private int state;
 
-    private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
-    private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
     int off = 0;
 
     // buffered state (previous codepoint and offset). we replay this once we
@@ -56,7 +58,7 @@ public class MockTokenizer extends Tokenizer {
     // TODO: "register" with LuceneTestCase to ensure all streams are closed() ?
     // currently, we can only check that the lifecycle is correct if someone is reusing,
     // but not for "one-offs".
-    private static enum State {
+    private enum State {
         SETREADER,       // consumer set a reader input either via ctor or via reset(Reader)
         RESET,           // consumer has called reset()
         INCREMENT,       // consumer is consuming, has called incrementToken() == true
@@ -71,33 +73,34 @@ public class MockTokenizer extends Tokenizer {
 
     private final Random random = new Random();
 
-    public MockTokenizer(AttributeFactory factory, Reader input, CharacterRunAutomaton runAutomaton, boolean lowerCase, int maxTokenLength) {
-        super(factory, input);
+    public MockTokenizer() {
+        this(WHITESPACE, true);
+    }
+
+    public MockTokenizer(AttributeFactory factory) {
+        this(factory, WHITESPACE, true);
+    }
+
+    public MockTokenizer(CharacterRunAutomaton runAutomaton, boolean lowerCase) {
+        this(runAutomaton, lowerCase, DEFAULT_MAX_TOKEN_LENGTH);
+    }
+
+    public MockTokenizer(CharacterRunAutomaton runAutomaton, boolean lowerCase, int maxTokenLength) {
+        this(AttributeFactory.DEFAULT_ATTRIBUTE_FACTORY, runAutomaton, lowerCase, maxTokenLength);
+    }
+
+    public MockTokenizer(AttributeFactory factory, CharacterRunAutomaton runAutomaton, boolean lowerCase) {
+        this(factory, runAutomaton, lowerCase, DEFAULT_MAX_TOKEN_LENGTH);
+    }
+
+    public MockTokenizer(AttributeFactory factory, CharacterRunAutomaton runAutomaton, boolean lowerCase, int maxTokenLength) {
+        super(factory);
         this.runAutomaton = runAutomaton;
         this.lowerCase = lowerCase;
         this.state = runAutomaton.getInitialState();
-        this.streamState = State.SETREADER;
         this.maxTokenLength = maxTokenLength;
-    }
-
-    public MockTokenizer(Reader input, CharacterRunAutomaton runAutomaton, boolean lowerCase, int maxTokenLength) {
-        this(AttributeFactory.DEFAULT_ATTRIBUTE_FACTORY, input, runAutomaton, lowerCase, maxTokenLength);
-    }
-
-    public MockTokenizer(Reader input, CharacterRunAutomaton runAutomaton, boolean lowerCase) {
-        this(input, runAutomaton, lowerCase, DEFAULT_MAX_TOKEN_LENGTH);
-    }
-    /** Calls {@link #MockTokenizer(Reader, CharacterRunAutomaton, boolean) MockTokenizer(Reader, WHITESPACE, true)} */
-    public MockTokenizer(Reader input) {
-        this(input, WHITESPACE, true);
-    }
-
-    public MockTokenizer(AttributeFactory factory, Reader input, CharacterRunAutomaton runAutomaton, boolean lowerCase) {
-        this(factory, input, runAutomaton, lowerCase, DEFAULT_MAX_TOKEN_LENGTH);
-    }
-
-    public MockTokenizer(AttributeFactory factory, Reader input) {
-        this(input, WHITESPACE, true);
+        termAtt = addAttribute(CharTermAttribute.class);
+        offsetAtt = addAttribute(OffsetAttribute.class);
     }
 
     @Override
@@ -182,26 +185,22 @@ public class MockTokenizer extends Tokenizer {
     protected int readChar() throws IOException {
         switch(random.nextInt(10)) {
             case 0: {
-                // read(char[])
                 char c[] = new char[1];
                 int ret = input.read(c);
                 return ret < 0 ? ret : c[0];
             }
             case 1: {
-                // read(char[], int, int)
                 char c[] = new char[2];
                 int ret = input.read(c, 1, 1);
                 return ret < 0 ? ret : c[1];
             }
             case 2: {
-                // read(CharBuffer)
                 char c[] = new char[1];
                 CharBuffer cb = CharBuffer.wrap(c);
                 int ret = input.read(cb);
                 return ret < 0 ? ret : c[0];
             }
             default:
-                // read()
                 return input.read();
         }
     }
@@ -211,11 +210,7 @@ public class MockTokenizer extends Tokenizer {
             state = runAutomaton.getInitialState();
         }
         state = runAutomaton.step(state, c);
-        if (state < 0) {
-            return false;
-        } else {
-            return true;
-        }
+        return state >= 0;
     }
 
     protected int normalize(int c) {
@@ -234,18 +229,15 @@ public class MockTokenizer extends Tokenizer {
 
     @Override
     public void close() throws IOException {
-        super.close();
-        // in some exceptional cases (e.g. TestIndexWriterExceptions) a test can prematurely close()
-        // these tests should disable this check, by default we check the normal workflow.
-        // TODO: investigate the CachingTokenFilter "double-close"... for now we ignore this
-        assert !enableChecks || streamState == State.END || streamState == State.CLOSE : "close() called in wrong state: " + streamState;
-        streamState = State.CLOSE;
-    }
-
-    boolean setReaderTestPoint() {
-        assert !enableChecks || streamState == State.CLOSE : "setReader() called in wrong state: " + streamState;
-        streamState = State.SETREADER;
-        return true;
+        try {
+            super.close();
+            // in some exceptional cases (e.g. TestIndexWriterExceptions) a test can prematurely close()
+            // these tests should disable this check, by default we check the normal workflow.
+            // TODO: investigate the CachingTokenFilter "double-close"... for now we ignore this
+            assert !enableChecks || streamState == State.END || streamState == State.CLOSE : "close() called in wrong state: " + streamState;
+        } finally {
+            streamState = State.CLOSE;
+        }
     }
 
     @Override
@@ -262,10 +254,6 @@ public class MockTokenizer extends Tokenizer {
         }
     }
 
-    /**
-     * Toggle consumer workflow checking: if your test consumes tokenstreams normally you
-     * should leave this enabled.
-     */
     public void setEnableChecks(boolean enableChecks) {
         this.enableChecks = enableChecks;
     }

@@ -23,7 +23,7 @@
 package org.xbib.elasticsearch.index.analysis.baseform;
 
 import org.apache.lucene.analysis.TokenStream;
-import org.elasticsearch.ElasticsearchIllegalArgumentException;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
@@ -55,10 +55,10 @@ public class BaseformTokenFilterFactory extends AbstractTokenFilterFactory {
     private Dictionary createDictionary(Environment env, Settings settings) {
         try {
             String lang = settings.get("language", "de");
-            String path = "/baseform/" + lang + "-lemma-utf8.txt";
+            String path = "baseform/" + lang + "-lemma-utf8.txt";
             return new Dictionary().load(new InputStreamReader(env.resolveConfig(path).openStream(), "UTF-8"));
         } catch (IOException e) {
-            throw new ElasticsearchIllegalArgumentException("resources in settings not found: " + settings, e);
+            throw new ElasticsearchException("resources in settings not found: " + settings, e);
         }
     }
 }

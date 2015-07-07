@@ -1,12 +1,12 @@
 package org.xbib.elasticsearch.index.mapper.reference.gnd;
 
+import com.google.common.base.Charsets;
+import org.apache.lucene.index.IndexNotFoundException;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.base.Charsets;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.ESLoggerFactory;
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
@@ -23,17 +23,22 @@ public class GNDReferenceMappingTests extends Assert {
 
     private final static ESLogger logger = ESLoggerFactory.getLogger(GNDReferenceMappingTests.class.getName());
 
-    @Test
+
     public void testGND() throws IOException {
-        Settings nodeSettings = ImmutableSettings.settingsBuilder()
+        Settings nodeSettings = Settings.settingsBuilder()
+                .put("path.home", System.getProperty("path.home"))
                 .put("gateway.type", "none")
-                .put("index.store.type", "memory")
                 .put("index.number_of_shards", 1)
                 .put("index.number_of_replica", 0)
                 .put("cluster.routing.schedule", "50ms")
                 .build();
         Node node = NodeBuilder.nodeBuilder().settings(nodeSettings).local(true).build().start();
         Client client = node.client();
+        try {
+            client.admin().indices().prepareDelete("gnd").execute().actionGet();
+        } catch (Exception e) {
+            logger.warn("can not delete index");
+        }
         String gndSettings = copyToStringFromClasspath("gnd-settings.json");
         String gndMapping = copyToStringFromClasspath("gnd-mapping.json");
         client.admin().indices().prepareCreate("gnd")

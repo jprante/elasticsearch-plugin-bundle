@@ -36,7 +36,7 @@ import org.xbib.elasticsearch.index.analysis.icu.IcuCollationTokenizerFactory;
 
 import java.util.List;
 
-import static org.elasticsearch.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * Like CustomAnalyzerProvider, but with IcuCollationTokenizerFactory as tokenizer

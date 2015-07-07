@@ -8,11 +8,9 @@ import org.apache.lucene.analysis.core.StopFilter;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.apache.lucene.util.Version;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.inject.ModulesBuilder;
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.SettingsModule;
 import org.elasticsearch.env.Environment;
@@ -30,9 +28,8 @@ import org.xbib.elasticsearch.index.analysis.MockTokenizer;
 import org.xbib.elasticsearch.plugin.analysis.bundle.BundlePlugin;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringReader;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -47,15 +44,15 @@ import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterF
 
 public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
 
-    private Version TEST_VERSION_CURRENT = Version.LATEST;
-
     @Test
     public void testOffsets() throws IOException {
-        Settings settings = ImmutableSettings.settingsBuilder()
+        Settings settings = Settings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, org.elasticsearch.Version.CURRENT)
+                .put("path.home", System.getProperty("path.home"))
                 .loadFromClasspath("org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json").build();
         AnalysisService analysisService = createAnalysisService(settings);
-        Tokenizer tokenizer = analysisService.tokenizer("keyword").create(new StringReader("foo-bar"));
+        Tokenizer tokenizer = analysisService.tokenizer("keyword").create();
+        tokenizer.setReader(new StringReader("foo-bar"));
         TokenStream ts = analysisService.tokenFilter("wd").create(tokenizer);
 
         assertTokenStreamContents(ts,
@@ -67,11 +64,13 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
 
     @Test
     public void testOffsetChange() throws Exception {
-        Settings settings = ImmutableSettings.settingsBuilder()
+        Settings settings = Settings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, org.elasticsearch.Version.CURRENT)
+                .put("path.home", System.getProperty("path.home"))
                 .loadFromClasspath("org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json").build();
         AnalysisService analysisService = createAnalysisService(settings);
-        Tokenizer tokenizer = analysisService.tokenizer("keyword").create(new StringReader("übelkeit"));
+        Tokenizer tokenizer = analysisService.tokenizer("keyword").create();
+        tokenizer.setReader(new StringReader("übelkeit"));
         TokenStream ts = analysisService.tokenFilter("wd").create(tokenizer);
 
         assertTokenStreamContents(ts,
@@ -82,9 +81,9 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
 
     public void doSplit(final String input, String... output) throws Exception {
         int flags = GENERATE_WORD_PARTS | GENERATE_NUMBER_PARTS | SPLIT_ON_CASE_CHANGE | SPLIT_ON_NUMERICS | STEM_ENGLISH_POSSESSIVE;
-        WordDelimiterFilter2 wdf = new WordDelimiterFilter2(new MockTokenizer(
-                new StringReader(input), MockTokenizer.KEYWORD, false), WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE, flags, null);
-
+        MockTokenizer mockTokenizer = new MockTokenizer(MockTokenizer.KEYWORD, false);
+        mockTokenizer.setReader(new StringReader(input));
+        WordDelimiterFilter2 wdf = new WordDelimiterFilter2(mockTokenizer, WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE, flags, null);
         assertTokenStreamContents(wdf, output);
     }
 
@@ -126,9 +125,9 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
     public void doSplitPossessive(int stemPossessive, final String input, final String... output) throws Exception {
         int flags = GENERATE_WORD_PARTS | GENERATE_NUMBER_PARTS | SPLIT_ON_CASE_CHANGE | SPLIT_ON_NUMERICS;
         flags |= (stemPossessive == 1) ? STEM_ENGLISH_POSSESSIVE : 0;
-        WordDelimiterFilter2 wdf = new WordDelimiterFilter2(new MockTokenizer(
-                new StringReader(input), MockTokenizer.KEYWORD, false), flags, null);
-
+        MockTokenizer mockTokenizer = new MockTokenizer(MockTokenizer.KEYWORD, false);
+        mockTokenizer.setReader(new StringReader(input));
+        WordDelimiterFilter2 wdf = new WordDelimiterFilter2(mockTokenizer, flags, null);
         assertTokenStreamContents(wdf, output);
     }
 
@@ -168,13 +167,13 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
     @Test
     public void testPositionIncrements() throws Exception {
         final int flags = GENERATE_WORD_PARTS | GENERATE_NUMBER_PARTS | CATENATE_ALL | SPLIT_ON_CASE_CHANGE | SPLIT_ON_NUMERICS | STEM_ENGLISH_POSSESSIVE;
-        final Set<String> protWords = new HashSet<String>(Arrays.asList("NUTCH"));
+        final Set<String> protWords = new HashSet<String>(Collections.singletonList("NUTCH"));
 
     /* analyzer that uses whitespace + wdf */
         Analyzer a = new Analyzer() {
             @Override
-            public TokenStreamComponents createComponents(String field, Reader reader) {
-                Tokenizer tokenizer = new MockTokenizer(reader, MockTokenizer.WHITESPACE, false);
+            public TokenStreamComponents createComponents(String field) {
+                Tokenizer tokenizer = new MockTokenizer(MockTokenizer.WHITESPACE, false);
                 return new TokenStreamComponents(tokenizer, new WordDelimiterFilter2(
                         tokenizer,
                         flags, protWords));
@@ -218,8 +217,8 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
     /* analyzer that will consume tokens with large position increments */
         Analyzer a2 = new Analyzer() {
             @Override
-            public TokenStreamComponents createComponents(String field, Reader reader) {
-                Tokenizer tokenizer = new MockTokenizer(reader, MockTokenizer.WHITESPACE, false);
+            public TokenStreamComponents createComponents(String field) {
+                Tokenizer tokenizer = new MockTokenizer(MockTokenizer.WHITESPACE, false);
                 return new TokenStreamComponents(tokenizer, new WordDelimiterFilter2(
                         new LargePosIncTokenFilter(tokenizer),
                         flags, protWords));
@@ -263,11 +262,9 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
 
         Analyzer a3 = new Analyzer() {
             @Override
-            public TokenStreamComponents createComponents(String field, Reader reader) {
-                Tokenizer tokenizer = new MockTokenizer(reader, MockTokenizer.WHITESPACE, false);
-                StopFilter filter = new StopFilter(TEST_VERSION_CURRENT,
-                        tokenizer, StandardAnalyzer.STOP_WORDS_SET);
-                //filter.setEnablePositionIncrements(true);
+            public TokenStreamComponents createComponents(String field) {
+                Tokenizer tokenizer = new MockTokenizer(MockTokenizer.WHITESPACE, false);
+                StopFilter filter = new StopFilter(tokenizer, StandardAnalyzer.STOP_WORDS_SET);
                 return new TokenStreamComponents(tokenizer, new WordDelimiterFilter2(filter, flags, protWords));
             }
         };
@@ -294,11 +291,9 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
         final int flags4 = flags | CATENATE_WORDS;
         Analyzer a4 = new Analyzer() {
             @Override
-            public TokenStreamComponents createComponents(String field, Reader reader) {
-                Tokenizer tokenizer = new MockTokenizer(reader, MockTokenizer.WHITESPACE, false);
-                StopFilter filter = new StopFilter(TEST_VERSION_CURRENT,
-                        tokenizer, StandardAnalyzer.STOP_WORDS_SET);
-                //filter.setEnablePositionIncrements(true);
+            public TokenStreamComponents createComponents(String field) {
+                Tokenizer tokenizer = new MockTokenizer(MockTokenizer.WHITESPACE, false);
+                StopFilter filter = new StopFilter(tokenizer, StandardAnalyzer.STOP_WORDS_SET);
                 return new TokenStreamComponents(tokenizer, new WordDelimiterFilter2(filter, flags4, protWords));
             }
         };
@@ -314,13 +309,13 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
     @Test
     public void testPositionIncrementsCollapsePositions() throws Exception {
         final int flags = GENERATE_WORD_PARTS | GENERATE_NUMBER_PARTS | CATENATE_ALL | SPLIT_ON_CASE_CHANGE | SPLIT_ON_NUMERICS | STEM_ENGLISH_POSSESSIVE | ALL_PARTS_AT_SAME_POSITION;
-        final Set<String> protWords = new HashSet<String>(Arrays.asList("NUTCH"));
+        final Set<String> protWords = new HashSet<String>(Collections.singletonList("NUTCH"));
 
     /* analyzer that uses whitespace + wdf */
         Analyzer a = new Analyzer() {
             @Override
-            public TokenStreamComponents createComponents(String field, Reader reader) {
-                Tokenizer tokenizer = new MockTokenizer(reader, MockTokenizer.WHITESPACE, false);
+            public TokenStreamComponents createComponents(String field) {
+                Tokenizer tokenizer = new MockTokenizer(MockTokenizer.WHITESPACE, false);
                 return new TokenStreamComponents(tokenizer, new WordDelimiterFilter2(
                         tokenizer,
                         flags, protWords));
@@ -360,8 +355,8 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
     /* analyzer that will consume tokens with large position increments */
         Analyzer a2 = new Analyzer() {
             @Override
-            public TokenStreamComponents createComponents(String field, Reader reader) {
-                Tokenizer tokenizer = new MockTokenizer(reader, MockTokenizer.WHITESPACE, false);
+            public TokenStreamComponents createComponents(String field) {
+                Tokenizer tokenizer = new MockTokenizer(MockTokenizer.WHITESPACE, false);
                 return new TokenStreamComponents(tokenizer, new WordDelimiterFilter2(
                         new LargePosIncTokenFilter(tokenizer),
                         flags, protWords));
@@ -399,11 +394,9 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
 
         Analyzer a3 = new Analyzer() {
             @Override
-            public TokenStreamComponents createComponents(String field, Reader reader) {
-                Tokenizer tokenizer = new MockTokenizer(reader, MockTokenizer.WHITESPACE, false);
-                StopFilter filter = new StopFilter(TEST_VERSION_CURRENT,
-                        tokenizer, StandardAnalyzer.STOP_WORDS_SET);
-                //filter.setEnablePositionIncrements(true);
+            public TokenStreamComponents createComponents(String field) {
+                Tokenizer tokenizer = new MockTokenizer(MockTokenizer.WHITESPACE, false);
+                StopFilter filter = new StopFilter(tokenizer, StandardAnalyzer.STOP_WORDS_SET);
                 return new TokenStreamComponents(tokenizer, new WordDelimiterFilter2(filter, flags, protWords));
             }
         };
@@ -430,11 +423,9 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
         final int flags4 = flags | CATENATE_WORDS;
         Analyzer a4 = new Analyzer() {
             @Override
-            public TokenStreamComponents createComponents(String field, Reader reader) {
-                Tokenizer tokenizer = new MockTokenizer(reader, MockTokenizer.WHITESPACE, false);
-                StopFilter filter = new StopFilter(TEST_VERSION_CURRENT,
-                        tokenizer, StandardAnalyzer.STOP_WORDS_SET);
-                //filter.setEnablePositionIncrements(true);
+            public TokenStreamComponents createComponents(String field) {
+                Tokenizer tokenizer = new MockTokenizer(MockTokenizer.WHITESPACE, false);
+                StopFilter filter = new StopFilter(tokenizer, StandardAnalyzer.STOP_WORDS_SET);
                 return new TokenStreamComponents(tokenizer, new WordDelimiterFilter2(filter, flags4, protWords));
             }
         };

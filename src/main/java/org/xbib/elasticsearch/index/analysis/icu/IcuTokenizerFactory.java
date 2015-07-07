@@ -31,7 +31,7 @@ import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.icu.segmentation.DefaultICUTokenizerConfig;
 import org.apache.lucene.analysis.icu.segmentation.ICUTokenizer;
 import org.apache.lucene.analysis.icu.segmentation.ICUTokenizerConfig;
-import org.elasticsearch.ElasticsearchIllegalArgumentException;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
@@ -42,11 +42,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Map;
 
-import static org.elasticsearch.common.collect.Maps.newHashMap;
+import static com.google.common.collect.Maps.newHashMap;
 
 /**
  * ICU-based tokenizer, optionally using ICU rbbi rules files.
@@ -84,7 +83,7 @@ public class IcuTokenizerFactory extends AbstractTokenizerFactory {
                 try {
                     InputStream rulesStream = getClass().getResourceAsStream("/" + resourcePath);
                     if (rulesStream == null) {
-                        throw new ElasticsearchIllegalArgumentException("rules stream not found: " + resourcePath);
+                        throw new ElasticsearchException("rules stream not found: " + resourcePath);
                     }
                     BufferedReader reader = new BufferedReader(new InputStreamReader(rulesStream, Charset.forName("UTF-8")));
                     while ((line = reader.readLine()) != null) {
@@ -114,7 +113,7 @@ public class IcuTokenizerFactory extends AbstractTokenizerFactory {
     }
 
     @Override
-    public Tokenizer create(Reader reader) {
-        return new ICUTokenizer(reader, config);
+    public Tokenizer create() {
+        return new ICUTokenizer(config);
     }
 }
