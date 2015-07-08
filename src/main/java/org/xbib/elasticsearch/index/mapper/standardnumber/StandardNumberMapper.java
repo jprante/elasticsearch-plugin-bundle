@@ -25,13 +25,13 @@ package org.xbib.elasticsearch.index.mapper.standardnumber;
 import org.apache.lucene.document.Field;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
+import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
 import org.elasticsearch.index.mapper.MergeMappingException;
 import org.elasticsearch.index.mapper.MergeResult;
 import org.elasticsearch.index.mapper.ParseContext;
-import org.elasticsearch.index.mapper.core.AbstractFieldMapper;
 import org.elasticsearch.index.mapper.core.StringFieldMapper;
 import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberService;
 import org.xbib.standardnumber.StandardNumber;
@@ -44,7 +44,7 @@ import java.util.Map;
 
 import static org.elasticsearch.index.mapper.MapperBuilders.stringField;
 
-public class StandardnumberMapper extends AbstractFieldMapper {
+public class StandardnumberMapper extends FieldMapper {
 
     public static final String CONTENT_TYPE = "standardnumber";
 
@@ -72,7 +72,7 @@ public class StandardnumberMapper extends AbstractFieldMapper {
         }
     }
 
-    public static class Builder extends AbstractFieldMapper.Builder<Builder, StandardnumberMapper> {
+    public static class Builder extends FieldMapper.Builder<Builder, StandardnumberMapper> {
 
         private StringFieldMapper.Builder contentBuilder;
 
@@ -206,7 +206,7 @@ public class StandardnumberMapper extends AbstractFieldMapper {
 
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
-        builder.startObject(name());
+        builder.startObject(simpleName());
         builder.field("type", CONTENT_TYPE);
         builder.startObject("fields");
         contentMapper.toXContent(builder, params);

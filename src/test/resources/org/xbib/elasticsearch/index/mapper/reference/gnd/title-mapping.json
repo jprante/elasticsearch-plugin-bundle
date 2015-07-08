@@ -396,20 +396,11 @@
                             "gnd:preferredNameForTheConferenceOrEvent",
                             "gnd:variantNameForTheConferenceOrEvent"
                         ],
-                        "fields": {
-                            "identifierGND": {
-                                "type": "string"
-                            },
-                            "nameConference": {
-                                "type": "string"
-                            },
-                            "nameCorporate": {
-                                "type": "string"
-                            },
-                            "allIndexes": {
-                                "type": "string"
-                            }
-                        }
+                        "to": [
+                            "bib.nameConference",
+                            "bib.nameCorporate",
+                            "cql.allIndexes"
+                        ]
                     }
                 }
             },
@@ -511,21 +502,10 @@
                             "gnd:preferredNameForTheConferenceOrEvent",
                             "gnd:variantNameForTheConferenceOrEvent"
                         ],
-                        "fields": {
-                            "identifierGND": {
-                                "type": "string"
-                            },
-                            "nameCorporate": {
-                                "type": "string",
-                                "index": "no",
-                                "copy_to": "bib.nameCorporate"
-                            },
-                            "allIndexes": {
-                                "type": "string",
-                                "index": "no",
-                                "copy_to": "cql.allIndexes"
-                            }
-                        }
+                        "to": [
+                            "bib.nameCorporate",
+                            "cql.allIndexes"
+                        ]
                     },
                     "identifierZDB": {
                         "type": "string",
@@ -1464,26 +1444,11 @@
                             "gnd:preferredNameForThePlaceOrGeographicName",
                             "gnd:variantNameForThePlaceOrGeographicName"
                         ],
-                        "fields": {
-                            "identifierGND": {
-                                "type": "string"
-                            },
-                            "subject": {
-                                "type": "string",
-                                "index": "no",
-                                "copy_to": "dc.subject"
-                            },
-                            "nameCorporate": {
-                                "type": "string",
-                                "index": "no",
-                                "copy_to": "bib.nameCorporate"
-                            },
-                            "allIndexes": {
-                                "type": "string",
-                                "index": "no",
-                                "copy_to": "cql.allIndexes"
-                            }
-                        }
+                        "to": [
+                            "dc.subject",
+                            "bib.nameCorporate",
+                            "cql.allIndexes"
+                        ]
                     },
                     "identifierZDB": {
                         "type": "string",
@@ -2154,15 +2119,9 @@
                             "gnd:preferredNameForTheConferenceOrEvent",
                             "gnd:variantNameForTheConferenceOrEvent"
                         ],
-                        "fields": {
-                            "identifierGND": {
-                                "type": "string"
-                            },
-                            "allIndexes": {
-                                "type": "string",
-                                "copy_to": "cql.allIndexes"
-                            }
-                        }
+                        "to": [
+                            "cql.allIndexes"
+                        ]
                     },
                     "identifierZDB": {
                         "type": "string",
@@ -2516,19 +2475,10 @@
                             "gnd:preferredNameForThePerson",
                             "gnd:variantNameForThePerson"
                         ],
-                        "fields": {
-                            "identifierGND": {
-                                "type": "string"
-                            },
-                            "namePersonal": {
-                                "type": "string",
-                                "copy_to": "bib.namePersonal"
-                            },
-                            "allIndexes": {
-                                "type": "string",
-                                "copy_to": "cql.allIndexes"
-                            }
-                        }
+                        "to": [
+                            "bib.namePersonal",
+                            "cql.allIndexes"
+                        ]
                     },
                     "identifierZDB": {
                         "type": "string",
@@ -2606,19 +2556,10 @@
                             "gnd:preferredNameForThePerson",
                             "gnd:variantNameForThePerson"
                         ],
-                        "fields": {
-                            "identifierGND": {
-                                "type": "string"
-                            },
-                            "namePersonal": {
-                                "type": "string",
-                                "copy_to": "bib.namePersonal"
-                            },
-                            "allIndexes": {
-                                "type": "string",
-                                "copy_to": "cql.allIndexes"
-                            }
-                        }
+                        "to": [
+                            "bib.namePersonal",
+                            "cql.allIndexes"
+                        ]
                     },
                     "identifierZDB": {
                         "type": "string",
@@ -2688,19 +2629,10 @@
                             "gnd:preferredNameForThePerson",
                             "gnd:variantNameForThePerson"
                         ],
-                        "fields": {
-                            "identifierGND": {
-                                "type": "string"
-                            },
-                            "namePersonal": {
-                                "type": "string",
-                                "copy_to": "bib.namePersonal"
-                            },
-                            "allIndexes": {
-                                "type": "string",
-                                "copy_to": "cql.allIndexes"
-                            }
-                        }
+                        "to": [
+                            "bib.namePersonal",
+                            "cql.allIndexes"
+                        ]
                     },
                     "identifierZDB": {
                         "type": "string",
@@ -2778,19 +2710,10 @@
                             "gnd:preferredNameForThePerson",
                             "gnd:variantNameForThePerson"
                         ],
-                        "fields": {
-                            "identifierGND": {
-                                "type": "string"
-                            },
-                            "namePersonal": {
-                                "type": "string",
-                                "copy_to": "bib.namePersonal"
-                            },
-                            "allIndexes": {
-                                "type": "string",
-                                "copy_to":  "cql.allIndexes"
-                            }
-                        }
+                        "to": [
+                            "bib.namePersonal",
+                            "cql.allIndexes"
+                        ]
                     },
                     "identifierZDB": {
                         "type": "string",
@@ -2876,19 +2799,10 @@
                             "gnd:preferredNameForThePerson",
                             "gnd:variantNameForThePerson"
                         ],
-                        "fields": {
-                            "identifierGND": {
-                                "type": "string"
-                            },
-                            "namePersonal": {
-                                "type": "string",
-                                "copy_to": "bib.namePersonal"
-                            },
-                            "allIndexes": {
-                                "type": "string",
-                                "copy_to": "cql.allIndexes"
-                            }
-                        }
+                        "to": [
+                            "bib.namePersonal",
+                            "cql.allIndexes"
+                        ]
                     },
                     "identifierZDB": {
                         "type": "string",
@@ -3079,19 +2993,10 @@
                             "gnd:preferredNameForThePlaceOrGeographicName",
                             "gnd:variantNameForThePlaceOrGeographicName"
                         ],
-                        "fields": {
-                            "identifierGND": {
-                                "type": "string"
-                            },
-                            "subject": {
-                                "type": "string",
-                                "copy_to": "dc.subject"
-                            },
-                            "allIndexes": {
-                                "type": "string",
-                                "copy_to": "cql.allIndexes"
-                            }
-                        }
+                        "to": [
+                            "dc.subject",
+                            "cql.allIndexes"
+                        ]
                     },
                     "identifierZDB": {
                         "type": "string",

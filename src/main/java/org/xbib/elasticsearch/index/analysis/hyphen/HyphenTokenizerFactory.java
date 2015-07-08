@@ -30,8 +30,6 @@ import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenizerFactory;
 import org.elasticsearch.index.settings.IndexSettings;
 
-import java.io.Reader;
-
 public class HyphenTokenizerFactory extends AbstractTokenizerFactory {
 
     @Inject

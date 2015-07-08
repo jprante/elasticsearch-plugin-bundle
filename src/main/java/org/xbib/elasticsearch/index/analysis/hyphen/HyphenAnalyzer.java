@@ -25,8 +25,6 @@ package org.xbib.elasticsearch.index.analysis.hyphen;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
 
-import java.io.Reader;
-
 public class HyphenAnalyzer extends Analyzer {
 
     private final HyphenTokenizerFactory tokenizerFactory;

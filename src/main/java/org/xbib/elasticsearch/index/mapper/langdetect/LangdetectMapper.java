@@ -28,13 +28,13 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.index.mapper.ContentPath;
+import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
 import org.elasticsearch.index.mapper.MergeMappingException;
 import org.elasticsearch.index.mapper.MergeResult;
 import org.elasticsearch.index.mapper.ParseContext;
-import org.elasticsearch.index.mapper.core.AbstractFieldMapper;
 import org.elasticsearch.index.mapper.core.StringFieldMapper;
 import org.xbib.elasticsearch.module.langdetect.LangdetectService;
 import org.xbib.elasticsearch.index.analysis.langdetect.Language;
@@ -48,7 +48,7 @@ import java.util.Map;
 
 import static org.elasticsearch.index.mapper.MapperBuilders.stringField;
 
-public class LangdetectMapper extends AbstractFieldMapper {
+public class LangdetectMapper extends FieldMapper {
 
     public static final String CONTENT_TYPE = "langdetect";
 
@@ -76,7 +76,7 @@ public class LangdetectMapper extends AbstractFieldMapper {
         }
     }
 
-    public static class Builder extends AbstractFieldMapper.Builder<Builder, LangdetectMapper> {
+    public static class Builder extends FieldMapper.Builder<Builder, LangdetectMapper> {
 
         private StringFieldMapper.Builder contentBuilder;
         private StringFieldMapper.Builder langBuilder;
@@ -360,7 +360,7 @@ public class LangdetectMapper extends AbstractFieldMapper {
 
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
-        builder.startObject(name());
+        builder.startObject(simpleName());
         builder.field("type", CONTENT_TYPE);
         builder.startObject("fields");
         contentMapper.toXContent(builder, params);

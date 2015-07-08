@@ -11,16 +11,15 @@ import java.text.CharacterIterator;
  * Contain all the issues surrounding BreakIterators in ICU in one place.
  * Basically this boils down to the fact that they aren't very friendly to any
  * sort of OO design.
- * <p/>
+ *
  * http://bugs.icu-project.org/trac/ticket/5901: RBBI.getRuleStatus(), hoist to
  * BreakIterator from RuleBasedBreakIterator
- * <p/>
+ *
  * DictionaryBasedBreakIterator is a subclass of RuleBasedBreakIterator, but
  * doesn't actually behave as a subclass: it always returns 0 for
  * getRuleStatus():
  * http://bugs.icu-project.org/trac/ticket/4730: Thai RBBI, no boundary type
  * tags
- *
  */
 abstract class BreakIteratorWrapper {
 

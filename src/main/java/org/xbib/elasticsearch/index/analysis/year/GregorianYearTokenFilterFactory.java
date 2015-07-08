@@ -37,7 +37,8 @@ public class GregorianYearTokenFilterFactory extends AbstractTokenFilterFactory 
     @Inject
     public GregorianYearTokenFilterFactory(Index index,
                                            @IndexSettings Settings indexSettings,
-                                           @Assisted String name, @Assisted Settings settings) {
+                                           @Assisted String name,
+                                           @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
         defaultYear = settings.get("default_year", "0000");
     }

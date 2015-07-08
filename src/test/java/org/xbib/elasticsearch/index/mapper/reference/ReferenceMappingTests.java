@@ -4,7 +4,6 @@ import com.google.common.base.Charsets;
 import org.apache.lucene.index.IndexableField;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
-import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
@@ -84,7 +83,6 @@ public class ReferenceMappingTests extends Assert {
 
     @Test
     public void testRefMappings() throws Exception {
-        logger.info("testRefMappings");
         String mapping = copyToStringFromClasspath("ref-mapping.json");
         DocumentMapper docMapper = mapperParser.parse(mapping);
         BytesReference json = jsonBuilder().startObject()
@@ -96,7 +94,7 @@ public class ReferenceMappingTests extends Assert {
             logger.info("testRefMappings {} = {}", field.name(), field.stringValue());
         }
         assertNotNull(docMapper.mappers().smartNameFieldMapper("someField"));
-        //assertEquals(doc.get(docMapper.mappers().smartNameFieldMapper("someField").fieldType().names().indexName()), "1234");
+        assertEquals("1234", doc.getFields("someField.someField")[0].stringValue());
         assertEquals(3, doc.getFields("someField.ref").length);
         assertEquals("a", doc.getFields("someField.ref")[0].stringValue());
         assertEquals("b", doc.getFields("someField.ref")[1].stringValue());
@@ -105,9 +103,14 @@ public class ReferenceMappingTests extends Assert {
         // re-parse from mapping
         String builtMapping = docMapper.mappingSource().string();
         docMapper = mapperParser.parse(builtMapping);
-        json = jsonBuilder().startObject().field("_id", 1).field("someField", "1234").endObject().bytes();
+        json = jsonBuilder().startObject()
+                .field("someField", "1234")
+                .endObject().bytes();
         doc = docMapper.parse("someType", "1", json).rootDoc();
-        //assertEquals(doc.get(docMapper.mappers().smartNameFieldMapper("someField").fieldType().names().indexName()), "1234");
+        for (IndexableField field : doc.getFields()) {
+            logger.info("reparse testRefMappings {} = {}", field.name(), field.stringValue());
+        }
+        assertEquals("1234", doc.getFields("someField.someField")[0].stringValue());
         assertEquals(3, doc.getFields("someField.ref").length);
         assertEquals("a", doc.getFields("someField.ref")[0].stringValue());
         assertEquals("b", doc.getFields("someField.ref")[1].stringValue());
@@ -116,7 +119,6 @@ public class ReferenceMappingTests extends Assert {
 
     @Test
     public void testRefInDoc() throws Exception {
-        logger.info("testRefInDoc start");
         String mapping = copyToStringFromClasspath("ref-mapping-authorities.json");
         DocumentMapper docMapper = mapperParser.parse(mapping);
         BytesReference json = jsonBuilder().startObject()
@@ -135,9 +137,7 @@ public class ReferenceMappingTests extends Assert {
         assertEquals(2, doc.getFields("bib.contributor").length);
         assertEquals("A contributor", doc.getFields("bib.contributor")[0].stringValue());
         assertEquals("John Doe", doc.getFields("bib.contributor")[1].stringValue());
-        logger.info("testRefInDoc end");
     }
-
 
     @Test
     public void testRefFromID() throws Exception {
@@ -151,7 +151,6 @@ public class ReferenceMappingTests extends Assert {
         assertEquals(1, doc.getFields("ref").length, 1);
         assertEquals("John Doe", doc.getFields("ref")[0].stringValue());
     }
-
 
     @Test
     public void testSearch() throws Exception {
@@ -214,30 +213,6 @@ public class ReferenceMappingTests extends Assert {
             logger.info("{}", hit.getSource());
         }
         assertEquals(1, searchResponse.getHits().getTotalHits());
-    }
-
-    @Test
-    public void testRefInDocNested() throws Exception {
-        logger.info("testRefInDocNested start");
-        String mapping = copyToStringFromClasspath("ref-mapping-nested.json");
-        DocumentMapper docMapper = mapperParser.parse(mapping);
-        BytesReference json = jsonBuilder().startObject()
-                .field("dc.creator", "A creator")
-                .field("bib.contributor", "A contributor")
-                .field("person.authorName", "the name of the author")
-                .field("authorID", "1")
-                .endObject().bytes();
-        ParseContext.Document doc = docMapper.parse("nested", "1", json).rootDoc();
-        for (IndexableField field : doc.getFields()) {
-            logger.info("testRefInDocNested {} = {}", field.name(), field.stringValue());
-        }
-        assertEquals(2, doc.getFields("dc.creator").length);
-        assertEquals("A creator", doc.getFields("dc.creator")[0].stringValue());
-        assertEquals("John Doe", doc.getFields("dc.creator")[1].stringValue());
-        assertEquals(2, doc.getFields("bib.contributor").length);
-        assertEquals("A contributor", doc.getFields("bib.contributor")[0].stringValue());
-        assertEquals("John Doe", doc.getFields("bib.contributor")[1].stringValue());
-        logger.info("testRefInDocNested end");
     }
 
     private String copyToStringFromClasspath(String path) throws IOException {

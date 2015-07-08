@@ -18,7 +18,7 @@
             "bib" : {
                 "properties" : {
                     "contributor" : {
-                         "type" : "string"
+                        "type" : "string"
                     }
                 }
             }

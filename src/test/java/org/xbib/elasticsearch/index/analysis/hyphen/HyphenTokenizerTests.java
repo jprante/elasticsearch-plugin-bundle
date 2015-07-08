@@ -184,10 +184,14 @@ public class HyphenTokenizerTests extends Assert {
     }
 
     private AnalysisService createAnalysisService() {
+        return createAnalysisService("hyphen_tokenizer.json");
+    }
+
+    private AnalysisService createAnalysisService(String name) {
         Settings settings = Settings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("path.home", System.getProperty("path.home"))
-                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json").build();
+                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/hyphen/" + name).build();
         Index index = new Index("test");
         Injector parentInjector = new ModulesBuilder().add(new SettingsModule(settings),
                 new EnvironmentModule(new Environment(settings)),

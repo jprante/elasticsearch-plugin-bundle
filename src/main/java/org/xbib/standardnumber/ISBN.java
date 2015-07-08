@@ -178,6 +178,8 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
 
     /**
      * Prefer European Article Number (EAN, ISBN-13)
+     * @param preferEAN true if EAN should be preferred
+     * @return this ISBN object
      */
     public ISBN ean(boolean preferEAN) {
         this.eanPreferred = preferEAN;

@@ -34,7 +34,10 @@ import org.elasticsearch.index.settings.IndexSettings;
 public class GermanNormalizationFilterFactory extends AbstractTokenFilterFactory {
 
     @Inject
-    public GermanNormalizationFilterFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
+    public GermanNormalizationFilterFactory(Index index,
+                                            @IndexSettings Settings indexSettings,
+                                            @Assisted String name,
+                                            @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
     }
 

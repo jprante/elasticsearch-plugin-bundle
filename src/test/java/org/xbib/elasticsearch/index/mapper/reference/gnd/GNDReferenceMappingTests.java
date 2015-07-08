@@ -1,13 +1,12 @@
 package org.xbib.elasticsearch.index.mapper.reference.gnd;
 
 import com.google.common.base.Charsets;
-import org.apache.lucene.index.IndexNotFoundException;
-import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
@@ -18,26 +17,26 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import static org.elasticsearch.common.io.Streams.copyToString;
+import static org.elasticsearch.index.query.QueryBuilders.matchPhraseQuery;
 
 public class GNDReferenceMappingTests extends Assert {
 
     private final static ESLogger logger = ESLoggerFactory.getLogger(GNDReferenceMappingTests.class.getName());
 
-
+    @Test
     public void testGND() throws IOException {
         Settings nodeSettings = Settings.settingsBuilder()
                 .put("path.home", System.getProperty("path.home"))
                 .put("gateway.type", "none")
                 .put("index.number_of_shards", 1)
                 .put("index.number_of_replica", 0)
-                .put("cluster.routing.schedule", "50ms")
                 .build();
         Node node = NodeBuilder.nodeBuilder().settings(nodeSettings).local(true).build().start();
         Client client = node.client();
         try {
             client.admin().indices().prepareDelete("gnd").execute().actionGet();
         } catch (Exception e) {
-            logger.warn("can not delete index");
+            logger.warn("can not delete index 'gnd'");
         }
         String gndSettings = copyToStringFromClasspath("gnd-settings.json");
         String gndMapping = copyToStringFromClasspath("gnd-mapping.json");
@@ -48,6 +47,11 @@ public class GNDReferenceMappingTests extends Assert {
         String gndDocument = copyToStringFromClasspath("gnd-document.json");
         client.prepareIndex("gnd", "gnd", "11862444X").setSource(gndDocument).setRefresh(true).execute().actionGet();
 
+        try {
+            client.admin().indices().prepareDelete("title").execute().actionGet();
+        } catch (Exception e) {
+            logger.warn("can not delete index 'title'");
+        }
         String titleSettings = copyToStringFromClasspath("title-settings.json");
         String titleMapping = copyToStringFromClasspath("title-mapping.json");
         client.admin().indices().prepareCreate("title")
@@ -57,22 +61,20 @@ public class GNDReferenceMappingTests extends Assert {
         String titleDocument = copyToStringFromClasspath("title-document.json");
         client.prepareIndex("title", "title", "(DE-605)008427902").setSource(titleDocument).setRefresh(true).execute().actionGet();
 
-        SearchResponse searchResponse = client.search(new SearchRequest()
-                .indices("title")
-                .types("title")
-                .extraSource("{\"query\":{\"match_phrase\":{\"cql.allIndexes\":\"Tucholsky, Kurt\"}}}"))
-                .actionGet();
+        // search for Tucholsky
+        QueryBuilder queryBuilder = matchPhraseQuery("cql.allIndexes", "Tucholsky, Kurt");
+        SearchResponse searchResponse = client.prepareSearch("title")
+                .setQuery(queryBuilder).execute().actionGet();
         logger.info("hits = {}", searchResponse.getHits().getTotalHits());
         for (SearchHit hit : searchResponse.getHits().getHits()) {
             logger.info("{}", hit.getSource());
         }
         assertEquals(searchResponse.getHits().getTotalHits(), 1);
 
-        searchResponse = client.search(new SearchRequest()
-                .indices("title")
-                .types("title")
-                .extraSource("{\"query\":{\"match_phrase\":{\"cql.allIndexes\":\"Panter, Peter\"}}}"))
-                .actionGet();
+        // search for Tucholsky alias "Peter Panter"
+        queryBuilder = matchPhraseQuery("cql.allIndexes", "Panter, Peter");
+        searchResponse = client.prepareSearch("title")
+                .setQuery(queryBuilder).execute().actionGet();
         logger.info("hits = {}", searchResponse.getHits().getTotalHits());
         for (SearchHit hit : searchResponse.getHits().getHits()) {
             logger.info("{}", hit.getSource());

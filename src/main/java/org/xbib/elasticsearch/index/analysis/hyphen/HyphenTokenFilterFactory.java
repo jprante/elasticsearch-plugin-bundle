@@ -37,7 +37,8 @@ public class HyphenTokenFilterFactory extends AbstractTokenFilterFactory {
     @Inject
     public HyphenTokenFilterFactory(Index index,
                                     @IndexSettings Settings indexSettings,
-                                    @Assisted String name, @Assisted Settings settings) {
+                                    @Assisted String name,
+                                    @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
         // by default, only '-' is used for token filtering
         this.hyphenchars = settings.get("hyphens") != null ? settings.get("hyphens").toCharArray() : null;

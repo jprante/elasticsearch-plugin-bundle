@@ -37,7 +37,10 @@ public class IcuTransformTokenFilterFactory extends AbstractTokenFilterFactory {
     private final Transliterator transliterator;
 
     @Inject
-    public IcuTransformTokenFilterFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
+    public IcuTransformTokenFilterFactory(Index index,
+                                          @IndexSettings Settings indexSettings,
+                                          @Assisted String name,
+                                          @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
         String id = settings.get("id", "Null");
         String s = settings.get("dir", "forward");

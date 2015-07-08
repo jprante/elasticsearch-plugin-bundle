@@ -42,8 +42,10 @@ public class IcuNormalizerTokenFilterFactory extends AbstractTokenFilterFactory 
     private final Normalizer2 normalizer;
 
     @Inject
-    public IcuNormalizerTokenFilterFactory(Index index, @IndexSettings Settings indexSettings,
-                                           @Assisted String name, @Assisted Settings settings) {
+    public IcuNormalizerTokenFilterFactory(Index index,
+                                           @IndexSettings Settings indexSettings,
+                                           @Assisted String name,
+                                           @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
         String normalizationName = settings.get("name", "nfkc_cf");
         Normalizer2.Mode normalizationMode;

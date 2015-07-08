@@ -70,6 +70,7 @@ public class BundlePlugin extends AbstractPlugin {
 
     /**
      * Automatically called with the analysis module.
+     * @param module the analysis module
      */
     public void onModule(AnalysisModule module) {
         if (settings.getAsBoolean("plugins.baseform.enabled", true)) {

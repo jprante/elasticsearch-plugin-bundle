@@ -100,7 +100,7 @@ public class SortFormTests extends BaseTokenStreamTest {
             BytesRef sortKey = sortKeyFromTokenStream(ts);
             map.put(sortKey, s);
         }
-        // strength "quaternary" orders without punctuation and ensures unique entries.
+        // strength "quaternary" orders without punctuation and ensures unique entries
         Iterator<Collection<String>> it = map.asMap().values().iterator();
         assertEquals("[¬Frau¬ Göbel]",it.next().toString());
         assertEquals("[Goethe]",it.next().toString());

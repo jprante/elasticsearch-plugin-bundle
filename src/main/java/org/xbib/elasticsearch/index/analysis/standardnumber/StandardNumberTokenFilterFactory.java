@@ -25,8 +25,6 @@ package org.xbib.elasticsearch.index.analysis.standardnumber;
 import org.apache.lucene.analysis.TokenStream;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.assistedinject.Assisted;
-import org.elasticsearch.common.logging.ESLogger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
@@ -39,7 +37,8 @@ public class StandardnumberTokenFilterFactory extends AbstractTokenFilterFactory
     @Inject
     public StandardnumberTokenFilterFactory(Index index,
                                             @IndexSettings Settings indexSettings,
-                                            @Assisted String name, @Assisted Settings settings) {
+                                            @Assisted String name,
+                                            @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
         this.standardnumberService = new StandardnumberService(settings);
         standardnumberService.start();

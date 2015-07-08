@@ -1,19 +1,23 @@
 {
-  "doc" : {
+  "doc": {
     "properties": {
-      "authorName": {
-        "type": "string"
-      },
-      "authorID": {
-        "type": "ref",
-        "ref_index": "authors",
-        "ref_type": "authors",
-        "ref_fields": [
-          "author"
-        ],
-        "to": [
-          "dc.creator"
-        ]
+      "author": {
+        "properties": {
+          "authorName": {
+            "type": "string"
+          },
+          "authorID": {
+            "type": "ref",
+            "ref_index": "ref",
+            "ref_type": "ref",
+            "ref_fields": [
+              "author"
+            ],
+            "to": [
+              "dc.creator"
+            ]
+          }
+        }
       },
       "dc": {
         "properties": {

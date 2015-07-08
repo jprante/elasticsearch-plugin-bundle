@@ -59,7 +59,6 @@ public class HyphenAnalyzerProvider extends CustomAnalyzerProvider {
 
     @Override
     public void build(AnalysisService analysisService) {
-
         List<CharFilterFactory> charFilters = newArrayList();
         String[] charFilterNames = analyzerSettings.getAsArray("char_filter");
         for (String charFilterName : charFilterNames) {
@@ -69,7 +68,6 @@ public class HyphenAnalyzerProvider extends CustomAnalyzerProvider {
             }
             charFilters.add(charFilter);
         }
-
         List<TokenFilterFactory> tokenFilters = newArrayList();
         String[] tokenFilterNames = analyzerSettings.getAsArray("filter");
         for (String tokenFilterName : tokenFilterNames) {
@@ -79,10 +77,8 @@ public class HyphenAnalyzerProvider extends CustomAnalyzerProvider {
             }
             tokenFilters.add(tokenFilter);
         }
-
         int positionOffsetGap = analyzerSettings.getAsInt("position_offset_gap", 0);
         int offsetGap = analyzerSettings.getAsInt("offset_gap", -1);
-
         this.customAnalyzer = new CustomAnalyzer(tokenizerFactory,
                 charFilters.toArray(new CharFilterFactory[charFilters.size()]),
                 tokenFilters.toArray(new TokenFilterFactory[tokenFilters.size()]),

@@ -32,16 +32,16 @@ import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.settings.IndexSettings;
 
-import java.io.IOException;
-
 public class DecompoundTokenFilterFactory extends AbstractTokenFilterFactory {
 
     private final Decompounder decompounder;
 
     @Inject
     public DecompoundTokenFilterFactory(Index index,
-                                        @IndexSettings Settings indexSettings, Environment env,
-                                        @Assisted String name, @Assisted Settings settings) {
+                                        Environment env,
+                                        @IndexSettings Settings indexSettings,
+                                        @Assisted String name,
+                                        @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
         this.decompounder = createDecompounder(env, settings);
     }

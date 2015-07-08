@@ -3,11 +3,11 @@ package org.xbib.elasticsearch.index.analysis.langdetect;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * This class is used by ObjectMapper, it requires public attributes
- */
 public class LangProfile {
 
+    /**
+     * This class is used by ObjectMapper, it requires public attributes
+     */
     public String name = null;
 
     public Map<String, Integer> freq = new HashMap<String, Integer>();

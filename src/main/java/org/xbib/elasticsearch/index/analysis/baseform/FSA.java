@@ -26,6 +26,7 @@ public abstract class FSA implements Iterable<ByteBuffer> {
     /**
      * @return Returns the identifier of the first arc leaving <code>node</code>
      * or 0 if the node has no outgoing arcs.
+     * @param node node
      */
     public abstract int getFirstArc(int node);
 
@@ -33,6 +34,7 @@ public abstract class FSA implements Iterable<ByteBuffer> {
      * @return Returns the identifier of the next arc after <code>arc</code> and
      * leaving <code>node</code>. Zero is returned if no more arcs are
      * available for the node.
+     * @param arc arc
      */
     public abstract int getNextArc(int arc);
 
@@ -40,11 +42,14 @@ public abstract class FSA implements Iterable<ByteBuffer> {
      * @return Returns the identifier of an arc leaving <code>node</code> and
      * labeled with <code>label</code>. An identifier equal to 0 means
      * the node has no outgoing arc labeled <code>label</code>.
+     * @param node node
+     * @param label label
      */
     public abstract int getArc(int node, byte label);
 
     /**
      * Return the label associated with a given <code>arc</code>.
+     * @param arc arc
      */
     public abstract byte getArcLabel(int arc);
 
@@ -52,6 +57,7 @@ public abstract class FSA implements Iterable<ByteBuffer> {
      * Returns <code>true</code> if the destination node at the end of this
      * <code>arc</code> corresponds to an input sequence created when building
      * this automaton.
+     * @param arc arc
      */
     public abstract boolean isArcFinal(int arc);
 
@@ -59,6 +65,7 @@ public abstract class FSA implements Iterable<ByteBuffer> {
      * Returns <code>true</code> if this <code>arc</code> does not have a
      * terminating node (@link {@link #getEndNode(int)} will throw an
      * exception). Implies {@link #isArcFinal(int)}.
+     * @param arc arc
      */
     public abstract boolean isArcTerminal(int arc);
 
@@ -66,6 +73,7 @@ public abstract class FSA implements Iterable<ByteBuffer> {
      * Return the end node pointed to by a given <code>arc</code>. Terminal arcs
      * (those that point to a terminal state) have no end node representation
      * and throw a runtime exception.
+     * @param arc arc
      */
     public abstract int getEndNode(int arc);
 
@@ -75,6 +83,7 @@ public abstract class FSA implements Iterable<ByteBuffer> {
     public abstract Set<FSAFlags> getFlags();
 
     /**
+     * @param node node
      * @return Returns the number of sequences reachable from the given state if
      * the automaton was compiled with {@link FSAFlags#NUMBERS}. The size of
      * the right language of the state, in other words.
@@ -97,7 +106,8 @@ public abstract class FSA implements Iterable<ByteBuffer> {
      * Important: it is guaranteed that the returned byte buffer is
      * backed by a byte array and that the content of the byte buffer starts at
      * the array's index 0.
-     *
+     * @param node node
+     * @return byte buffer
      * @see Iterable
      */
     public Iterable<ByteBuffer> getSequences(final int node) {

@@ -41,8 +41,10 @@ public class BaseformTokenFilterFactory extends AbstractTokenFilterFactory {
 
     @Inject
     public BaseformTokenFilterFactory(Index index,
-                                      @IndexSettings Settings indexSettings, Environment env,
-                                      @Assisted String name, @Assisted Settings settings) {
+                                      Environment env,
+                                      @IndexSettings Settings indexSettings,
+                                      @Assisted String name,
+                                      @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
         this.dictionary = createDictionary(env, settings);
     }

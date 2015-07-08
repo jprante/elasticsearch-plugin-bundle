@@ -69,7 +69,6 @@ public class HyphenTokenFilter extends TokenFilter {
 
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
     private final PositionIncrementAttribute posIncrAtt = addAttribute(PositionIncrementAttribute.class);
-    private final TypeAttribute typeAtt = addAttribute(TypeAttribute.class);
 
     // TODO use TypeAttribute, LETTER_COMP or something
     private final static Pattern letter = Pattern.compile("\\p{L}+", Pattern.UNICODE_CHARACTER_CLASS);

@@ -28,8 +28,6 @@ import org.apache.lucene.analysis.core.KeywordTokenizer;
 import org.apache.lucene.collation.CollationKeyAnalyzer;
 import org.apache.lucene.collation.ICUCollationAttributeFactory;
 
-import java.io.Reader;
-
 /**
  * Configures {@link KeywordTokenizer} with {@link ICUCollationAttributeFactory}.
  * <p>
