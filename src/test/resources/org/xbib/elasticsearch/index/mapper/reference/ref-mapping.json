@@ -6,9 +6,9 @@
                 "ref_index" : "test",
                 "ref_type" : "test",
                 "ref_fields" : [ "myfield" ],
-                "fields" : {
-                    "someField.ref" : { "type" : "string" }
-                }
+                "to" : [
+                    "someField.ref"
+                ]
              }
         }
     }

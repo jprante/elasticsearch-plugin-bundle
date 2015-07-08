@@ -6,9 +6,9 @@
                 "ref_index" : "authorities",
                 "ref_type" : "persons",
                 "ref_fields" : [ "author" ],
-                "fields" : {
-                      "ref" : { "store" : true }
-                }
+                "to" : [
+                      "ref"
+                ]
              }
         }
     }

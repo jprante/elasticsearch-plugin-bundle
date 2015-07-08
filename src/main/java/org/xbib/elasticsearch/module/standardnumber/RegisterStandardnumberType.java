@@ -20,31 +20,24 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.index.analysis.standardnumber;
+package org.xbib.elasticsearch.module.standardnumber;
 
-import org.apache.lucene.analysis.TokenStream;
 import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.AbstractIndexComponent;
 import org.elasticsearch.index.Index;
-import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
+import org.elasticsearch.index.mapper.MapperService;
 import org.elasticsearch.index.settings.IndexSettings;
+import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberService;
+import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapper;
 
-public class StandardnumberTokenFilterFactory extends AbstractTokenFilterFactory  {
-
-    private final StandardnumberService standardnumberService;
+public class RegisterStandardnumberType extends AbstractIndexComponent {
 
     @Inject
-    public StandardnumberTokenFilterFactory(Index index,
-                                            @IndexSettings Settings indexSettings,
-                                            @Assisted String name, @Assisted Settings settings) {
-        super(index, indexSettings, name, settings);
-        this.standardnumberService = new StandardnumberService(settings);
-        standardnumberService.start();
-    }
-
-    @Override
-    public TokenStream create(TokenStream tokenStream) {
-        return new StandardnumberTokenFilter(tokenStream, standardnumberService);
+    public RegisterStandardnumberType(Index index, @IndexSettings Settings indexSettings,
+                                      MapperService mapperService, StandardnumberService service) {
+        super(index, indexSettings);
+        mapperService.documentMapperParser().putTypeParser("standardnumber",
+                new StandardnumberMapper.TypeParser(service));
     }
 }
