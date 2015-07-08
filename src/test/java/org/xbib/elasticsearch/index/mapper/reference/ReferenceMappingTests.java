@@ -92,7 +92,7 @@ public class ReferenceMappingTests extends Assert {
 
     @Test
     public void testRefMappings() throws Exception {
-        mapperParser.putTypeParser(ReferenceMapper.REF, new ReferenceMapper.TypeParser(client));
+        mapperParser.putTypeParser(ReferenceMapper.CONTENT_TYPE, new ReferenceMapper.TypeParser(client));
         String mapping = copyToStringFromClasspath("ref-mapping.json");
         DocumentMapper docMapper = mapperParser.parse(mapping);
         BytesReference json = jsonBuilder().startObject()
@@ -124,7 +124,7 @@ public class ReferenceMappingTests extends Assert {
 
     @Test
     public void testRefInDoc() throws Exception {
-        mapperParser.putTypeParser(ReferenceMapper.REF, new ReferenceMapper.TypeParser(client));
+        mapperParser.putTypeParser(ReferenceMapper.CONTENT_TYPE, new ReferenceMapper.TypeParser(client));
         String mapping = copyToStringFromClasspath("ref-mapping-authorities.json");
         DocumentMapper docMapper = mapperParser.parse(mapping);
         BytesReference json = jsonBuilder().startObject()
@@ -148,7 +148,7 @@ public class ReferenceMappingTests extends Assert {
 
     @Test
     public void testRefFromID() throws Exception {
-        mapperParser.putTypeParser(ReferenceMapper.REF, new ReferenceMapper.TypeParser(client));
+        mapperParser.putTypeParser(ReferenceMapper.CONTENT_TYPE, new ReferenceMapper.TypeParser(client));
         String mapping = copyToStringFromClasspath("ref-mapping-from-id.json");
         DocumentMapper docMapper = mapperParser.parse(mapping);
         BytesReference json = jsonBuilder().startObject()

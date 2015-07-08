@@ -187,14 +187,12 @@ public class StandardnumberMapper implements Mapper {
 
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
-        builder.startObject(name);
+        builder.startObject(name());
         builder.field("type", CONTENT_TYPE);
-
         builder.startObject("fields");
         contentMapper.toXContent(builder, params);
         stdnumMapper.toXContent(builder, params);
         builder.endObject();
-
         builder.endObject();
         return builder;
     }
