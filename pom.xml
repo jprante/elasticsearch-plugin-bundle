@@ -7,7 +7,7 @@
 
     <groupId>org.xbib.elasticsearch.plugin</groupId>
     <artifactId>elasticsearch-plugin-bundle</artifactId>
-    <version>2.0.0.0-SNAPSHOT</version>
+    <version>2.0.0.0-beta1-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
@@ -74,9 +74,9 @@
         <github.global.server>github</github.global.server>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.compiler.version>1.7</java.compiler.version>
-        <elasticsearch.version>2.0.0-SNAPSHOT</elasticsearch.version>
+        <elasticsearch.version>2.0.0-beta1-SNAPSHOT</elasticsearch.version>
         <lucene.version>5.2.1</lucene.version>
-        <jackson.version>2.5.2</jackson.version>
+        <jackson.version>2.5.3</jackson.version>
     </properties>
 
     <dependencies>
@@ -84,14 +84,6 @@
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
             <version>${elasticsearch.version}</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-analyzers-common</artifactId>
-            <version>${lucene.version}</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
@@ -159,14 +151,14 @@
                 <directory>${basedir}/src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>es-plugin.properties</include>
+                    <include>plugin-descriptor.properties</include>
                 </includes>
             </resource>
             <resource>
                 <directory>${basedir}/src/main/resources</directory>
                 <filtering>false</filtering>
                 <excludes>
-                    <exclude>es-plugin.properties</exclude>
+                    <exclude>plugin-descriptor.properties</exclude>
                 </excludes>
             </resource>
         </resources>

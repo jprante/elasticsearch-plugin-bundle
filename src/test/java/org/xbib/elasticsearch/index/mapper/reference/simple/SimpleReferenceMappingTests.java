@@ -12,6 +12,7 @@ import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.junit.Assert;
 import org.junit.Test;
+import org.xbib.elasticsearch.plugin.analysis.bundle.BundlePlugin;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -28,6 +29,7 @@ public class SimpleReferenceMappingTests extends Assert {
     public void testSimpleRef() throws IOException {
         Settings nodeSettings = Settings.settingsBuilder()
                 .put("path.home", System.getProperty("path.home"))
+                .put("plugin.types", BundlePlugin.class.getName())
                 .put("gateway.type", "none")
                 .put("index.number_of_shards", 1)
                 .put("index.number_of_replica", 0)

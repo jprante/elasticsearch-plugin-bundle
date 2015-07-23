@@ -23,6 +23,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.xbib.elasticsearch.index.mapper.MapperTestUtils;
+import org.xbib.elasticsearch.plugin.analysis.bundle.BundlePlugin;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -44,6 +45,7 @@ public class ReferenceMappingTests extends Assert {
     public static void setupMapperParser() throws IOException {
         Settings nodeSettings = Settings.settingsBuilder()
                 .put("path.home", System.getProperty("path.home"))
+                .put("plugin.types", BundlePlugin.class.getName())
                 .put("gateway.type", "none")
                 .put("index.number_of_shards", 1)
                 .put("index.number_of_replica", 0)
@@ -88,7 +90,7 @@ public class ReferenceMappingTests extends Assert {
         BytesReference json = jsonBuilder().startObject()
                 .field("someField", "1234")
                 .endObject().bytes();
-        ParseContext.Document doc = docMapper.parse("someType", "1", json).rootDoc();
+        ParseContext.Document doc = docMapper.parse("someIndex", "someType", "1", json).rootDoc();
         assertNotNull(doc);
         for (IndexableField field : doc.getFields()) {
             logger.info("testRefMappings {} = {}", field.name(), field.stringValue());
@@ -106,7 +108,7 @@ public class ReferenceMappingTests extends Assert {
         json = jsonBuilder().startObject()
                 .field("someField", "1234")
                 .endObject().bytes();
-        doc = docMapper.parse("someType", "1", json).rootDoc();
+        doc = docMapper.parse("someIndex", "someType", "1", json).rootDoc();
         for (IndexableField field : doc.getFields()) {
             logger.info("reparse testRefMappings {} = {}", field.name(), field.stringValue());
         }
@@ -127,7 +129,7 @@ public class ReferenceMappingTests extends Assert {
                 .field("bib.contributor", "A contributor")
                 .field("authorID", "1")
                 .endObject().bytes();
-        ParseContext.Document doc = docMapper.parse("docs", "1", json).rootDoc();
+        ParseContext.Document doc = docMapper.parse("docs", "docs", "1", json).rootDoc();
         for (IndexableField field : doc.getFields()) {
             logger.info("testRefInDoc {} = {}", field.name(), field.stringValue());
         }
@@ -147,7 +149,7 @@ public class ReferenceMappingTests extends Assert {
                 .field("title", "A title")
                 .field("authorID", "1")
                 .endObject().bytes();
-        ParseContext.Document doc = docMapper.parse("docs", "1", json).rootDoc();
+        ParseContext.Document doc = docMapper.parse("docs", "docs", "1", json).rootDoc();
         assertEquals(1, doc.getFields("ref").length, 1);
         assertEquals("John Doe", doc.getFields("ref")[0].stringValue());
     }
