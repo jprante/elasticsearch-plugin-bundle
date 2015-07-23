@@ -7,7 +7,7 @@
 
     <groupId>org.xbib.elasticsearch.plugin</groupId>
     <artifactId>elasticsearch-plugin-bundle</artifactId>
-    <version>1.5.2.2</version>
+    <version>1.5.2.3</version>
 
     <packaging>jar</packaging>
 

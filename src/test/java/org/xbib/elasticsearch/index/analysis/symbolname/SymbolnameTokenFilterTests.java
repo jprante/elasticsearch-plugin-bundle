@@ -7,8 +7,7 @@ import org.elasticsearch.Version;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.inject.ModulesBuilder;
-import org.elasticsearch.common.logging.ESLogger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
+import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.SettingsModule;
 import org.elasticsearch.env.Environment;
@@ -30,8 +29,6 @@ import java.io.StringReader;
 
 public class SymbolnameTokenFilterTests extends Assert {
 
-    private final static ESLogger logger = ESLoggerFactory.getLogger(SymbolnameTokenFilterTests.class.getName());
-
     @Test
     public void testSimple() throws IOException {
 
@@ -48,8 +45,7 @@ public class SymbolnameTokenFilterTests extends Assert {
         };
         AnalysisService analysisService = createAnalysisService();
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("symbolname");
-        Tokenizer tokenizer = analysisService.tokenizer("whitespace").create();
-        tokenizer.setReader(new StringReader(source));
+        Tokenizer tokenizer = analysisService.tokenizer("whitespace").create(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 
@@ -76,8 +72,7 @@ public class SymbolnameTokenFilterTests extends Assert {
         };
         AnalysisService analysisService = createAnalysisService();
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("symbolname");
-        Tokenizer tokenizer = analysisService.tokenizer("whitespace").create();
-        tokenizer.setReader(new StringReader(source));
+        Tokenizer tokenizer = analysisService.tokenizer("whitespace").create(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 
@@ -106,15 +101,13 @@ public class SymbolnameTokenFilterTests extends Assert {
         };
         AnalysisService analysisService = createAnalysisService();
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("symbolname");
-        Tokenizer tokenizer = analysisService.tokenizer("whitespace").create();
-        tokenizer.setReader(new StringReader(source));
+        Tokenizer tokenizer = analysisService.tokenizer("whitespace").create(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 
     private AnalysisService createAnalysisService() {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = ImmutableSettings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
-                .put("path.home", System.getProperty("path.home"))
                 .build();
         Index index = new Index("test");
         Injector parentInjector = new ModulesBuilder().add(new SettingsModule(settings),

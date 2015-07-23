@@ -28,8 +28,6 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PackedTokenAttributeImpl;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.elasticsearch.common.logging.ESLogger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.CharacterCodingException;
@@ -39,11 +37,7 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.google.common.collect.Lists.newLinkedList;
-
 public class SymbolnameTokenFilter extends TokenFilter {
-
-    private final static ESLogger logger = ESLoggerFactory.getLogger(SymbolnameTokenFilter.class.getName());
 
     private final LinkedList<PackedTokenAttributeImpl> tokens;
 
@@ -91,7 +85,7 @@ public class SymbolnameTokenFilter extends TokenFilter {
 
     protected void process() throws CharacterCodingException {
         String term = new String(termAtt.buffer(), 0, termAtt.length());
-        Collection<CharSequence> variants = newLinkedList();
+        Collection<CharSequence> variants = new LinkedList<>();
         variants.addAll(process(term));
         for (CharSequence ch : variants) {
             if (ch != null) {
@@ -103,7 +97,7 @@ public class SymbolnameTokenFilter extends TokenFilter {
     }
 
     protected Collection<CharSequence> process(String term) {
-        Collection<CharSequence> variants = newLinkedList();
+        Collection<CharSequence> variants = new LinkedList<>();
         StringBuffer sb = new StringBuffer();
         Matcher m = pattern.matcher(term);
         while (m.find()) {
