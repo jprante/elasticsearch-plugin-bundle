@@ -35,6 +35,7 @@ import org.xbib.elasticsearch.index.analysis.decompound.DecompoundAnalysisBinder
 import org.xbib.elasticsearch.index.analysis.german.GermanAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.icu.IcuAnalysisBinderProcessor;
+import org.xbib.elasticsearch.index.analysis.symbolname.SymbolnameAnalysisBinderProcessor;
 import org.xbib.elasticsearch.module.langdetect.LangdetectModule;
 import org.xbib.elasticsearch.module.langdetect.LangdetectService;
 import org.xbib.elasticsearch.index.analysis.sortform.SortformAnalysisBinderProcessor;
@@ -105,6 +106,9 @@ public class BundlePlugin extends AbstractPlugin {
         }
         if (settings.getAsBoolean("plugins.year.enabled", true)) {
             module.addProcessor(new GregorianYearAnalysisBinderProcessor());
+        }
+        if (settings.getAsBoolean("plugins.symbolname.enabled", true)) {
+            module.addProcessor(new SymbolnameAnalysisBinderProcessor());
         }
     }
 
