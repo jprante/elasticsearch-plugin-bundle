@@ -36,6 +36,7 @@ import org.xbib.elasticsearch.index.analysis.german.GermanAnalysisBinderProcesso
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.icu.IcuAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.symbolname.SymbolnameAnalysisBinderProcessor;
+import org.xbib.elasticsearch.module.crypt.CryptModule;
 import org.xbib.elasticsearch.module.langdetect.LangdetectModule;
 import org.xbib.elasticsearch.module.langdetect.LangdetectService;
 import org.xbib.elasticsearch.index.analysis.sortform.SortformAnalysisBinderProcessor;
@@ -132,6 +133,9 @@ public class BundlePlugin extends AbstractPlugin {
         }
         if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
             modules.add(StandardnumberIndexModule.class);
+        }
+        if (settings.getAsBoolean("plugins.crypt.enabled", true)) {
+            modules.add(CryptModule.class);
         }
         return modules;
     }
