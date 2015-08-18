@@ -37,9 +37,11 @@ import org.elasticsearch.index.analysis.NamedAnalyzer;
 import org.elasticsearch.index.codec.docvaluesformat.DocValuesFormatProvider;
 import org.elasticsearch.index.codec.postingsformat.PostingsFormatProvider;
 import org.elasticsearch.index.fielddata.FieldDataType;
+import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
 import org.elasticsearch.index.mapper.ParseContext;
+import org.elasticsearch.index.mapper.core.AbstractFieldMapper;
 import org.elasticsearch.index.mapper.core.StringFieldMapper;
 import org.elasticsearch.index.similarity.SimilarityProvider;
 
@@ -136,7 +138,7 @@ public class CryptMapper extends StringFieldMapper {
     private final String algo;
 
     public CryptMapper(
-            org.elasticsearch.index.mapper.FieldMapper.Names names,
+            FieldMapper.Names names,
             float boost,
             FieldType fieldType,
             FieldType defaultFieldType,
@@ -150,11 +152,11 @@ public class CryptMapper extends StringFieldMapper {
             PostingsFormatProvider postingsFormat,
             DocValuesFormatProvider docValuesFormat,
             SimilarityProvider similarity,
-            org.elasticsearch.index.mapper.FieldMapper.Loading normsLoading,
+            FieldMapper.Loading normsLoading,
             Settings fieldDataSettings,
             Settings indexSettings,
-            org.elasticsearch.index.mapper.core.AbstractFieldMapper.MultiFields multiFields,
-            org.elasticsearch.index.mapper.core.AbstractFieldMapper.CopyTo copyTo,
+            AbstractFieldMapper.MultiFields multiFields,
+            AbstractFieldMapper.CopyTo copyTo,
             String algo
 
     ) {
@@ -247,7 +249,6 @@ public class CryptMapper extends StringFieldMapper {
         }
         return buf.toString();
     }
-    private final static char hexDigit[] = {'0', '1', '2', '3', '4', '5', '6', '7',
-            '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+    private final static char[] hexDigit = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
 }

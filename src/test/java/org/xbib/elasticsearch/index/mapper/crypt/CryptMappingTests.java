@@ -3,7 +3,6 @@ package org.xbib.elasticsearch.index.mapper.crypt;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.lucene.index.IndexableField;
 import org.elasticsearch.Version;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.base.Charsets;
@@ -80,9 +79,9 @@ public class CryptMappingTests extends Assert {
         String sampleText = copyToStringFromClasspath("plaintext.txt");
         BytesReference json = jsonBuilder().startObject().field("_id", 1).field("someField", sampleText).endObject().bytes();
         ParseContext.Document doc = docMapper.parse(json).rootDoc();
-        for (IndexableField field : doc.getFields()) {
-            logger.info("{} = {}", field.name(), field.stringValue());
-        }
+        //for (IndexableField field : doc.getFields()) {
+        //    logger.info("{} = {}", field.name(), field.stringValue());
+        //}
         assertEquals(1, doc.getFields("someField").length);
         assertEquals("cc482c9bf51da22e59ce8731719963a3fee3d2c7240ee2ee7f13cae4f27f773a", doc.getFields("someField")[0].stringValue());
         // re-parse it
@@ -92,6 +91,25 @@ public class CryptMappingTests extends Assert {
         doc = docMapper.parse(json).rootDoc();
         assertEquals(1, doc.getFields("someField").length);
         assertEquals("cc482c9bf51da22e59ce8731719963a3fee3d2c7240ee2ee7f13cae4f27f773a", doc.getFields("someField")[0].stringValue());
+    }
+
+    @Test
+    public void testMD5CryptMapping() throws Exception {
+        String mapping = copyToStringFromClasspath("md5-mapping.json");
+        DocumentMapperParser docMapperParser = setupMapperParser(ImmutableSettings.EMPTY);
+        DocumentMapper docMapper = docMapperParser.parse(mapping);
+        String sampleText = copyToStringFromClasspath("plaintext.txt");
+        BytesReference json = jsonBuilder().startObject().field("_id", 1).field("someField", sampleText).endObject().bytes();
+        ParseContext.Document doc = docMapper.parse(json).rootDoc();
+        assertEquals(1, doc.getFields("someField").length);
+        assertEquals("ec43393eaa2179e10866f6df2d95d8b1", doc.getFields("someField")[0].stringValue());
+        // re-parse it
+        String builtMapping = docMapper.mappingSource().string();
+        docMapper = docMapperParser.parse(builtMapping);
+        json = jsonBuilder().startObject().field("_id", 1).field("someField", sampleText).endObject().bytes();
+        doc = docMapper.parse(json).rootDoc();
+        assertEquals(1, doc.getFields("someField").length);
+        assertEquals("ec43393eaa2179e10866f6df2d95d8b1", doc.getFields("someField")[0].stringValue());
     }
 
     public String copyToStringFromClasspath(String path) throws IOException {
