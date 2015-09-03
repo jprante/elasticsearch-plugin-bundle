@@ -45,7 +45,13 @@ A plugin that consists of a compilation of useful Elasticsearch plugins related 
 
 ## Installation
 
+### Elasticsearch 1.x
+
     ./bin/plugin -install bundle -url http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/1.4.0.6/elasticsearch-plugin-bundle-1.4.0.6-plugin.zip
+
+### Elasticsearch 2.x
+
+    ./bin/plugin install http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/2.0.0-Beta1/elasticsearch-plugin-bundle-2.0.0-Beta1-plugin.zip
 
 Do not forget to restart the node after installing.
 

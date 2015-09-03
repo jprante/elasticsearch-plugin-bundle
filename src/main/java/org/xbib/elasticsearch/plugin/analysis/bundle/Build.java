@@ -42,7 +42,7 @@ public class Build {
 
         try {
             String pluginName = BundlePlugin.class.getName();
-            Enumeration<URL> e = BundlePlugin.class.getClassLoader().getResources("es-plugin.properties");
+            Enumeration<URL> e = BundlePlugin.class.getClassLoader().getResources("plugin-descriptor.properties");
             while (e.hasMoreElements()) {
                 URL url = e.nextElement();
                 InputStream in = url.openStream();
