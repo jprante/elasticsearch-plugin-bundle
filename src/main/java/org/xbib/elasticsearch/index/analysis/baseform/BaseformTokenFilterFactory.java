@@ -41,12 +41,11 @@ public class BaseformTokenFilterFactory extends AbstractTokenFilterFactory {
 
     @Inject
     public BaseformTokenFilterFactory(Index index,
-                                      Environment env,
                                       @IndexSettings Settings indexSettings,
                                       @Assisted String name,
                                       @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
-        this.dictionary = createDictionary(env, settings);
+        this.dictionary = createDictionary(settings);
     }
 
     @Override
@@ -54,11 +53,11 @@ public class BaseformTokenFilterFactory extends AbstractTokenFilterFactory {
         return new BaseformTokenFilter(tokenStream, dictionary);
     }
 
-    private Dictionary createDictionary(Environment env, Settings settings) {
+    private Dictionary createDictionary(Settings settings) {
         try {
             String lang = settings.get("language", "de");
-            String path = "baseform/" + lang + "-lemma-utf8.txt";
-            return new Dictionary().load(new InputStreamReader(env.resolveConfig(path).openStream(), "UTF-8"));
+            String path = "/baseform/" + lang + "-lemma-utf8.txt";
+            return new Dictionary().load(new InputStreamReader(getClass().getResourceAsStream(path), "UTF-8"));
         } catch (IOException e) {
             throw new ElasticsearchException("resources in settings not found: " + settings, e);
         }

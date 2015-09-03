@@ -24,7 +24,6 @@ import org.elasticsearch.index.IndexNameModule;
 import org.elasticsearch.index.analysis.AnalysisModule;
 import org.elasticsearch.index.analysis.AnalysisService;
 import org.elasticsearch.index.settings.IndexSettingsModule;
-import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 import org.junit.Test;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
@@ -302,7 +301,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
         Settings settings = Settings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("path.home", System.getProperty("path.home"))
-                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/icu/icu_collation.json").build();
+                .loadFromStream("icu_collation.json", getClass().getResourceAsStream("/org/xbib/elasticsearch/index/analysis/icu/icu_collation.json")).build();
         AnalysisService analysisService = createAnalysisService(index, settings);
         Analyzer analyzer = analysisService.analyzer("icu_german_collate").analyzer();
 
@@ -336,8 +335,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     private AnalysisService createAnalysisService(Index index, Settings settings) {
         Injector parentInjector = new ModulesBuilder()
                 .add(new SettingsModule(settings),
-                        new EnvironmentModule(new Environment(settings)),
-                        new IndicesAnalysisModule())
+                        new EnvironmentModule(new Environment(settings)))
                 .createInjector();
         Injector injector = new ModulesBuilder().add(
                 new IndexSettingsModule(index, settings),

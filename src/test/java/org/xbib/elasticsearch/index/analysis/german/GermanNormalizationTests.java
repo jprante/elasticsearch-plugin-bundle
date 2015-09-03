@@ -17,7 +17,6 @@ import org.elasticsearch.index.analysis.AnalysisModule;
 import org.elasticsearch.index.analysis.AnalysisService;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.index.settings.IndexSettingsModule;
-import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -57,11 +56,10 @@ public class GermanNormalizationTests extends Assert {
         Settings settings = Settings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("path.home", System.getProperty("path.home"))
-                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/german/german_normalization_analysis.json").build();
+                .loadFromStream("german_normalization_analysis.json", getClass().getResourceAsStream("/org/xbib/elasticsearch/index/analysis/german/german_normalization_analysis.json")).build();
         Index index = new Index("test");
         Injector parentInjector = new ModulesBuilder().add(new SettingsModule(settings),
-                new EnvironmentModule(new Environment(settings)),
-                new IndicesAnalysisModule())
+                new EnvironmentModule(new Environment(settings)))
                 .createInjector();
         AnalysisModule analysisModule = new AnalysisModule(settings, parentInjector.getInstance(IndicesAnalysisService.class));
         new BundlePlugin(settings).onModule(analysisModule);

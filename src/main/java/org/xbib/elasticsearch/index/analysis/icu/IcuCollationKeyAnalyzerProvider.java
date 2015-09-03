@@ -28,18 +28,10 @@ import com.ibm.icu.util.ULocale;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.assistedinject.Assisted;
-import org.elasticsearch.common.io.Streams;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.env.Environment;
-import org.elasticsearch.env.FailedToResolveConfigException;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractIndexAnalyzerProvider;
 import org.elasticsearch.index.settings.IndexSettings;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URL;
 
 /**
  * An ICU collation analyzer provider.
@@ -60,10 +52,9 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
     @Inject
     public IcuCollationKeyAnalyzerProvider(Index index,
                                            @IndexSettings Settings indexSettings,
-                                           Environment environment,
                                            @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
-        this.collator = createCollator(environment, settings);
+        this.collator = createCollator(settings);
     }
 
     @Override
@@ -71,29 +62,14 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
         return new IcuCollationKeyAnalyzer(collator);
     }
 
-    public static Collator createCollator(Environment environment, Settings settings) {
+    public static Collator createCollator(Settings settings) {
         Collator collator;
         String rules = settings.get("rules");
         if (rules != null) {
-            FailedToResolveConfigException failureToResolve = null;
-            try {
-                URL url = environment.resolveConfig(rules);
-                Reader reader = new InputStreamReader(url.openStream());
-                rules = Streams.copyToString(reader);
-                reader.close();
-            } catch (FailedToResolveConfigException e) {
-                failureToResolve = e;
-            } catch (IOException e) {
-                throw new ElasticsearchException("Failed to load collation rules", e);
-            }
             try {
                 collator = new RuleBasedCollator(rules);
             } catch (Exception e) {
-                if (failureToResolve != null) {
-                    throw new ElasticsearchException("Failed to resolve collation rules location", failureToResolve);
-                } else {
-                    throw new ElasticsearchException("Failed to parse collation rules", e);
-                }
+                throw new ElasticsearchException("Failed to parse collation rules", e);
             }
         } else {
             String language = settings.get("language");

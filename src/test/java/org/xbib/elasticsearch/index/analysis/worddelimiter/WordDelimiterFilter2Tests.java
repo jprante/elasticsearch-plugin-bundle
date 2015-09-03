@@ -20,7 +20,6 @@ import org.elasticsearch.index.IndexNameModule;
 import org.elasticsearch.index.analysis.AnalysisModule;
 import org.elasticsearch.index.analysis.AnalysisService;
 import org.elasticsearch.index.settings.IndexSettingsModule;
-import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 import org.junit.Test;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
@@ -49,7 +48,7 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
         Settings settings = Settings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, org.elasticsearch.Version.CURRENT)
                 .put("path.home", System.getProperty("path.home"))
-                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json").build();
+                .loadFromStream("worddelimiter.json", getClass().getResourceAsStream("/org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json")).build();
         AnalysisService analysisService = createAnalysisService(settings);
         Tokenizer tokenizer = analysisService.tokenizer("keyword").create();
         tokenizer.setReader(new StringReader("foo-bar"));
@@ -67,7 +66,7 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
         Settings settings = Settings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, org.elasticsearch.Version.CURRENT)
                 .put("path.home", System.getProperty("path.home"))
-                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json").build();
+                .loadFromStream("worddelimiter.json", getClass().getResourceAsStream("/org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json")).build();
         AnalysisService analysisService = createAnalysisService(settings);
         Tokenizer tokenizer = analysisService.tokenizer("keyword").create();
         tokenizer.setReader(new StringReader("übelkeit"));
@@ -441,8 +440,7 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
     private AnalysisService createAnalysisService(Settings settings) {
         Index index = new Index("test");
         Injector parentInjector = new ModulesBuilder().add(new SettingsModule(settings),
-                new EnvironmentModule(new Environment(settings)),
-                new IndicesAnalysisModule())
+                new EnvironmentModule(new Environment(settings)))
                 .createInjector();
         AnalysisModule analysisModule = new AnalysisModule(settings, parentInjector.getInstance(IndicesAnalysisService.class));
         new BundlePlugin(settings).onModule(analysisModule);

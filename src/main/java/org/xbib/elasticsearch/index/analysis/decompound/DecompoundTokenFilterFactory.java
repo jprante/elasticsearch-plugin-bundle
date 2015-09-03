@@ -32,18 +32,19 @@ import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.settings.IndexSettings;
 
+import java.net.URL;
+
 public class DecompoundTokenFilterFactory extends AbstractTokenFilterFactory {
 
     private final Decompounder decompounder;
 
     @Inject
     public DecompoundTokenFilterFactory(Index index,
-                                        Environment env,
                                         @IndexSettings Settings indexSettings,
                                         @Assisted String name,
                                         @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
-        this.decompounder = createDecompounder(env, settings);
+        this.decompounder = createDecompounder(settings);
     }
 
     @Override
@@ -51,15 +52,15 @@ public class DecompoundTokenFilterFactory extends AbstractTokenFilterFactory {
         return new DecompoundTokenFilter(tokenStream, decompounder);
     }
 
-    private Decompounder createDecompounder(Environment env, Settings settings) {
+    private Decompounder createDecompounder(Settings settings) {
         try {
-            String forward = settings.get("forward", "decompound/kompVVic.tree");
-            String backward = settings.get("backward", "decompound/kompVHic.tree");
-            String reduce = settings.get("reduce", "decompound/grfExt.tree");
+            String forward = settings.get("forward", "/decompound/kompVVic.tree");
+            String backward = settings.get("backward", "/decompound/kompVHic.tree");
+            String reduce = settings.get("reduce", "/decompound/grfExt.tree");
             double threshold = settings.getAsDouble("threshold", 0.51);
-            return new Decompounder(env.resolveConfig(forward).openStream(),
-                    env.resolveConfig(backward).openStream(),
-                    env.resolveConfig(reduce).openStream(),
+            return new Decompounder(getClass().getResourceAsStream(forward),
+                    getClass().getResourceAsStream(backward),
+                    getClass().getResourceAsStream(reduce),
                     threshold);
         } catch (Exception e) {
             throw new ElasticsearchException("decompounder resources in settings not found: " + settings, e);

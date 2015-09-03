@@ -27,7 +27,7 @@ import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.Module;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.analysis.AnalysisModule;
-import org.elasticsearch.plugins.AbstractPlugin;
+import org.elasticsearch.plugins.Plugin;
 import org.xbib.elasticsearch.index.analysis.baseform.BaseformAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.concat.ConcatAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.decompound.DecompoundAnalysisBinderProcessor;
@@ -48,7 +48,7 @@ import java.util.Collection;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-public class BundlePlugin extends AbstractPlugin {
+public class BundlePlugin extends Plugin {
 
     private final Settings settings;
 
@@ -110,7 +110,7 @@ public class BundlePlugin extends AbstractPlugin {
     }
 
     @Override
-    public Collection<Class<? extends LifecycleComponent>> services() {
+    public Collection<Class<? extends LifecycleComponent>> nodeServices() {
         Collection<Class<? extends LifecycleComponent>> services = newArrayList();
         if (settings.getAsBoolean("plugins.langdetect.enabled", true)) {
             services.add(LangdetectService.class);
@@ -119,16 +119,16 @@ public class BundlePlugin extends AbstractPlugin {
     }
 
     @Override
-    public Collection<Class<? extends Module>> indexModules() {
-        Collection<Class<? extends Module>> modules = newArrayList();
+    public Collection<Module> indexModules(Settings indexSettings) {
+        Collection<Module> modules = newArrayList();
         if (settings.getAsBoolean("plugins.langdetect.enabled", true)) {
-            modules.add(LangdetectModule.class);
+            modules.add(new LangdetectModule());
         }
         if (settings.getAsBoolean("plugins.reference.enabled", true)) {
-            modules.add(ReferenceModule.class);
+            modules.add(new ReferenceModule());
         }
         if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
-            modules.add(StandardnumberIndexModule.class);
+            modules.add(new StandardnumberIndexModule());
         }
         return modules;
     }

@@ -16,37 +16,13 @@ import org.elasticsearch.index.mapper.DocumentMapperParser;
 import org.elasticsearch.index.mapper.MapperService;
 import org.elasticsearch.index.settings.IndexSettingsModule;
 import org.elasticsearch.index.similarity.SimilarityLookupService;
-import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
-
-import java.nio.file.Path;
 
 public class MapperTestUtils {
 
-    public static MapperService newMapperService() {
-        return newMapperService(new Index("test"), Settings.builder()
-                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
-                .put("path.home", System.getProperty("path.home"))
-                .build());
-    }
-
-    public static MapperService newMapperService(Index index, Settings indexSettings) {
-        return new MapperService(index,
-                indexSettings,
-                newAnalysisService(indexSettings),
-                newSimilarityLookupService(indexSettings),
-                null);
-    }
-
-    public static AnalysisService newAnalysisService(Path tempDir) {
-        return newAnalysisService(Settings.builder()
-                .put("path.home", tempDir)
-                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
-                .build());
-    }
-
     public static AnalysisService newAnalysisService(Settings indexSettings) {
-        Injector parentInjector = new ModulesBuilder().add(new SettingsModule(indexSettings), new EnvironmentModule(new Environment(indexSettings)), new IndicesAnalysisModule()).createInjector();
+        Injector parentInjector = new ModulesBuilder().add(new SettingsModule(indexSettings),
+                new EnvironmentModule(new Environment(indexSettings))).createInjector();
         Index index = new Index("test");
         Injector injector = new ModulesBuilder().add(
                 new IndexSettingsModule(index, indexSettings),

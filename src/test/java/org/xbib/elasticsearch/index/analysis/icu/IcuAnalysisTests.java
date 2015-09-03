@@ -17,7 +17,6 @@ import org.elasticsearch.index.analysis.NamedAnalyzer;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.index.analysis.TokenizerFactory;
 import org.elasticsearch.index.settings.IndexSettingsModule;
-import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 import org.junit.Test;
 
@@ -38,8 +37,7 @@ public class IcuAnalysisTests {
 
         Injector parentInjector = new ModulesBuilder()
                 .add(new SettingsModule(settings),
-                        new EnvironmentModule(new Environment(settings)),
-                        new IndicesAnalysisModule())
+                        new EnvironmentModule(new Environment(settings)))
                 .createInjector();
         Injector injector = new ModulesBuilder().add(
                 new IndexSettingsModule(index, settings),
