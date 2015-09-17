@@ -1,0 +1,10 @@
+{
+    "someType" : {
+        "_source" : {
+            "enabled": false
+        },
+        "properties" : {
+            "someField":{ "type" : "crypt" }
+        }
+    }
+}

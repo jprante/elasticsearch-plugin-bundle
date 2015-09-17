@@ -1,4 +1,3 @@
-
 package org.xbib.elasticsearch.index.mapper.langdetect;
 
 import com.google.common.base.Charsets;

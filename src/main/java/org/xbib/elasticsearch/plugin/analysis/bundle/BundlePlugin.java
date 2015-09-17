@@ -43,6 +43,7 @@ import org.xbib.elasticsearch.index.analysis.worddelimiter.WorddelimiterAnalysis
 import org.xbib.elasticsearch.index.analysis.year.GregorianYearAnalysisBinderProcessor;
 import org.xbib.elasticsearch.module.reference.ReferenceModule;
 import org.xbib.elasticsearch.module.standardnumber.StandardnumberIndexModule;
+import org.xbib.elasticsearch.module.crypt.CryptModule;
 
 import java.util.Collection;
 
@@ -129,6 +130,9 @@ public class BundlePlugin extends Plugin {
         }
         if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
             modules.add(new StandardnumberIndexModule());
+        }
+        if (settings.getAsBoolean("plugins.crypt.enabled", true)) {
+            modules.add(new CryptModule());
         }
         return modules;
     }

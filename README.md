@@ -351,6 +351,19 @@ All feedback is welcome! If you find issues, please post them at [Github](https:
     }
 
 
+## Crypt mapper
+
+    {
+        "someType" : {
+            "_source" : {
+                "enabled": false
+            },
+            "properties" : {
+                "someField":{ "type" : "crypt", "algo": "SHA-512" }
+            }
+        }
+    }
+
 # License
 
 elasticsearch-plugin-bundle - a compilation of useful plugins for Elasticsearch
