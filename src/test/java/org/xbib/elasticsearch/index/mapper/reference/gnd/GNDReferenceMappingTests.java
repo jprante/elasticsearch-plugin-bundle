@@ -29,7 +29,6 @@ public class GNDReferenceMappingTests extends Assert {
         Settings nodeSettings = Settings.settingsBuilder()
                 .put("path.home", System.getProperty("path.home"))
                 .put("plugin.types", BundlePlugin.class.getName())
-                .put("gateway.type", "none")
                 .put("index.number_of_shards", 1)
                 .put("index.number_of_replica", 0)
                 .build();

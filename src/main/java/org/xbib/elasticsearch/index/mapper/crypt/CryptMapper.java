@@ -54,10 +54,10 @@ public class CryptMapper extends StringFieldMapper {
 
         @Override
         public CryptMapper build(Mapper.BuilderContext context) {
-            if (positionOffsetGap > 0) {
-                fieldType.setIndexAnalyzer(new NamedAnalyzer(fieldType.indexAnalyzer(), positionOffsetGap));
-                fieldType.setSearchAnalyzer(new NamedAnalyzer(fieldType.searchAnalyzer(), positionOffsetGap));
-                fieldType.setSearchQuoteAnalyzer(new NamedAnalyzer(fieldType.searchQuoteAnalyzer(), positionOffsetGap));
+            if (this.positionIncrementGap != -1) {
+                fieldType.setIndexAnalyzer(new NamedAnalyzer(fieldType.indexAnalyzer(),  this.positionIncrementGap));
+                fieldType.setSearchAnalyzer(new NamedAnalyzer(fieldType.searchAnalyzer(),  this.positionIncrementGap));
+                fieldType.setSearchQuoteAnalyzer(new NamedAnalyzer(fieldType.searchQuoteAnalyzer(),  this.positionIncrementGap));
             }
             if (fieldType.indexOptions() != IndexOptions.NONE && !fieldType.tokenized()) {
                 defaultFieldType.setOmitNorms(true);
@@ -71,7 +71,7 @@ public class CryptMapper extends StringFieldMapper {
             }
             setupFieldType(context);
             CryptMapper fieldMapper = new CryptMapper(
-                    name, fieldType, defaultFieldType, positionOffsetGap, ignoreAbove,
+                    name, fieldType, defaultFieldType, positionIncrementGap, ignoreAbove,
                     context.indexSettings(), multiFieldsBuilder.build(this, context), copyTo, algo);
             fieldMapper.includeInAll(includeInAll);
             return fieldMapper;

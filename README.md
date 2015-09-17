@@ -30,7 +30,8 @@ A plugin that consists of a compilation of useful Elasticsearch plugins related 
 
 | Elasticsearch version    | Plugin        | Release date |
 | ------------------------ | ------------- | -------------|
-| 2.0.0-Beta1              | 2.0.0.Beta1.0 | Sep  3, 2015 |
+| 2.0.0-beta2              | 2.0.0-beta2.0 | Sep 17, 2015 |
+| 2.0.0-beta1              | 2.0.0-beta1.0 | Sep  3, 2015 |
 | 1.6.0                    | 1.6.0.0       | Jun 30, 2015 |
 | 1.5.2                    | 1.5.2.1       | Jun 30, 2015 |
 | 1.5.2                    | 1.5.2.0       | Apr 27, 2015 |
@@ -51,7 +52,7 @@ A plugin that consists of a compilation of useful Elasticsearch plugins related 
 
 ### Elasticsearch 2.x
 
-    ./bin/plugin install http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/2.0.0-Beta1/elasticsearch-plugin-bundle-2.0.0-Beta1-plugin.zip
+    ./bin/plugin install http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/2.0.0-beta2.0/elasticsearch-plugin-bundle-2.0.0-beta2.0-plugin.zip
 
 Do not forget to restart the node after installing.
 
