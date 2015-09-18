@@ -1,6 +1,5 @@
 package org.xbib.elasticsearch.index.mapper.langdetect;
 
-import com.google.common.base.Charsets;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.mapper.DocumentMapper;
@@ -84,6 +83,6 @@ public class LangdetectMappingTests extends Assert {
     }
 
     public String copyToStringFromClasspath(String path) throws IOException {
-        return copyToString(new InputStreamReader(getClass().getResource(path).openStream(), Charsets.UTF_8));
+        return copyToString(new InputStreamReader(getClass().getResource(path).openStream(), "UTF-8"));
     }
 }

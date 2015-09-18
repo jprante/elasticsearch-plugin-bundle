@@ -1,6 +1,5 @@
 package org.xbib.elasticsearch.index.mapper.reference;
 
-import com.google.common.base.Charsets;
 import org.apache.lucene.index.IndexableField;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
@@ -219,7 +218,7 @@ public class ReferenceMappingTests extends Assert {
     private String copyToStringFromClasspath(String path) throws IOException {
         Reader reader = null;
         try {
-            reader = new InputStreamReader(getClass().getResource(path).openStream(), Charsets.UTF_8);
+            reader = new InputStreamReader(getClass().getResource(path).openStream(), "UTF-8");
             return copyToString(reader);
         } finally {
             if (reader != null) {

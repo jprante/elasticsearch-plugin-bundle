@@ -46,16 +46,15 @@ import org.xbib.standardnumber.ZDB;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
-import static com.google.common.collect.Lists.newLinkedList;
-import static com.google.common.collect.Sets.newLinkedHashSet;
-import static com.google.common.collect.Sets.newTreeSet;
+import java.util.TreeSet;
 
 public class StandardnumberService extends AbstractLifecycleComponent<StandardnumberService>  {
 
-    private final static ThreadLocal<Set<StandardNumber>> stdnums = new ThreadLocal<Set<StandardNumber>>();
+    private final static ThreadLocal<Set<StandardNumber>> stdnums = new ThreadLocal<>();
 
     @Inject
     public StandardnumberService(Settings settings) {
@@ -77,8 +76,8 @@ public class StandardnumberService extends AbstractLifecycleComponent<Standardnu
     protected Collection<StandardNumber> getStdNums() {
         if (stdnums.get() == null) {
             String[] s = settings.getAsArray("number_types", null);
-            Set<String> types = s != null ? newTreeSet(Arrays.asList(s)) : null;
-            Set<StandardNumber> set = newLinkedHashSet();
+            Set<String> types = s != null ? new TreeSet<>(Arrays.asList(s)) : null;
+            Set<StandardNumber> set = new LinkedHashSet<>();
             set.addAll(types == null ? create() : create(types));
             stdnums.set(set);
         }
@@ -86,7 +85,7 @@ public class StandardnumberService extends AbstractLifecycleComponent<Standardnu
     }
 
     public Collection<StandardNumber> detect(CharSequence content) {
-        Collection<StandardNumber> candidates = newLinkedList();
+        Collection<StandardNumber> candidates = new LinkedList<>();
         for (StandardNumber stdnum : getStdNums()) {
             stdnum.reset();
             try {
@@ -99,7 +98,7 @@ public class StandardnumberService extends AbstractLifecycleComponent<Standardnu
     }
 
     public Collection<CharSequence> lookup(CharSequence content) {
-        Collection<CharSequence> variants = newLinkedList();
+        Collection<CharSequence> variants = new LinkedList<>();
         for (StandardNumber stdnum : getStdNums()) {
             stdnum.reset();
             if (stdnum instanceof ISBN) {
@@ -142,7 +141,7 @@ public class StandardnumberService extends AbstractLifecycleComponent<Standardnu
     }
 
     public static Collection<StandardNumber> create(Collection<String> types) {
-        List<StandardNumber> stdnums = newLinkedList();
+        List<StandardNumber> stdnums = new LinkedList<>();
         for (String type : types) {
             stdnums.add(create(type));
         }

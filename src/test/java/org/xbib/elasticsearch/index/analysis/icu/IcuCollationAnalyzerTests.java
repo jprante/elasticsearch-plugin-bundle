@@ -1,8 +1,5 @@
 package org.xbib.elasticsearch.index.analysis.icu;
 
-import com.google.common.base.Supplier;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.SetMultimap;
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
 import com.ibm.icu.util.ULocale;
@@ -27,14 +24,12 @@ import org.elasticsearch.index.settings.IndexSettingsModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 import org.junit.Test;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
+import org.xbib.util.MultiMap;
+import org.xbib.util.TreeMultiMap;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.TreeMap;
-
-import static com.google.common.collect.Sets.newTreeSet;
 
 public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
 
@@ -312,20 +307,12 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
                 "Göthe",
                 "Götz"
         };
-
-        SetMultimap<BytesRef,String> bytesRefMap =
-                Multimaps.newSetMultimap(new TreeMap<BytesRef, Collection<String>>(), new Supplier<Set<String>>() {
-                    @Override
-                    public Set<String> get() {
-                        return newTreeSet();
-                    }
-                });
-
+        MultiMap<BytesRef,String> bytesRefMap = new TreeMultiMap<>();
         for (String s : words) {
             TokenStream ts = analyzer.tokenStream(null, s);
             bytesRefMap.put(bytesFromTokenStream(ts), s);
         }
-        Iterator<Collection<String>> it =  bytesRefMap.asMap().values().iterator();
+        Iterator<Set<String>> it = bytesRefMap.values().iterator();
         assertEquals("[Göbel]",it.next().toString());
         assertEquals("[Goethe, Göthe]",it.next().toString());
         assertEquals("[Götz]",it.next().toString());

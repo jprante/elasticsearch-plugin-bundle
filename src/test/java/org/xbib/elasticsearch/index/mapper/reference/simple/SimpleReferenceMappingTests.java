@@ -1,6 +1,5 @@
 package org.xbib.elasticsearch.index.mapper.reference.simple;
 
-import com.google.common.base.Charsets;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.logging.ESLogger;
@@ -91,7 +90,7 @@ public class SimpleReferenceMappingTests extends Assert {
     private String copyToStringFromClasspath(String path) throws IOException {
         Reader reader = null;
         try {
-             reader = new InputStreamReader(getClass().getResource(path).openStream(), Charsets.UTF_8);
+             reader = new InputStreamReader(getClass().getResource(path).openStream(), "UTF-8");
             return copyToString(reader);
         } finally {
             if (reader != null) {

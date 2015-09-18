@@ -45,9 +45,8 @@ import org.xbib.elasticsearch.module.reference.ReferenceModule;
 import org.xbib.elasticsearch.module.standardnumber.StandardnumberIndexModule;
 import org.xbib.elasticsearch.module.crypt.CryptModule;
 
+import java.util.ArrayList;
 import java.util.Collection;
-
-import static com.google.common.collect.Lists.newArrayList;
 
 public class BundlePlugin extends Plugin {
 
@@ -60,9 +59,7 @@ public class BundlePlugin extends Plugin {
 
     @Override
     public String name() {
-        return "plugin-bundle-" +
-                Build.getInstance().getVersion() + "-" +
-                Build.getInstance().getShortHash();
+        return "plugin-bundle";
     }
 
     @Override
@@ -112,7 +109,7 @@ public class BundlePlugin extends Plugin {
 
     @Override
     public Collection<Class<? extends LifecycleComponent>> nodeServices() {
-        Collection<Class<? extends LifecycleComponent>> services = newArrayList();
+        Collection<Class<? extends LifecycleComponent>> services = new ArrayList<>();
         if (settings.getAsBoolean("plugins.langdetect.enabled", true)) {
             services.add(LangdetectService.class);
         }
@@ -121,7 +118,7 @@ public class BundlePlugin extends Plugin {
 
     @Override
     public Collection<Module> indexModules(Settings indexSettings) {
-        Collection<Module> modules = newArrayList();
+        Collection<Module> modules = new ArrayList<>();
         if (settings.getAsBoolean("plugins.langdetect.enabled", true)) {
             modules.add(new LangdetectModule());
         }

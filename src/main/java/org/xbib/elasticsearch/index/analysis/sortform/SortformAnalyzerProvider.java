@@ -34,9 +34,8 @@ import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.index.settings.IndexSettings;
 import org.xbib.elasticsearch.index.analysis.icu.IcuCollationTokenizerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * Like CustomAnalyzerProvider, but with IcuCollationTokenizerFactory as tokenizer
@@ -60,8 +59,7 @@ public class SortformAnalyzerProvider extends CustomAnalyzerProvider {
 
     @Override
     public void build(AnalysisService analysisService) {
-
-        List<CharFilterFactory> charFilters = newArrayList();
+        List<CharFilterFactory> charFilters = new ArrayList<>();
         String[] charFilterNames = analyzerSettings.getAsArray("char_filter");
         for (String charFilterName : charFilterNames) {
             CharFilterFactory charFilter = analysisService.charFilter(charFilterName);
@@ -70,8 +68,7 @@ public class SortformAnalyzerProvider extends CustomAnalyzerProvider {
             }
             charFilters.add(charFilter);
         }
-
-        List<TokenFilterFactory> tokenFilters = newArrayList();
+        List<TokenFilterFactory> tokenFilters = new ArrayList<>();
         String[] tokenFilterNames = analyzerSettings.getAsArray("filter");
         for (String tokenFilterName : tokenFilterNames) {
             TokenFilterFactory tokenFilter = analysisService.tokenFilter(tokenFilterName);

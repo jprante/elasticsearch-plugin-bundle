@@ -39,8 +39,6 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.google.common.collect.Lists.newLinkedList;
-
 public class SymbolnameTokenFilter extends TokenFilter {
 
     private final static ESLogger logger = ESLoggerFactory.getLogger(SymbolnameTokenFilter.class.getName());
@@ -91,7 +89,7 @@ public class SymbolnameTokenFilter extends TokenFilter {
 
     protected void process() throws CharacterCodingException {
         String term = new String(termAtt.buffer(), 0, termAtt.length());
-        Collection<CharSequence> variants = newLinkedList();
+        Collection<CharSequence> variants = new LinkedList<>();
         variants.addAll(process(term));
         for (CharSequence ch : variants) {
             if (ch != null) {
@@ -103,7 +101,7 @@ public class SymbolnameTokenFilter extends TokenFilter {
     }
 
     protected Collection<CharSequence> process(String term) {
-        Collection<CharSequence> variants = newLinkedList();
+        Collection<CharSequence> variants = new LinkedList<>();
         StringBuffer sb = new StringBuffer();
         Matcher m = pattern.matcher(term);
         while (m.find()) {

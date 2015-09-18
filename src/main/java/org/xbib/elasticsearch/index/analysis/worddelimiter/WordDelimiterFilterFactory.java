@@ -11,15 +11,14 @@ import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.analysis.Analysis;
 import org.elasticsearch.index.settings.IndexSettings;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static com.google.common.collect.Maps.newTreeMap;
-import static com.google.common.collect.Sets.newHashSet;
 
 public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory implements WordDelimiterFlags {
 
@@ -67,7 +66,7 @@ public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory imple
         flags |= getFlag(STEM_ENGLISH_POSSESSIVE, settings, "stem_english_possessive", true);
         // If not null is the set of tokens to protect from being delimited
         List<String> protoWords = Analysis.getWordList(env, settings, "protected_words");
-        protectedWords = protoWords == null ? null : newHashSet(protoWords);
+        protectedWords = protoWords == null ? null : new HashSet<>(protoWords);
     }
 
     public WordDelimiterFilter2 create(TokenStream input) {
@@ -86,7 +85,7 @@ public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory imple
 
     // parses a list of MappingCharFilter style rules into a custom byte[] type table
     private byte[] parseTypes(List<String> rules) {
-        SortedMap<Character, Byte> typeMap = newTreeMap();
+        SortedMap<Character, Byte> typeMap = new TreeMap<>();
         for (String rule : rules) {
             Matcher m = typePattern.matcher(rule);
             if (!m.find()) {
@@ -115,20 +114,21 @@ public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory imple
     }
 
     private Byte parseType(String s) {
-        if (s.equals("LOWER")) {
-            return LOWER;
-        } else if (s.equals("UPPER")) {
-            return UPPER;
-        } else if (s.equals("ALPHA")) {
-            return ALPHA;
-        } else if (s.equals("DIGIT")) {
-            return DIGIT;
-        } else if (s.equals("ALPHANUM")) {
-            return ALPHANUM;
-        } else if (s.equals("SUBWORD_DELIM")) {
-            return SUBWORD_DELIM;
-        } else {
-            return null;
+        switch (s) {
+            case "LOWER":
+                return LOWER;
+            case "UPPER":
+                return UPPER;
+            case "ALPHA":
+                return ALPHA;
+            case "DIGIT":
+                return DIGIT;
+            case "ALPHANUM":
+                return ALPHANUM;
+            case "SUBWORD_DELIM":
+                return SUBWORD_DELIM;
+            default:
+                return null;
         }
     }
 

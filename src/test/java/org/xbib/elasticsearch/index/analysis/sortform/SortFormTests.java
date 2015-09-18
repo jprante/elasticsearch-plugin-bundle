@@ -1,8 +1,5 @@
 package org.xbib.elasticsearch.index.analysis.sortform;
 
-import com.google.common.base.Supplier;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.SetMultimap;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.TermToBytesRefAttribute;
@@ -11,8 +8,6 @@ import org.apache.lucene.util.BytesRefBuilder;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.inject.ModulesBuilder;
-import org.elasticsearch.common.logging.ESLogger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.SettingsModule;
 import org.elasticsearch.env.Environment;
@@ -27,18 +22,14 @@ import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 import org.junit.Test;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
 import org.xbib.elasticsearch.plugin.analysis.bundle.BundlePlugin;
+import org.xbib.util.MultiMap;
+import org.xbib.util.TreeMultiMap;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.TreeMap;
-
-import static com.google.common.collect.Sets.newTreeSet;
 
 public class SortFormTests extends BaseTokenStreamTest {
-
-    private final static ESLogger logger = ESLoggerFactory.getLogger("sortform");
 
     @Test
     public void testBasicUsage() throws Exception {
@@ -87,20 +78,14 @@ public class SortFormTests extends BaseTokenStreamTest {
                 "Gross"
         };
 
-        SetMultimap<BytesRef,String> map =
-                Multimaps.newSetMultimap(new TreeMap<BytesRef, Collection<String>>(), new Supplier<Set<String>>() {
-                    @Override
-                    public Set<String> get() {
-                        return newTreeSet();
-                    }
-                });
+        MultiMap<BytesRef,String> map = new TreeMultiMap<>();
         for (String s : words) {
             TokenStream ts = analyzer.tokenStream(null, s);
             BytesRef sortKey = sortKeyFromTokenStream(ts);
             map.put(sortKey, s);
         }
         // strength "quaternary" orders without punctuation and ensures unique entries
-        Iterator<Collection<String>> it = map.asMap().values().iterator();
+        Iterator<Set<String>> it = map.values().iterator();
         assertEquals("[¬Frau¬ Göbel]",it.next().toString());
         assertEquals("[Goethe]",it.next().toString());
         assertEquals("[Göthe]",it.next().toString());

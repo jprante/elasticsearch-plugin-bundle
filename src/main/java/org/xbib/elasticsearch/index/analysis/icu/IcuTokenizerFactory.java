@@ -28,9 +28,6 @@ import com.ibm.icu.lang.UScript;
 import com.ibm.icu.text.BreakIterator;
 import com.ibm.icu.text.RuleBasedBreakIterator;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.icu.segmentation.DefaultICUTokenizerConfig;
-import org.apache.lucene.analysis.icu.segmentation.ICUTokenizer;
-import org.apache.lucene.analysis.icu.segmentation.ICUTokenizerConfig;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.assistedinject.Assisted;
@@ -38,21 +35,25 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenizerFactory;
 import org.elasticsearch.index.settings.IndexSettings;
+import org.xbib.elasticsearch.index.analysis.icu.segmentation.DefaultIcuTokenizerConfig;
+import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizer;
+import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizerConfig;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Map;
 
-import static com.google.common.collect.Maps.newHashMap;
 
 /**
  * ICU-based tokenizer, optionally using ICU rbbi rules files.
  */
 public class IcuTokenizerFactory extends AbstractTokenizerFactory {
 
-    private final ICUTokenizerConfig config;
+    private final IcuTokenizerConfig config;
 
     @Inject
     public IcuTokenizerFactory(Index index,
@@ -60,7 +61,7 @@ public class IcuTokenizerFactory extends AbstractTokenizerFactory {
                                @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
         boolean cjkAsWords = settings.getAsBoolean("cjk_as_words", true);
-        Map<Integer, String> tailored = newHashMap();
+        Map<Integer, String> tailored = new HashMap<>();
         String[] scriptAndResourcePaths = settings.getAsArray("rulefiles");
         if (scriptAndResourcePaths != null) {
             for (String scriptAndResourcePath : scriptAndResourcePaths) {
@@ -72,7 +73,7 @@ public class IcuTokenizerFactory extends AbstractTokenizerFactory {
             }
         }
         if (tailored.isEmpty()) {
-            this.config = new DefaultICUTokenizerConfig(cjkAsWords);
+            this.config = new DefaultIcuTokenizerConfig(cjkAsWords);
         } else {
             final BreakIterator breakers[] = new BreakIterator[UScript.CODE_LIMIT];
             for (Map.Entry<Integer,String> entry : tailored.entrySet()) {
@@ -98,7 +99,7 @@ public class IcuTokenizerFactory extends AbstractTokenizerFactory {
                 }
                 breakers[code] = new RuleBasedBreakIterator(rules.toString());
             }
-            this.config = new DefaultICUTokenizerConfig(cjkAsWords) {
+            this.config = new DefaultIcuTokenizerConfig(cjkAsWords) {
 
                 @Override
                 public BreakIterator getBreakIterator(int script) {
@@ -114,6 +115,6 @@ public class IcuTokenizerFactory extends AbstractTokenizerFactory {
 
     @Override
     public Tokenizer create() {
-        return new ICUTokenizer(config);
+        return new IcuTokenizer(config);
     }
 }

@@ -1,6 +1,5 @@
 package org.xbib.elasticsearch.index.mapper.reference.gnd;
 
-import com.google.common.base.Charsets;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.logging.ESLogger;
@@ -87,6 +86,6 @@ public class GNDReferenceMappingTests extends Assert {
     }
 
     public String copyToStringFromClasspath(String path) throws IOException {
-        return copyToString(new InputStreamReader(getClass().getResource(path).openStream(), Charsets.UTF_8));
+        return copyToString(new InputStreamReader(getClass().getResource(path).openStream(), "UTF-8"));
     }
 }

@@ -45,11 +45,10 @@ import org.elasticsearch.index.mapper.ParseContext;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Lists.newLinkedList;
 import static org.elasticsearch.index.mapper.MapperBuilders.stringField;
 
 public class ReferenceMapper extends FieldMapper {
@@ -106,8 +105,8 @@ public class ReferenceMapper extends FieldMapper {
         public Builder(String name, Client client) {
             super(name, new ReferenceFieldType());
             this.client = client;
-            this.refBuilders = newLinkedList();
-            this.refFields = newLinkedList();
+            this.refBuilders = new LinkedList<>();
+            this.refFields = new LinkedList<>();
             this.contentBuilder = stringField(name);
         }
 
@@ -140,7 +139,7 @@ public class ReferenceMapper extends FieldMapper {
         public ReferenceMapper build(BuilderContext context) {
             context.path().add(name);
             FieldMapper contentMapper = (FieldMapper) contentBuilder.build(context);
-            List<FieldMapper> refMappers = newLinkedList();
+            List<FieldMapper> refMappers = new LinkedList<>();
             if (!refBuilders.isEmpty()) {
                 for (Mapper.Builder refBuilder : refBuilders) {
                     RefContext refContext = new RefContext(context.indexSettings());
@@ -294,7 +293,7 @@ public class ReferenceMapper extends FieldMapper {
                                 break;
                             case "ref_fields":
                                 // single field
-                                fields = newArrayList();
+                                fields = new LinkedList<>();
                                 fields.add(parser.text());
                                 break;
                         }
@@ -303,7 +302,7 @@ public class ReferenceMapper extends FieldMapper {
                     if (currentFieldName != null) {
                         switch (currentFieldName) {
                             case "ref_fields": {
-                                fields = newArrayList();
+                                fields = new LinkedList<>();
                                 while (parser.nextToken() != XContentParser.Token.END_ARRAY) {
                                     if (parser.text() != null) {
                                         fields.add(parser.text());
@@ -312,7 +311,7 @@ public class ReferenceMapper extends FieldMapper {
                                 break;
                             }
                             case "to": {
-                                mappers = newArrayList();
+                                mappers = new LinkedList<>();
                                 while (parser.nextToken() != XContentParser.Token.END_ARRAY) {
                                     if (parser.text() != null) {
                                         RefContext refContext = new RefContext(settings);
@@ -374,7 +373,7 @@ public class ReferenceMapper extends FieldMapper {
     @Override
     @SuppressWarnings("unchecked")
     public Iterator<Mapper> iterator() {
-        List<FieldMapper> extras = newArrayList();
+        List<FieldMapper> extras = new LinkedList<>();
         extras.addAll(mappers);
         return CollectionUtils.concat(super.iterator(), extras.iterator());
     }

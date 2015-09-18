@@ -22,29 +22,17 @@ import java.io.InputStream;
  * </ul>
  */
 public class DefaultIcuTokenizerConfig extends IcuTokenizerConfig {
-    /**
-     * Token type for words containing ideographic characters
-     */
+    /** Token type for words containing ideographic characters */
     public static final String WORD_IDEO = StandardTokenizer.TOKEN_TYPES[StandardTokenizer.IDEOGRAPHIC];
-    /**
-     * Token type for words containing Japanese hiragana
-     */
+    /** Token type for words containing Japanese hiragana */
     public static final String WORD_HIRAGANA = StandardTokenizer.TOKEN_TYPES[StandardTokenizer.HIRAGANA];
-    /**
-     * Token type for words containing Japanese katakana
-     */
+    /** Token type for words containing Japanese katakana */
     public static final String WORD_KATAKANA = StandardTokenizer.TOKEN_TYPES[StandardTokenizer.KATAKANA];
-    /**
-     * Token type for words containing Korean hangul
-     */
+    /** Token type for words containing Korean hangul  */
     public static final String WORD_HANGUL = StandardTokenizer.TOKEN_TYPES[StandardTokenizer.HANGUL];
-    /**
-     * Token type for words that contain letters
-     */
+    /** Token type for words that contain letters */
     public static final String WORD_LETTER = StandardTokenizer.TOKEN_TYPES[StandardTokenizer.ALPHANUM];
-    /**
-     * Token type for words that appear to be numbers
-     */
+    /** Token type for words that appear to be numbers */
     public static final String WORD_NUMBER = StandardTokenizer.TOKEN_TYPES[StandardTokenizer.NUM];
 
     /*
@@ -59,15 +47,12 @@ public class DefaultIcuTokenizerConfig extends IcuTokenizerConfig {
             readBreakIterator("Default.brk");
     private static final BreakIterator khmerBreakIterator =
             readBreakIterator("Khmer.brk");
-    private static final BreakIterator myanmarBreakIterator =
-            readBreakIterator("Myanmar.brk");
 
     private final boolean cjkAsWords;
 
     /**
      * Creates a new config. This object is lightweight, but the first
      * time the class is referenced, breakiterators will be initialized.
-     *
      * @param cjkAsWords true if cjk text should undergo dictionary-based segmentation,
      *                   otherwise text will be segmented according to UAX#29 defaults.
      *                   If this is true, all Han+Hiragana+Katakana words will be tagged as
@@ -84,15 +69,10 @@ public class DefaultIcuTokenizerConfig extends IcuTokenizerConfig {
 
     @Override
     public BreakIterator getBreakIterator(int script) {
-        switch (script) {
-            case UScript.KHMER:
-                return (BreakIterator) khmerBreakIterator.clone();
-            case UScript.MYANMAR:
-                return (BreakIterator) myanmarBreakIterator.clone();
-            case UScript.JAPANESE:
-                return (BreakIterator) cjkBreakIterator.clone();
-            default:
-                return (BreakIterator) defaultBreakIterator.clone();
+        switch(script) {
+            case UScript.KHMER: return (BreakIterator)khmerBreakIterator.clone();
+            case UScript.JAPANESE: return (BreakIterator)cjkBreakIterator.clone();
+            default: return (BreakIterator)defaultBreakIterator.clone();
         }
     }
 

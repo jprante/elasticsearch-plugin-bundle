@@ -1,6 +1,5 @@
 package org.xbib.elasticsearch.index.mapper.crypt;
 
-import com.google.common.base.Charsets;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.mapper.DocumentMapper;
@@ -61,6 +60,6 @@ public class CryptMappingTests extends Assert {
     }
 
     public String copyToStringFromClasspath(String path) throws IOException {
-        return copyToString(new InputStreamReader(getClass().getResource(path).openStream(), Charsets.UTF_8));
+        return copyToString(new InputStreamReader(getClass().getResource(path).openStream(), "UTF-8"));
     }
 }
