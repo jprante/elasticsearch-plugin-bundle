@@ -20,7 +20,7 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.index.analysis.langdetect;
+package org.xbib.elasticsearch.common.langdetect;
 
 import java.lang.Character.UnicodeBlock;
 import java.util.HashMap;
