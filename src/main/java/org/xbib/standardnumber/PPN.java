@@ -22,7 +22,6 @@
  */
 package org.xbib.standardnumber;
 
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

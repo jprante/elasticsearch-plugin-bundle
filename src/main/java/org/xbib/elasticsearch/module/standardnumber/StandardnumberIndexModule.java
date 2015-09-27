@@ -24,6 +24,7 @@ package org.xbib.elasticsearch.module.standardnumber;
 
 import org.elasticsearch.common.inject.Binder;
 import org.elasticsearch.common.inject.Module;
+import org.xbib.elasticsearch.index.mapper.standardnumber.RegisterStandardnumberType;
 
 public class StandardnumberIndexModule implements Module {
 

@@ -516,7 +516,4 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
             return ranges;
         }
     }
-
 }
-
-

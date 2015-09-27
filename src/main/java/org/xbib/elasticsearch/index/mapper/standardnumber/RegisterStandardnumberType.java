@@ -20,7 +20,7 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.module.standardnumber;
+package org.xbib.elasticsearch.index.mapper.standardnumber;
 
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
@@ -29,7 +29,6 @@ import org.elasticsearch.index.Index;
 import org.elasticsearch.index.mapper.MapperService;
 import org.elasticsearch.index.settings.IndexSettings;
 import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberService;
-import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapper;
 
 public class RegisterStandardnumberType extends AbstractIndexComponent {
 
