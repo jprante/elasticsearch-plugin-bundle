@@ -1,0 +1,17 @@
+{
+    "index":{
+        "analysis":{
+            "tokenizer" : {
+                "my_hyphen_tokenizer" : {
+                    "type" : "hyphen"
+                }
+            },
+            "filter" : {
+                "my_hyphen_tokenfilter" : {
+                    "type" : "hyphen",
+                    "subwords" : false
+                }
+            }
+        }
+    }
+}

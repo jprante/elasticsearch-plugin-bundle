@@ -33,7 +33,7 @@ import org.elasticsearch.index.mapper.ObjectMapperListener;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.mapper.core.StringFieldMapper;
 import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberService;
-import org.xbib.standardnumber.StandardNumber;
+import org.xbib.elasticsearch.common.standardnumber.StandardNumber;
 
 import java.io.IOException;
 import java.util.Collection;

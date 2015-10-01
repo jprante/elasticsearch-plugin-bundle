@@ -85,12 +85,10 @@ public class SymbolnameTokenFilter extends TokenFilter {
 
     protected void process() throws CharacterCodingException {
         String term = new String(termAtt.buffer(), 0, termAtt.length());
-        Collection<CharSequence> variants = new LinkedList<>();
-        variants.addAll(process(term));
-        for (CharSequence ch : variants) {
-            if (ch != null) {
+        for (CharSequence charSequence : process(term)) {
+            if (charSequence != null) {
                 PackedTokenAttributeImpl token = new PackedTokenAttributeImpl();
-                token.append(ch);
+                token.append(charSequence);
                 tokens.add(token);
             }
         }
@@ -103,7 +101,7 @@ public class SymbolnameTokenFilter extends TokenFilter {
         while (m.find()) {
             String symbol = m.group();
             Character ch = symbol.charAt(0);
-            String symbolname = " __" + Character.getName(ch.charValue())
+            String symbolname = " __" + Character.getName(ch.charValue()).toUpperCase()
                     .replaceAll("\\s","").replaceAll("\\-","") + "__";
             m.appendReplacement(sb, symbolname);
         }
@@ -117,6 +115,7 @@ public class SymbolnameTokenFilter extends TokenFilter {
         }
         return variants;
     }
+
 
     private final static Pattern pattern = Pattern.compile("\\P{L}", Pattern.UNICODE_CHARACTER_CLASS);
 

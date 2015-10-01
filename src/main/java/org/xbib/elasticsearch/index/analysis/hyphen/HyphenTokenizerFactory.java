@@ -30,18 +30,25 @@ import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenizerFactory;
 import org.elasticsearch.index.settings.IndexSettings;
 
-import java.io.Reader;
-
 public class HyphenTokenizerFactory extends AbstractTokenizerFactory {
 
+    private final Integer tokenLength;
+
     @Inject
-    public HyphenTokenizerFactory(Index index, @IndexSettings Settings indexSettings,
-                                  @Assisted String name, @Assisted Settings settings) {
+    public HyphenTokenizerFactory(Index index,
+                                  @IndexSettings Settings indexSettings,
+                                  @Assisted String name,
+                                  @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
+        this.tokenLength = settings.getAsInt("max_token_length", null);
     }
 
     @Override
-    public Tokenizer create(Reader reader) {
-        return new HyphenTokenizer(reader);
+    public Tokenizer create() {
+        HyphenTokenizer tokenizer =  new HyphenTokenizer();
+        if (tokenLength != null) {
+            tokenizer.setMaxTokenLength(tokenLength);
+        }
+        return tokenizer;
     }
 }

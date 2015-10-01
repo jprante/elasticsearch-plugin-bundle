@@ -6667,16 +6667,8 @@
             },
             "xbib": {
                 "properties": {
-                    "detect": {
-                        "type": "langdetect",
-                        "fields": {
-                            "detect": {
-                                "type": "string"
-                            },
-                            "lang": {
-                                "type": "string"
-                            }
-                        }
+                    "lang": {
+                        "type": "langdetect"
                     },
                     "identifier": {
                         "type": "string",
