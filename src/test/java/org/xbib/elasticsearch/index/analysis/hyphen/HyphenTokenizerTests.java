@@ -78,8 +78,7 @@ public class HyphenTokenizerTests extends Assert {
                 "sondern",
                 "100-prozentig",
                 "als",
-                "Dipl",
-                "Ing",
+                "Dipl.-Ing",
                 "arbeiten"
         };
         AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json");
@@ -186,8 +185,8 @@ public class HyphenTokenizerTests extends Assert {
                 "100-prozentig",
                 "100prozentig",
                 "als",
-                "Dipl",
-                "Ing",
+                "Dipl.-Ing",
+                "Dipl.Ing",
                 "arbeiten"
         };
         AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer_without_subwords.json");

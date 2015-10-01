@@ -18,26 +18,16 @@ public class UnstemmedTests extends Assert {
     public void testOne() throws IOException {
         String source = "Ein Tag in Köln im Café an der Straßenecke mit einer Standard-Nummer ISBN 1-4493-5854-3";
         String[] expected = {
-                "ein",
                 "tag",
-                "in",
                 "koln",
-                "im",
                 "cafe",
                 "caf",
-                "an",
-                "der",
                 "strassenecke",
                 "strasseneck",
-                "mit",
-                "einer",
                 "standard-nummer",
                 "standardnummer",
-                "nummer",
-                "standard",
                 "standard-numm",
                 "standardnumm",
-                "numm",
                 "isbn",
                 "1-4493-5854-3",
                 "1449358543",
@@ -53,17 +43,12 @@ public class UnstemmedTests extends Assert {
     public void testTwo() throws IOException {
         String source = "So wird's was: das Elasticsearch-Buch erscheint beim O'Reilly-Verlag.";
         String[] expected = {
-                "so",
                 "wird's",
-                "was",
-                "das",
                 "elasticsearch-buch",
                 "elasticsearchbuch",
-                "buch",
-                "elasticsearch",
                 "erscheint",
-                "beim",
-                "o'reilly-verlag"
+                "o'reilly-verlag",
+                "o'reillyverlag"
         };
         AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/german/unstemmed.json");
         Analyzer analyzer = analysisService.defaultAnalyzer();
@@ -102,6 +87,21 @@ public class UnstemmedTests extends Assert {
         };
         AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/german/unstemmed.json");
         Analyzer analyzer = analysisService.analyzer("unstemmed");
+        assertSimpleTSOutput(analyzer.tokenStream(null, new StringReader(source)), expected);
+    }
+
+    @Test
+    public void testSix() throws IOException {
+        String source = "Programmieren in C++ für Einsteiger";
+        String[] expected = {
+                "programmieren",
+                "programmi",
+                "c++",
+                "einsteiger",
+                "einsteig"
+        };
+        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/german/unstemmed.json");
+        Analyzer analyzer = analysisService.defaultAnalyzer();
         assertSimpleTSOutput(analyzer.tokenStream(null, new StringReader(source)), expected);
     }
 

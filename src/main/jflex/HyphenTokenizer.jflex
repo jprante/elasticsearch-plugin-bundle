@@ -46,8 +46,9 @@ ALPHANUM   = ({LETTER}|{THAI}|[:digit:])+
 // acronyms: U.S.A., I.B.M., etc. with dropped last punctuation char.
 // company names like AT&T
 // emails, product identifiers, hostnames
-ADJUNCT = "-" | "'" | "&" | "@" | "_" | "."
-ALPHANUM_COMP = {ALPHANUM} {ADJUNCT} {ALPHANUM} ({ADJUNCT} {ALPHANUM})*
+ADJUNCT = ("-" | "'" | "&" | "@" | "_" | "." | "+")+
+ALPHANUM_COMP = {ALPHANUM} {ADJUNCT}
+              | {ALPHANUM} {ADJUNCT} {ALPHANUM} ({ADJUNCT} {ALPHANUM})*
 
 // floating point, serial, model numbers, ip addresses, etc.
 // every other segment must have at least one digit
@@ -58,7 +59,7 @@ NUM        = ({ALPHANUM} {P} {HAS_DIGIT}
            | {ALPHANUM} {P} {HAS_DIGIT} ({P} {ALPHANUM} {P} {HAS_DIGIT})+
            | {HAS_DIGIT} {P} {ALPHANUM} ({P} {HAS_DIGIT} {P} {ALPHANUM})+)
 
-// punctuation for numbers
+// punctuation for numbers / numeric formulas
 P           = ("_"|"-"|"/"|"."|",")
 
 // at least one digit
