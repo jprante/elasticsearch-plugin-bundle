@@ -7,7 +7,7 @@
 
     <groupId>org.xbib.elasticsearch.plugin</groupId>
     <artifactId>elasticsearch-plugin-bundle</artifactId>
-    <version>1.5.2.4</version>
+    <version>1.5.2.5</version>
 
     <packaging>jar</packaging>
 
@@ -198,6 +198,12 @@
                     <includes>
                         <include>**/*Tests.java</include>
                     </includes>
+                    <systemProperties>
+                        <property>
+                            <name>path.home</name>
+                            <value>${project.basedir}/target/classes</value>
+                        </property>
+                    </systemProperties>
                 </configuration>
             </plugin>
             <plugin>
