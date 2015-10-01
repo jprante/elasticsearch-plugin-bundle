@@ -28,7 +28,6 @@ public class MapperTestUtils {
                 new IndexSettingsModule(index, indexSettings),
                 new IndexNameModule(index),
                 new AnalysisModule(indexSettings, parentInjector.getInstance(IndicesAnalysisService.class))).createChildInjector(parentInjector);
-
         return injector.getInstance(AnalysisService.class);
     }
 

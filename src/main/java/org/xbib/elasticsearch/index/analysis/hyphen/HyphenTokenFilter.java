@@ -26,7 +26,6 @@ import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.util.AttributeSource;
 
 import java.io.IOException;
@@ -67,26 +66,28 @@ import java.util.regex.Pattern;
  */
 public class HyphenTokenFilter extends TokenFilter {
 
-    private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
-    private final PositionIncrementAttribute posIncrAtt = addAttribute(PositionIncrementAttribute.class);
-
     // TODO use TypeAttribute, LETTER_COMP or something
     private final static Pattern letter = Pattern.compile("\\p{L}+", Pattern.UNICODE_CHARACTER_CLASS);
+
+    final static char[] HYPHEN = new char[]{'-'};
+
+    private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
+
+    private final PositionIncrementAttribute posIncrAtt = addAttribute(PositionIncrementAttribute.class);
 
     private final Stack<String> stack;
 
     private final char[] hyphenchars;
 
+    private final boolean subwords;
+
     private AttributeSource.State current;
 
-    protected HyphenTokenFilter(TokenStream input) {
-        this(input, new char[]{'-'});
-    }
-
-    protected HyphenTokenFilter(TokenStream input, char[] hyphenchars) {
+    protected HyphenTokenFilter(TokenStream input, char[] hyphenchars, boolean subwords) {
         super(input);
         this.stack = new Stack<String>();
         this.hyphenchars = hyphenchars;
+        this.subwords = subwords;
     }
 
     @Override
@@ -114,21 +115,25 @@ public class HyphenTokenFilter extends TokenFilter {
             if (pos <= 0) {
                 continue;
             }
-            String head = "";
-            String tail;
-            while (pos > 0) {
-                head = head + s.substring(0, pos);
-                tail = s.substring(pos + 1);
-                // only words, no numbers
-                if (letter.matcher(head).matches()) {
-                    if (head.length() > 1) {
-                        stack.push(head);
+            if (subwords) {
+                String head = "";
+                String tail;
+                while (pos > 0) {
+                    head = head + s.substring(0, pos);
+                    tail = s.substring(pos + 1);
+                    // only words, no numbers
+                    if (letter.matcher(head).matches()) {
+                        if (head.length() > 1) {
+                            stack.push(head);
+                        }
+                        stack.push(tail);
+                        stack.push(head + tail);
                     }
-                    stack.push(tail);
-                    stack.push(head + tail);
+                    s = tail;
+                    pos = s.indexOf(ch);
                 }
-                s = tail;
-                pos = s.indexOf(ch);
+            } else {
+                stack.push(s.replaceAll(Pattern.quote(Character.toString(ch)), ""));
             }
         }
         return !stack.isEmpty();

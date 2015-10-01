@@ -34,18 +34,20 @@ public class HyphenTokenFilterFactory extends AbstractTokenFilterFactory {
 
     private final char[] hyphenchars;
 
+    private final boolean subwords;
+
     @Inject
     public HyphenTokenFilterFactory(Index index,
                                     @IndexSettings Settings indexSettings,
                                     @Assisted String name,
                                     @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
-        // by default, only '-' is used for token filtering
-        this.hyphenchars = settings.get("hyphens") != null ? settings.get("hyphens").toCharArray() : null;
+        this.hyphenchars = settings.get("hyphens") != null ? settings.get("hyphens").toCharArray() : HyphenTokenFilter.HYPHEN;
+        this.subwords = settings.getAsBoolean("subwords", true);
     }
 
     @Override
     public TokenStream create(TokenStream tokenStream) {
-        return hyphenchars != null ? new HyphenTokenFilter(tokenStream, hyphenchars) : new HyphenTokenFilter(tokenStream);
+        return new HyphenTokenFilter(tokenStream, hyphenchars, subwords);
     }
 }

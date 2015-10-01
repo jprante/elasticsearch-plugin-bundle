@@ -34,41 +34,9 @@ public class AssertingIndexSearcher extends IndexSearcher {
         return super.rewrite(original);
     }
 
-    /*@Override
-    protected Query wrapFilter(Query query, Filter filter) {
-        if (random.nextBoolean()) {
-            return super.wrapFilter(query, filter);
-        }
-        return (filter == null) ? query : new FilteredQuery(query, filter, randomFilterStrategy(random));
-    }*/
-
     @Override
     public String toString() {
         return "AssertingIndexSearcher(" + super.toString() + ")";
     }
-
-
-    /*public static FilteredQuery.FilterStrategy randomFilterStrategy(final Random random) {
-        switch (random.nextInt(6)) {
-            case 5:
-            case 4:
-                return new FilteredQuery.RandomAccessFilterStrategy() {
-                    protected boolean useRandomAccess(Bits bits, long filterCost) {
-                        return random.nextBoolean();
-                    }
-                };
-            case 3:
-                return FilteredQuery.RANDOM_ACCESS_FILTER_STRATEGY;
-            case 2:
-                return FilteredQuery.LEAP_FROG_FILTER_FIRST_STRATEGY;
-            case 1:
-                return FilteredQuery.LEAP_FROG_QUERY_FIRST_STRATEGY;
-            case 0:
-                return FilteredQuery.QUERY_FIRST_FILTER_STRATEGY;
-            default:
-                return FilteredQuery.RANDOM_ACCESS_FILTER_STRATEGY;
-        }
-    }*/
-
 
 }

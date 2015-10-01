@@ -32,14 +32,23 @@ import org.elasticsearch.index.settings.IndexSettings;
 
 public class HyphenTokenizerFactory extends AbstractTokenizerFactory {
 
+    private final Integer tokenLength;
+
     @Inject
-    public HyphenTokenizerFactory(Index index, @IndexSettings Settings indexSettings,
-                                  @Assisted String name, @Assisted Settings settings) {
+    public HyphenTokenizerFactory(Index index,
+                                  @IndexSettings Settings indexSettings,
+                                  @Assisted String name,
+                                  @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
+        this.tokenLength = settings.getAsInt("max_token_length", null);
     }
 
     @Override
     public Tokenizer create() {
-        return new HyphenTokenizer();
+        HyphenTokenizer tokenizer =  new HyphenTokenizer();
+        if (tokenLength != null) {
+            tokenizer.setMaxTokenLength(tokenLength);
+        }
+        return tokenizer;
     }
 }
