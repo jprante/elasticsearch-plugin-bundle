@@ -30,8 +30,7 @@ public class SymbolnameTokenFilterTests extends Assert {
         };
         AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService();
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("symbolname");
-        Tokenizer tokenizer = analysisService.tokenizer("whitespace").create();
-        tokenizer.setReader(new StringReader(source));
+        Tokenizer tokenizer = analysisService.tokenizer("whitespace").create(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 
@@ -58,8 +57,7 @@ public class SymbolnameTokenFilterTests extends Assert {
         };
         AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService();
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("symbolname");
-        Tokenizer tokenizer = analysisService.tokenizer("whitespace").create();
-        tokenizer.setReader(new StringReader(source));
+        Tokenizer tokenizer = analysisService.tokenizer("whitespace").create(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 
@@ -88,8 +86,7 @@ public class SymbolnameTokenFilterTests extends Assert {
         };
         AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService();
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("symbolname");
-        Tokenizer tokenizer = analysisService.tokenizer("whitespace").create();
-        tokenizer.setReader(new StringReader(source));
+        Tokenizer tokenizer = analysisService.tokenizer("whitespace").create(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 

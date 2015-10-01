@@ -30,6 +30,8 @@ import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenizerFactory;
 import org.elasticsearch.index.settings.IndexSettings;
 
+import java.io.Reader;
+
 public class HyphenTokenizerFactory extends AbstractTokenizerFactory {
 
     private final Integer tokenLength;
@@ -44,8 +46,8 @@ public class HyphenTokenizerFactory extends AbstractTokenizerFactory {
     }
 
     @Override
-    public Tokenizer create() {
-        HyphenTokenizer tokenizer =  new HyphenTokenizer();
+    public Tokenizer create(Reader reader) {
+        HyphenTokenizer tokenizer =  new HyphenTokenizer(reader);
         if (tokenLength != null) {
             tokenizer.setMaxTokenLength(tokenLength);
         }

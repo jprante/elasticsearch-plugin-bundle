@@ -4,7 +4,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexReaderContext;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Weight;
 
 import java.io.IOException;
 import java.util.Random;
@@ -22,11 +21,6 @@ public class AssertingIndexSearcher extends IndexSearcher {
     public AssertingIndexSearcher(Random random, IndexReaderContext context, ExecutorService ex) {
         super(context, ex);
         this.random = new Random(random.nextLong());
-    }
-
-    @Override
-    public Weight createNormalizedWeight(Query query, boolean b) throws IOException {
-        return super.createNormalizedWeight(query, b);
     }
 
     @Override

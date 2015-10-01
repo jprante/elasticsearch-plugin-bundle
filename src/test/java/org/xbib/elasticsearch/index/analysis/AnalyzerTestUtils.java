@@ -4,6 +4,7 @@ import org.elasticsearch.Version;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.inject.ModulesBuilder;
+import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.SettingsModule;
 import org.elasticsearch.env.Environment;
@@ -19,14 +20,14 @@ import org.xbib.elasticsearch.plugin.analysis.bundle.BundlePlugin;
 public class AnalyzerTestUtils {
 
     public static AnalysisService createAnalysisService() {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = ImmutableSettings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("path.home", System.getProperty("path.home")).build();
         return createAnalysisService(settings);
     }
 
     public static AnalysisService createAnalysisService(String resource) {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = ImmutableSettings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("path.home", System.getProperty("path.home"))
                 .loadFromStream(resource, AnalyzerTestUtils.class.getResourceAsStream(resource))

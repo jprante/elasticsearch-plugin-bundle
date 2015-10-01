@@ -33,8 +33,7 @@ public class GermanNormalizationTests extends Assert {
         };
         AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/german/german_normalization_analysis.json");
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("umlaut");
-        Tokenizer tokenizer = analysisService.tokenizer("standard").create();
-        tokenizer.setReader(new StringReader(source));
+        Tokenizer tokenizer = analysisService.tokenizer("standard").create(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 

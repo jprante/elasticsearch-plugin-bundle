@@ -4,6 +4,7 @@ import org.elasticsearch.Version;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.inject.ModulesBuilder;
+import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.SettingsModule;
 import org.elasticsearch.env.Environment;
@@ -12,8 +13,9 @@ import org.elasticsearch.index.Index;
 import org.elasticsearch.index.IndexNameModule;
 import org.elasticsearch.index.analysis.AnalysisModule;
 import org.elasticsearch.index.analysis.AnalysisService;
+import org.elasticsearch.index.codec.docvaluesformat.DocValuesFormatService;
+import org.elasticsearch.index.codec.postingsformat.PostingsFormatService;
 import org.elasticsearch.index.mapper.DocumentMapperParser;
-import org.elasticsearch.index.mapper.MapperService;
 import org.elasticsearch.index.settings.IndexSettingsModule;
 import org.elasticsearch.index.similarity.SimilarityLookupService;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
@@ -36,27 +38,23 @@ public class MapperTestUtils {
     }
 
     public static DocumentMapperParser newMapperParser() {
-        return newMapperParser(Settings.builder()
+        return newMapperParser(ImmutableSettings.builder()
                 .put("path.home", System.getProperty("path.home"))
                 .build());
     }
 
     public static DocumentMapperParser newMapperParser(Settings settings) {
-        Settings forcedSettings = Settings.builder()
+        Settings forcedSettings = ImmutableSettings.builder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put(settings)
                 .build();
-        SimilarityLookupService similarityLookupService = newSimilarityLookupService(forcedSettings);
-        MapperService mapperService = new MapperService(new Index("test"),
-                forcedSettings,
-                newAnalysisService(forcedSettings),
-                similarityLookupService,
-                null);
-        return new DocumentMapperParser(
-                forcedSettings,
-                mapperService,
-                MapperTestUtils.newAnalysisService(forcedSettings),
-                similarityLookupService,
+        AnalysisService analysisService = newAnalysisService(forcedSettings);
+        Index index = new Index("test");
+        return new DocumentMapperParser(index, settings,
+                analysisService,
+                new PostingsFormatService(index),
+                new DocValuesFormatService(index),
+                new SimilarityLookupService(index, settings),
                 null);
     }
 }
