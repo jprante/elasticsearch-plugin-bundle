@@ -50,7 +50,8 @@ public class DecompoundTokenFilterTests extends Assert {
         };
         AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/decompound/decompound_analysis.json");
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("decomp");
-        Tokenizer tokenizer = analysisService.tokenizer("standard").create(new StringReader(source));
+        Tokenizer tokenizer = analysisService.tokenizer("standard").create();
+        tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 

@@ -48,7 +48,8 @@ public class BaseformTokenFilterTests extends Assert {
         };
         AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService();
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("baseform");
-        Tokenizer tokenizer = analysisService.tokenizer("standard").create(new StringReader(source));
+        Tokenizer tokenizer = analysisService.tokenizer("standard").create();
+        tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 
@@ -73,7 +74,8 @@ public class BaseformTokenFilterTests extends Assert {
         };
         AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService();
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("baseform");
-        Tokenizer tokenizer = analysisService.tokenizer("standard").create(new StringReader(source));
+        Tokenizer tokenizer = analysisService.tokenizer("standard").create();
+        tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 
@@ -95,7 +97,8 @@ public class BaseformTokenFilterTests extends Assert {
         };
         AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService();
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("baseform");
-        Tokenizer tokenizer = analysisService.tokenizer("standard").create(new StringReader(source));
+        Tokenizer tokenizer = analysisService.tokenizer("standard").create();
+        tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 
