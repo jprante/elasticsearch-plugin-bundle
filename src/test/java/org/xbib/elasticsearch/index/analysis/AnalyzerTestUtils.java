@@ -14,6 +14,7 @@ import org.elasticsearch.index.IndexNameModule;
 import org.elasticsearch.index.analysis.AnalysisModule;
 import org.elasticsearch.index.analysis.AnalysisService;
 import org.elasticsearch.index.settings.IndexSettingsModule;
+import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 import org.xbib.elasticsearch.plugin.analysis.bundle.BundlePlugin;
 
@@ -37,9 +38,10 @@ public class AnalyzerTestUtils {
 
     public static AnalysisService createAnalysisService(Settings settings) {
         Index index = new Index("test");
-        Injector parentInjector = new ModulesBuilder().add(new SettingsModule(settings),
-                new EnvironmentModule(new Environment(settings)))
-                .createInjector();
+        Injector parentInjector = new ModulesBuilder()
+                .add(new SettingsModule(settings),
+                     new EnvironmentModule(new Environment(settings)),
+                     new IndicesAnalysisModule()).createInjector();
         AnalysisModule analysisModule = new AnalysisModule(settings, parentInjector.getInstance(IndicesAnalysisService.class));
         new BundlePlugin(settings).onModule(analysisModule);
         Injector injector = new ModulesBuilder().add(
@@ -49,4 +51,5 @@ public class AnalyzerTestUtils {
                 .createChildInjector(parentInjector);
         return injector.getInstance(AnalysisService.class);
     }
+
 }

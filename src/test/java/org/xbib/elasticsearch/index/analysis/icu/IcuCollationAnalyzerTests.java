@@ -14,21 +14,11 @@ import org.elasticsearch.common.base.Supplier;
 import org.elasticsearch.common.collect.Multimaps;
 import org.elasticsearch.common.collect.SetMultimap;
 import org.elasticsearch.common.collect.Sets;
-import org.elasticsearch.common.inject.Injector;
-import org.elasticsearch.common.inject.ModulesBuilder;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.settings.SettingsModule;
-import org.elasticsearch.env.Environment;
-import org.elasticsearch.env.EnvironmentModule;
-import org.elasticsearch.index.Index;
-import org.elasticsearch.index.IndexNameModule;
-import org.elasticsearch.index.analysis.AnalysisModule;
 import org.elasticsearch.index.analysis.AnalysisService;
-import org.elasticsearch.index.settings.IndexSettingsModule;
-import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
-import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 import org.junit.Test;
+import org.xbib.elasticsearch.index.analysis.AnalyzerTestUtils;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
 
 import java.io.IOException;
@@ -47,7 +37,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testBasicUsage() throws Exception {
-        Index index = new Index("test");
+        //Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
@@ -55,7 +45,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
                 .put("index.analysis.analyzer.myAnalyzer.decomposition", "canonical")
                 .build();
-        AnalysisService analysisService = createAnalysisService(index, settings);
+        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService(settings);
         Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
         TokenStream tsUpper = analyzer.tokenStream(null, "I WİLL USE TURKİSH CASING");
         BytesRef b1 = bytesFromTokenStream(tsUpper);
@@ -69,7 +59,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testNormalization() throws IOException {
-        Index index = new Index("test");
+        //Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
@@ -77,7 +67,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
                 .put("index.analysis.analyzer.myAnalyzer.decomposition", "canonical")
                 .build();
-        AnalysisService analysisService = createAnalysisService(index, settings);
+        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService(settings);
         Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
         TokenStream tsUpper = analyzer.tokenStream(null, "I W\u0049\u0307LL USE TURKİSH CASING");
         BytesRef b1 = bytesFromTokenStream(tsUpper);
@@ -91,7 +81,6 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testSecondaryStrength() throws IOException {
-        Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
@@ -99,7 +88,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
                 .put("index.analysis.analyzer.myAnalyzer.strength", "secondary")
                 .put("index.analysis.analyzer.myAnalyzer.decomposition", "no")
                 .build();
-        AnalysisService analysisService = createAnalysisService(index, settings);
+        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService(settings);
         Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
         TokenStream tsUpper = analyzer.tokenStream("content", "TESTING");
         BytesRef b1 = bytesFromTokenStream(tsUpper);
@@ -114,7 +103,6 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testIgnorePunctuation() throws IOException {
-        Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
@@ -122,7 +110,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
                 .put("index.analysis.analyzer.myAnalyzer.alternate", "shifted")
                 .build();
-        AnalysisService analysisService = createAnalysisService(index, settings);
+        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService(settings);
         Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
         TokenStream tsPunctuation = analyzer.tokenStream("content", "foo-bar");
         BytesRef b1 = bytesFromTokenStream(tsPunctuation);
@@ -137,7 +125,6 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testIgnoreWhitespace() throws IOException {
-        Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
@@ -146,7 +133,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
                 .put("index.analysis.analyzer.myAnalyzer.alternate", "shifted")
                 .put("index.analysis.analyzer.myAnalyzer.variableTop", 4096) // SPACE
                 .build();
-        AnalysisService analysisService = createAnalysisService(index, settings);
+        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService(settings);
         Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
         TokenStream tsWithoutSpace = analyzer.tokenStream(null, "foobar");
         BytesRef b1 = bytesFromTokenStream(tsWithoutSpace);
@@ -166,14 +153,13 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testNumerics() throws IOException {
-        Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "en")
                 .put("index.analysis.analyzer.myAnalyzer.numeric", true)
                 .build();
-        AnalysisService analysisService = createAnalysisService(index, settings);
+        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService(settings);
         Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
         TokenStream tsNine = analyzer.tokenStream(null, "foobar-9");
         BytesRef b1 = bytesFromTokenStream(tsNine);
@@ -188,7 +174,6 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testIgnoreAccentsButNotCase() throws IOException {
-        Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
@@ -196,7 +181,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
                 .put("index.analysis.analyzer.myAnalyzer.caseLevel", "true")
                 .build();
-        AnalysisService analysisService = createAnalysisService(index, settings);
+        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService(settings);
         Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
 
         String withAccents = "résumé";
@@ -230,7 +215,6 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testUpperCaseFirst() throws IOException {
-        Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
@@ -238,7 +222,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
                 .put("index.analysis.analyzer.myAnalyzer.strength", "tertiary")
                 .put("index.analysis.analyzer.myAnalyzer.caseFirst", "upper")
                 .build();
-        AnalysisService analysisService = createAnalysisService(index, settings);
+        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService(settings);
         Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
         String lower = "resume";
         String upper = "Resume";
@@ -265,14 +249,13 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
         RuleBasedCollator tailoredCollator = new RuleBasedCollator(baseCollator.getRules() + DIN5007_2_tailorings);
         String tailoredRules = tailoredCollator.getRules();
 
-        Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.rules", tailoredRules)
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
                 .build();
-        AnalysisService analysisService = createAnalysisService(index, settings);
+        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService(settings);
         Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
 
         String germanUmlaut = "Töne";
@@ -289,11 +272,10 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     @Test
     public void testCustomFromJson() throws Exception {
 
-        Index index = new Index("test");
         Settings settings = ImmutableSettings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .loadFromClasspath("org/xbib/elasticsearch/index/analysis/icu/icu_collation.json").build();
-        AnalysisService analysisService = createAnalysisService(index, settings);
+        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService(settings);
         Analyzer analyzer = analysisService.analyzer("icu_german_collate").analyzer();
 
         String[] words = new String[]{
@@ -321,18 +303,6 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
         assertEquals("[Goethe, Göthe]",it.next().toString());
         assertEquals("[Götz]",it.next().toString());
         assertEquals("[Goldmann]",it.next().toString());
-    }
-
-    private AnalysisService createAnalysisService(Index index, Settings settings) {
-        Injector parentInjector = new ModulesBuilder().add(new SettingsModule(settings), new EnvironmentModule(new Environment(settings)), new IndicesAnalysisModule()).createInjector();
-        Injector injector = new ModulesBuilder().add(
-                new IndexSettingsModule(index, settings),
-                new IndexNameModule(index),
-                new AnalysisModule(settings, parentInjector.getInstance(IndicesAnalysisService.class))
-                        .addProcessor(new IcuAnalysisBinderProcessor()))
-                .createChildInjector(parentInjector);
-
-        return injector.getInstance(AnalysisService.class);
     }
 
     private BytesRef bytesFromTokenStream(TokenStream stream) throws IOException {

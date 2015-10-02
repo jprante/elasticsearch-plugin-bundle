@@ -9,25 +9,11 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.util.Version;
-import org.elasticsearch.cluster.metadata.IndexMetaData;
-import org.elasticsearch.common.inject.Injector;
-import org.elasticsearch.common.inject.ModulesBuilder;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.settings.SettingsModule;
-import org.elasticsearch.env.Environment;
-import org.elasticsearch.env.EnvironmentModule;
-import org.elasticsearch.index.Index;
-import org.elasticsearch.index.IndexNameModule;
-import org.elasticsearch.index.analysis.AnalysisModule;
 import org.elasticsearch.index.analysis.AnalysisService;
-import org.elasticsearch.index.settings.IndexSettingsModule;
-import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
-import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 import org.junit.Test;
+import org.xbib.elasticsearch.index.analysis.AnalyzerTestUtils;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
 import org.xbib.elasticsearch.index.analysis.MockTokenizer;
-import org.xbib.elasticsearch.plugin.analysis.bundle.BundlePlugin;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -51,10 +37,7 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
 
     @Test
     public void testOffsets() throws IOException {
-        Settings settings = ImmutableSettings.settingsBuilder()
-                .put(IndexMetaData.SETTING_VERSION_CREATED, org.elasticsearch.Version.CURRENT)
-                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json").build();
-        AnalysisService analysisService = createAnalysisService(settings);
+        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json");
         Tokenizer tokenizer = analysisService.tokenizer("keyword").create(new StringReader("foo-bar"));
         TokenStream ts = analysisService.tokenFilter("wd").create(tokenizer);
 
@@ -67,10 +50,7 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
 
     @Test
     public void testOffsetChange() throws Exception {
-        Settings settings = ImmutableSettings.settingsBuilder()
-                .put(IndexMetaData.SETTING_VERSION_CREATED, org.elasticsearch.Version.CURRENT)
-                .loadFromClasspath("org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json").build();
-        AnalysisService analysisService = createAnalysisService(settings);
+        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json");
         Tokenizer tokenizer = analysisService.tokenizer("keyword").create(new StringReader("übelkeit"));
         TokenStream ts = analysisService.tokenFilter("wd").create(tokenizer);
 
@@ -445,20 +425,5 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
                 new int[]{1, 0, 0, 0, 0},
                 null,
                 false);
-    }
-
-    private AnalysisService createAnalysisService(Settings settings) {
-        Index index = new Index("test");
-        Injector parentInjector = new ModulesBuilder().add(new SettingsModule(settings),
-                new EnvironmentModule(new Environment(settings)),
-                new IndicesAnalysisModule())
-                .createInjector();
-        AnalysisModule analysisModule = new AnalysisModule(settings, parentInjector.getInstance(IndicesAnalysisService.class));
-        new BundlePlugin(settings).onModule(analysisModule);
-        Injector injector = new ModulesBuilder().add(
-                new IndexSettingsModule(index, settings),
-                new IndexNameModule(index), analysisModule)
-                .createChildInjector(parentInjector);
-        return injector.getInstance(AnalysisService.class);
     }
 }
