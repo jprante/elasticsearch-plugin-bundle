@@ -31,6 +31,7 @@ import org.elasticsearch.plugins.Plugin;
 import org.xbib.elasticsearch.index.analysis.baseform.BaseformAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.concat.ConcatAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.decompound.DecompoundAnalysisBinderProcessor;
+import org.xbib.elasticsearch.index.analysis.decompound.fst.FstDecompoundAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.german.GermanAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.icu.IcuAnalysisBinderProcessor;
@@ -80,6 +81,9 @@ public class BundlePlugin extends Plugin {
         }
         if (settings.getAsBoolean("plugins.decompound.enabled", true)) {
             module.addProcessor(new DecompoundAnalysisBinderProcessor());
+        }
+        if (settings.getAsBoolean("plugins.decompound.fst.enabled", true)) {
+            module.addProcessor(new FstDecompoundAnalysisBinderProcessor());
         }
         if (settings.getAsBoolean("plugins.german.enabled", true)) {
             module.addProcessor(new GermanAnalysisBinderProcessor());
