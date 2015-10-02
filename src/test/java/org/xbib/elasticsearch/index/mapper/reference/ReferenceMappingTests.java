@@ -47,7 +47,6 @@ public class ReferenceMappingTests extends Assert {
                 .put("plugin.types", BundlePlugin.class.getName())
                 .put("index.number_of_shards", 1)
                 .put("index.number_of_replica", 0)
-                .put("cluster.routing.schedule", "50ms")
                 .build();
         node = NodeBuilder.nodeBuilder().settings(nodeSettings).local(true).build().start();
         client = node.client();
@@ -94,11 +93,11 @@ public class ReferenceMappingTests extends Assert {
             logger.info("testRefMappings {} = {}", field.name(), field.stringValue());
         }
         assertNotNull(docMapper.mappers().smartNameFieldMapper("someField"));
-        assertEquals("1234", doc.getFields("someField.someField")[0].stringValue());
-        assertEquals(3, doc.getFields("someField.ref").length);
-        assertEquals("a", doc.getFields("someField.ref")[0].stringValue());
-        assertEquals("b", doc.getFields("someField.ref")[1].stringValue());
-        assertEquals("c", doc.getFields("someField.ref")[2].stringValue());
+        assertEquals("1234", doc.getFields("someField")[0].stringValue());
+        assertEquals(3, doc.getFields("ref").length);
+        assertEquals("a", doc.getFields("ref")[0].stringValue());
+        assertEquals("b", doc.getFields("ref")[1].stringValue());
+        assertEquals("c", doc.getFields("ref")[2].stringValue());
 
         // re-parse from mapping
         String builtMapping = docMapper.mappingSource().string();
@@ -110,11 +109,11 @@ public class ReferenceMappingTests extends Assert {
         for (IndexableField field : doc.getFields()) {
             logger.info("reparse testRefMappings {} = {}", field.name(), field.stringValue());
         }
-        assertEquals("1234", doc.getFields("someField.someField")[0].stringValue());
-        assertEquals(3, doc.getFields("someField.ref").length);
-        assertEquals("a", doc.getFields("someField.ref")[0].stringValue());
-        assertEquals("b", doc.getFields("someField.ref")[1].stringValue());
-        assertEquals("c", doc.getFields("someField.ref")[2].stringValue());
+        assertEquals("1234", doc.getFields("someField")[0].stringValue());
+        assertEquals(3, doc.getFields("ref").length);
+        assertEquals("a", doc.getFields("ref")[0].stringValue());
+        assertEquals("b", doc.getFields("ref")[1].stringValue());
+        assertEquals("c", doc.getFields("ref")[2].stringValue());
     }
 
     @Test

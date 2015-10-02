@@ -29,11 +29,9 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.util.CollectionUtils;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.index.get.GetField;
-import org.elasticsearch.index.mapper.ContentPath;
 import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
@@ -50,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.elasticsearch.index.mapper.MapperBuilders.stringField;
+import static org.elasticsearch.index.mapper.core.TypeParsers.parseField;
 
 public class ReferenceMapper extends FieldMapper {
 
@@ -92,8 +91,6 @@ public class ReferenceMapper extends FieldMapper {
 
         private FieldMapper.Builder contentBuilder;
 
-        private List<FieldMapper.Builder> refBuilders;
-
         private Client client;
 
         private String refIndex;
@@ -105,7 +102,6 @@ public class ReferenceMapper extends FieldMapper {
         public Builder(String name, Client client) {
             super(name, new ReferenceFieldType());
             this.client = client;
-            this.refBuilders = new LinkedList<>();
             this.refFields = new LinkedList<>();
             this.contentBuilder = stringField(name);
         }
@@ -117,11 +113,6 @@ public class ReferenceMapper extends FieldMapper {
 
         public Builder refType(String refType) {
             this.refType = refType;
-            return this;
-        }
-
-        public Builder refMapper(FieldMapper.Builder ref) {
-            this.refBuilders.add(ref);
             return this;
         }
 
@@ -137,16 +128,7 @@ public class ReferenceMapper extends FieldMapper {
 
         @Override
         public ReferenceMapper build(BuilderContext context) {
-            context.path().add(name);
             FieldMapper contentMapper = (FieldMapper) contentBuilder.build(context);
-            List<FieldMapper> refMappers = new LinkedList<>();
-            if (!refBuilders.isEmpty()) {
-                for (Mapper.Builder refBuilder : refBuilders) {
-                    RefContext refContext = new RefContext(context.indexSettings());
-                    refMappers.add((FieldMapper) refBuilder.build(refContext));
-                }
-            }
-            context.path().remove();
             MappedFieldType defaultFieldType = Defaults.FIELD_TYPE.clone();
             if (this.fieldType.indexOptions() != IndexOptions.NONE && !this.fieldType.tokenized()) {
                 defaultFieldType.setOmitNorms(true);
@@ -169,20 +151,9 @@ public class ReferenceMapper extends FieldMapper {
                     refType,
                     refFields,
                     contentMapper,
-                    refMappers,
                     context.indexSettings(),
                     multiFieldsBuilder.build(this, context),
                     copyTo);
-        }
-    }
-
-    /**
-     * A builder context that resets the content path temporarily for a reference mapper
-     */
-    public static class RefContext extends BuilderContext {
-
-        public RefContext(Settings settings) {
-            super(settings, new ContentPath());
         }
     }
 
@@ -199,6 +170,7 @@ public class ReferenceMapper extends FieldMapper {
         public Mapper.Builder parse(String name, Map<String, Object> node, ParserContext parserContext)
                 throws MapperParsingException {
             ReferenceMapper.Builder builder = new Builder(name, client);
+            parseField(builder, name, node, parserContext);
             Iterator<Map.Entry<String, Object>> iterator = node.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<String, Object> entry = iterator.next();
@@ -217,21 +189,11 @@ public class ReferenceMapper extends FieldMapper {
                         builder.refFields(entry.getValue());
                         iterator.remove();
                         break;
-                    case "to":
-                        List<String> toNames = (List<String>)fieldNode;
-                        for (String toName : toNames) {
-                            FieldMapper.Builder mapperBuilder = stringField(toName);
-                            builder.refMapper(mapperBuilder);
-                        }
-                        iterator.remove();
-                        break;
                 }
             }
             return builder;
         }
     }
-
-    private final Settings settings;
 
     private final Client client;
 
@@ -243,7 +205,9 @@ public class ReferenceMapper extends FieldMapper {
 
     private FieldMapper contentMapper;
 
-    private List<FieldMapper> mappers;
+    private CopyTo copyTo;
+
+    private final static CopyTo COPYTO_EMPTY = new CopyTo.Builder().build();
 
     public ReferenceMapper(String simpleName,
                            MappedFieldType fieldType,
@@ -253,18 +217,16 @@ public class ReferenceMapper extends FieldMapper {
                            String reftype,
                            List<String> reffields,
                            FieldMapper contentMapper,
-                           List<FieldMapper> refmappers,
                            Settings indexSettings,
                            MultiFields multiFields,
                            CopyTo copyTo) {
-        super(simpleName, fieldType, defaultFieldType, indexSettings, multiFields, copyTo);
-        this.settings = indexSettings;
+        super(simpleName, fieldType, defaultFieldType, indexSettings, multiFields, COPYTO_EMPTY);
+        this.copyTo = copyTo;
         this.client = client;
         this.index = refindex;
         this.type = reftype;
         this.fields = reffields;
         this.contentMapper = contentMapper;
-        this.mappers = refmappers;
     }
 
     @Override
@@ -282,9 +244,6 @@ public class ReferenceMapper extends FieldMapper {
                 } else if (token == XContentParser.Token.VALUE_STRING) {
                     if (currentFieldName != null) {
                         switch (currentFieldName) {
-                            case "ref_id":
-                                content = parser.text();
-                                break;
                             case "ref_index":
                                 index = parser.text();
                                 break;
@@ -310,15 +269,6 @@ public class ReferenceMapper extends FieldMapper {
                                 }
                                 break;
                             }
-                            case "to": {
-                                mappers = new LinkedList<>();
-                                while (parser.nextToken() != XContentParser.Token.END_ARRAY) {
-                                    if (parser.text() != null) {
-                                        RefContext refContext = new RefContext(settings);
-                                        mappers.add(stringField(parser.text()).build(refContext));
-                                    }
-                                }
-                            }
                         }
                     }
                 }
@@ -343,9 +293,9 @@ public class ReferenceMapper extends FieldMapper {
                         GetField getField = response.getField(field);
                         if (getField != null) {
                             for (Object object : getField.getValues()) {
-                                for (FieldMapper mapper : mappers) {
-                                    context = context.createExternalValueContext(object);
-                                    mapper.parse(context);
+                                context = context.createExternalValueContext(object);
+                                if (copyTo != null) {
+                                    parseCopyFields(context, copyTo.copyToFields());
                                 }
                             }
                         }
@@ -371,16 +321,8 @@ public class ReferenceMapper extends FieldMapper {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Iterator<Mapper> iterator() {
-        List<FieldMapper> extras = new LinkedList<>();
-        extras.addAll(mappers);
-        return CollectionUtils.concat(super.iterator(), extras.iterator());
-    }
-
-    @Override
-    public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
-        builder.startObject(simpleName());
+    protected void doXContentBody(XContentBuilder builder, boolean includeDefaults, Params params) throws IOException {
+        super.doXContentBody(builder, includeDefaults, params);
         builder.field("type", CONTENT_TYPE);
         if (index != null) {
             builder.field("ref_index", index);
@@ -391,18 +333,48 @@ public class ReferenceMapper extends FieldMapper {
         if (fields != null) {
             builder.field("ref_fields", fields);
         }
-        builder.startArray("to");
-        for (Mapper mapper : mappers) {
-            builder.value(mapper.name());
+        if (copyTo != null) {
+            copyTo.toXContent(builder, params);
         }
-        builder.endArray();
-        builder.endObject();
-        return builder;
     }
 
     @Override
     protected String contentType() {
         return CONTENT_TYPE;
+    }
+
+    /* copied from org.elasticsearch.index.mapper.DocumentParser private methods */
+
+    /** Creates instances of the fields that the current field should be copied to */
+    private static void parseCopyFields(ParseContext context, List<String> copyToFields) throws IOException {
+        if (!context.isWithinCopyTo() && !copyToFields.isEmpty()) {
+            context = context.createCopyToContext();
+            for (String field : copyToFields) {
+                // In case of a hierarchy of nested documents, we need to figure out
+                // which document the field should go to
+                ParseContext.Document targetDoc = null;
+                for (ParseContext.Document doc = context.doc(); doc != null; doc = doc.getParent()) {
+                    if (field.startsWith(doc.getPrefix())) {
+                        targetDoc = doc;
+                        break;
+                    }
+                }
+                assert targetDoc != null;
+                final ParseContext copyToContext;
+                if (targetDoc == context.doc()) {
+                    copyToContext = context;
+                } else {
+                    copyToContext = context.switchDoc(targetDoc);
+                }
+                // simplified - no dynamic field creation
+                FieldMapper fieldMapper = copyToContext.docMapper().mappers().getMapper(field);
+                if (fieldMapper != null) {
+                    fieldMapper.parse(copyToContext);
+                } else {
+                    throw new MapperParsingException("attempt to copy value to non-existing field [" + field + "]");
+                }
+            }
+          }
     }
 
 }

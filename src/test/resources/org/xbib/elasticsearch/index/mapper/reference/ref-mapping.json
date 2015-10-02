@@ -1,6 +1,6 @@
 {
     "someType" : {
-        "properties": {
+        "properties" : {
             "someField": {
                 "type": "ref",
                 "ref_index": "test",
@@ -8,9 +8,12 @@
                 "ref_fields": [
                     "myfield"
                 ],
-                "to": [
-                    "someField.ref"
+                "copy_to": [
+                    "ref"
                 ]
+            },
+            "ref" : {
+                "type" : "string"
             }
         }
     }
