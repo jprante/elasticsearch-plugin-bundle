@@ -2,28 +2,15 @@ package org.xbib.elasticsearch.index.analysis.baseform;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
-import org.elasticsearch.cluster.metadata.IndexMetaData;
-import org.elasticsearch.common.inject.Injector;
-import org.elasticsearch.common.inject.ModulesBuilder;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.settings.SettingsModule;
-import org.elasticsearch.env.Environment;
-import org.elasticsearch.env.EnvironmentModule;
-import org.elasticsearch.index.Index;
-import org.elasticsearch.index.IndexNameModule;
-import org.elasticsearch.index.analysis.AnalysisModule;
 import org.elasticsearch.index.analysis.AnalysisService;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
-import org.elasticsearch.index.settings.IndexSettingsModule;
-import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import org.xbib.elasticsearch.plugin.analysis.bundle.BundlePlugin;
+import org.xbib.elasticsearch.index.analysis.AnalyzerTestUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -32,8 +19,6 @@ public class BaseformTokenFilterTests extends Assert {
 
     @Test
     public void testOne() throws IOException {
-        AnalysisService analysisService = createAnalysisService();
-        TokenFilterFactory tokenFilter = analysisService.tokenFilter("baseform");
 
         String source = "Die Jahresfeier der Rechtsanwaltskanzleien auf dem Donaudampfschiff hat viel Ökosteuer gekostet";
 
@@ -61,17 +46,14 @@ public class BaseformTokenFilterTests extends Assert {
             "gekostet",
             "kosten"
         };
-
-        Tokenizer tokenizer = new StandardTokenizer();
-        tokenizer.setReader(new StringReader(source));
+        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService();
+        TokenFilterFactory tokenFilter = analysisService.tokenFilter("baseform");
+        Tokenizer tokenizer = analysisService.tokenizer("standard").create(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
-
     }
 
     @Test
     public void testTwo() throws IOException {
-        AnalysisService analysisService = createAnalysisService();
-        TokenFilterFactory tokenFilter = analysisService.tokenFilter("baseform");
 
         String source = "Das sind Autos, die Nudeln transportieren.";
 
@@ -89,17 +71,15 @@ public class BaseformTokenFilterTests extends Assert {
                 "transportieren",
                 "transportieren"
         };
-
-        Tokenizer tokenizer = new StandardTokenizer();
-        tokenizer.setReader(new StringReader(source));
+        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService();
+        TokenFilterFactory tokenFilter = analysisService.tokenFilter("baseform");
+        Tokenizer tokenizer = analysisService.tokenizer("standard").create(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 
 
     @Test
     public void testThree() throws IOException {
-        AnalysisService analysisService = createAnalysisService();
-        TokenFilterFactory tokenFilter = analysisService.tokenFilter("baseform");
 
         String source = "wurde zum tollen gemacht";
 
@@ -113,29 +93,10 @@ public class BaseformTokenFilterTests extends Assert {
                 "gemacht",
                 "machen"
         };
-        Tokenizer tokenizer = new StandardTokenizer();
-        tokenizer.setReader(new StringReader(source));
+        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService();
+        TokenFilterFactory tokenFilter = analysisService.tokenFilter("baseform");
+        Tokenizer tokenizer = analysisService.tokenizer("standard").create(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
-    }
-
-    private AnalysisService createAnalysisService() {
-        Settings settings = Settings.settingsBuilder()
-                .put(IndexMetaData.SETTING_VERSION_CREATED, org.elasticsearch.Version.CURRENT)
-                .put("path.home", System.getProperty("path.home"))
-                .build();
-        Index index = new Index("test");
-        Injector parentInjector = new ModulesBuilder().add(new SettingsModule(settings),
-                new EnvironmentModule(new Environment(settings)))
-                .createInjector();
-        AnalysisModule analysisModule = new AnalysisModule(settings, parentInjector.getInstance(IndicesAnalysisService.class));
-        new BundlePlugin(settings).onModule(analysisModule);
-        Injector injector = new ModulesBuilder().add(
-                new IndexSettingsModule(index, settings),
-                new IndexNameModule(index),
-                analysisModule)
-                .createChildInjector(parentInjector);
-
-        return injector.getInstance(AnalysisService.class);
     }
 
     private void assertSimpleTSOutput(TokenStream stream, String[] expected) throws IOException {

@@ -205,7 +205,6 @@ public class HyphenTokenizerTests extends Assert {
         while (stream.incrementToken()) {
             assertTrue(i < expected.length);
             assertEquals(expected[i], termAttr.toString());
-            //System.err.println(termAttr.toString());
             i++;
         }
         assertEquals(i, expected.length);
