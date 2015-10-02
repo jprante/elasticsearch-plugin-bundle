@@ -1,0 +1,160 @@
+{
+  "type": "h",
+  "boost": "1.0",
+  "xbib": [
+    {
+      "uid": "(DE-605)HT015773389"
+    },
+    {
+      "uid": "(DE-605)017215715"
+    },
+    {
+      "identifier": [
+        "DE-82",
+        "DE-832",
+        "DE-361",
+        "DE-467",
+        "DE-Kob7"
+      ]
+    }
+  ],
+  "RecordIdentifier": {
+    "identifierForTheRecord": "(DE-605)HT015773389"
+  },
+  "IdentifierDNB": {
+    "identifierDNB": "989665089"
+  },
+  "IdentifierRegion": {
+    "identifierForTheRegion": "DNB989665089"
+  },
+  "RecordCodes": [
+    "Autopsie",
+    "MAB-Zeichenvorrat",
+    "ISO 646 (IRV) + ISO 5426",
+    "RAK-DNB",
+    "RSWK",
+    "keine Angabe",
+    "Verfasserwerk",
+    "Ordnungssachtitel ist der Inhalt des Feldes 331"
+  ],
+  "Country": {
+    "countryISO": "XA-DE-BE"
+  },
+  "Language": {
+    "languageSource": "eng",
+    "language": "Englisch"
+  },
+  "FormatCarrier": [
+    "Druckschrift",
+    "säurefreies, alterungsbeständiges Papier"
+  ],
+  "TypeMonograph": [
+    "einbändiges Werk",
+    "Sonstiges"
+  ],
+  "Person": {
+    "personName": "Schroeder, Manfred R.",
+    "personBio": "1926-2009",
+    "personIdentifier": "(DE-588)120787318",
+    "identifierGND": "120787318"
+  },
+  "TitleStatement": {
+    "titleMain": "Number theory in science and communication"
+  },
+  "TitleAddendum": {
+    "title": "with applications in cryptography, physics, digital information, computing, and self-similarity"
+  },
+  "CreatorStatement": {
+    "creatorStatement": "Manfred Schroeder"
+  },
+  "Edition": {
+    "edition": "5. ed."
+  },
+  "PublicationPlace": {
+    "printingPlace": "Berlin ; Heidelberg"
+  },
+  "PublisherName": {
+    "printerName": "Springer"
+  },
+  "DateProper": {
+    "date": "2009"
+  },
+  "Extent": {
+    "extent": "XXIV, 431 S. : Ill., graph. Darst."
+  },
+  "Description": {
+    "description": "Literaturverz. S. 409 - 418"
+  },
+  "IdentifierISBN": {
+    "identifierISBN": [
+      "978-3-540-85297-1",
+      "Pp. : EUR 69.50 (freier Pr.), sfr 108.00 (freier Pr.)"
+    ]
+  },
+  "IdentifierSheetMusic": {
+    "standardNumber": "12195589"
+  },
+  "IdentifierArticle": {
+    "standardNumber": "9783540852971"
+  },
+  "IdentifierNationalBibliographyCIP": {
+    "standardNumber": "08,N32,0458"
+  },
+  "NationalBibliographyNumber": {
+    "standardNumber": "08,A50,0860"
+  },
+  "OnlineAccess": [
+    {
+      "contact": "B:DE-101",
+      "format": "application/pdf",
+      "uri": "http://digitool.hbz-nrw.de:1801/webclient/DeliveryManager?pid=3459982&custom_att_2=simple_viewer",
+      "relatedto": "Inhaltsverzeichnis"
+    },
+    {
+      "uri": "http://digitool.hbz-nrw.de:1801/webclient/DeliveryManager?pid=3459983&custom_att_2=simple_viewer",
+      "label": "Number theory in science and communication",
+      "nonpublicnote": "Zusätzliche Angaben"
+    }
+  ],
+  "SubjectClassification": {
+    "subject": "510"
+  },
+  "SubjectRVK": {
+    "subject": "SK 180"
+  },
+  "SubjectDDC": {
+    "notation": "512.7",
+    "basenotation": "512.7",
+    "edition": "DDC22ger"
+  },
+  "RSWK": {
+    "subjectTopicName": "Zahlentheorie",
+    "subjectIdentifier": "(DE-588)4067277-3",
+    "identifierGND": "4067277-3"
+  },
+  "RecordSystemNumber": {
+    "systemNumber": "(DE-605)017215715"
+  },
+  "dc": [
+    {
+      "type": "Monographie"
+    },
+    {
+      "format": "Gedruckte Ressource"
+    },
+    {
+      "date": 2009
+    },
+    {
+      "language": "Englisch"
+    }
+  ],
+  "SubjectHeadingSequence": {
+    "number0": {
+      "subjectTopicName": "Zahlentheorie",
+      "subjectIdentifier": "(DE-588)4067277-3",
+      "identifierGND": "4067277-3"
+    }
+  },
+  "collection": "hbz Verbundkatalog"
+}

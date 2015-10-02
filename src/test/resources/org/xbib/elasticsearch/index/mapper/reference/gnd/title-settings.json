@@ -1,66 +1,174 @@
 {
-  "analysis": {
-    "filter": {
-      "snowball_german_umlaut": {
-        "name": "German2",
-        "type": "snowball"
+  "index" : {
+    "number_of_shards" : 1,
+    "number_of_replicas" : 0,
+    "analysis" : {
+      "filter" : {
+        "snowball_german_umlaut" : {
+          "type" : "snowball",
+          "name" : "German2"
+        },
+        "standardnumber" : {
+          "type" : "standardnumber",
+          "number_types" : [ "isbn" ]
+        },
+        "simple_hyphen" : {
+          "type" : "hyphen",
+          "subwords" : false
+        },
+        "german_stop_words" : {
+          "type" : "stop",
+          "stopwords" : [
+            "and",
+            "the",
+            "of",
+            "to",
+            "alle",
+            "als",
+            "am",
+            "an",
+            "auch",
+            "auf",
+            "aus",
+            "bei",
+            "beim",
+            "bis",
+            "da",
+            "das",
+            "dass",
+            "daß",
+            "dem",
+            "den",
+            "der",
+            "des",
+            "dich",
+            "die",
+            "diese",
+            "diesem",
+            "dieser",
+            "dieses",
+            "dir",
+            "du",
+            "durch",
+            "ein",
+            "eine",
+            "einem",
+            "einen",
+            "einer",
+            "eines",
+            "er",
+            "es",
+            "euch",
+            "euer",
+            "eures",
+            "eurem",
+            "für",
+            "hat",
+            "ihnen",
+            "ihr",
+            "ihre",
+            "ihrem",
+            "ihrer",
+            "ihres",
+            "im",
+            "in",
+            "ist",
+            "kein",
+            "mehr",
+            "mein",
+            "mich",
+            "mir",
+            "mit",
+            "nach",
+            "nicht",
+            "noch",
+            "nur",
+            "oder",
+            "ohne",
+            "sehr",
+            "sein",
+            "sich",
+            "sie",
+            "sind",
+            "so",
+            "um",
+            "und",
+            "uns",
+            "unser",
+            "unsere",
+            "unserem",
+            "unserer",
+            "unseres",
+            "vom",
+            "von",
+            "vor",
+            "war",
+            "was",
+            "wegen",
+            "wer",
+            "werden",
+            "wie",
+            "wir",
+            "wird",
+            "zu",
+            "zum",
+            "zur",
+            "über"
+          ]
+        }
       },
-      "standardnumber": {
-        "number_types": [
-          "isbn"
-        ],
-        "type": "standardnumber"
-      }
-    },
-    "analyzer": {
-      "german_phonebook_with_sortform": {
-        "filter": [
-          "sortform"
-        ],
-        "country": "DE",
-        "strength": "primary",
-        "alternate": "shifted",
-        "language": "de",
-        "rules": "& ae , ä & AE , Ä & oe , ö & OE , Ö & ue , ü & UE , ü & ss , ß",
-        "type": "sortform"
-      },
-      "default": {
-        "filter": [
-          "lowercase",
-          "keyword_repeat",
-          "icu_normalizer",
-          "icu_folding",
-          "hyphen",
-          "snowball_german_umlaut",
-          "standardnumber",
-          "unique"
-        ],
-        "type": "custom",
-        "tokenizer": "hyphen"
-      },
-      "unstemmed": {
-        "filter": [
-          "lowercase",
-          "keyword_repeat",
-          "icu_normalizer",
-          "icu_folding",
-          "hyphen",
-          "german_normalize",
-          "unique"
-        ],
-        "type": "custom",
-        "tokenizer": "hyphen"
-      },
-      "german_phonebook_with_sortform_without_punctuation": {
-        "filter": [
-          "sortform"
-        ],
-        "country": "DE",
-        "strength": "quaternary",
-        "alternate": "shifted",
-        "rules": "& ae , ä & AE , Ä & oe , ö & OE , Ö & ue , ü & UE , ü & ss , ß",
-        "language": "de",
-        "type": "sortform"
+      "analyzer" : {
+        "default" : {
+          "type" : "custom",
+          "tokenizer" : "hyphen",
+          "filter" : [
+            "lowercase",
+            "german_stop_words",
+            "keyword_repeat",
+            "icu_normalizer",
+            "icu_folding",
+            "simple_hyphen",
+            "snowball_german_umlaut",
+            "standardnumber",
+            "unique"
+          ]
+        },
+        "unstemmed" : {
+          "type" : "custom",
+          "tokenizer" : "hyphen",
+          "filter" : [
+            "lowercase",
+            "german_stop_words",
+            "keyword_repeat",
+            "icu_normalizer",
+            "icu_folding",
+            "simple_hyphen",
+            "german_normalize",
+            "unique"
+          ]
+        },
+        "german_phonebook_with_sortform" : {
+          "type" : "sortform",
+          "language" : "de",
+          "country" : "DE",
+          "strength" : "primary",
+          "alternate" : "shifted",
+          "rules" : "& ae , a\u0308 & AE , A\u0308 & oe , o\u0308 & OE , O\u0308 & ue , u\u0308 & UE , u\u0308 & ss , \u00df",
+          "filter" : [
+            "sortform"
+          ]
+        },
+        "german_phonebook_with_sortform_without_punctuation" : {
+          "type" : "sortform",
+          "language" : "de",
+          "country" : "DE",
+          "strength" : "quaternary",
+          "alternate" : "shifted",
+          "rules" : "& ae , a\u0308 & AE , A\u0308 & oe , o\u0308 & OE , O\u0308 & ue , u\u0308 & UE , u\u0308 & ss , \u00df",
+          "filter" : [
+            "sortform"
+          ]
+        }
       }
     }
   }

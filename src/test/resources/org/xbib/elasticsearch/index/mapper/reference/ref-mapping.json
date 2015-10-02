@@ -2,14 +2,19 @@
     "someType" : {
         "properties" : {
             "someField": {
-                "type" : "ref",
-                "ref_index" : "test",
-                "ref_type" : "test",
-                "ref_fields" : [ "myfield" ],
-                "to" : [
-                    "someField.ref"
+                "type": "ref",
+                "ref_index": "test",
+                "ref_type": "test",
+                "ref_fields": [
+                    "myfield"
+                ],
+                "copy_to": [
+                    "ref"
                 ]
-             }
+            },
+            "ref" : {
+                "type" : "string"
+            }
         }
     }
 }

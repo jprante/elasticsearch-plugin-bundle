@@ -28,6 +28,7 @@ import org.elasticsearch.index.mapper.DocumentMapper;
 import org.elasticsearch.index.mapper.DocumentMapperParser;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.similarity.SimilarityLookupService;
+import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
@@ -56,11 +57,8 @@ public class ReferenceMappingTests extends Assert {
     @BeforeClass
     public static void setupMapperParser() throws IOException {
         Settings nodeSettings = ImmutableSettings.settingsBuilder()
-                .put("gateway.type", "none")
-                .put("index.store.type", "memory")
                 .put("index.number_of_shards", 1)
                 .put("index.number_of_replica", 0)
-                .put("cluster.routing.schedule", "50ms")
                 .build();
         node = NodeBuilder.nodeBuilder().settings(nodeSettings).local(true).build().start();
         client = node.client();
@@ -86,7 +84,13 @@ public class ReferenceMappingTests extends Assert {
 
     @AfterClass
     public static void shutdown() {
+        try {
+            client.admin().indices().prepareDelete("test", "authorities", "books").execute().actionGet();
+        } catch (IndexMissingException e) {
+            logger.warn(e.getMessage());
+        }
         client.close();
+        node.stop();
         node.close();
     }
 
@@ -103,10 +107,10 @@ public class ReferenceMappingTests extends Assert {
         assertNotNull(doc);
         assertNotNull(docMapper.mappers().smartName("someField"));
         assertEquals(doc.get(docMapper.mappers().smartName("someField").mapper().names().indexName()), "1234");
-        assertEquals(doc.getFields("someField.ref").length, 3);
-        assertEquals(doc.getFields("someField.ref")[0].stringValue(), "a");
-        assertEquals(doc.getFields("someField.ref")[1].stringValue(), "b");
-        assertEquals(doc.getFields("someField.ref")[2].stringValue(), "c");
+        assertEquals(3, doc.getFields("ref").length);
+        assertEquals("a", doc.getFields("ref")[0].stringValue());
+        assertEquals("b", doc.getFields("ref")[1].stringValue());
+        assertEquals("c", doc.getFields("ref")[2].stringValue());
 
         // re-parse from mapping
         String builtMapping = docMapper.mappingSource().string();
@@ -115,11 +119,11 @@ public class ReferenceMappingTests extends Assert {
         json = jsonBuilder().startObject().field("_id", 1).field("someField", "1234").endObject().bytes();
         doc = docMapper.parse(json).rootDoc();
 
-        assertEquals(doc.get(docMapper.mappers().smartName("someField").mapper().names().indexName()), "1234");
-        assertEquals(doc.getFields("someField.ref").length, 3);
-        assertEquals(doc.getFields("someField.ref")[0].stringValue(), "a");
-        assertEquals(doc.getFields("someField.ref")[1].stringValue(), "b");
-        assertEquals(doc.getFields("someField.ref")[2].stringValue(), "c");
+        assertEquals("1234", doc.get(docMapper.mappers().smartName("someField").mapper().names().indexName()));
+        assertEquals(3, doc.getFields("ref").length);
+        assertEquals("a", doc.getFields("ref")[0].stringValue());
+        assertEquals("b", doc.getFields("ref")[1].stringValue());
+        assertEquals("c", doc.getFields("ref")[2].stringValue());
     }
 
     @Test

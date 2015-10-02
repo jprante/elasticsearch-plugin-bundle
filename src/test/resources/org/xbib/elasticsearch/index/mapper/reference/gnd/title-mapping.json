@@ -305,9 +305,6 @@
             },
             "Conference": {
                 "properties": {
-                    "a": {
-                        "type": "string"
-                    },
                     "conferenceDate": {
                         "type": "string",
                         "copy_to": [
@@ -393,7 +390,7 @@
                             "gnd:preferredNameForTheConferenceOrEvent",
                             "gnd:variantNameForTheConferenceOrEvent"
                         ],
-                        "to": [
+                        "copy_to": [
                             "bib.nameConference",
                             "bib.nameCorporate",
                             "cql.allIndexes"
@@ -486,9 +483,6 @@
                             "bib.nameCorporate"
                         ]
                     },
-                    "e": {
-                        "type": "string"
-                    },
                     "identifierDNB": {
                         "type": "string",
                         "norms": {
@@ -506,7 +500,7 @@
                             "gnd:preferredNameForTheConferenceOrEvent",
                             "gnd:variantNameForTheConferenceOrEvent"
                         ],
-                        "to": [
+                        "copy_to": [
                             "bib.nameCorporate",
                             "cql.allIndexes"
                         ]
@@ -1448,7 +1442,7 @@
                             "gnd:preferredNameForThePlaceOrGeographicName",
                             "gnd:variantNameForThePlaceOrGeographicName"
                         ],
-                        "to": [
+                        "copy_to": [
                             "dc.subject",
                             "bib.nameCorporate",
                             "cql.allIndexes"
@@ -2123,7 +2117,7 @@
                             "gnd:preferredNameForTheConferenceOrEvent",
                             "gnd:variantNameForTheConferenceOrEvent"
                         ],
-                        "to": [
+                        "copy_to": [
                             "cql.allIndexes"
                         ]
                     },
@@ -2482,7 +2476,7 @@
                             "gnd:preferredNameForThePerson",
                             "gnd:variantNameForThePerson"
                         ],
-                        "to": [
+                        "copy_to": [
                             "bib.namePersonal",
                             "cql.allIndexes"
                         ]
@@ -2563,7 +2557,7 @@
                             "gnd:preferredNameForThePerson",
                             "gnd:variantNameForThePerson"
                         ],
-                        "to": [
+                        "copy_to": [
                             "bib.namePersonal",
                             "cql.allIndexes"
                         ]
@@ -2636,7 +2630,7 @@
                             "gnd:preferredNameForThePerson",
                             "gnd:variantNameForThePerson"
                         ],
-                        "to": [
+                        "copy_to": [
                             "bib.namePersonal",
                             "cql.allIndexes"
                         ]
@@ -2717,7 +2711,7 @@
                             "gnd:preferredNameForThePerson",
                             "gnd:variantNameForThePerson"
                         ],
-                        "to": [
+                        "copy_to": [
                             "bib.namePersonal",
                             "cql.allIndexes"
                         ]
@@ -2806,7 +2800,7 @@
                             "gnd:preferredNameForThePerson",
                             "gnd:variantNameForThePerson"
                         ],
-                        "to": [
+                        "copy_to": [
                             "bib.namePersonal",
                             "cql.allIndexes"
                         ]
@@ -3000,7 +2994,7 @@
                             "gnd:preferredNameForThePlaceOrGeographicName",
                             "gnd:variantNameForThePlaceOrGeographicName"
                         ],
-                        "to": [
+                        "copy_to": [
                             "dc.subject",
                             "cql.allIndexes"
                         ]
