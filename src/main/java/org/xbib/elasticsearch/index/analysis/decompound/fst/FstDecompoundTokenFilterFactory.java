@@ -26,7 +26,6 @@ import org.apache.lucene.analysis.TokenStream;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.settings.IndexSettings;
@@ -39,12 +38,11 @@ public class FstDecompoundTokenFilterFactory extends AbstractTokenFilterFactory 
 
     @Inject
     public FstDecompoundTokenFilterFactory(Index index,
-                                           Environment env,
                                            @IndexSettings Settings indexSettings,
                                            @Assisted String name,
                                            @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
-        this.decompounder = createDecompounder(env, settings);
+        this.decompounder = createDecompounder(settings);
     }
 
     @Override
@@ -52,10 +50,10 @@ public class FstDecompoundTokenFilterFactory extends AbstractTokenFilterFactory 
         return new FstDecompoundTokenFilter(tokenStream, decompounder);
     }
 
-    private FstDecompounder createDecompounder(Environment env, Settings settings) {
+    private FstDecompounder createDecompounder(Settings settings) {
         try {
             String words = settings.get("words", "/decompound/fst/words.fst");
-            return new FstDecompounder(env.resolveConfig(words).openStream());
+            return new FstDecompounder(getClass().getResourceAsStream(words));
         } catch (IOException e) {
             throw new IllegalArgumentException("fst decompounder resources in settings not found: " + settings, e);
         }
