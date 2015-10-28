@@ -23,14 +23,14 @@ public class CryptMappingTests extends Assert {
         docMapperParser.putTypeParser(CryptMapper.CONTENT_TYPE, new CryptMapper.TypeParser());
         DocumentMapper docMapper = docMapperParser.parse(mapping);
         String sampleText = copyToStringFromClasspath("plaintext.txt");
-        BytesReference json = XContentFactory.jsonBuilder().startObject().field("_id", 1).field("someField", sampleText).endObject().bytes();
+        BytesReference json = XContentFactory.jsonBuilder().startObject().field("someField", sampleText).endObject().bytes();
         ParseContext.Document doc = docMapper.parse("test", "someType", "1", json).rootDoc();
         assertEquals(1, doc.getFields("someField").length);
         assertEquals("{SHA-256}cc482c9bf51da22e59ce8731719963a3fee3d2c7240ee2ee7f13cae4f27f773a", doc.getFields("someField")[0].stringValue());
         // re-parse it
         String builtMapping = docMapper.mappingSource().string();
         docMapper = docMapperParser.parse(builtMapping);
-        json = XContentFactory.jsonBuilder().startObject().field("_id", 1).field("someField", sampleText).endObject().bytes();
+        json = XContentFactory.jsonBuilder().startObject().field("someField", sampleText).endObject().bytes();
         doc = docMapper.parse("test", "someType", "1", json).rootDoc();
         assertEquals(1, doc.getFields("someField").length);
         assertEquals("{SHA-256}cc482c9bf51da22e59ce8731719963a3fee3d2c7240ee2ee7f13cae4f27f773a", doc.getFields("someField")[0].stringValue());
@@ -43,7 +43,7 @@ public class CryptMappingTests extends Assert {
         docMapperParser.putTypeParser(CryptMapper.CONTENT_TYPE, new CryptMapper.TypeParser());
         DocumentMapper docMapper = docMapperParser.parse(mapping);
         String sampleText = copyToStringFromClasspath("plaintext.txt");
-        BytesReference json = XContentFactory.jsonBuilder().startObject().field("_id", 1).field("someField", sampleText).endObject().bytes();
+        BytesReference json = XContentFactory.jsonBuilder().startObject().field("someField", sampleText).endObject().bytes();
         ParseContext.Document doc = docMapper.parse("test", "someType", "1", json).rootDoc();
         //for (IndexableField field : doc.getFields()) {
         //    log.info("{} = {}", field.name(), field.stringValue());
@@ -53,7 +53,7 @@ public class CryptMappingTests extends Assert {
         // re-parse it
         String builtMapping = docMapper.mappingSource().string();
         docMapper = docMapperParser.parse(builtMapping);
-        json = XContentFactory.jsonBuilder().startObject().field("_id", 1).field("someField", sampleText).endObject().bytes();
+        json = XContentFactory.jsonBuilder().startObject().field("someField", sampleText).endObject().bytes();
         doc = docMapper.parse("test", "someType", "1", json).rootDoc();
         assertEquals(1, doc.getFields("someField").length);;
         assertEquals("{SHA-512}9ca2bab7ffacb00e1c3f5f00eb2405bc32755159b18a013092b54adbe88ff47c21445c3dba035c4721588e42ec6921f4153c52b9feb214e984f24676ad9553f9", doc.getFields("someField")[0].stringValue());

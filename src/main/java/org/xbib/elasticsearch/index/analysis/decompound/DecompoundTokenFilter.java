@@ -25,6 +25,7 @@ package org.xbib.elasticsearch.index.analysis.decompound;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.analysis.tokenattributes.KeywordAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.util.AttributeSource;
@@ -34,22 +35,27 @@ import java.util.LinkedList;
 
 public class DecompoundTokenFilter extends TokenFilter {
 
-    protected final LinkedList<DecompoundToken> tokens;
+    private final LinkedList<DecompoundToken> tokens;
 
-    protected final Decompounder decomp;
+    private final Decompounder decomp;
 
-    protected final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
-
-    protected final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
-
+    private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
+    private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
+    private final KeywordAttribute keywordAtt = addAttribute(KeywordAttribute.class);
     private final PositionIncrementAttribute posIncAtt = addAttribute(PositionIncrementAttribute.class);
+
+    private final boolean respectKeywords;
+
+    private final boolean subwordsonly;
 
     private AttributeSource.State current;
 
-    protected DecompoundTokenFilter(TokenStream input, Decompounder decomp) {
+    protected DecompoundTokenFilter(TokenStream input, Decompounder decomp, boolean respectKeywords, boolean subwordsonly) {
         super(input);
         this.tokens = new LinkedList<DecompoundToken>();
         this.decomp = decomp;
+        this.respectKeywords = respectKeywords;
+        this.subwordsonly = subwordsonly;
     }
 
     @Override
@@ -63,25 +69,34 @@ public class DecompoundTokenFilter extends TokenFilter {
             posIncAtt.setPositionIncrement(0);
             return true;
         }
-        if (input.incrementToken()) {
-            decompound();
-            if (!tokens.isEmpty()) {
-                current = captureState();
-            }
-            return true;
-        } else {
+        if (!input.incrementToken()) {
             return false;
         }
+        if (respectKeywords && keywordAtt.isKeyword()) {
+            return true;
+        }
+        if (!decompound()) {
+            current = captureState();
+            if (subwordsonly) {
+                DecompoundToken token = tokens.removeFirst();
+                restoreState(current);
+                termAtt.setEmpty().append(token.txt);
+                offsetAtt.setOffset(token.startOffset, token.endOffset);
+                return true;
+            }
+        }
+        return true;
     }
 
-    protected void decompound() {
+    protected boolean decompound() {
         int start = offsetAtt.startOffset();
-        CharSequence term = new String(termAtt.buffer(), 0, termAtt.length());
-        for (String s : decomp.decompound(term.toString())) {
+        String term = new String(termAtt.buffer(), 0, termAtt.length());
+        for (String s : decomp.decompound(term)) {
             int len = s.length();
             tokens.add(new DecompoundToken(s, start, len));
             start += len;
         }
+        return tokens.isEmpty();
     }
 
     @Override
@@ -91,7 +106,7 @@ public class DecompoundTokenFilter extends TokenFilter {
         current = null;
     }
 
-    protected class DecompoundToken {
+    private class DecompoundToken {
 
         public final CharSequence txt;
         public final int startOffset;

@@ -35,7 +35,7 @@ public class UnstemmedTests extends Assert {
                 "9781449358549"
         };
         AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/german/unstemmed.json");
-        Analyzer analyzer = analysisService.defaultAnalyzer();
+        Analyzer analyzer = analysisService.analyzer("default");
         assertSimpleTSOutput(analyzer.tokenStream(null, new StringReader(source)), expected);
     }
 
@@ -51,7 +51,7 @@ public class UnstemmedTests extends Assert {
                 "o'reillyverlag"
         };
         AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/german/unstemmed.json");
-        Analyzer analyzer = analysisService.defaultAnalyzer();
+        Analyzer analyzer = analysisService.analyzer("default");
         assertSimpleTSOutput(analyzer.tokenStream(null, new StringReader(source)), expected);
     }
 
@@ -63,7 +63,7 @@ public class UnstemmedTests extends Assert {
              "9781449358549"
         };
         AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/german/unstemmed.json");
-        Analyzer analyzer = analysisService.defaultAnalyzer();
+        Analyzer analyzer = analysisService.analyzer("default");
         assertSimpleTSOutput(analyzer.tokenStream(null, new StringReader(source)), expected);
     }
 
@@ -101,7 +101,7 @@ public class UnstemmedTests extends Assert {
                 "einsteig"
         };
         AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/german/unstemmed.json");
-        Analyzer analyzer = analysisService.defaultAnalyzer();
+        Analyzer analyzer = analysisService.analyzer("default");
         assertSimpleTSOutput(analyzer.tokenStream(null, new StringReader(source)), expected);
     }
 

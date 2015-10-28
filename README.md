@@ -30,8 +30,7 @@ A plugin that consists of a compilation of useful Elasticsearch plugins related 
 
 | Elasticsearch version    | Plugin        | Release date |
 | ------------------------ | ------------- | -------------|
-| 2.0.0-beta2              | 2.0.0-beta2.0 | Sep 17, 2015 |
-| 2.0.0-beta1              | 2.0.0-beta1.0 | Sep  3, 2015 |
+| 2.0.0                    | 2.0.0         | Oct 28, 2015 |
 | 1.6.0                    | 1.6.0.0       | Jun 30, 2015 |
 | 1.5.2                    | 1.5.2.1       | Jun 30, 2015 |
 | 1.5.2                    | 1.5.2.0       | Apr 27, 2015 |
@@ -48,11 +47,11 @@ A plugin that consists of a compilation of useful Elasticsearch plugins related 
 
 ### Elasticsearch 1.x
 
-    ./bin/plugin -install bundle -url http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/1.4.0.6/elasticsearch-plugin-bundle-1.4.0.6-plugin.zip
+    ./bin/plugin -install bundle -url http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/1.6.0.0/elasticsearch-plugin-bundle-1.6.0.0-plugin.zip
 
 ### Elasticsearch 2.x
 
-    ./bin/plugin install http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/2.0.0-beta2.0/elasticsearch-plugin-bundle-2.0.0-beta2.0-plugin.zip
+    ./bin/plugin install http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/2.0.0.0/elasticsearch-plugin-bundle-2.0.0.0-plugin.zip
 
 Do not forget to restart the node after installing.
 
@@ -175,14 +174,72 @@ All feedback is welcome! If you find issues, please post them at [Github](https:
     }
 
 
-## Decompound
 
-    {
-        "index" : {
+# Example
+
+In the mapping, us a token filter of type "decompound"::
+
+  {
+     "index":{
+        "analysis":{
+            "filter":{
+                "decomp":{
+                    "type" : "decompound"
+                }
+            },
+            "tokenizer" : {
+                "decomp" : {
+                   "type" : "standard",
+                   "filter" : [ "decomp" ]
+                }
+            }
+        }
+     }
+  }
+
+"Die Jahresfeier der Rechtsanwaltskanzleien auf dem Donaudampfschiff hat viel Ökosteuer gekostet" will be tokenized into 
+"Die", "Die", "Jahresfeier", "Jahr", "feier", "der", "der", "Rechtsanwaltskanzleien", "Recht", "anwalt", "kanzlei", "auf", "auf", "dem",  "dem", "Donaudampfschiff", "Donau", "dampf", "schiff", "hat", "hat", "viel", "viel", "Ökosteuer", "Ökosteuer", "gekostet", "gekosten"
+
+It is recommended to add the `Unique token filter <http://www.elasticsearch.org/guide/reference/index-modules/analysis/unique-tokenfilter.html>`_ to skip tokens that occur more than once.
+
+Also the Lucene german normalization token filter is provided::
+
+      {
+        "index":{
+            "analysis":{
+                "filter":{
+                    "umlaut":{
+                        "type":"german_normalize"
+                    }
+                },
+                "tokenizer" : {
+                    "umlaut" : {
+                       "type":"standard",
+                       "filter" : "umlaut"
+                    }            
+                }
+            }
+        }
+      }
+
+The input "Ein schöner Tag in Köln im Café an der Straßenecke" will be tokenized into 
+"Ein", "schoner", "Tag", "in", "Koln", "im", "Café", "an", "der", "Strassenecke".
+
+# Threshold
+
+The decomposing algorithm knows about a threshold when to assume words as decomposed successfully or not.
+If the threshold is too low, words could silently disappear from being indexed. In this case, you have to adapt the
+threshold so words do no longer disappear.
+
+The default threshold value is 0.51. You can modify it in the settings::
+
+      {
+         "index" : {
             "analysis" : {
                 "filter" : {
                     "decomp" : {
-                        "type" : "decompound"
+                        "type" : "decompound",
+                        "threshold" : 0.51
                     }
                 },
                 "tokenizer" : {
@@ -192,34 +249,51 @@ All feedback is welcome! If you find issues, please post them at [Github](https:
                     }
                 }
             }
-        }
-    }
+         }
+      }
+      
+# Subwords
+      
+Sometimes only the decomposed subwords should be indexed. For this, you can use the parameter `"subwords_only": true`
 
-## Combo
-
-    {
-        "index" : {
+      {
+         "index" : {
             "analysis" : {
-                "analyzer" : {
-                    "default" : {
-                        "type" : "custom",
-                        "tokenizer" : "icu_tokenizer",
-                        "filter" : [ "snowball", "icu_folding" ]
-                    },
-                    "combo" : {
-                        "type" : "combo",
-                        "sub_analyzers" : [ "standard", "default" ]
+                "filter" : {
+                    "decomp" : {
+                        "type" : "decompound",
+                        "subwords_only" : true
                     }
                 },
-                "filter" : {
-                    "snowball" : {
-                        "type" : "snowball",
-                        "language" : "German2"
+                "tokenizer" : {
+                    "decomp" : {
+                       "type" : "standard",
+                       "filter" : [ "decomp" ]
                     }
                 }
             }
-        }
-    }
+         }
+      }
+
+# References
+
+
+The decompunder is a derived work of ASV toolbox http://asv.informatik.uni-leipzig.de/asv/methoden
+
+Copyright (C) 2005 Abteilung Automatische Sprachverarbeitung, Institut für Informatik, Universität Leipzig
+
+The Compact Patricia Trie data structure can be found in 
+
+*Morrison, D.: Patricia - practical algorithm to retrieve information coded in alphanumeric. Journal of ACM, 1968, 15(4):514–534*
+
+The compound splitter used for generating features for document classification is described in
+
+*Witschel, F., Biemann, C.: Rigorous dimensionality reduction through linguistically motivated feature selection for text categorization. Proceedings of NODALIDA 2005, Joensuu, Finland*
+
+The base form reduction step (for Norwegian) is described in
+
+*Eiken, U.C., Liseth, A.T., Richter, M., Witschel, F. and Biemann, C.: Ord i Dag: Mining Norwegian Daily Newswire. Proceedings of FinTAL, Turku, 2006, Finland*
+
 
 
 ## Langdetect
