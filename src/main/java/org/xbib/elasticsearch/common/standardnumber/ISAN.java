@@ -56,7 +56,7 @@ import java.util.regex.Pattern;
  */
 public class ISAN extends AbstractStandardNumber implements Comparable<ISAN>, StandardNumber {
 
-    private static final Pattern PATTERN = Pattern.compile("[\\p{Alnum}\\-]{16,34}");
+    private static final Pattern PATTERN = Pattern.compile("[\\p{Alnum}\\p{Pd}]{16,34}");
 
     private String value;
 

@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  */
 public class ZDB extends AbstractStandardNumber implements Comparable<ZDB>, StandardNumber {
 
-    private final static Pattern PATTERN = Pattern.compile("^[\\p{Digit}]{2,10}\\-{0,1}[\\p{Digit}xX]{1}\\b");
+    private final static Pattern PATTERN = Pattern.compile("^[\\p{Digit}]{2,10}\\p{Pd}{0,1}[\\p{Digit}xX]{1}\\b");
 
     private String value;
 

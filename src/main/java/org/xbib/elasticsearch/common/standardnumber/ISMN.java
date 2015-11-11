@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
  */
 public class ISMN extends AbstractStandardNumber implements Comparable<ISMN>, StandardNumber {
 
-    private static final Pattern PATTERN = Pattern.compile("[\\p{Digit}M\\-]{0,17}");
+    private static final Pattern PATTERN = Pattern.compile("[\\p{Digit}M\\p{Pd}]{0,17}");
 
     private String value;
 

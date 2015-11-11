@@ -63,7 +63,7 @@ import java.util.regex.Pattern;
  */
 public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, StandardNumber {
 
-    private static final Pattern PATTERN = Pattern.compile("[\\p{Digit}xX\\-]{10,17}");
+    private static final Pattern PATTERN = Pattern.compile("[\\p{Digit}xX\\p{Pd}]{10,17}");
 
     private static final List<String> ranges = new ISBNRangeMessageConfigurator().getRanges();
 

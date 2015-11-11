@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  */
 public class PPN extends AbstractStandardNumber implements Comparable<PPN>, StandardNumber {
 
-    private final static Pattern PATTERN = Pattern.compile("[\\p{Digit}]{3,10}\\-{0,1}[\\p{Digit}xX]{1}\\b");
+    private final static Pattern PATTERN = Pattern.compile("[\\p{Digit}]{3,10}\\p{Pd}{0,1}[\\p{Digit}xX]{1}\\b");
 
     private String value;
 

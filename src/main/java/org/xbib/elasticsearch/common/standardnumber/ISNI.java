@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
  */
 public class ISNI extends AbstractStandardNumber implements Comparable<ISNI>, StandardNumber {
 
-    private final static Pattern PATTERN = Pattern.compile("[\\p{Digit}xX\\-\\s]{16,24}");
+    private final static Pattern PATTERN = Pattern.compile("[\\p{Digit}xX\\p{Pd}\\s]{16,24}");
 
     private String value;
 

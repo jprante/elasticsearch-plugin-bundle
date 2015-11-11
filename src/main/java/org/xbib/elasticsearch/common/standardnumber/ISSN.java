@@ -78,7 +78,7 @@ import java.util.regex.Pattern;
  */
 public class ISSN extends AbstractStandardNumber implements Comparable<ISSN>, StandardNumber {
 
-    private final static Pattern PATTERN = Pattern.compile("[0-9]{4}\\-?[0-9]{3}[0-9xX]");
+    private final static Pattern PATTERN = Pattern.compile("[0-9]{4}\\p{Pd}?[0-9]{3}[0-9xX]");
 
     private String value;
 

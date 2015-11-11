@@ -45,7 +45,7 @@ public class IBAN extends AbstractStandardNumber implements Comparable<IBAN>, St
      * Norway = 15, Malta = 31 + "IBAN "
      *
      */
-    private static final Pattern PATTERN = Pattern.compile("[\\p{Alnum}\\-\\s]{15,36}");
+    private static final Pattern PATTERN = Pattern.compile("[\\p{Alnum}\\p{Pd}\\s]{15,36}");
 
     private String formatted;
 

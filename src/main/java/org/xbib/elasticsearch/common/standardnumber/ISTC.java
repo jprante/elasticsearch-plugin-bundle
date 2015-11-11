@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
  */
 public class ISTC extends AbstractStandardNumber implements Comparable<ISTC>, StandardNumber {
 
-    private static final Pattern PATTERN = Pattern.compile("^[\\p{Alnum}\\-\\s]{12,24}");
+    private static final Pattern PATTERN = Pattern.compile("^[\\p{Alnum}\\p{Pd}\\s]{12,24}");
 
     private String value;
 
