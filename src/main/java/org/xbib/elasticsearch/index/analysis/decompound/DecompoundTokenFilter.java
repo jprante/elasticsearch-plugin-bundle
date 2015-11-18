@@ -90,14 +90,14 @@ public class DecompoundTokenFilter extends TokenFilter {
 
     protected boolean decompound() {
         int start = offsetAtt.startOffset();
-        String term = new String(termAtt.buffer(), 0, termAtt.length());
+        int len = termAtt.length();
+        String term = new String(termAtt.buffer(), 0, len);
         for (String s : decomp.decompound(term)) {
-            int len = s.length();
             tokens.add(new DecompoundToken(s, start, len));
-            start += len;
         }
         return tokens.isEmpty();
     }
+
 
     @Override
     public void reset() throws IOException {
