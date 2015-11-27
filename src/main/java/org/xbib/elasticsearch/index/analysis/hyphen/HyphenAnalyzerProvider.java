@@ -31,7 +31,7 @@ import org.elasticsearch.index.analysis.CharFilterFactory;
 import org.elasticsearch.index.analysis.CustomAnalyzer;
 import org.elasticsearch.index.analysis.CustomAnalyzerProvider;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
-import org.elasticsearch.index.settings.IndexSettings;
+import org.elasticsearch.index.settings.IndexSettingsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,10 +48,12 @@ public class HyphenAnalyzerProvider extends CustomAnalyzerProvider {
     private CustomAnalyzer customAnalyzer;
 
     @Inject
-    public HyphenAnalyzerProvider(Index index, @IndexSettings Settings indexSettings,
+    public HyphenAnalyzerProvider(Index index,
+                                  IndexSettingsService indexSettingsService,
                                   HyphenTokenizerFactory tokenizerFactory,
-                                  @Assisted String name, @Assisted Settings settings) {
-        super(index, indexSettings, name, settings);
+                                  @Assisted String name,
+                                  @Assisted Settings settings) {
+        super(index, indexSettingsService, name, settings);
         this.tokenizerFactory = tokenizerFactory;
         this.analyzerSettings = settings;
     }

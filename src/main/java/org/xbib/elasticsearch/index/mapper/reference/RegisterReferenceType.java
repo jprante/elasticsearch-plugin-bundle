@@ -20,23 +20,23 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.module.reference;
+package org.xbib.elasticsearch.index.mapper.reference;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.AbstractIndexComponent;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.mapper.MapperService;
-import org.elasticsearch.index.settings.IndexSettings;
-import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapper;
+import org.elasticsearch.index.settings.IndexSettingsService;
 
 public class RegisterReferenceType extends AbstractIndexComponent {
 
     @Inject
-    public RegisterReferenceType(Index index, @IndexSettings Settings indexSettings,
-                                 MapperService mapperService, Client client) {
-        super(index, indexSettings);
+    public RegisterReferenceType(Index index,
+                                 IndexSettingsService indexSettingsService,
+                                 MapperService mapperService,
+                                 Client client) {
+        super(index, indexSettingsService.indexSettings());
         mapperService.documentMapperParser().putTypeParser(ReferenceMapper.CONTENT_TYPE,
                 new ReferenceMapper.TypeParser(client));
     }

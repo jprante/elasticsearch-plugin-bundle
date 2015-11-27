@@ -4,14 +4,12 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.ESLoggerFactory;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xbib.elasticsearch.plugin.analysis.bundle.BundlePlugin;
+import org.xbib.elasticsearch.index.mapper.NodeTestUtils;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,13 +24,7 @@ public class SimpleReferenceMappingTests extends Assert {
 
     @Test
     public void testSimpleRef() throws IOException {
-        Settings nodeSettings = Settings.settingsBuilder()
-                .put("path.home", System.getProperty("path.home"))
-                .put("plugin.types", BundlePlugin.class.getName())
-                .put("index.number_of_shards", 1)
-                .put("index.number_of_replica", 0)
-                .build();
-        Node node = NodeBuilder.nodeBuilder().settings(nodeSettings).local(true).build().start();
+        Node node = NodeTestUtils.createNode();
         Client client = node.client();
 
         try {
@@ -84,7 +76,7 @@ public class SimpleReferenceMappingTests extends Assert {
         assertEquals(1, searchResponse.getHits().getTotalHits());
 
         client.close();
-        node.close();
+        NodeTestUtils.releaseNode(node);
     }
 
     private String copyToStringFromClasspath(String path) throws IOException {

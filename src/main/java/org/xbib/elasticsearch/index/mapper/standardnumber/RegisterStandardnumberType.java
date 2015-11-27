@@ -23,19 +23,20 @@
 package org.xbib.elasticsearch.index.mapper.standardnumber;
 
 import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.AbstractIndexComponent;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.mapper.MapperService;
-import org.elasticsearch.index.settings.IndexSettings;
+import org.elasticsearch.index.settings.IndexSettingsService;
 import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberService;
 
 public class RegisterStandardnumberType extends AbstractIndexComponent {
 
     @Inject
-    public RegisterStandardnumberType(Index index, @IndexSettings Settings indexSettings,
-                                      MapperService mapperService, StandardnumberService service) {
-        super(index, indexSettings);
+    public RegisterStandardnumberType(Index index,
+                                      IndexSettingsService indexSettingsService,
+                                      MapperService mapperService,
+                                      StandardnumberService service) {
+        super(index, indexSettingsService.indexSettings());
         mapperService.documentMapperParser().putTypeParser(StandardnumberMapper.CONTENT_TYPE,
                 new StandardnumberMapper.TypeParser(service));
     }

@@ -24,6 +24,7 @@ package org.xbib.elasticsearch.module.reference;
 
 import org.elasticsearch.common.inject.Binder;
 import org.elasticsearch.common.inject.Module;
+import org.xbib.elasticsearch.index.mapper.reference.RegisterReferenceType;
 
 public class ReferenceModule implements Module {
 

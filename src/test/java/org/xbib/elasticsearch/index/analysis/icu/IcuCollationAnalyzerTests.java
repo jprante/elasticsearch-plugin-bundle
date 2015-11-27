@@ -336,14 +336,13 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
 
     private BytesRef bytesFromTokenStream(TokenStream stream) throws IOException {
         TermToBytesRefAttribute termAttr = stream.getAttribute(TermToBytesRefAttribute.class);
-        BytesRef bytesRef = termAttr.getBytesRef();
         stream.reset();
+        BytesRefBuilder bytesRefBuilder = new BytesRefBuilder();
         while (stream.incrementToken()) {
-            termAttr.fillBytesRef();
+            BytesRef bytesRef = termAttr.getBytesRef();
+            bytesRefBuilder.append(bytesRef);
         }
         stream.close();
-        BytesRefBuilder bytesRefBuilder = new BytesRefBuilder();
-        bytesRefBuilder.append(bytesRef);
         return bytesRefBuilder.toBytesRef();
     }
 

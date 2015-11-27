@@ -29,19 +29,21 @@ import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractIndexAnalyzerProvider;
 import org.elasticsearch.index.analysis.UniqueTokenFilterFactory;
 import org.elasticsearch.index.analysis.WhitespaceTokenizerFactory;
-import org.elasticsearch.index.settings.IndexSettings;
+import org.elasticsearch.index.settings.IndexSettingsService;
 
 public class StandardnumberAnalyzerProvider extends AbstractIndexAnalyzerProvider<StandardnumberAnalyzer> {
 
     private final StandardnumberAnalyzer analyzer;
 
     @Inject
-    public StandardnumberAnalyzerProvider(Index index, @IndexSettings Settings indexSettings,
+    public StandardnumberAnalyzerProvider(Index index,
+                                          IndexSettingsService indexSettingsService,
                                           WhitespaceTokenizerFactory tokenizerFactory,
                                           StandardnumberTokenFilterFactory stdnumTokenFilterFactory,
                                           UniqueTokenFilterFactory uniqueTokenFilterFactory,
-                                          @Assisted String name, @Assisted Settings settings) {
-        super(index, indexSettings, name, settings);
+                                          @Assisted String name,
+                                          @Assisted Settings settings) {
+        super(index, indexSettingsService.indexSettings(), name, settings);
         this.analyzer = new StandardnumberAnalyzer(tokenizerFactory, stdnumTokenFilterFactory, uniqueTokenFilterFactory);
     }
 

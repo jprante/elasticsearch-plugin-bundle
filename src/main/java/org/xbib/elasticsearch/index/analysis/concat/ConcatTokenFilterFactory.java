@@ -7,15 +7,17 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
-import org.elasticsearch.index.settings.IndexSettings;
+import org.elasticsearch.index.settings.IndexSettingsService;
 
 public class ConcatTokenFilterFactory extends AbstractTokenFilterFactory {
 
     @Inject
     public ConcatTokenFilterFactory(Index index,
-                                    @IndexSettings Settings indexSettings, Environment env,
-                                    @Assisted String name, @Assisted Settings settings) {
-        super(index, indexSettings, name, settings);
+                                    IndexSettingsService indexSettingsService,
+                                    Environment env,
+                                    @Assisted String name,
+                                    @Assisted Settings settings) {
+        super(index, indexSettingsService.indexSettings(), name, settings);
     }
 
     @Override

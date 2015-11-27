@@ -31,7 +31,7 @@ import org.elasticsearch.index.analysis.CharFilterFactory;
 import org.elasticsearch.index.analysis.CustomAnalyzer;
 import org.elasticsearch.index.analysis.CustomAnalyzerProvider;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
-import org.elasticsearch.index.settings.IndexSettings;
+import org.elasticsearch.index.settings.IndexSettingsService;
 import org.xbib.elasticsearch.index.analysis.icu.IcuCollationTokenizerFactory;
 
 import java.util.ArrayList;
@@ -49,10 +49,12 @@ public class SortformAnalyzerProvider extends CustomAnalyzerProvider {
     private CustomAnalyzer customAnalyzer;
 
     @Inject
-    public SortformAnalyzerProvider(Index index, @IndexSettings Settings indexSettings,
+    public SortformAnalyzerProvider(Index index,
+                                    IndexSettingsService indexSettingsService,
                                     IcuCollationTokenizerFactory tokenizerFactory,
-                                    @Assisted String name, @Assisted Settings settings) {
-        super(index, indexSettings, name, settings);
+                                    @Assisted String name,
+                                    @Assisted Settings settings) {
+        super(index, indexSettingsService, name, settings);
         this.tokenizerFactory = tokenizerFactory;
         this.analyzerSettings = settings;
     }

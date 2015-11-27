@@ -25,6 +25,8 @@ package org.xbib.elasticsearch.plugin.analysis.bundle;
 import org.elasticsearch.common.component.LifecycleComponent;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.Module;
+import org.elasticsearch.common.logging.ESLogger;
+import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.analysis.AnalysisModule;
 import org.elasticsearch.plugins.Plugin;

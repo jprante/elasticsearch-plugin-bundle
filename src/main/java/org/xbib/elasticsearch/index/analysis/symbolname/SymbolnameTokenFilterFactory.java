@@ -28,16 +28,16 @@ import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
-import org.elasticsearch.index.settings.IndexSettings;
+import org.elasticsearch.index.settings.IndexSettingsService;
 
 public class SymbolnameTokenFilterFactory extends AbstractTokenFilterFactory  {
 
     @Inject
     public SymbolnameTokenFilterFactory(Index index,
-                                        @IndexSettings Settings indexSettings,
+                                        IndexSettingsService indexSettingsService,
                                         @Assisted String name,
                                         @Assisted Settings settings) {
-        super(index, indexSettings, name, settings);
+        super(index, indexSettingsService.indexSettings(), name, settings);
     }
 
     @Override

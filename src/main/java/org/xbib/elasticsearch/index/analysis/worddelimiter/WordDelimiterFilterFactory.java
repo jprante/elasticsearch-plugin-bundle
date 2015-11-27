@@ -9,7 +9,7 @@ import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.analysis.Analysis;
-import org.elasticsearch.index.settings.IndexSettings;
+import org.elasticsearch.index.settings.IndexSettingsService;
 
 import java.util.HashSet;
 import java.util.List;
@@ -27,11 +27,12 @@ public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory imple
     private byte[] typeTable = null;
 
     @Inject
-    public WordDelimiterFilterFactory(Index index, @IndexSettings Settings indexSettings,
+    public WordDelimiterFilterFactory(Index index,
+                                      IndexSettingsService indexSettingsService,
                                       Environment env,
                                       @Assisted String name,
                                       @Assisted Settings settings) {
-        super(index, indexSettings, name, settings);
+        super(index, indexSettingsService.indexSettings(), name, settings);
 
         // Sample Format for the type table:
         // $ => DIGIT

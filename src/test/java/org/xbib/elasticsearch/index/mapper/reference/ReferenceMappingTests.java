@@ -9,20 +9,18 @@ import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.ESLoggerFactory;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.mapper.DocumentMapper;
 import org.elasticsearch.index.mapper.DocumentMapperParser;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.xbib.elasticsearch.index.mapper.MapperTestUtils;
-import org.xbib.elasticsearch.plugin.analysis.bundle.BundlePlugin;
+import org.xbib.elasticsearch.index.mapper.NodeTestUtils;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -36,19 +34,13 @@ public class ReferenceMappingTests extends Assert {
 
     private final static ESLogger logger = ESLoggerFactory.getLogger(ReferenceMappingTests.class.getName());
 
-    private static Node node;
-    private static Client client;
-    private static DocumentMapperParser mapperParser;
+    private Node node;
+    private Client client;
+    private DocumentMapperParser mapperParser;
 
-    @BeforeClass
-    public static void setupMapperParser() throws IOException {
-        Settings nodeSettings = Settings.settingsBuilder()
-                .put("path.home", System.getProperty("path.home"))
-                .put("plugin.types", BundlePlugin.class.getName())
-                .put("index.number_of_shards", 1)
-                .put("index.number_of_replica", 0)
-                .build();
-        node = NodeBuilder.nodeBuilder().settings(nodeSettings).local(true).build().start();
+    @Before
+    public void setupMapperParser() throws IOException {
+        node = NodeTestUtils.createNode();
         client = node.client();
         try {
             client.admin().indices().prepareDelete("test").execute().actionGet();
@@ -70,14 +62,9 @@ public class ReferenceMappingTests extends Assert {
         mapperParser.putTypeParser(ReferenceMapper.CONTENT_TYPE, new ReferenceMapper.TypeParser(client));
     }
 
-    @AfterClass
-    public static void cleanup() throws InterruptedException {
-        if (client != null) {
-            client.close();
-        }
-        if (node != null) {
-            node.close();
-        }
+    @After
+    public void cleanup() throws IOException {
+        NodeTestUtils.releaseNode(node);
     }
 
     @Test
@@ -225,4 +212,5 @@ public class ReferenceMappingTests extends Assert {
             }
         }
     }
+
 }

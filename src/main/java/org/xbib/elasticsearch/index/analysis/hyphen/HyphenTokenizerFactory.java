@@ -28,7 +28,7 @@ import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenizerFactory;
-import org.elasticsearch.index.settings.IndexSettings;
+import org.elasticsearch.index.settings.IndexSettingsService;
 
 public class HyphenTokenizerFactory extends AbstractTokenizerFactory {
 
@@ -36,10 +36,10 @@ public class HyphenTokenizerFactory extends AbstractTokenizerFactory {
 
     @Inject
     public HyphenTokenizerFactory(Index index,
-                                  @IndexSettings Settings indexSettings,
+                                  IndexSettingsService indexSettingsService,
                                   @Assisted String name,
                                   @Assisted Settings settings) {
-        super(index, indexSettings, name, settings);
+        super(index, indexSettingsService.indexSettings(), name, settings);
         this.tokenLength = settings.getAsInt("max_token_length", null);
     }
 

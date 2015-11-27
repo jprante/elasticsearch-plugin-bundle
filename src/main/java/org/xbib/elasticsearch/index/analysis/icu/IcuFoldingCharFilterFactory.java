@@ -30,7 +30,7 @@ import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractCharFilterFactory;
-import org.elasticsearch.index.settings.IndexSettings;
+import org.elasticsearch.index.settings.IndexSettingsService;
 
 import java.io.Reader;
 
@@ -45,8 +45,11 @@ public class IcuFoldingCharFilterFactory extends AbstractCharFilterFactory {
     private final Normalizer2 normalizer;
 
     @Inject
-    public IcuFoldingCharFilterFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
-        super(index, indexSettings, name);
+    public IcuFoldingCharFilterFactory(Index index,
+                                       IndexSettingsService indexSettingsService,
+                                       @Assisted String name,
+                                       @Assisted Settings settings) {
+        super(index, indexSettingsService.indexSettings(), name);
         String normalizationName = "utr30";
         Normalizer2.Mode normalizationMode = Normalizer2.Mode.COMPOSE;
         this.normalizer =  Normalizer2.getInstance(ICUFoldingFilter.class.getResourceAsStream("utr30.nrm"),

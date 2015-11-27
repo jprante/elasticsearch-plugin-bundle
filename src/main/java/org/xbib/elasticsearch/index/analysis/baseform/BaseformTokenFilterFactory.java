@@ -27,10 +27,9 @@ import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
-import org.elasticsearch.index.settings.IndexSettings;
+import org.elasticsearch.index.settings.IndexSettingsService;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -41,10 +40,10 @@ public class BaseformTokenFilterFactory extends AbstractTokenFilterFactory {
 
     @Inject
     public BaseformTokenFilterFactory(Index index,
-                                      @IndexSettings Settings indexSettings,
+                                      IndexSettingsService indexSettingsService,
                                       @Assisted String name,
                                       @Assisted Settings settings) {
-        super(index, indexSettings, name, settings);
+        super(index, indexSettingsService.indexSettings(), name, settings);
         this.dictionary = createDictionary(settings);
     }
 

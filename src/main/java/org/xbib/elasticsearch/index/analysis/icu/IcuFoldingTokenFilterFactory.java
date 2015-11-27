@@ -32,7 +32,7 @@ import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
-import org.elasticsearch.index.settings.IndexSettings;
+import org.elasticsearch.index.settings.IndexSettingsService;
 
 /**
  * Uses the {@link org.apache.lucene.analysis.icu.ICUFoldingFilter}.
@@ -46,8 +46,11 @@ public class IcuFoldingTokenFilterFactory extends AbstractTokenFilterFactory {
     private final String unicodeSetFilter;
 
     @Inject
-    public IcuFoldingTokenFilterFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
-        super(index, indexSettings, name, settings);
+    public IcuFoldingTokenFilterFactory(Index index,
+                                        IndexSettingsService indexSettingsService,
+                                        @Assisted String name,
+                                        @Assisted Settings settings) {
+        super(index, indexSettingsService.indexSettings(), name, settings);
         this.unicodeSetFilter = settings.get("unicodeSetFilter");
     }
 

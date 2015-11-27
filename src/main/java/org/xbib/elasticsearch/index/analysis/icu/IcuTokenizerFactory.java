@@ -34,7 +34,7 @@ import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenizerFactory;
-import org.elasticsearch.index.settings.IndexSettings;
+import org.elasticsearch.index.settings.IndexSettingsService;
 import org.xbib.elasticsearch.index.analysis.icu.segmentation.DefaultIcuTokenizerConfig;
 import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizer;
 import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizerConfig;
@@ -57,9 +57,10 @@ public class IcuTokenizerFactory extends AbstractTokenizerFactory {
 
     @Inject
     public IcuTokenizerFactory(Index index,
-                               @IndexSettings Settings indexSettings,
-                               @Assisted String name, @Assisted Settings settings) {
-        super(index, indexSettings, name, settings);
+                               IndexSettingsService indexSettingsService,
+                               @Assisted String name,
+                               @Assisted Settings settings) {
+        super(index, indexSettingsService.indexSettings(), name, settings);
         boolean cjkAsWords = settings.getAsBoolean("cjk_as_words", true);
         Map<Integer, String> tailored = new HashMap<>();
         String[] scriptAndResourcePaths = settings.getAsArray("rulefiles");

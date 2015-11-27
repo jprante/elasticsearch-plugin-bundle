@@ -47,11 +47,13 @@ public class MapperTestUtils {
                 .put(settings)
                 .build();
         SimilarityLookupService similarityLookupService = newSimilarityLookupService(forcedSettings);
+
         MapperService mapperService = new MapperService(new Index("test"),
                 forcedSettings,
                 newAnalysisService(forcedSettings),
                 similarityLookupService,
                 null);
+
         return new DocumentMapperParser(
                 forcedSettings,
                 mapperService,

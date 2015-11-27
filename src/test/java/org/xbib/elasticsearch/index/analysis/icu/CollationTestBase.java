@@ -59,17 +59,17 @@ public abstract class CollationTestBase extends LuceneTestCase {
         // index Term below should NOT be returned by a TermRangeFilter with a Farsi
         // Collator (or an Arabic one for the case when Farsi searcher not
         // supported).
-        BooleanQuery bq = new BooleanQuery();
+        BooleanQuery.Builder bq = new BooleanQuery.Builder();
         bq.add(query, BooleanClause.Occur.MUST);
         bq.add(new TermRangeQuery("content", firstBeg, firstEnd, true, true), BooleanClause.Occur.FILTER);
 
-        ScoreDoc[] result = searcher.search(bq, 1).scoreDocs;
+        ScoreDoc[] result = searcher.search(bq.build(), 1).scoreDocs;
         assertEquals("The index Term should not be included.", 0, result.length);
 
-        bq = new BooleanQuery();
+        bq = new BooleanQuery.Builder();
         bq.add(query, BooleanClause.Occur.MUST);
         bq.add(new TermRangeQuery("content", secondBeg, secondEnd, true, true), BooleanClause.Occur.FILTER);
-        result = searcher.search(bq, 1).scoreDocs;
+        result = searcher.search(bq.build(), 1).scoreDocs;
         assertEquals("The index Term should be included.", 1, result.length);
 
         reader.close();
@@ -145,7 +145,6 @@ public abstract class CollationTestBase extends LuceneTestCase {
                 BytesRef bytes = termAtt.getBytesRef();
                 ts.reset();
                 assertTrue(ts.incrementToken());
-                termAtt.fillBytesRef();
                 // ensure we make a copy of the actual bytes too
                 map.put(term, BytesRef.deepCopyOf(bytes));
                 assertFalse(ts.incrementToken());
@@ -167,7 +166,6 @@ public abstract class CollationTestBase extends LuceneTestCase {
                                 BytesRef bytes = termAtt.getBytesRef();
                                 ts.reset();
                                 assertTrue(ts.incrementToken());
-                                termAtt.fillBytesRef();
                                 assertEquals(expected, bytes);
                                 assertFalse(ts.incrementToken());
                                 ts.end();
