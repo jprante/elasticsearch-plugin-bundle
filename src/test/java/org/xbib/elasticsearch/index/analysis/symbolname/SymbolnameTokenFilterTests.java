@@ -7,7 +7,7 @@ import org.elasticsearch.index.analysis.AnalysisService;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xbib.elasticsearch.index.analysis.AnalyzerTestUtils;
+import org.xbib.elasticsearch.MapperTestUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -28,7 +28,7 @@ public class SymbolnameTokenFilterTests extends Assert {
                 "__PLUSSIGN__",
                 "__PLUSSIGN__"
         };
-        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService();
+        AnalysisService analysisService = MapperTestUtils.analysisService();
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("symbolname");
         Tokenizer tokenizer = analysisService.tokenizer("whitespace").create();
         tokenizer.setReader(new StringReader(source));
@@ -56,7 +56,7 @@ public class SymbolnameTokenFilterTests extends Assert {
                 "__FULLSTOP__",
                 "__DIGITZERO__"
         };
-        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService();
+        AnalysisService analysisService = MapperTestUtils.analysisService();
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("symbolname");
         Tokenizer tokenizer = analysisService.tokenizer("whitespace").create();
         tokenizer.setReader(new StringReader(source));
@@ -86,7 +86,7 @@ public class SymbolnameTokenFilterTests extends Assert {
                 "oder",
                 "__QUESTIONMARK__"
         };
-        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService();
+        AnalysisService analysisService = MapperTestUtils.analysisService();
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("symbolname");
         Tokenizer tokenizer = analysisService.tokenizer("whitespace").create();
         tokenizer.setReader(new StringReader(source));

@@ -6,7 +6,7 @@ import org.elasticsearch.index.analysis.NamedAnalyzer;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.index.analysis.TokenizerFactory;
 import org.junit.Test;
-import org.xbib.elasticsearch.index.analysis.AnalyzerTestUtils;
+import org.xbib.elasticsearch.MapperTestUtils;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -16,7 +16,7 @@ public class IcuAnalysisTests {
     @Test
     public void testDefaultsIcuAnalysis() {
 
-        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService();
+        AnalysisService analysisService = MapperTestUtils.analysisService();
         TokenizerFactory tokenizerFactory = analysisService.tokenizer("icu_tokenizer");
         assertThat(tokenizerFactory, instanceOf(IcuTokenizerFactory.class));
 

@@ -7,7 +7,7 @@ import org.elasticsearch.index.mapper.DocumentMapperParser;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xbib.elasticsearch.index.mapper.MapperTestUtils;
+import org.xbib.elasticsearch.MapperTestUtils;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,7 +20,6 @@ public class CryptMappingTests extends Assert {
     public void testSHA256CryptMapping() throws Exception {
         String mapping = copyToStringFromClasspath("sha256-mapping.json");
         DocumentMapperParser docMapperParser = MapperTestUtils.newMapperParser();
-        docMapperParser.putTypeParser(CryptMapper.CONTENT_TYPE, new CryptMapper.TypeParser());
         DocumentMapper docMapper = docMapperParser.parse(mapping);
         String sampleText = copyToStringFromClasspath("plaintext.txt");
         BytesReference json = XContentFactory.jsonBuilder().startObject().field("someField", sampleText).endObject().bytes();
@@ -40,7 +39,6 @@ public class CryptMappingTests extends Assert {
     public void testSHA512CryptMapping() throws Exception {
         String mapping = copyToStringFromClasspath("sha512-mapping.json");
         DocumentMapperParser docMapperParser = MapperTestUtils.newMapperParser();
-        docMapperParser.putTypeParser(CryptMapper.CONTENT_TYPE, new CryptMapper.TypeParser());
         DocumentMapper docMapper = docMapperParser.parse(mapping);
         String sampleText = copyToStringFromClasspath("plaintext.txt");
         BytesReference json = XContentFactory.jsonBuilder().startObject().field("someField", sampleText).endObject().bytes();

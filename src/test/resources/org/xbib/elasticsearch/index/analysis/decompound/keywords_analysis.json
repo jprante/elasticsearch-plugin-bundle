@@ -1,0 +1,72 @@
+{
+    "index": {
+        "version": {
+            "created": "1040499"
+        },
+        "analysis": {
+            "analyzer": {
+                "decompounding_default": {
+                    "tokenizer": "decomp",
+                    "filter": [
+                        "keywords",
+                        "decomp"
+                    ],
+                    "type": "custom"
+                },
+                "with_keywords": {
+                    "tokenizer": "decomp",
+                    "filter": [
+                        "keywords",
+                        "decomp_with_keywords"
+                    ],
+                    "type": "custom"
+                },
+                "with_keywords_disabled": {
+                    "tokenizer": "decomp",
+                    "filter": [
+                        "keywords",
+                        "decomp_with_keywords_disabled"
+                    ],
+                    "type": "custom"
+                },
+                "with_subwords_only": {
+                    "tokenizer": "decomp",
+                    "filter": [
+                        "decomp_subwords_only"
+                    ],
+                    "type": "custom"
+                }
+            },
+            "filter": {
+                "keywords": {
+                    "type": "keyword_marker",
+                    "keywords": [
+                        "Schlüsselwort"
+                    ]
+                },
+                "decomp": {
+                    "type": "decompound"
+                },
+                "decomp_with_keywords": {
+                    "type": "decompound",
+                    "respect_keywords": true
+                },
+                "decomp_with_keywords_disabled": {
+                    "type": "decompound",
+                    "respect_keywords": false
+                },
+                "decomp_subwords_only" : {
+                    "type" : "decompound",
+                    "subwords_only" : true
+                }
+            },
+            "tokenizer": {
+                "decomp": {
+                    "type": "standard",
+                    "filter": "decomp"
+                }
+            }
+        }
+    }
+}
+

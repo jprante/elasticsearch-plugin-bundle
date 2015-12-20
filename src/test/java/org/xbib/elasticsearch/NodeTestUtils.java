@@ -1,9 +1,11 @@
-package org.xbib.elasticsearch.index.mapper;
+package org.xbib.elasticsearch;
 
+import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.MockNode;
 import org.elasticsearch.node.Node;
-import org.elasticsearch.plugins.Plugin;
+import org.junit.After;
+import org.junit.Before;
 import org.xbib.elasticsearch.plugin.analysis.bundle.BundlePlugin;
 
 import java.io.IOException;
@@ -13,23 +15,21 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashSet;
-import java.util.Set;
 
 public class NodeTestUtils {
+
+    private Node node;
+    private Client client;
 
     public static Node createNode() {
         Settings nodeSettings = Settings.settingsBuilder()
                 .put("path.home", System.getProperty("path.home"))
-                .put("plugin.types", BundlePlugin.class.getName())
+                .put("client.type", "node")
                 .put("index.number_of_shards", 1)
                 .put("index.number_of_replica", 0)
                 .build();
         // ES 2.1 renders NodeBuilder as useless
-        //Node node = NodeBuilder.nodeBuilder().settings(nodeSettings).local(true).build().start();
-        Set<Class<? extends Plugin>> plugins = new HashSet<>();
-        plugins.add(BundlePlugin.class);
-        Node node = new MockNode(nodeSettings, plugins);
+        Node node = new MockNode(nodeSettings, BundlePlugin.class);
         node.start();
         return node;
     }
@@ -39,6 +39,21 @@ public class NodeTestUtils {
             node.close();
             deleteFiles();
         }
+    }
+
+    @Before
+    public void setupNode() throws IOException {
+        node = createNode();
+        client = node.client();
+    }
+
+    protected Client client(String id) {
+        return client;
+    }
+
+    @After
+    public void cleanupNode() throws IOException {
+        releaseNode(node);
     }
 
     private static void deleteFiles() throws IOException {

@@ -8,10 +8,9 @@ import org.apache.lucene.analysis.core.StopFilter;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.apache.lucene.util.Version;
 import org.elasticsearch.index.analysis.AnalysisService;
 import org.junit.Test;
-import org.xbib.elasticsearch.index.analysis.AnalyzerTestUtils;
+import org.xbib.elasticsearch.MapperTestUtils;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
 import org.xbib.elasticsearch.index.analysis.MockTokenizer;
 
@@ -34,7 +33,7 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
 
     @Test
     public void testOffsets() throws IOException {
-        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json");
+        AnalysisService analysisService = MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json");
         Tokenizer tokenizer = analysisService.tokenizer("keyword").create();
         tokenizer.setReader(new StringReader("foo-bar"));
         TokenStream ts = analysisService.tokenFilter("wd").create(tokenizer);
@@ -48,7 +47,7 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
 
     @Test
     public void testOffsetChange() throws Exception {
-        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json");
+        AnalysisService analysisService = MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json");
         Tokenizer tokenizer = analysisService.tokenizer("keyword").create();
         tokenizer.setReader(new StringReader("übelkeit"));
         TokenStream ts = analysisService.tokenFilter("wd").create(tokenizer);

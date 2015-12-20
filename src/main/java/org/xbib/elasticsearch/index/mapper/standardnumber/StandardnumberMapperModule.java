@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Jörg Prante
+ * Copyright (C) 2015 Jörg Prante
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -20,22 +20,26 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.index.mapper.langdetect;
+package org.xbib.elasticsearch.index.mapper.standardnumber;
 
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.index.AbstractIndexComponent;
-import org.elasticsearch.index.Index;
-import org.elasticsearch.index.mapper.MapperService;
-import org.elasticsearch.index.settings.IndexSettingsService;
+import org.elasticsearch.common.inject.AbstractModule;
 
-public class RegisterLangdetectType extends AbstractIndexComponent {
+public class StandardnumberMapperModule extends AbstractModule {
 
-    @Inject
-    public RegisterLangdetectType(Index index,
-                                  IndexSettingsService indexSettingsService,
-                                  MapperService mapperService) {
-        super(index, indexSettingsService.indexSettings());
-        mapperService.documentMapperParser().putTypeParser(LangdetectMapper.CONTENT_TYPE,
-                new LangdetectMapper.TypeParser());
+    private final StandardnumberMapperTypeParser typeParser;
+
+    public StandardnumberMapperModule(StandardnumberMapperTypeParser typeParser) {
+        this.typeParser = typeParser;
     }
+
+    public StandardnumberMapperTypeParser getTypeParser() {
+        return typeParser;
+    }
+
+    @Override
+    protected void configure() {
+        bind(StandardnumberService.class).asEagerSingleton();
+        bind(StandardnumberMapperTypeParser.class).toInstance(getTypeParser());
+    }
+
 }

@@ -9,7 +9,7 @@ import org.elasticsearch.node.Node;
 import org.elasticsearch.search.SearchHit;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xbib.elasticsearch.index.mapper.NodeTestUtils;
+import org.xbib.elasticsearch.NodeTestUtils;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

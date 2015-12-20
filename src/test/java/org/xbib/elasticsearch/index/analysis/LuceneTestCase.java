@@ -5,7 +5,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.similarities.DefaultSimilarity;
 import org.apache.lucene.util.NamedThreadFactory;
 import org.junit.Assert;
-import org.xbib.elasticsearch.index.analysis.AssertingIndexSearcher;
 
 import java.util.Random;
 import java.util.concurrent.ExecutorService;

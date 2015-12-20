@@ -20,11 +20,12 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.index.analysis.standardnumber;
+package org.xbib.elasticsearch.index.mapper.standardnumber;
 
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.common.component.AbstractLifecycleComponent;
 import org.elasticsearch.common.inject.Inject;
+import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.settings.Settings;
 import org.xbib.elasticsearch.common.standardnumber.ARK;
 import org.xbib.elasticsearch.common.standardnumber.DOI;
@@ -54,15 +55,20 @@ import java.util.TreeSet;
 
 public class StandardnumberService extends AbstractLifecycleComponent<StandardnumberService>  {
 
+    private final Injector injector;
+
     private final static ThreadLocal<Set<StandardNumber>> stdnums = new ThreadLocal<>();
 
     @Inject
-    public StandardnumberService(Settings settings) {
+    public StandardnumberService(Settings settings, Injector injector) {
         super(settings);
+        this.injector = injector;
     }
 
     @Override
     protected void doStart() throws ElasticsearchException {
+        StandardnumberMapperTypeParser typeParser = injector.getInstance(StandardnumberMapperTypeParser.class);
+        typeParser.setService(this);
     }
 
     @Override
@@ -73,7 +79,7 @@ public class StandardnumberService extends AbstractLifecycleComponent<Standardnu
     protected void doClose() throws ElasticsearchException {
     }
 
-    protected Collection<StandardNumber> getStdNums() {
+    protected Collection<StandardNumber> getStdNums(Settings settings) {
         if (stdnums.get() == null) {
             String[] s = settings.getAsArray("number_types", null);
             Set<String> types = s != null ? new TreeSet<>(Arrays.asList(s)) : null;
@@ -86,7 +92,7 @@ public class StandardnumberService extends AbstractLifecycleComponent<Standardnu
 
     public Collection<StandardNumber> detect(CharSequence content) {
         Collection<StandardNumber> candidates = new LinkedList<>();
-        for (StandardNumber stdnum : getStdNums()) {
+        for (StandardNumber stdnum : getStdNums(settings)) {
             stdnum.reset();
             try {
                 candidates.add(stdnum.set(content).normalize().verify());
@@ -97,9 +103,9 @@ public class StandardnumberService extends AbstractLifecycleComponent<Standardnu
         return candidates;
     }
 
-    public Collection<CharSequence> lookup(CharSequence content) {
+    public Collection<CharSequence> lookup(Settings settings, CharSequence content) {
         Collection<CharSequence> variants = new LinkedList<>();
-        for (StandardNumber stdnum : getStdNums()) {
+        for (StandardNumber stdnum : getStdNums(settings)) {
             stdnum.reset();
             if (stdnum instanceof ISBN) {
                 handleISBN((ISBN) stdnum, content, variants);

@@ -1,5 +1,6 @@
 package org.xbib.elasticsearch.index.analysis.decompound;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -7,7 +8,7 @@ import org.elasticsearch.index.analysis.AnalysisService;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xbib.elasticsearch.index.analysis.AnalyzerTestUtils;
+import org.xbib.elasticsearch.MapperTestUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -48,11 +49,30 @@ public class DecompoundTokenFilterTests extends Assert {
             "gekostet",
             "gekosten"
         };
-        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/decompound/decompound_analysis.json");
+        AnalysisService analysisService = MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/decompound/decompound_analysis.json");
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("decomp");
         Tokenizer tokenizer = analysisService.tokenizer("standard").create();
         tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
+    }
+
+    @Test
+    public void testWithSubwordsOnly() throws IOException {
+        String source = "Das ist ein Schlüsselwort, ein Bindestrichwort";
+        String[] expected = {
+                "Da",
+                "ist",
+                "ein",
+                "Schlüssel",
+                "wort",
+                "ein",
+                "Bindestrich",
+                "wort"
+        };
+        AnalysisService analysisService = MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/decompound/keywords_analysis.json");
+        Analyzer analyzer = analysisService.analyzer("with_subwords_only");
+        assertNotNull(analyzer);
+        assertSimpleTSOutput(analyzer.tokenStream("test-field", source), expected);
     }
 
     private void assertSimpleTSOutput(TokenStream stream, String[] expected) throws IOException {

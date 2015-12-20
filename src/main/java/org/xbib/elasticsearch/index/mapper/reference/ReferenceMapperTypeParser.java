@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Jörg Prante
+ * Copyright (C) 2015 Jörg Prante
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -22,22 +22,5 @@
  */
 package org.xbib.elasticsearch.index.mapper.reference;
 
-import org.elasticsearch.client.Client;
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.index.AbstractIndexComponent;
-import org.elasticsearch.index.Index;
-import org.elasticsearch.index.mapper.MapperService;
-import org.elasticsearch.index.settings.IndexSettingsService;
-
-public class RegisterReferenceType extends AbstractIndexComponent {
-
-    @Inject
-    public RegisterReferenceType(Index index,
-                                 IndexSettingsService indexSettingsService,
-                                 MapperService mapperService,
-                                 Client client) {
-        super(index, indexSettingsService.indexSettings());
-        mapperService.documentMapperParser().putTypeParser(ReferenceMapper.CONTENT_TYPE,
-                new ReferenceMapper.TypeParser(client));
-    }
+public final class ReferenceMapperTypeParser extends ReferenceMapper.TypeParser {
 }

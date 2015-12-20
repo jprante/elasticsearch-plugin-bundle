@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 
-
 public class AssertingIndexSearcher extends IndexSearcher {
     final Random random;
 

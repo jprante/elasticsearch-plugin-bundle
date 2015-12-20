@@ -33,7 +33,6 @@ import org.elasticsearch.index.mapper.MergeMappingException;
 import org.elasticsearch.index.mapper.MergeResult;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.mapper.core.StringFieldMapper;
-import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberService;
 import org.xbib.elasticsearch.common.standardnumber.StandardNumber;
 
 import java.io.IOException;
@@ -116,7 +115,7 @@ public class StandardnumberMapper extends FieldMapper {
 
         private StandardnumberService service;
 
-        public TypeParser(StandardnumberService service) {
+        public void setService(StandardnumberService service) {
             this.service = service;
         }
 
@@ -135,7 +134,6 @@ public class StandardnumberMapper extends FieldMapper {
                     for (Map.Entry<String, Object> fieldsEntry : fieldsNode.entrySet()) {
                         String propName = fieldsEntry.getKey();
                         Object propNode = fieldsEntry.getValue();
-
                         if (name.equals(propName)) {
                             builder.content((StringFieldMapper.Builder) parserContext.typeParser("string").parse(name,
                                     (Map<String, Object>) propNode, parserContext));
@@ -171,10 +169,8 @@ public class StandardnumberMapper extends FieldMapper {
     @Override
     public Mapper parse(ParseContext context) throws IOException {
         String content = null;
-
         XContentParser parser = context.parser();
         XContentParser.Token token = parser.currentToken();
-
         if (token == XContentParser.Token.VALUE_STRING) {
             content = parser.text();
         }

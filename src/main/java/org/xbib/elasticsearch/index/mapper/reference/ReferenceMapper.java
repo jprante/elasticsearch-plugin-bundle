@@ -159,11 +159,7 @@ public class ReferenceMapper extends FieldMapper {
 
     public static class TypeParser implements Mapper.TypeParser {
 
-        private final Client client;
-
-        public TypeParser(Client client) {
-            this.client = client;
-        }
+        private Client client;
 
         @Override
         @SuppressWarnings({"unchecked","rawtypes"})
@@ -193,6 +189,11 @@ public class ReferenceMapper extends FieldMapper {
             }
             return builder;
         }
+
+        public void setClient(Client client) {
+            this.client = client;
+        }
+
     }
 
     private final Client client;

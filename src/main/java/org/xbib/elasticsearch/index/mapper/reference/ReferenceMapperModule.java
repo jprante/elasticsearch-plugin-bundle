@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Jörg Prante
+ * Copyright (C) 2015 Jörg Prante
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -20,16 +20,26 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.module.reference;
+package org.xbib.elasticsearch.index.mapper.reference;
 
-import org.elasticsearch.common.inject.Binder;
-import org.elasticsearch.common.inject.Module;
-import org.xbib.elasticsearch.index.mapper.reference.RegisterReferenceType;
+import org.elasticsearch.common.inject.AbstractModule;
 
-public class ReferenceModule implements Module {
+public class ReferenceMapperModule extends AbstractModule {
+
+    private final ReferenceMapperTypeParser typeParser;
+
+    public ReferenceMapperModule(ReferenceMapperTypeParser typeParser) {
+        this.typeParser = typeParser;
+    }
+
+    public ReferenceMapperTypeParser getTypeParser() {
+        return typeParser;
+    }
 
     @Override
-    public void configure(Binder binder) {
-        binder.bind(RegisterReferenceType.class).asEagerSingleton();
+    protected void configure() {
+        bind(ReferenceMapperService.class).asEagerSingleton();
+        bind(ReferenceMapperTypeParser.class).toInstance(getTypeParser());
     }
+
 }

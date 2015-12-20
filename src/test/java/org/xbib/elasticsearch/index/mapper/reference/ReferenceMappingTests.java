@@ -19,8 +19,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.xbib.elasticsearch.index.mapper.MapperTestUtils;
-import org.xbib.elasticsearch.index.mapper.NodeTestUtils;
+import org.xbib.elasticsearch.MapperTestUtils;
+import org.xbib.elasticsearch.NodeTestUtils;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -58,8 +58,7 @@ public class ReferenceMappingTests extends Assert {
         json = jsonBuilder().startObject().field("author", "John Doe").endObject().bytes();
         client.prepareIndex("authorities", "persons", "1").setSource(json).execute().actionGet();
 
-        mapperParser = MapperTestUtils.newMapperParser();
-        mapperParser.putTypeParser(ReferenceMapper.CONTENT_TYPE, new ReferenceMapper.TypeParser(client));
+        mapperParser = MapperTestUtils.newMapperParser(client);
     }
 
     @After

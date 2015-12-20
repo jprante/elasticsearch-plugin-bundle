@@ -3,7 +3,7 @@ package org.xbib.elasticsearch.index.analysis.icu;
 import org.elasticsearch.index.analysis.AnalysisService;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xbib.elasticsearch.index.analysis.AnalyzerTestUtils;
+import org.xbib.elasticsearch.MapperTestUtils;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -14,7 +14,8 @@ public class IcuCharFilterTests extends Assert {
     @Test
     public void testFoldingCharfilter() throws IOException {
         String source = "Jörg Prante";
-        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/icu/icu_folding.json");
+        AnalysisService analysisService = MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/icu/icu_folding.json");
+                //AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/icu/icu_folding.json");
         Reader charFilter = analysisService.charFilter("my_icu_folder").create(new StringReader(source));
         StringBuilder sb = new StringBuilder();
         int ch;

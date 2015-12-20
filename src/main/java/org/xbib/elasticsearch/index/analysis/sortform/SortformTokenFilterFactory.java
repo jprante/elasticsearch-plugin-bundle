@@ -35,7 +35,8 @@ public class SortformTokenFilterFactory extends AbstractTokenFilterFactory {
     @Inject
     public SortformTokenFilterFactory(Index index,
                                       IndexSettingsService indexSettingsService,
-                                      @Assisted String name, @Assisted Settings settings) {
+                                      @Assisted String name,
+                                      @Assisted Settings settings) {
         super(index, indexSettingsService.indexSettings(), name, settings);
     }
 

@@ -34,7 +34,6 @@ public class DictionaryTests extends Assert {
         try {
             CharSequence baseform = dictionary.lookup(word);
         } catch (StackOverflowError e) {
-            System.err.println(line);
             return false;
         }
         return true;

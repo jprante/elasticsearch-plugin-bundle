@@ -24,28 +24,34 @@ package org.xbib.elasticsearch.index.analysis.standardnumber;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.elasticsearch.common.inject.Inject;
+import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.settings.IndexSettingsService;
+import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberService;
 
 public class StandardnumberTokenFilterFactory extends AbstractTokenFilterFactory  {
 
-    private final StandardnumberService standardnumberService;
+    private final Settings settings;
+
+    private final Injector injector;
 
     @Inject
     public StandardnumberTokenFilterFactory(Index index,
                                             IndexSettingsService indexSettingsService,
                                             @Assisted String name,
-                                            @Assisted Settings settings) {
+                                            @Assisted Settings settings,
+                                            Injector injector) {
         super(index, indexSettingsService.indexSettings(), name, settings);
-        this.standardnumberService = new StandardnumberService(settings);
-        standardnumberService.start();
+        this.injector = injector;
+        this.settings = settings;
     }
 
     @Override
     public TokenStream create(TokenStream tokenStream) {
-        return new StandardnumberTokenFilter(tokenStream, standardnumberService);
+        StandardnumberService service = injector.getInstance(StandardnumberService.class);
+        return new StandardnumberTokenFilter(tokenStream, service, settings);
     }
 }

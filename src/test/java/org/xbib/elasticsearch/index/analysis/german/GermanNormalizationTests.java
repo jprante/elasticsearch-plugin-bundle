@@ -7,7 +7,7 @@ import org.elasticsearch.index.analysis.AnalysisService;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xbib.elasticsearch.index.analysis.AnalyzerTestUtils;
+import org.xbib.elasticsearch.MapperTestUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -31,7 +31,8 @@ public class GermanNormalizationTests extends Assert {
             "der",
             "Strassenecke"
         };
-        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/german/german_normalization_analysis.json");
+        AnalysisService analysisService =
+                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/german/german_normalization_analysis.json");
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("umlaut");
         Tokenizer tokenizer = analysisService.tokenizer("standard").create();
         tokenizer.setReader(new StringReader(source));

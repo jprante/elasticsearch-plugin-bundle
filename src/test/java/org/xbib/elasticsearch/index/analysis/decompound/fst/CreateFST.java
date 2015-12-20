@@ -10,6 +10,7 @@ import org.apache.lucene.util.fst.NoOutputs;
 import org.junit.Test;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -67,7 +68,9 @@ public class CreateFST {
             builder.add(intsRef.get(), nothing);
         }
         final FST<Object> fst = builder.finish();
-        final OutputStreamDataOutput out = new OutputStreamDataOutput(new FileOutputStream("words.fst"));
+        File file = File.createTempFile("words.", ".fst");
+        file.deleteOnExit();
+        final OutputStreamDataOutput out = new OutputStreamDataOutput(new FileOutputStream(file));
         fst.save(out);
         out.close();
     }

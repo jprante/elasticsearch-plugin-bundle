@@ -79,10 +79,8 @@ public class SortformAnalyzerProvider extends CustomAnalyzerProvider {
             }
             tokenFilters.add(tokenFilter);
         }
-
         int positionOffsetGap = analyzerSettings.getAsInt("position_offset_gap", 0);
         int offsetGap = analyzerSettings.getAsInt("offset_gap", -1);
-
         this.customAnalyzer = new CustomAnalyzer(tokenizerFactory,
                 charFilters.toArray(new CharFilterFactory[charFilters.size()]),
                 tokenFilters.toArray(new TokenFilterFactory[tokenFilters.size()]),

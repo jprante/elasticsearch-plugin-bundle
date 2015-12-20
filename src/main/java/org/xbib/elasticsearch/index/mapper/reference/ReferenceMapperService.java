@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Jörg Prante
+ * Copyright (C) 2015 Jörg Prante
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -20,16 +20,36 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.module.standardnumber;
+package org.xbib.elasticsearch.index.mapper.reference;
 
-import org.elasticsearch.common.inject.Binder;
-import org.elasticsearch.common.inject.Module;
-import org.xbib.elasticsearch.index.mapper.standardnumber.RegisterStandardnumberType;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.common.component.AbstractLifecycleComponent;
+import org.elasticsearch.common.inject.Inject;
+import org.elasticsearch.common.inject.Injector;
+import org.elasticsearch.common.settings.Settings;
 
-public class StandardnumberIndexModule implements Module {
+public class ReferenceMapperService extends AbstractLifecycleComponent<ReferenceMapperService> {
+
+    private final Injector injector;
+
+    @Inject
+    public ReferenceMapperService(Settings settings, Injector injector) {
+        super(settings);
+        this.injector = injector;
+    }
 
     @Override
-    public void configure(Binder binder) {
-        binder.bind(RegisterStandardnumberType.class).asEagerSingleton();
+    protected void doStart() {
+        ReferenceMapperTypeParser referenceMapperTypeParser = injector.getInstance(ReferenceMapperTypeParser.class);
+        Client client = injector.getInstance(Client.class);
+        referenceMapperTypeParser.setClient(client);
+    }
+
+    @Override
+    protected void doStop() {
+    }
+
+    @Override
+    protected void doClose() {
     }
 }

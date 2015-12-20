@@ -25,10 +25,9 @@ package org.xbib.elasticsearch.plugin.analysis.bundle;
 import org.elasticsearch.common.component.LifecycleComponent;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.Module;
-import org.elasticsearch.common.logging.ESLogger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.analysis.AnalysisModule;
+import org.elasticsearch.indices.IndicesModule;
 import org.elasticsearch.plugins.Plugin;
 import org.xbib.elasticsearch.index.analysis.baseform.BaseformAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.concat.ConcatAnalysisBinderProcessor;
@@ -38,15 +37,21 @@ import org.xbib.elasticsearch.index.analysis.german.GermanAnalysisBinderProcesso
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.icu.IcuAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.symbolname.SymbolnameAnalysisBinderProcessor;
-import org.xbib.elasticsearch.module.langdetect.LangdetectModule;
-import org.xbib.elasticsearch.module.langdetect.LangdetectService;
 import org.xbib.elasticsearch.index.analysis.sortform.SortformAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.worddelimiter.WorddelimiterAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.year.GregorianYearAnalysisBinderProcessor;
-import org.xbib.elasticsearch.module.reference.ReferenceModule;
-import org.xbib.elasticsearch.module.standardnumber.StandardnumberIndexModule;
-import org.xbib.elasticsearch.module.crypt.CryptModule;
+import org.xbib.elasticsearch.index.mapper.crypt.CryptMapper;
+import org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper;
+import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapper;
+import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapperModule;
+import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapperService;
+import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapperTypeParser;
+import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapper;
+import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapperModule;
+import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapperTypeParser;
+import org.xbib.elasticsearch.module.langdetect.LangdetectService;
+import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,9 +60,21 @@ public class BundlePlugin extends Plugin {
 
     private final Settings settings;
 
+    private final ReferenceMapperTypeParser refMapperTypeParser;
+
+    private final StandardnumberMapperTypeParser standardnumberMapperTypeParser;
+
+    private final LangdetectMapper.TypeParser langdetectMapperTypeParser;
+
+    private final CryptMapper.TypeParser cryptmapperTypeParser;
+
     @Inject
     public BundlePlugin(Settings settings) {
         this.settings = settings;
+        this.refMapperTypeParser = new ReferenceMapperTypeParser();
+        this.standardnumberMapperTypeParser = new StandardnumberMapperTypeParser();
+        this.langdetectMapperTypeParser = new LangdetectMapper.TypeParser();
+        this.cryptmapperTypeParser = new CryptMapper.TypeParser();
     }
 
     @Override
@@ -67,7 +84,35 @@ public class BundlePlugin extends Plugin {
 
     @Override
     public String description() {
-        return "A collection of useful plugins";
+        return "A collection of plugins for Elasticsearch";
+    }
+
+
+    @Override
+    public Collection<Module> nodeModules() {
+        Collection<Module> modules = new ArrayList<>();
+        if ("node".equals(settings.get("client.type"))) {
+            modules.add(new ReferenceMapperModule(refMapperTypeParser));
+            modules.add(new StandardnumberMapperModule(standardnumberMapperTypeParser));
+        }
+        return modules;
+    }
+
+    @Override
+    public Collection<Class<? extends LifecycleComponent>> nodeServices() {
+        Collection<Class<? extends LifecycleComponent>> services = new ArrayList<>();
+        if ("node".equals(settings.get("client.type"))) {
+            if (settings.getAsBoolean("plugins.reference.enabled", true)) {
+                services.add(ReferenceMapperService.class);
+            }
+            if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
+                services.add(StandardnumberService.class);
+            }
+            if (settings.getAsBoolean("plugins.langdetect.enabled", true)) {
+                services.add(LangdetectService.class);
+            }
+        }
+        return services;
     }
 
     /**
@@ -75,69 +120,61 @@ public class BundlePlugin extends Plugin {
      * @param module the analysis module
      */
     public void onModule(AnalysisModule module) {
-        if (settings.getAsBoolean("plugins.baseform.enabled", true)) {
-            module.addProcessor(new BaseformAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.concat.enabled", true)) {
-            module.addProcessor(new ConcatAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.decompound.enabled", true)) {
-            module.addProcessor(new DecompoundAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.decompound.fst.enabled", true)) {
-            module.addProcessor(new FstDecompoundAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.german.enabled", true)) {
-            module.addProcessor(new GermanAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.hyphen.enabled", true)) {
-            module.addProcessor(new HyphenAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.icu.enabled", true)) {
-            module.addProcessor(new IcuAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.sortform.enabled", true)) {
-            module.addProcessor(new SortformAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
-            module.addProcessor(new StandardnumberAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.worddelimiter.enabled", true)) {
-            module.addProcessor(new WorddelimiterAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.year.enabled", true)) {
-            module.addProcessor(new GregorianYearAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.symbolname.enabled", true)) {
-            module.addProcessor(new SymbolnameAnalysisBinderProcessor());
+        if ("node".equals(settings.get("client.type"))) {
+            if (settings.getAsBoolean("plugins.baseform.enabled", true)) {
+                module.addProcessor(new BaseformAnalysisBinderProcessor());
+            }
+            if (settings.getAsBoolean("plugins.concat.enabled", true)) {
+                module.addProcessor(new ConcatAnalysisBinderProcessor());
+            }
+            if (settings.getAsBoolean("plugins.decompound.enabled", true)) {
+                module.addProcessor(new DecompoundAnalysisBinderProcessor());
+            }
+            if (settings.getAsBoolean("plugins.decompound.fst.enabled", true)) {
+                module.addProcessor(new FstDecompoundAnalysisBinderProcessor());
+            }
+            if (settings.getAsBoolean("plugins.german.enabled", true)) {
+                module.addProcessor(new GermanAnalysisBinderProcessor());
+            }
+            if (settings.getAsBoolean("plugins.hyphen.enabled", true)) {
+                module.addProcessor(new HyphenAnalysisBinderProcessor());
+            }
+            if (settings.getAsBoolean("plugins.icu.enabled", true)) {
+                module.addProcessor(new IcuAnalysisBinderProcessor());
+            }
+            if (settings.getAsBoolean("plugins.sortform.enabled", true)) {
+                module.addProcessor(new SortformAnalysisBinderProcessor());
+            }
+            if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
+                module.addProcessor(new StandardnumberAnalysisBinderProcessor());
+            }
+            if (settings.getAsBoolean("plugins.worddelimiter.enabled", true)) {
+                module.addProcessor(new WorddelimiterAnalysisBinderProcessor());
+            }
+            if (settings.getAsBoolean("plugins.year.enabled", true)) {
+                module.addProcessor(new GregorianYearAnalysisBinderProcessor());
+            }
+            if (settings.getAsBoolean("plugins.symbolname.enabled", true)) {
+                module.addProcessor(new SymbolnameAnalysisBinderProcessor());
+            }
         }
     }
 
-    @Override
-    public Collection<Class<? extends LifecycleComponent>> nodeServices() {
-        Collection<Class<? extends LifecycleComponent>> services = new ArrayList<>();
-        if (settings.getAsBoolean("plugins.langdetect.enabled", true)) {
-            services.add(LangdetectService.class);
+    public void onModule(IndicesModule indicesModule) {
+        if ("node".equals(settings.get("client.type"))) {
+            if (settings.getAsBoolean("plugins.reference.enabled", true)) {
+                indicesModule.registerMapper(ReferenceMapper.CONTENT_TYPE, refMapperTypeParser);
+            }
+            if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
+                indicesModule.registerMapper(StandardnumberMapper.CONTENT_TYPE, standardnumberMapperTypeParser);
+            }
+            if (settings.getAsBoolean("plugins.langdetect.enabled", true)) {
+                indicesModule.registerMapper(LangdetectMapper.CONTENT_TYPE, langdetectMapperTypeParser);
+            }
+            if (settings.getAsBoolean("plugins.crypt.enabled", true)) {
+                indicesModule.registerMapper(CryptMapper.CONTENT_TYPE, cryptmapperTypeParser);
+            }
         }
-        return services;
-    }
-
-    @Override
-    public Collection<Module> indexModules(Settings indexSettings) {
-        Collection<Module> modules = new ArrayList<>();
-        if (settings.getAsBoolean("plugins.langdetect.enabled", true)) {
-            modules.add(new LangdetectModule());
-        }
-        if (settings.getAsBoolean("plugins.reference.enabled", true)) {
-            modules.add(new ReferenceModule());
-        }
-        if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
-            modules.add(new StandardnumberIndexModule());
-        }
-        if (settings.getAsBoolean("plugins.crypt.enabled", true)) {
-            modules.add(new CryptModule());
-        }
-        return modules;
     }
 
 }

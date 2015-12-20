@@ -9,8 +9,7 @@ import org.elasticsearch.index.analysis.TokenFilterFactory;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import org.xbib.elasticsearch.index.analysis.AnalyzerTestUtils;
+import org.xbib.elasticsearch.MapperTestUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -46,7 +45,7 @@ public class BaseformTokenFilterTests extends Assert {
             "gekostet",
             "kosten"
         };
-        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService();
+        AnalysisService analysisService = MapperTestUtils.analysisService();
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("baseform");
         Tokenizer tokenizer = analysisService.tokenizer("standard").create();
         tokenizer.setReader(new StringReader(source));
@@ -72,7 +71,7 @@ public class BaseformTokenFilterTests extends Assert {
                 "transportieren",
                 "transportieren"
         };
-        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService();
+        AnalysisService analysisService = MapperTestUtils.analysisService();
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("baseform");
         Tokenizer tokenizer = analysisService.tokenizer("standard").create();
         tokenizer.setReader(new StringReader(source));
@@ -95,7 +94,7 @@ public class BaseformTokenFilterTests extends Assert {
                 "gemacht",
                 "machen"
         };
-        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService();
+        AnalysisService analysisService = MapperTestUtils.analysisService();
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("baseform");
         Tokenizer tokenizer = analysisService.tokenizer("standard").create();
         tokenizer.setReader(new StringReader(source));

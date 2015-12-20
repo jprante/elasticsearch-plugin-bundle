@@ -6,7 +6,7 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.elasticsearch.index.analysis.AnalysisService;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xbib.elasticsearch.index.analysis.AnalyzerTestUtils;
+import org.xbib.elasticsearch.MapperTestUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -32,7 +32,8 @@ public class IcuTokenizerTests extends Assert {
                 "zum",
                 "Ende"
         };
-        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json");
+        AnalysisService analysisService =
+                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json");
         Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenizer, expected);
@@ -47,7 +48,8 @@ public class IcuTokenizerTests extends Assert {
                 "ISBN",
                 "3-428-84350-9"
         };
-        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json");
+        AnalysisService analysisService =
+                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json");
         Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenizer, expected);
@@ -61,7 +63,8 @@ public class IcuTokenizerTests extends Assert {
         String[] expected = {
                 "3-428-84350-9"
         };
-        AnalysisService analysisService = AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json");
+        AnalysisService analysisService =
+                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json");
         Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         // THIS FAILS
