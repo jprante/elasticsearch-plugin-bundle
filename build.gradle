@@ -1,6 +1,6 @@
 
 def xbibGroup = 'org.xbib.elasticsearch.plugin'
-def xbibVersion = '2.1.1.0'
+def xbibVersion = '2.1.1.1'
 
 group = xbibGroup
 version = xbibVersion

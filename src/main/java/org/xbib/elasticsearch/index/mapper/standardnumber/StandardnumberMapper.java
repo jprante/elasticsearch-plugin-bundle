@@ -23,6 +23,7 @@
 package org.xbib.elasticsearch.index.mapper.standardnumber;
 
 import org.apache.lucene.document.Field;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.index.mapper.FieldMapper;
@@ -105,6 +106,9 @@ public class StandardnumberMapper extends FieldMapper {
             return new StandardnumberMapper(name,
                     fieldType,
                     defaultFieldType,
+                    context.indexSettings(),
+                    multiFieldsBuilder.build(this, context),
+                    copyTo,
                     service,
                     contentMapper,
                     stdnumMapper);
@@ -151,16 +155,19 @@ public class StandardnumberMapper extends FieldMapper {
     }
 
     private final StandardnumberService service;
-    private final StringFieldMapper contentMapper;
-    private final StringFieldMapper stdnumMapper;
+    private final FieldMapper contentMapper;
+    private final FieldMapper stdnumMapper;
 
-    public StandardnumberMapper(String name,
+    public StandardnumberMapper(String simpleName,
                                 MappedFieldType fieldType,
                                 MappedFieldType defaultFieldType,
+                                Settings indexSettings,
+                                MultiFields multiFields,
+                                CopyTo copyTo,
                                 StandardnumberService service,
-                                StringFieldMapper contentMapper,
-                                StringFieldMapper stdnumMapper) {
-        super(name, fieldType, defaultFieldType, null, null,null);
+                                FieldMapper contentMapper,
+                                FieldMapper stdnumMapper) {
+        super(simpleName, fieldType, defaultFieldType, indexSettings, multiFields, copyTo);
         this.service = service;
         this.contentMapper = contentMapper;
         this.stdnumMapper = stdnumMapper;

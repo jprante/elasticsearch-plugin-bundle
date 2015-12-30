@@ -20,7 +20,7 @@
  * as required under Section 5 of the GNU Affero General Public License.
  *
  */
-package org.xbib.elasticsearch.plugin.analysis.bundle;
+package org.xbib.elasticsearch.plugin.bundle;
 
 import org.elasticsearch.common.component.LifecycleComponent;
 import org.elasticsearch.common.inject.Inject;

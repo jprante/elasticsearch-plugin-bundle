@@ -6,7 +6,7 @@ import org.elasticsearch.node.MockNode;
 import org.elasticsearch.node.Node;
 import org.junit.After;
 import org.junit.Before;
-import org.xbib.elasticsearch.plugin.analysis.bundle.BundlePlugin;
+import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;

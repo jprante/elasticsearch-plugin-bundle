@@ -104,12 +104,16 @@ public class CryptMapper extends StringFieldMapper {
     private int ignoreAbove;
     private String algo;
 
-    public CryptMapper(String simpleName, MappedFieldType fieldType, MappedFieldType defaultFieldType,
-            int positionOffsetGap, int ignoreAbove,
-            Settings indexSettings, FieldMapper.MultiFields multiFields, FieldMapper.CopyTo copyTo,
-            String algo) {
-        super(simpleName, fieldType, defaultFieldType,
-                positionOffsetGap, ignoreAbove,
+    public CryptMapper(String simpleName,
+                       MappedFieldType fieldType,
+                       MappedFieldType defaultFieldType,
+                       int positionOffsetGap,
+                       int ignoreAbove,
+                       Settings indexSettings,
+                       FieldMapper.MultiFields multiFields,
+                       FieldMapper.CopyTo copyTo,
+                       String algo) {
+        super(simpleName, fieldType, defaultFieldType, positionOffsetGap, ignoreAbove,
                 indexSettings, multiFields, copyTo);
         this.ignoreAbove = ignoreAbove;
         this.algo = algo;

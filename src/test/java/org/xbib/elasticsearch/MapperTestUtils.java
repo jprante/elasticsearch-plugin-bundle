@@ -48,7 +48,6 @@ import org.elasticsearch.index.settings.IndexSettingsModule;
 import org.elasticsearch.index.similarity.SimilarityLookupService;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 import org.elasticsearch.indices.mapper.MapperRegistry;
-import org.xbib.elasticsearch.index.analysis.icu.IcuAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.mapper.crypt.CryptMapper;
 import org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper;
 import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapper;
@@ -56,7 +55,7 @@ import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapperTypeParser;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapper;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapperTypeParser;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberService;
-import org.xbib.elasticsearch.plugin.analysis.bundle.BundlePlugin;
+import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -89,7 +88,6 @@ public class MapperTestUtils {
                 .createInjector();
         AnalysisModule analysisModule = new AnalysisModule(indexSettings,
                 parentInjector.getInstance(IndicesAnalysisService.class));
-                //.addProcessor(new IcuAnalysisBinderProcessor());
         new BundlePlugin(settings).onModule(analysisModule);
         Injector injector = new ModulesBuilder().add(new IndexSettingsModule(index, indexSettings),
                 new IndexNameModule(index),

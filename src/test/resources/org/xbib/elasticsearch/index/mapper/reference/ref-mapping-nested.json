@@ -13,7 +13,7 @@
             "ref_fields": [
               "author"
             ],
-            "to": [
+            "copy_to": [
               "dc.creator",
               "bib.contributor"
             ]
