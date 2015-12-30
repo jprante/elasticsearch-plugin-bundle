@@ -23,6 +23,7 @@
 package org.xbib.elasticsearch.index.mapper.standardnumber;
 
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexOptions;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
@@ -47,6 +48,13 @@ import static org.elasticsearch.index.mapper.MapperBuilders.stringField;
 public class StandardnumberMapper extends FieldMapper {
 
     public static final String CONTENT_TYPE = "standardnumber";
+
+    public static final class Defaults {
+        public static final StandardnumberFieldType FIELD_TYPE = new StandardnumberFieldType();
+        static {
+            FIELD_TYPE.freeze();
+        }
+    }
 
     static final class StandardnumberFieldType extends MappedFieldType {
 
@@ -99,12 +107,26 @@ public class StandardnumberMapper extends FieldMapper {
 
         @Override
         public StandardnumberMapper build(BuilderContext context) {
+            MappedFieldType defaultFieldType = Defaults.FIELD_TYPE.clone();
+            if (this.fieldType.indexOptions() != IndexOptions.NONE && !this.fieldType.tokenized()) {
+                defaultFieldType.setOmitNorms(true);
+                defaultFieldType.setIndexOptions(IndexOptions.DOCS);
+                if (!this.omitNormsSet && this.fieldType.boost() == 1.0F) {
+                    this.fieldType.setOmitNorms(true);
+                }
+                if (!this.indexOptionsSet) {
+                    this.fieldType.setIndexOptions(IndexOptions.DOCS);
+                }
+            }
+            defaultFieldType.freeze();
+            this.setupFieldType(context);
+
             context.path().add(name);
             StringFieldMapper contentMapper = contentBuilder.build(context);
             StringFieldMapper stdnumMapper = stdnumBuilder.build(context);
             context.path().remove();
             return new StandardnumberMapper(name,
-                    fieldType,
+                    this.fieldType,
                     defaultFieldType,
                     context.indexSettings(),
                     multiFieldsBuilder.build(this, context),

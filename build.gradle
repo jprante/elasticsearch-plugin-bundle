@@ -1,6 +1,6 @@
 
 def xbibGroup = 'org.xbib.elasticsearch.plugin'
-def xbibVersion = '2.1.1.1'
+def xbibVersion = '2.1.1.2'
 
 group = xbibGroup
 version = xbibVersion
@@ -155,6 +155,7 @@ clean {
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
+    into 'build/tmp/sources'
     classifier 'sources'
 }
 
