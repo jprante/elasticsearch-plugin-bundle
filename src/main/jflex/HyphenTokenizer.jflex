@@ -49,9 +49,10 @@ PUNCT_DASH = [\u002D\u058A\u05BE\u1400\u1806\u2010\u2011\u2012\u2013\u2014\u2015
 // acronyms: U.S.A., I.B.M., etc. with dropped last punctuation char.
 // company names like AT&T
 // emails, product identifiers, hostnames
-ADJUNCT = ({PUNCT_DASH} | "'" | "&" | "@" | "_" | "." | "+")+
+ADJUNCT = ({PUNCT_DASH} | "'" | "&" | "@" | "_" | "+")+
 ALPHANUM_COMP = {ALPHANUM} {ADJUNCT}
               | {ALPHANUM} {ADJUNCT} {ALPHANUM} ({ADJUNCT} {ALPHANUM})*
+              | {ALPHANUM} "." {ALPHANUM} ("." {ALPHANUM})*
 
 // floating point, serial, model numbers, ip addresses, etc.
 // every other segment must have at least one digit

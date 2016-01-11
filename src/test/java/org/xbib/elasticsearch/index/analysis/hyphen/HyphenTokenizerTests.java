@@ -1,5 +1,7 @@
 package org.xbib.elasticsearch.index.analysis.hyphen;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -80,7 +82,8 @@ public class HyphenTokenizerTests extends Assert {
                 "sondern",
                 "100-prozentig",
                 "als",
-                "Dipl.-Ing",
+                "Dipl",
+                "Ing",
                 "arbeiten"
         };
         AnalysisService analysisService =
@@ -157,15 +160,20 @@ public class HyphenTokenizerTests extends Assert {
 
     @Test
     public void testSeven() throws IOException {
-        String source = "Procter & Gamble ist nicht schwarz - weiss";
+        String source = "Procter & Gamble ist Procter&Gamble. Schwarz - weiss ist schwarz-weiss";
 
         String[] expected = {
                 "Procter",
                 "Gamble",
                 "ist",
-                "nicht",
-                "schwarz",
-                "weiss"
+                "Procter&Gamble",
+                "Schwarz",
+                "weiss",
+                "ist",
+                "schwarz-weiss",
+                "schwarzweiss",
+                "weiss",
+                "schwarz"
         };
 
         AnalysisService analysisService =
@@ -176,11 +184,10 @@ public class HyphenTokenizerTests extends Assert {
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 
-
     @Test
     public void testEight() throws IOException {
 
-        String source = "Ich will nicht als Service-Center-Mitarbeiterin, sondern 100-prozentig als Dipl.-Ing. arbeiten!";
+        String source = "Ich will nicht als Service-Center-Mitarbeiterin mit C++, sondern 100-prozentig als Dipl.-Ing. arbeiten!";
 
         String[] expected = {
                 "Ich",
@@ -189,13 +196,45 @@ public class HyphenTokenizerTests extends Assert {
                 "als",
                 "Service-Center-Mitarbeiterin",
                 "ServiceCenterMitarbeiterin",
+                "mit",
+                "C++",
                 "sondern",
                 "100-prozentig",
                 "100prozentig",
                 "als",
-                "Dipl.-Ing",
-                "Dipl.Ing",
+                "Dipl",
+                "Ing",
                 "arbeiten"
+        };
+        AnalysisService analysisService =
+                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer_without_subwords.json");
+        Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_tokenizer").create();
+        tokenizer.setReader(new StringReader(source));
+        TokenFilterFactory tokenFilter = analysisService.tokenFilter("my_hyphen_tokenfilter");
+        assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
+    }
+
+
+    @Test
+    public void testNine() throws IOException {
+
+        String source = "Das ist ein Punkt. Und noch ein Punkt für U.S.A. Oder? Nicht doch.";
+
+        String[] expected = {
+                "Das",
+                "ist",
+                "ein",
+                "Punkt",
+                "Und",
+                "noch",
+                "ein",
+                "Punkt",
+                "für",
+                "U.S.A",
+                "Oder",
+                "Nicht",
+                "doch"
+
         };
         AnalysisService analysisService =
                 MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer_without_subwords.json");
