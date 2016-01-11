@@ -4,7 +4,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.search.sort.SortOrder;
 import org.junit.Test;
-import org.xbib.elasticsearch.util.NodeTestUtils;
+import org.xbib.elasticsearch.NodeTestUtils;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.junit.Assert.assertEquals;
