@@ -36,6 +36,7 @@ import org.xbib.elasticsearch.index.analysis.decompound.fst.FstDecompoundAnalysi
 import org.xbib.elasticsearch.index.analysis.german.GermanAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.icu.IcuAnalysisBinderProcessor;
+import org.xbib.elasticsearch.index.analysis.naturalsort.NaturalSortAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.symbolname.SymbolnameAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.sortform.SortformAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberAnalysisBinderProcessor;
@@ -156,6 +157,9 @@ public class BundlePlugin extends Plugin {
             }
             if (settings.getAsBoolean("plugins.symbolname.enabled", true)) {
                 module.addProcessor(new SymbolnameAnalysisBinderProcessor());
+            }
+            if (settings.getAsBoolean("plugins.naturalsort.enabled", true)) {
+                module.addProcessor(new NaturalSortAnalysisBinderProcessor());
             }
         }
     }
