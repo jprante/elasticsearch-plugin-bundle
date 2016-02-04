@@ -36,9 +36,8 @@ import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
-import org.elasticsearch.index.mapper.MergeMappingException;
-import org.elasticsearch.index.mapper.MergeResult;
 import org.elasticsearch.index.mapper.ParseContext;
+import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapper;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -100,7 +99,7 @@ public class ReferenceMapper extends FieldMapper {
         private List<String> refFields;
 
         public Builder(String name, Client client) {
-            super(name, new ReferenceFieldType());
+            super(name, Defaults.FIELD_TYPE, Defaults.FIELD_TYPE);
             this.client = client;
             this.refFields = new LinkedList<>();
             this.contentBuilder = stringField(name);
@@ -314,11 +313,6 @@ public class ReferenceMapper extends FieldMapper {
     @Override
     protected void parseCreateField(ParseContext parseContext, List<Field> fields) throws IOException {
         // override
-    }
-
-    @Override
-    public void merge(Mapper mergeWith, MergeResult mergeResult) throws MergeMappingException {
-        // ignore this for now
     }
 
     @Override

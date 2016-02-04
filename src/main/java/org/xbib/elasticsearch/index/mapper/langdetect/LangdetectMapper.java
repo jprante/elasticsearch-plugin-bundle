@@ -14,6 +14,7 @@ import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.mapper.core.StringFieldMapper;
+import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapper;
 import org.xbib.elasticsearch.module.langdetect.LangdetectService;
 import org.xbib.elasticsearch.common.langdetect.Language;
 import org.xbib.elasticsearch.common.langdetect.LanguageDetectionException;
@@ -51,7 +52,7 @@ public class LangdetectMapper extends StringFieldMapper {
         protected Settings.Builder settingsBuilder = Settings.settingsBuilder();
 
         public Builder(String name) {
-            super(name, Defaults.LANG_FIELD_TYPE);
+            super(name, Defaults.LANG_FIELD_TYPE, Defaults.LANG_FIELD_TYPE);
             this.builder = this;
         }
 

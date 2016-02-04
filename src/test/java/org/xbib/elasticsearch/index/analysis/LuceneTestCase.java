@@ -2,7 +2,7 @@ package org.xbib.elasticsearch.index.analysis;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.similarities.DefaultSimilarity;
+import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.util.NamedThreadFactory;
 import org.junit.Assert;
 
@@ -83,7 +83,7 @@ public class LuceneTestCase extends Assert {
                     ? new IndexSearcher(r, ex)
                     : new IndexSearcher(r.getContext(), ex);
         }
-        ret.setSimilarity(new DefaultSimilarity());
+        ret.setSimilarity(new ClassicSimilarity());
         return ret;
 
     }
