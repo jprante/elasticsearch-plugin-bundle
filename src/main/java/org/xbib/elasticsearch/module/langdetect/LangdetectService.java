@@ -2,6 +2,7 @@ package org.xbib.elasticsearch.module.langdetect;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.SpecialPermission;
 import org.elasticsearch.common.component.AbstractLifecycleComponent;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.logging.ESLogger;
@@ -14,6 +15,9 @@ import org.xbib.elasticsearch.common.langdetect.NGram;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -190,14 +194,31 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
         isStarted = true;
     }
 
-    public void loadProfileFromResource(String resource, String profile, int index, int langsize) throws IOException {
-        InputStream in = getClass().getResourceAsStream(profile + resource);
+    public void loadProfileFromResource(String resource, String profile, int index, int langsize) throws Exception {
+        final InputStream in = getClass().getResourceAsStream(profile + resource);
         if (in == null) {
             throw new IOException("profile '" + resource + "' not found");
         }
-        ObjectMapper mapper = new ObjectMapper();
-        LangProfile langProfile = mapper.readValue(in, LangProfile.class);
-        addProfile(langProfile, index, langsize);
+        try {
+            SecurityManager sm = System.getSecurityManager();
+            if (sm != null) {
+                // unprivileged code such as scripts do not have SpecialPermission
+                sm.checkPermission(new SpecialPermission());
+            }
+            LangProfile langProfile =
+                AccessController.doPrivileged(
+                    new PrivilegedExceptionAction<LangProfile>() {
+                        @Override
+                        public LangProfile run() throws IOException {
+                            ObjectMapper mapper = new ObjectMapper();
+                            return mapper.readValue(in, LangProfile.class);
+                        }
+                    }
+                );
+            addProfile(langProfile, index, langsize);
+        } catch (PrivilegedActionException e) {
+            throw new Exception("permission problem", e);
+        }
     }
 
     public void addProfile(LangProfile profile, int index, int langsize) throws IOException {

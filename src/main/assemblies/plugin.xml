@@ -23,5 +23,10 @@
             <outputDirectory>/</outputDirectory>
             <filtered>true</filtered>
         </file>
+		<file>
+			<source>${basedir}/src/main/templates/plugin-security.policy</source>
+            <outputDirectory>/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
     </files>
 </assembly>
