@@ -31,8 +31,6 @@ import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
-import org.elasticsearch.index.mapper.MergeMappingException;
-import org.elasticsearch.index.mapper.MergeResult;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.mapper.core.StringFieldMapper;
 import org.xbib.elasticsearch.common.standardnumber.StandardNumber;
@@ -89,7 +87,7 @@ public class StandardnumberMapper extends FieldMapper {
         private StandardnumberService service;
 
         public Builder(String name, StandardnumberService service) {
-            super(name, new StandardnumberFieldType());
+            super(name, Defaults.FIELD_TYPE, Defaults.FIELD_TYPE);
             this.service = service;
             this.contentBuilder = stringField(name);
             this.builder = this;
@@ -223,10 +221,6 @@ public class StandardnumberMapper extends FieldMapper {
 
     @Override
     protected void parseCreateField(ParseContext parseContext, List<Field> fields) throws IOException {
-    }
-
-    @Override
-    public void merge(Mapper mergeWith, MergeResult mergeResult) throws MergeMappingException {
     }
 
     @Override
