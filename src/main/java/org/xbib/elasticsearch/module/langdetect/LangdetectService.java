@@ -211,7 +211,6 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
                         @Override
                         public LangProfile run() throws IOException {
                             ObjectMapper mapper = new ObjectMapper();
-                            LangProfile langProfile = mapper.readValue(in, LangProfile.class);
                             return mapper.readValue(in, LangProfile.class);
                         }
                     }
