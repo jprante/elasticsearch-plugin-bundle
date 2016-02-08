@@ -26,7 +26,7 @@ public class NodeTestUtils {
                 .put("path.home", System.getProperty("path.home"))
                 .put("client.type", "node")
                 .put("index.number_of_shards", 1)
-                .put("index.number_of_replica", 0)
+                .put("index.number_of_replicas", 0)
                 .build();
         // ES 2.1 renders NodeBuilder as useless
         Node node = new MockNode(nodeSettings, BundlePlugin.class);
