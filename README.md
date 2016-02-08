@@ -30,6 +30,7 @@ A plugin that consists of a compilation of useful Elasticsearch plugins related 
 
 | Elasticsearch version    | Plugin        | Release date |
 | ------------------------ | ------------- | -------------|
+| 2.2.0                    | 2.2.0.0       | Feb  8, 2016 |
 | 2.1.1                    | 2.1.1.2       | Dec 30, 2015 |
 | 2.1.1                    | 2.1.1.0       | Dec 21, 2015 |
 | 2.1.0                    | 2.1.0.0       | Nov 27, 2015 |
@@ -50,7 +51,7 @@ A plugin that consists of a compilation of useful Elasticsearch plugins related 
 
 ### Elasticsearch 2.x
 
-    ./bin/plugin install http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/2.1.1.1/elasticsearch-plugin-bundle-2.1.1.1-plugin.zip
+    ./bin/plugin install http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/2.2.0.0/elasticsearch-plugin-bundle-2.2.0.0-plugin.zip
 
 ### Elasticsearch 1.x
 
