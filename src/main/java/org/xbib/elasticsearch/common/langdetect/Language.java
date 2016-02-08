@@ -57,4 +57,8 @@ public class Language implements Streamable {
         out.writeString(lang);
         out.writeDouble(prob);
     }
+
+    public String toString() {
+        return lang + " (prob=" + prob + ")";
+    }
 }

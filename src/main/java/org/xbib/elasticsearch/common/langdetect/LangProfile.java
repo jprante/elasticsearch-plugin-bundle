@@ -1,24 +1,23 @@
 package org.xbib.elasticsearch.common.langdetect;
 
-import java.util.HashMap;
+import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.common.xcontent.XContentParser;
+import org.elasticsearch.common.xcontent.XContentType;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 public class LangProfile {
 
-    /**
-     * This class is used by ObjectMapper, it requires public attributes
-     */
-    public String name = null;
+    private String name;
 
-    public Map<String, Integer> freq = new HashMap<String, Integer>();
+    private Map<String, Integer> freq;
 
-    public int[] n_words = new int[NGram.N_GRAM];
+    private List<Integer> n_words;
 
     public LangProfile() {
-    }
-
-    public LangProfile(String name) {
-        this.name = name;
     }
 
     public void add(String gram) {
@@ -29,7 +28,7 @@ public class LangProfile {
         if (len < 1 || len > NGram.N_GRAM) {
             return;
         }
-        ++n_words[len - 1];
+        n_words.set(len - 1, n_words.get(len -1) + 1);
         if (freq.containsKey(gram)) {
             freq.put(gram, freq.get(gram) + 1);
         } else {
@@ -45,11 +44,7 @@ public class LangProfile {
         return name;
     }
 
-    public void setNWords() {
-        this.n_words = n_words;
-    }
-
-    public int[] getNWords() {
+    public List<Integer> getNWords() {
         return n_words;
     }
 
@@ -59,6 +54,15 @@ public class LangProfile {
 
     public Map<String, Integer> getFreq() {
         return freq;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void read(InputStream input) throws IOException {
+        XContentParser parser = XContentFactory.xContent(XContentType.JSON).createParser(input);
+        Map<String,Object> map = parser.map();
+        freq = (Map<String, Integer>) map.get("freq");
+        name = (String)map.get("name");
+        n_words = (List<Integer>)map.get("n_words");
     }
 
 }
