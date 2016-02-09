@@ -12,8 +12,6 @@ A plugin that consists of a compilation of useful Elasticsearch plugins related 
 
 - decompound: decompose words if possible (german) 
 
-- combo: apply more than one analyzer on a field
-
 - langdetect: find language code of detected languages
 
 - standardnumber: standard number entity recognition
