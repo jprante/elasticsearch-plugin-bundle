@@ -43,6 +43,7 @@ public class IcuAnalysisBinderProcessor extends AnalysisModule.AnalysisBinderPro
         tokenFiltersBindings.processTokenFilter("icu_normalizer", IcuNormalizerTokenFilterFactory.class);
         tokenFiltersBindings.processTokenFilter("icu_folding", IcuFoldingTokenFilterFactory.class);
         tokenFiltersBindings.processTokenFilter("icu_transform", IcuTransformTokenFilterFactory.class);
+        tokenFiltersBindings.processTokenFilter("icu_numberformat", IcuNumberFormatTokenFilterFactory.class);
     }
 
     @Override

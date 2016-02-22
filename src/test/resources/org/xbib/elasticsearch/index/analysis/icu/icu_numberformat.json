@@ -1,0 +1,24 @@
+{
+    "index":{
+        "analysis":{
+            "filter" : {
+                "spellout_de" : {
+                  "type" : "icu_numberformat",
+                  "locale" : "de",
+                  "format" : "spellout"
+                },
+                "spellout_en" : {
+                  "type" : "icu_numberformat",
+                  "locale" : "en_US",
+                  "format" : "spellout"
+                }
+            },
+            "tokenizer" : {
+                "my_tokenizer" : {
+                  "type" : "icu_tokenizer",
+                  "filter" : "spellout_de"
+                }
+            }
+        }
+    }
+}
