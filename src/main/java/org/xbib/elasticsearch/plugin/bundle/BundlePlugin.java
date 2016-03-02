@@ -29,6 +29,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.analysis.AnalysisModule;
 import org.elasticsearch.indices.IndicesModule;
 import org.elasticsearch.plugins.Plugin;
+import org.elasticsearch.rest.RestModule;
 import org.xbib.elasticsearch.index.analysis.baseform.BaseformAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.concat.ConcatAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.decompound.DecompoundAnalysisBinderProcessor;
@@ -53,6 +54,7 @@ import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapperMo
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapperTypeParser;
 import org.xbib.elasticsearch.module.langdetect.LangdetectService;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberService;
+import org.xbib.elasticsearch.rest.action.langdetect.RestLangdetectAction;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -178,6 +180,12 @@ public class BundlePlugin extends Plugin {
             if (settings.getAsBoolean("plugins.crypt.enabled", true)) {
                 indicesModule.registerMapper(CryptMapper.CONTENT_TYPE, cryptmapperTypeParser);
             }
+        }
+    }
+
+    public void onModule(RestModule module) {
+        if ("node".equals(settings.get("client.type")) && settings.getAsBoolean("plugins.langdetect.enabled", true)) {
+            module.addRestAction(RestLangdetectAction.class);
         }
     }
 

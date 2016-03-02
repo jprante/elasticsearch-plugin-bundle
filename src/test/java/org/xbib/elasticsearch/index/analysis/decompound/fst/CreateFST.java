@@ -21,9 +21,8 @@ import java.util.zip.GZIPInputStream;
 
 public class CreateFST {
 
-    @Test
     public void createMorphy() throws IOException {
-        final HashSet<BytesRef> words = new HashSet<BytesRef>();
+        final HashSet<BytesRef> words = new HashSet<>();
         String[] inputs = new String[]{
                 "morphy.txt.gz",
                 "morphy-unknown.txt.gz"
@@ -32,7 +31,7 @@ public class CreateFST {
             BufferedReader reader = new BufferedReader(new InputStreamReader(
                     new GZIPInputStream(getClass().getResourceAsStream(input)), "UTF-8"));
             Pattern pattern = Pattern.compile("\\s+");
-            String line = null;
+            String line;
             String last = null;
             StringBuilder buffer = new StringBuilder();
             while ((line = reader.readLine()) != null) {
