@@ -1,6 +1,6 @@
 
 def xbibGroup = 'org.xbib.elasticsearch.plugin'
-def xbibVersion = '2.2.0.2'
+def xbibVersion = '2.2.0.3'
 
 group = xbibGroup
 version = xbibVersion
@@ -22,20 +22,25 @@ ext {
 
 buildscript {
     repositories {
-        mavenCentral()
         mavenLocal()
+        mavenCentral()
+        jcenter()
         maven {
             url "http://xbib.org/repository"
         }
     }
     dependencies {
         classpath 'org.xbib.gradle.plugin:gradle-plugin-jflex:1.0.0'
+        classpath 'org.ajoberstar:gradle-git:1.4.2'
+        classpath 'co.riiid:gradle-github-plugin:0.4.2'
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'jflex'
+apply plugin: 'signing'
+apply plugin: 'co.riiid.gradle'
 
 repositories {
     mavenCentral()
@@ -148,6 +153,11 @@ clean {
     delete "plugins"
 }
 
+task javadocJar(type: Jar, dependsOn: classes) {
+    from javadoc
+    classifier 'javadoc'
+}
+
 task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
     into 'build/tmp/sources'
@@ -155,20 +165,20 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 }
 
 artifacts {
-    archives sourcesJar
-    archives buildPluginZip
+    archives javadocJar, sourcesJar, buildPluginZip
+}
+
+signing {
+    sign configurations.archives
 }
 
 uploadArchives {
     repositories {
-        if (project.hasProperty("xbibUsername")) {
+        if (project.hasProperty('xbibUsername')) {
             mavenDeployer {
                 configuration = configurations.wagon
-                repository(
-                        id: 'xbib.org',
-                        url: uri('scpexe://xbib.org/repository'),
-                        authentication: [userName: xbibUsername, privateKey: xbibPrivateKey]
-                )
+                repository(id: 'xbib.org', url: uri('scpexe://xbib.org/repository'),
+                        authentication: [userName: xbibUsername, privateKey: xbibPrivateKey])
                 pom.project {
                     inceptionYear '2012'
                     licenses {
@@ -181,5 +191,83 @@ uploadArchives {
                 }
             }
         }
+        if (project.hasProperty('ossrhUsername')) {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                repository(id: 'ossrh', url: uri(ossrhReleaseUrl),
+                    authentication: [userName: ossrhUsername, password: ossrhPassword])
+                snapshotRepository(id: 'ossrh', url: uri(ossrhSnapshotUrl),
+                        authentication: [userName: ossrhUsername, password: ossrhPassword])
+                pom.project {
+                    name 'Elasticsearch Plugin Bundle'
+                    description pluginDescription
+                    packaging 'jar'
+                    inceptionYear '2012'
+                    url 'https://github.com/jprante/elasticsearch-plugin-bundle'
+                    developers {
+                        developer {
+                            id 'jprante'
+                            name 'Jörg Prante'
+                            email 'joergprante@gmail.com'
+                            url 'https://github.com/jprante'
+                        }
+                    }
+                    scm {
+                        url 'https://github.com/xbib/elasticsearch-plugin-bundle'
+                        connection 'scm:git:git://github.com/xbib/elasticsaerch-plugin-bundle.git'
+                        developerConnection 'scm:git:git://github.com/xbib/elasticsaerch-plugin-bundle.git'
+                    }
+                    licenses {
+                        license {
+                            name 'The Apache License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                }
+            }
+        }
     }
 }
+
+import org.ajoberstar.grgit.*
+
+task printHeadId << {
+    def grgit = Grgit.open(project.file('.'))
+    println grgit.head().id
+}
+
+task printTag << {
+    def grgit = Grgit.open(project.file('.'))
+    //println grgit.tag.list().findAll {
+    //    it.commit == grgit.head()
+    //}
+    println grgit.describe()
+}
+
+task tag << {
+    def grgit = Grgit.open(project.file('.'))
+    grgit.tag.add {
+        name = version
+        message = "Release of ${version}"
+    }
+}
+
+/*
+github {
+    owner = 'jprante'
+    repo = 'elasticsearrch-plugin-bundle'
+    token = xbibGithubToken
+    name = 'v0.1.0'
+    tagName = '0.1.0'
+    targetCommitish = 'master'
+    body = """# Project Name
+Write `release note` here.
+"""
+    assets = [
+            'app/build/outputs/apk/app-release.apk',
+            'app/build/outputs/mapping/release/mapping.txt',
+            'app/build/outputs',
+            ...
+    ]
+}
+*/
