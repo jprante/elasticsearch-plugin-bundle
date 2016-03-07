@@ -52,7 +52,7 @@ A plugin that consists of a compilation of useful Elasticsearch plugins related 
 
 ### Elasticsearch 2.x
 
-    ./bin/plugin install 'http://search.maven.org/remotecontent?filepath=org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/2.2.0.3/elasticsearch-plugin-bundle-2.2.0.2-plugin.zip'
+    ./bin/plugin install 'http://search.maven.org/remotecontent?filepath=org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/2.2.0.3/elasticsearch-plugin-bundle-2.2.0.3-plugin.zip'
 
 ### Elasticsearch 1.x
 
