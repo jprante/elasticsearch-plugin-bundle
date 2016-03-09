@@ -56,7 +56,6 @@ import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapper;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapperModule;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapperTypeParser;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberService;
-import org.xbib.elasticsearch.module.langdetect.LangdetectService;
 import org.xbib.elasticsearch.rest.action.langdetect.RestLangdetectAction;
 
 import java.util.ArrayList;
@@ -85,20 +84,24 @@ public class BundlePlugin extends Plugin {
 
     @Override
     public String name() {
-        return "plugin-bundle";
+        return "bundle";
     }
 
     @Override
     public String description() {
-        return "A collection of plugins for Elasticsearch";
+        return "A bundle of plugins for Elasticsearch";
     }
 
 
     @Override
     public Collection<Module> nodeModules() {
         Collection<Module> modules = new ArrayList<>();
-        modules.add(new ReferenceMapperModule(refMapperTypeParser));
-        modules.add(new StandardnumberMapperModule(standardnumberMapperTypeParser));
+        if (settings.getAsBoolean("plugins.reference.enabled", true)) {
+            modules.add(new ReferenceMapperModule(refMapperTypeParser));
+        }
+        if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
+            modules.add(new StandardnumberMapperModule(standardnumberMapperTypeParser));
+        }
         return modules;
     }
 
@@ -110,9 +113,6 @@ public class BundlePlugin extends Plugin {
         }
         if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
             services.add(StandardnumberService.class);
-        }
-        if (settings.getAsBoolean("plugins.langdetect.enabled", true)) {
-            services.add(LangdetectService.class);
         }
         return services;
     }

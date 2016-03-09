@@ -1,22 +1,21 @@
-
-def xbibGroup = 'org.xbib.elasticsearch.plugin'
-def xbibVersion = '2.2.0.3'
-
-group = xbibGroup
-version = xbibVersion
-
-println "Current JVM: " + org.gradle.internal.jvm.Jvm.current()
+group = 'org.xbib.elasticsearch.plugin'
+version = '2.2.0.4'
 
 ext {
     pluginName = 'bundle'
     pluginClassname  = 'org.xbib.elasticsearch.plugin.bundle.BundlePlugin'
     pluginDescription = 'A bundle of plugins for Elasticsearch'
+    user = 'jprante'
+    name = 'elasticsearch-plugin-bundle'
+    scmUrl = 'https://github.com/' + user + '/' + name
+    scmConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
+    scmDeveloperConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
     versions = [
-        'log4j': '2.5',
-        'junit' : '4.12',
         'elasticsearch' : '2.2.0',
         'lucene' : '5.4.1',
-        'jackson': '2.6.2'
+        'jackson': '2.6.2',
+        'log4j': '2.5',
+        'junit' : '4.12'
     ]
 }
 
@@ -33,6 +32,7 @@ buildscript {
         classpath 'org.xbib.gradle.plugin:gradle-plugin-jflex:1.0.0'
         classpath 'org.ajoberstar:gradle-git:1.4.2'
         classpath 'co.riiid:gradle-github-plugin:0.4.2'
+        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
     }
 }
 
@@ -51,46 +51,34 @@ repositories {
     }
 }
 
-sourceSets {
-    integrationTest {
-        java {
-            compileClasspath += main.output + test.output
-            runtimeClasspath += main.output + test.output
-            srcDir file('src/integration-test/java')
-        }
-        resources.srcDir file('src/integration-test/resources')
-    }
-}
-
 configurations {
-    providedCompile
-    releaseJars
     wagon
-    integrationTestCompile.extendsFrom testCompile
-    integrationTestRuntime.extendsFrom testRuntime
+    releaseJars {
+        extendsFrom runtime
+        exclude group: 'org.elasticsearch'
+        exclude module: 'jna'
+        exclude module: 'jackson-core'
+        exclude module: 'jackson-dataformat-smile'
+        exclude module: 'jackson-dataformat-yaml'
+    }
 }
 
 dependencies {
-    jflex 'de.jflex:jflex:1.6.0'
     compile "org.elasticsearch:elasticsearch:${versions.elasticsearch}"
     compile "org.apache.lucene:lucene-analyzers-icu:${versions.lucene}"
     compile "com.fasterxml.jackson.core:jackson-databind:${versions.jackson}"
-    releaseJars("org.apache.lucene:lucene-analyzers-icu:${versions.lucene}") {
-        exclude group: "org.apache.lucene"
-    }
-    releaseJars("com.fasterxml.jackson.core:jackson-databind:${versions.jackson}") {
-        exclude module: "jackson-core"
-    }
     testCompile "junit:junit:${versions.junit}"
     testCompile "org.apache.logging.log4j:log4j-slf4j-impl:${versions.log4j}"
     testCompile "org.apache.logging.log4j:log4j-core:${versions.log4j}"
-    integrationTestCompile "junit:junit:${versions.junit}"
-    integrationTestCompile "org.elasticsearch:elasticsearch:${versions.elasticsearch}"
+    jflex 'de.jflex:jflex:1.6.0'
     wagon 'org.apache.maven.wagon:wagon-ssh-external:2.10'
 }
 
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
 tasks.withType(JavaCompile) {
-    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    options.compilerArgs << "-Xlint:unchecked,deprecation"
 }
 
 test {
@@ -134,33 +122,21 @@ task unpackPlugin(type: Copy, dependsOn: [':buildPluginZip']) {
     into "plugins/${pluginName}"
 }
 
-task integrationTest(type: Test, dependsOn: ['unpackPlugin']) {
-    testClassesDir = sourceSets.integrationTest.output.classesDir
-    classpath = configurations.integrationTestCompile
-    classpath += fileTree("plugins/${pluginName}").include('*.jar')
-    classpath += sourceSets.integrationTest.output
-    // without this trick to remove identical jars from classpath, an Elasticsearch bug whines about a "jar hell"
-    classpath -= configurations.releaseJars
-    outputs.upToDateWhen { false }
-    systemProperty 'path.home', projectDir.absolutePath
-    testLogging.showStandardStreams = false
-}
-
-integrationTest.mustRunAfter test
-check.dependsOn integrationTest
-
 clean {
     delete "plugins"
+    delete "data"
+    delete "logs"
 }
 
 task javadocJar(type: Jar, dependsOn: classes) {
     from javadoc
+    into 'build/tmp'
     classifier 'javadoc'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
-    into 'build/tmp/sources'
+    into 'build/tmp'
     classifier 'sources'
 }
 
@@ -168,106 +144,13 @@ artifacts {
     archives javadocJar, sourcesJar, buildPluginZip
 }
 
-signing {
-    sign configurations.archives
-}
-
-uploadArchives {
-    repositories {
-        if (project.hasProperty('xbibUsername')) {
-            mavenDeployer {
-                configuration = configurations.wagon
-                repository(id: 'xbib.org', url: uri('scpexe://xbib.org/repository'),
-                        authentication: [userName: xbibUsername, privateKey: xbibPrivateKey])
-                pom.project {
-                    inceptionYear '2012'
-                    licenses {
-                        license {
-                            name 'The Apache Software License, Version 2.0'
-                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                            distribution 'repo'
-                        }
-                    }
-                }
-            }
-        }
-        if (project.hasProperty('ossrhUsername')) {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-                repository(id: 'ossrh', url: uri(ossrhReleaseUrl),
-                    authentication: [userName: ossrhUsername, password: ossrhPassword])
-                snapshotRepository(id: 'ossrh', url: uri(ossrhSnapshotUrl),
-                        authentication: [userName: ossrhUsername, password: ossrhPassword])
-                pom.project {
-                    name 'Elasticsearch Plugin Bundle'
-                    description pluginDescription
-                    packaging 'jar'
-                    inceptionYear '2012'
-                    url 'https://github.com/jprante/elasticsearch-plugin-bundle'
-                    developers {
-                        developer {
-                            id 'jprante'
-                            name 'Jörg Prante'
-                            email 'joergprante@gmail.com'
-                            url 'https://github.com/jprante'
-                        }
-                    }
-                    scm {
-                        url 'https://github.com/xbib/elasticsearch-plugin-bundle'
-                        connection 'scm:git:git://github.com/xbib/elasticsaerch-plugin-bundle.git'
-                        developerConnection 'scm:git:git://github.com/xbib/elasticsaerch-plugin-bundle.git'
-                    }
-                    licenses {
-                        license {
-                            name 'The Apache License, Version 2.0'
-                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        }
-                    }
-                }
-            }
-        }
+if (project.hasProperty('signing.keyId')) {
+    signing {
+        sign configurations.archives
     }
 }
 
-import org.ajoberstar.grgit.*
+ext.grgit = org.ajoberstar.grgit.Grgit.open()
 
-task printHeadId << {
-    def grgit = Grgit.open(project.file('.'))
-    println grgit.head().id
-}
-
-task printTag << {
-    def grgit = Grgit.open(project.file('.'))
-    //println grgit.tag.list().findAll {
-    //    it.commit == grgit.head()
-    //}
-    println grgit.describe()
-}
-
-task tag << {
-    def grgit = Grgit.open(project.file('.'))
-    grgit.tag.add {
-        name = version
-        message = "Release of ${version}"
-    }
-}
-
-/*
-github {
-    owner = 'jprante'
-    repo = 'elasticsearrch-plugin-bundle'
-    token = xbibGithubToken
-    name = 'v0.1.0'
-    tagName = '0.1.0'
-    targetCommitish = 'master'
-    body = """# Project Name
-Write `release note` here.
-"""
-    assets = [
-            'app/build/outputs/apk/app-release.apk',
-            'app/build/outputs/mapping/release/mapping.txt',
-            'app/build/outputs',
-            ...
-    ]
-}
-*/
+apply from: 'gradle/git.gradle'
+apply from: 'gradle/publish.gradle'

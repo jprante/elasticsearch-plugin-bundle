@@ -32,14 +32,10 @@ public class ReferenceMapperModule extends AbstractModule {
         this.typeParser = typeParser;
     }
 
-    public ReferenceMapperTypeParser getTypeParser() {
-        return typeParser;
-    }
-
     @Override
     protected void configure() {
         bind(ReferenceMapperService.class).asEagerSingleton();
-        bind(ReferenceMapperTypeParser.class).toInstance(getTypeParser());
+        bind(ReferenceMapperTypeParser.class).toInstance(typeParser);
     }
 
 }

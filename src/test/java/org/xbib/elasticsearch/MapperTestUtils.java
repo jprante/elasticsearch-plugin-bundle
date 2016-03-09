@@ -62,19 +62,55 @@ import java.util.Map;
 
 public class MapperTestUtils {
 
-    public static DocumentMapperParser newMapperParser() {
-        return newMapperParser(Settings.EMPTY, null);
+    public static AnalysisService newAnalysisService(Settings indexSettings) {
+        Injector parentInjector = new ModulesBuilder().add(new SettingsModule(indexSettings),
+                new EnvironmentModule(new Environment(indexSettings))).createInjector();
+        Index index = new Index("test");
+        Injector injector = new ModulesBuilder().add(
+                new IndexSettingsModule(index, indexSettings),
+                new IndexNameModule(index),
+                new AnalysisModule(indexSettings, parentInjector.getInstance(IndicesAnalysisService.class))).createChildInjector(parentInjector);
+
+        return injector.getInstance(AnalysisService.class);
     }
 
-    public static DocumentMapperParser newMapperParser(Client client) {
-        return newMapperParser(Settings.EMPTY, client);
+    public static SimilarityLookupService newSimilarityLookupService(Settings indexSettings) {
+        return new SimilarityLookupService(new Index("test"), indexSettings);
     }
 
-    public static DocumentMapperParser newMapperParser(Settings settings, Client client) {
-        return newMapper(settings, client).documentMapperParser();
+    public static DocumentMapperParser newDocumentMapperParser() {
+        return newDocumentMapperParser(Settings.builder()
+                .put("path.home", System.getProperty("path.home"))
+                .build());
     }
 
-    public static MapperService newMapper(Settings settings, Client client) {
+    public static DocumentMapperParser newDocumentMapperParser(Settings settings) {
+        Settings forcedSettings = Settings.builder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
+                .put(settings)
+                .build();
+        SimilarityLookupService similarityLookupService = newSimilarityLookupService(forcedSettings);
+        Map<String, Mapper.TypeParser> mappers = registerBuiltInMappers();
+        mappers.put(LangdetectMapper.CONTENT_TYPE, new LangdetectMapper.TypeParser());
+        mappers.put(CryptMapper.CONTENT_TYPE, new CryptMapper.TypeParser());
+        Map<String, MetadataFieldMapper.TypeParser> metadataMappers = registerBuiltInMetadataMappers();
+        MapperRegistry mapperRegistry = new MapperRegistry(mappers, metadataMappers);
+        MapperService mapperService = new MapperService(new Index("test"),
+                forcedSettings,
+                newAnalysisService(forcedSettings),
+                similarityLookupService,
+                null,
+                mapperRegistry);
+        return new DocumentMapperParser(
+                forcedSettings,
+                mapperService,
+                MapperTestUtils.newAnalysisService(forcedSettings),
+                similarityLookupService,
+                null,
+                mapperRegistry);
+    }
+
+    public static MapperService newMapperService(Settings settings, Client client) {
         Settings indexSettings = Settings.builder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("path.home", System.getProperty("path.home"))
@@ -122,7 +158,7 @@ public class MapperTestUtils {
                 .put("path.home", System.getProperty("path.home"))
                 .put("client.type", "node")
                 .build();
-        return newMapper(settings, null).analysisService();
+        return newMapperService(settings, null).analysisService();
     }
 
     public static AnalysisService analysisService(Settings settings) {
@@ -132,7 +168,7 @@ public class MapperTestUtils {
                 .put("client.type", "node")
                 .put(settings)
                 .build();
-        return newMapper(newSettings, null).analysisService();
+        return newMapperService(newSettings, null).analysisService();
     }
 
     public static AnalysisService analysisService(String resource) {
@@ -142,7 +178,7 @@ public class MapperTestUtils {
                 .put("client.type", "node")
                 .loadFromStream(resource, MapperTestUtils.class.getResourceAsStream(resource))
                 .build();
-        return newMapper(settings, null).analysisService();
+        return newMapperService(settings, null).analysisService();
     }
 
     // copy from org.elasticsearch.indices.IndicesModule

@@ -1,33 +1,46 @@
-package org.xbib.elasticsearch.module.langdetect;
+/*
+ * Copyright (C) 2014 Jörg Prante
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, see http://www.gnu.org/licenses
+ * or write to the Free Software Foundation, Inc., 51 Franklin Street,
+ * Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * The interactive user interfaces in modified source and object code
+ * versions of this program must display Appropriate Legal Notices,
+ * as required under Section 5 of the GNU Affero General Public License.
+ *
+ */
+package org.xbib.elasticsearch.common.langdetect;
 
 import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.common.component.AbstractLifecycleComponent;
-import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.common.settings.Settings;
-import org.xbib.elasticsearch.common.langdetect.LangProfile;
-import org.xbib.elasticsearch.common.langdetect.Language;
-import org.xbib.elasticsearch.common.langdetect.LanguageDetectionException;
-import org.xbib.elasticsearch.common.langdetect.NGram;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Pattern;
 
-public class LangdetectService extends AbstractLifecycleComponent<LangdetectService> {
+public class LangdetectService {
 
     private final static ESLogger logger = ESLoggerFactory.getLogger(LangdetectService.class.getName());
 
+    private final Settings settings;
+
     private final static Pattern word = Pattern.compile("[\\P{IsWord}]", Pattern.UNICODE_CHARACTER_CLASS);
 
-    private final static String[] DEFAULT_LANGUAGES = new String[] {
+    public final static String[] DEFAULT_LANGUAGES = new String[] {
             // "af",
             "ar",
             "bg",
@@ -83,6 +96,10 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
             "zh-tw"
     };
 
+    private final static Settings DEFAULT_SETTINGS = Settings.builder()
+            .putArray("languages", DEFAULT_LANGUAGES)
+            .build();
+
     private Map<String, double[]> wordLangProbMap = new HashMap<>();
 
     private List<String> langlist = new LinkedList<>();
@@ -111,24 +128,19 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
 
     private boolean isStarted;
 
-    @Inject
-    public LangdetectService(Settings settings) {
-        super(settings);
-        this.profile = settings.get("profile", "/langdetect/");
+    public LangdetectService() {
+        this(DEFAULT_SETTINGS);
     }
 
-    @Override
-    protected void doStart() throws ElasticsearchException {
+    public LangdetectService(Settings settings) {
+        this(settings, null);
+    }
+
+    public LangdetectService(Settings settings, String profile) {
+        this.settings = settings;
+        this.profile = settings.get("profile", profile) ;
         load(settings);
         init();
-    }
-
-    @Override
-    protected void doStop() throws ElasticsearchException {
-    }
-
-    @Override
-    protected void doClose() throws ElasticsearchException {
     }
 
     public Settings getSettings() {
@@ -136,6 +148,9 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
     }
 
     private void load(Settings settings) {
+        if (settings.equals(Settings.EMPTY)) {
+            return;
+        }
         try {
             String[] keys = DEFAULT_LANGUAGES;
             if (settings.get("languages") != null) {
@@ -145,13 +160,13 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
             int size = keys.length;
             for (String key : keys) {
                 if (key != null && !key.isEmpty()) {
-                    loadProfileFromResource(key, this.profile, index++, size);
+                    loadProfileFromResource(key, index++, size);
                 }
             }
             logger.debug("language detection service installed for {}", langlist);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new ElasticsearchException(e.getMessage());
+            throw new ElasticsearchException(e.getMessage() + " profile=" + profile);
         }
         try {
             // map by settings
@@ -189,7 +204,8 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
         isStarted = true;
     }
 
-    public void loadProfileFromResource(String resource, String profile, int index, int langsize) throws IOException {
+    public void loadProfileFromResource(String resource,  int index, int langsize) throws IOException {
+        String profile = "/langdetect/" + (this.profile != null ? this.profile + "/" : "");
         InputStream in = getClass().getResourceAsStream(profile + resource);
         if (in == null) {
             throw new IOException("profile '" + resource + "' not found");
@@ -215,13 +231,6 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
                 wordLangProbMap.get(word)[index] = prob;
             }
         }
-    }
-
-    public void setProfile(String profile) throws LanguageDetectionException {
-        this.profile = profile;
-        langlist.clear();
-        load(settings);
-        init();
     }
 
     public String getProfile() {
@@ -343,5 +352,4 @@ public class LangdetectService extends AbstractLifecycleComponent<LangdetectServ
         }
         return list;
     }
-
 }

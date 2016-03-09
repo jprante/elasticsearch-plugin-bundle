@@ -24,11 +24,9 @@ public class NodeTestUtils {
     public static Node createNode() {
         Settings nodeSettings = Settings.settingsBuilder()
                 .put("path.home", System.getProperty("path.home"))
-                .put("client.type", "node")
                 .put("index.number_of_shards", 1)
-                .put("index.number_of_replicas", 0)
+                .put("index.number_of_replica", 0)
                 .build();
-        // ES 2.1 renders NodeBuilder as useless
         Node node = new MockNode(nodeSettings, BundlePlugin.class);
         node.start();
         return node;
@@ -47,7 +45,7 @@ public class NodeTestUtils {
         client = node.client();
     }
 
-    protected Client client(String id) {
+    protected Client client() {
         return client;
     }
 
@@ -70,8 +68,6 @@ public class NodeTestUtils {
                 Files.delete(dir);
                 return FileVisitResult.CONTINUE;
             }
-
         });
-
     }
 }

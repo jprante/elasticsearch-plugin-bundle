@@ -32,14 +32,10 @@ public class StandardnumberMapperModule extends AbstractModule {
         this.typeParser = typeParser;
     }
 
-    public StandardnumberMapperTypeParser getTypeParser() {
-        return typeParser;
-    }
-
     @Override
     protected void configure() {
         bind(StandardnumberService.class).asEagerSingleton();
-        bind(StandardnumberMapperTypeParser.class).toInstance(getTypeParser());
+        bind(StandardnumberMapperTypeParser.class).toInstance(typeParser);
     }
 
 }

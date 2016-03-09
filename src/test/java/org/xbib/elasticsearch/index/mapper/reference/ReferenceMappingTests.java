@@ -10,6 +10,7 @@ import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.compress.CompressedXContent;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.ESLoggerFactory;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.mapper.DocumentMapper;
 import org.elasticsearch.index.mapper.DocumentMapperParser;
 import org.elasticsearch.index.mapper.ParseContext;
@@ -59,7 +60,7 @@ public class ReferenceMappingTests extends Assert {
         json = jsonBuilder().startObject().field("author", "John Doe").endObject().bytes();
         client.prepareIndex("authorities", "persons", "1").setSource(json).execute().actionGet();
 
-        mapperParser = MapperTestUtils.newMapperParser(client);
+        mapperParser = MapperTestUtils.newMapperService(Settings.EMPTY, client).documentMapperParser();
     }
 
     @After

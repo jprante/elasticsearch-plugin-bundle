@@ -1,4 +1,4 @@
-package org.xbib.elasticsearch.index.analysis.naturalsort;
+package org.xbib.elasticsearch.index.mapper.langdetect;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.settings.Settings;
@@ -16,28 +16,28 @@ public class NaturalSortKeyTests extends NodeTestUtils {
         Settings settings = Settings.settingsBuilder()
                 .build();
 
-        client("1").admin().indices().prepareCreate("test")
+        client().admin().indices().prepareCreate("test")
                 .setSettings(settings)
                 .addMapping("type1",
                         "{ type1 : { properties : { points : { type : \"string\", fields : { sort : { type : \"string\", analyzer : \"naturalsort\" } } } } } }")
                 .execute().actionGet();
 
-        client("1").admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
+        client().admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
 
         String[] words = new String[]{
                 "Bob: 3 points", "Bob: 10 points", "Bob: 2 points"
         };
 
         for (String word : words) {
-            client("1").prepareIndex("test", "type1")
+            client().prepareIndex("test", "type1")
                     .setSource(jsonBuilder().startObject()
                             .field("points", word)
                             .endObject()).execute().actionGet();
         }
 
-        client("1").admin().indices().prepareRefresh().execute().actionGet();
+        client().admin().indices().prepareRefresh().execute().actionGet();
 
-        SearchResponse searchResponse = client("1").prepareSearch()
+        SearchResponse searchResponse = client().prepareSearch()
                 .addField("points")
                 .addSort("points.sort", SortOrder.ASC)
                 .execute().actionGet();
@@ -54,25 +54,25 @@ public class NaturalSortKeyTests extends NodeTestUtils {
         Settings settings = Settings.settingsBuilder()
                 .build();
 
-        client("1").admin().indices().prepareCreate("test")
+        client().admin().indices().prepareCreate("test")
                 .setSettings(settings)
                 .addMapping("type1", "{ type1 : { properties : { points : { type : \"string\", fields : { sort : { type : \"string\", analyzer : \"naturalsort\" } } } } } }")
                 .execute().actionGet();
 
-        client("1").admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
+        client().admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
 
         String[] words = new String[] {
                 "7 201 2 1", "7 25 2 1", "7 1 1 1", "7 10 1 1", "7 2 1 2", "7 20 2 1"
         };
 
         for (String word : words) {
-            client("1").prepareIndex("test", "type1")
+            client().prepareIndex("test", "type1")
                   .setSource(jsonBuilder().startObject().field("points", word).endObject()).execute().actionGet();
         }
 
-        client("1").admin().indices().prepareRefresh().execute().actionGet();
+        client().admin().indices().prepareRefresh().execute().actionGet();
 
-            SearchResponse searchResponse = client("1").prepareSearch()
+            SearchResponse searchResponse = client().prepareSearch()
                     .addField("points")
                     .addSort("points.sort", SortOrder.ASC)
                     .execute().actionGet();
@@ -84,7 +84,7 @@ public class NaturalSortKeyTests extends NodeTestUtils {
         assertEquals("7 25 2 1", searchResponse.getHits().getAt(4).field("points").getValue().toString());
         assertEquals("7 201 2 1", searchResponse.getHits().getAt(5).field("points").getValue().toString());
 
-        searchResponse = client("1").prepareSearch()
+        searchResponse = client().prepareSearch()
                     .addField("points")
                     .addSort("points.sort", SortOrder.DESC)
                     .execute().actionGet();
@@ -102,25 +102,25 @@ public class NaturalSortKeyTests extends NodeTestUtils {
         Settings settings = Settings.settingsBuilder()
                 .build();
 
-        client("1").admin().indices().prepareCreate("test")
+        client().admin().indices().prepareCreate("test")
                 .setSettings(settings)
                 .addMapping("type1", "{ type1 : { properties : { notation : { type : \"string\", fields : { sort : { type : \"string\", analyzer : \"naturalsort\" } } } } } }")
                 .execute().actionGet();
 
-        client("1").admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
+        client().admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
 
         String[] notations = new String[] {
                 "10.10.1", "10.1.1", "2.11.0", "2.10.1", "2.1.1", "1.10.0", "1.0.0"
         };
 
         for (String notation : notations) {
-            client("1").prepareIndex("test", "type1")
+            client().prepareIndex("test", "type1")
                     .setSource(jsonBuilder().startObject().field("notation", notation).endObject()).execute().actionGet();
         }
 
-        client("1").admin().indices().prepareRefresh().execute().actionGet();
+        client().admin().indices().prepareRefresh().execute().actionGet();
 
-            SearchResponse searchResponse = client("1").prepareSearch()
+            SearchResponse searchResponse = client().prepareSearch()
                     .addField("notation")
                     .addSort("notation.sort", SortOrder.ASC)
                     .execute().actionGet();

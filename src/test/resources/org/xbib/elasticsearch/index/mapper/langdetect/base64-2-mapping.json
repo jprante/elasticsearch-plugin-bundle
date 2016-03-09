@@ -1,0 +1,18 @@
+{
+  "someType" : {
+    "properties": {
+      "content": {
+        "type": "multi_field",
+        "fields": {
+          "content": {
+            "type": "string"
+          },
+          "language": {
+            "type": "langdetect",
+            "binary" : true
+          }
+        }
+      }
+    }
+  }
+}
