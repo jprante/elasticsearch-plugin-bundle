@@ -344,7 +344,7 @@ The base form reduction step (for Norwegian) is described in
     {
        "query" : {
            "term" : {
-                "content" : "eng"
+                "content" : "en"
            }
        }
     }
@@ -353,7 +353,7 @@ The base form reduction step (for Norwegian) is described in
     {
        "query" : {
            "term" : {
-                "content" : "ger"
+                "content" : "de"
            }
        }
     }
@@ -363,7 +363,7 @@ The base form reduction step (for Norwegian) is described in
     {
        "query" : {
            "term" : {
-                "content" : "fre"
+                "content" : "fr"
            }
        }
     }
