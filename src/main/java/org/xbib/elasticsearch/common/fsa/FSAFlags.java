@@ -53,7 +53,9 @@ public enum FSAFlags {
     }
 
     /**
-     * Returns <code>true</code> if the corresponding flag is set in the bit set.
+     * @param flag flag
+     * @param flags flags
+     * @return <code>true</code> if the corresponding flag is set in the bit set.
      */
     public static boolean isSet(int flags, FSAFlags flag) {
         return (flags & flag.bits) != 0;

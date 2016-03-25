@@ -79,6 +79,7 @@ public interface StandardNumber {
 
     /**
      * Indicate that a correct check sum should be computed.
+     * @param withChecksum if checksum is included
      * @return this standard number
      */
     StandardNumber createChecksum(boolean withChecksum);

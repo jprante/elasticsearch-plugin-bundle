@@ -48,16 +48,16 @@ public abstract class FSA implements Iterable<ByteBuffer> {
     public abstract int getArc(int node, byte label);
 
     /**
-     * Return the label associated with a given <code>arc</code>.
      * @param arc arc
+     * @return the label associated with a given <code>arc</code>.
      */
     public abstract byte getArcLabel(int arc);
 
     /**
-     * Returns <code>true</code> if the destination node at the end of this
+     * @param arc arc
+     * @return <code>true</code> if the destination node at the end of this
      * <code>arc</code> corresponds to an input sequence created when building
      * this automaton.
-     * @param arc arc
      */
     public abstract boolean isArcFinal(int arc);
 
@@ -66,6 +66,8 @@ public abstract class FSA implements Iterable<ByteBuffer> {
      * terminating node (@link {@link #getEndNode(int)} will throw an
      * exception). Implies {@link #isArcFinal(int)}.
      * @param arc arc
+     * @return <code>true</code> if this <code>arc</code> does not have a
+     * terminating node
      */
     public abstract boolean isArcTerminal(int arc);
 
@@ -74,11 +76,13 @@ public abstract class FSA implements Iterable<ByteBuffer> {
      * (those that point to a terminal state) have no end node representation
      * and throw a runtime exception.
      * @param arc arc
+     * @return int
      */
     public abstract int getEndNode(int arc);
 
     /**
      * Returns a set of flags for this FSA instance.
+     * @return set
      */
     public abstract Set<FSAFlags> getFlags();
 
@@ -124,6 +128,7 @@ public abstract class FSA implements Iterable<ByteBuffer> {
     /**
      * An alias of calling {@link #iterator} directly ({@link FSA} is also
      * {@link Iterable}).
+     * @return iterable
      */
     public final Iterable<ByteBuffer> getSequences() {
         return getSequences(getRootNode());
@@ -138,6 +143,7 @@ public abstract class FSA implements Iterable<ByteBuffer> {
      * Important: It is guaranteed that the returned byte buffer is
      * backed by a byte array and that the content of the byte buffer starts at
      * the array's index 0.
+     * @return iterator
      */
     public final Iterator<ByteBuffer> iterator() {
         return getSequences().iterator();
@@ -148,6 +154,9 @@ public abstract class FSA implements Iterable<ByteBuffer> {
      * than traversing the automaton in post or preorder since it can scan states
      * linearly. Returning false from {@link StateVisitor#accept(int)}
      * immediately terminates the traversal.
+     * @param <T> type
+     * @param v v
+     * @return state visitor
      */
     public <T extends StateVisitor> T visitAllStates(T v) {
         return visitInPostOrder(v);
@@ -156,6 +165,9 @@ public abstract class FSA implements Iterable<ByteBuffer> {
     /**
      * Same as {@link #visitInPostOrder(StateVisitor, int)},
      * starting from root automaton node.
+     * @param <T> type
+     * @param v v
+     * @return state visitor
      */
     public <T extends StateVisitor> T visitInPostOrder(T v) {
         return visitInPostOrder(v, getRootNode());
@@ -165,6 +177,10 @@ public abstract class FSA implements Iterable<ByteBuffer> {
      * Visits all states reachable from <code>node</code> in postorder.
      * Returning false from {@link StateVisitor#accept(int)}
      * immediately terminates the traversal.
+     * @param <T> type
+     * @param v v
+     * @param node node
+     * @return state visitor
      */
     public <T extends StateVisitor> T visitInPostOrder(T v, int node) {
         visitInPostOrder(v, node, new BitSet());
@@ -191,6 +207,9 @@ public abstract class FSA implements Iterable<ByteBuffer> {
 
     /**
      * Same as {@link #visitInPreOrder(StateVisitor, int)}, starting from root automaton node.
+     * @param <T> type
+     * @param v v
+     * @return state visitor
      */
     public <T extends StateVisitor> T visitInPreOrder(T v) {
         return visitInPreOrder(v, getRootNode());
@@ -199,6 +218,10 @@ public abstract class FSA implements Iterable<ByteBuffer> {
     /**
      * Visits all states in preorder. Returning false from {@link StateVisitor#accept(int)}
      * skips traversal of all sub-states of a given state.
+     * @param <T> type
+     * @param v v
+     * @param node node
+     * @return state visitor
      */
     public <T extends StateVisitor> T visitInPreOrder(T v, int node) {
         visitInPreOrder(v, node, new BitSet());

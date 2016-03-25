@@ -12,6 +12,7 @@ public final class FSATraversal {
 
     /**
      * Traversals of the given FSA.
+     * @param fsa fsa
      */
     public FSATraversal(FSA fsa) {
         this.fsa = fsa;
@@ -22,8 +23,10 @@ public final class FSATraversal {
      * that {@link FSA} is built with {@link FSAFlags#NUMBERS} and corresponds to the sequential
      * order of input sequences used at automaton construction time.
      *
+     * @param sequence sequence
      * @param start  Start index in the sequence array.
      * @param length Length of the byte sequence, must be at least 1.
+     * @param node node
      * @return Returns a unique integer assigned to the input sequence in the automaton (reflecting
      * the number of that sequence in the input used to build the automaton). Returns a negative
      * integer if the input sequence was not part of the input from which the automaton was created.
@@ -80,17 +83,14 @@ public final class FSATraversal {
     }
 
     /**
-     * @see #perfectHash(byte[], int, int, int)
-     */
-    public int perfectHash(byte[] sequence) {
-        return perfectHash(sequence, 0, sequence.length, fsa.getRootNode());
-    }
-
-    /**
      * Same as {@link #match(byte[], int, int, int)}, but allows passing
      * a reusable {@link MatchResult} object so that no intermediate garbage is
      * produced.
-     *
+     * @param result result
+     * @param sequence sequence
+     * @param start start
+     * @param length length
+     * @param node node
      * @return The same object as <code>result</code>, but with reset internal
      * type and other fields.
      */
@@ -135,6 +135,7 @@ public final class FSATraversal {
      * @param start    Starting index in <code>sequence</code>.
      * @param length   How many symbols to consider from <code>sequence</code>?
      * @param node     Start node identifier in the FSA.
+     * @return match result
      */
     public MatchResult match(byte[] sequence, int start, int length, int node) {
         return match(new MatchResult(), sequence, start, length, node);

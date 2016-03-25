@@ -58,6 +58,7 @@ public final class HyphenTokenizer extends Tokenizer {
     /**
      * Set the max allowed token length.  Any token longer
      * than this is skipped.
+     * @param length length
      */
     public void setMaxTokenLength(int length) {
         if (length < 1) {
@@ -68,6 +69,7 @@ public final class HyphenTokenizer extends Tokenizer {
 
     /**
      * @see #setMaxTokenLength
+     * @return max token length
      */
     public int getMaxTokenLength() {
         return maxTokenLength;
@@ -84,6 +86,7 @@ public final class HyphenTokenizer extends Tokenizer {
 
     /**
      * Creates a new {@link HyphenTokenizer} with a given {@link org.apache.lucene.util.AttributeFactory}
+     * @param factory factory
      */
     public HyphenTokenizer(AttributeFactory factory) {
         super(factory);

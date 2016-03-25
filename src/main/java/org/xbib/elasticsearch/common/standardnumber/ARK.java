@@ -105,7 +105,7 @@ public class ARK extends AbstractStandardNumber implements Comparable<ARK> {
      * No verification.
      *
      * @return this ARK
-     * @throws NumberFormatException
+     * @throws NumberFormatException if verification failed
      */
     @Override
     public ARK verify() throws NumberFormatException {

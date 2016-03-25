@@ -147,7 +147,9 @@ public final class FSABuilder {
         this(BUFFER_GROWTH_SIZE);
     }
 
-    /** */
+    /**
+     * @param bufferGrowthSize buffer growth size
+     */
     public FSABuilder(int bufferGrowthSize) {
         this.bufferGrowthSize = Math.max(bufferGrowthSize, ARC_SIZE * MAX_LABELS);
         // Allocate epsilon state.
@@ -161,6 +163,10 @@ public final class FSABuilder {
     /**
      * Add a single sequence of bytes to the FSA. The input must be lexicographically greater
      * than any previously added sequence.
+     * @param sequence sequence
+     * @param start start
+     * @param len len
+     *
      */
     public void add(byte[] sequence, int start, int len) {
         assert serialized != null : "Automaton already built.";
@@ -198,6 +204,7 @@ public final class FSABuilder {
 
     /**
      * Complete the automaton.
+     * @return FSA
      */
     public FSA complete() {
         add(new byte[0], 0, 0);
@@ -226,6 +233,8 @@ public final class FSABuilder {
 
     /**
      * Build a minimal, deterministic automaton from a sorted list of byte sequences.
+     * @param input input
+     * @return FSA
      */
     public static FSA build(byte[][] input) {
         final FSABuilder builder = new FSABuilder();
@@ -237,6 +246,8 @@ public final class FSABuilder {
 
     /**
      * Build a minimal, deterministic automaton from an iterable list of byte sequences.
+     * @param input input
+     * @return FSA
      */
     public static FSA build(Iterable<byte[]> input) {
         final FSABuilder builder = new FSABuilder();
@@ -247,7 +258,7 @@ public final class FSABuilder {
     }
 
     /**
-     * Return various statistics concerning the FSA and its compilation.
+     * @return various statistics concerning the FSA and its compilation.
      */
     public Map<InfoEntry, Object> getInfo() {
         return info;
@@ -469,6 +480,14 @@ public final class FSABuilder {
     /**
      * Lexicographic order of input sequences. By default, consistent with the "C" sort
      * (absolute value of bytes, 0-255).
+     * @param s1 s1
+     * @param start1 start1
+     * @param lens1 lens1
+     * @param s2 s2
+     * @param start2 start2
+     * @param lens2 lens2
+     * @return diffence of length
+     *
      */
     public static int compare(byte[] s1, int start1, int lens1,
                               byte[] s2, int start2, int lens2) {
