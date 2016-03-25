@@ -30,6 +30,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.settings.IndexSettingsService;
+import org.xbib.elasticsearch.common.fsa.Dictionary;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

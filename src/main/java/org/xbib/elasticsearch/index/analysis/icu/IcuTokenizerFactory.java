@@ -47,7 +47,6 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * ICU-based tokenizer, optionally using ICU rbbi rules files.
  */
@@ -69,7 +68,7 @@ public class IcuTokenizerFactory extends AbstractTokenizerFactory {
                 // "rulefiles" : "Latn:my.Latin.rules.rbbi,Cyrl:my.Cyrillic.rules.rbbi"
                 int colonPos = scriptAndResourcePath.indexOf(":");
                 String scriptCode = scriptAndResourcePath.substring(0, colonPos).trim();
-                String resourcePath = scriptAndResourcePath.substring(colonPos+1).trim();
+                String resourcePath = scriptAndResourcePath.substring(colonPos + 1).trim();
                 tailored.put(UCharacter.getPropertyValueEnum(UProperty.SCRIPT, scriptCode), resourcePath);
             }
         }
@@ -77,7 +76,7 @@ public class IcuTokenizerFactory extends AbstractTokenizerFactory {
             this.config = new DefaultIcuTokenizerConfig(cjkAsWords);
         } else {
             final BreakIterator breakers[] = new BreakIterator[UScript.CODE_LIMIT];
-            for (Map.Entry<Integer,String> entry : tailored.entrySet()) {
+            for (Map.Entry<Integer, String> entry : tailored.entrySet()) {
                 int code = entry.getKey();
                 String resourcePath = entry.getValue();
                 StringBuilder rules = new StringBuilder();

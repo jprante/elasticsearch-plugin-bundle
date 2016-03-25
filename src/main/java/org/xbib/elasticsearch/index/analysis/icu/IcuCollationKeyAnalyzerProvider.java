@@ -58,11 +58,6 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
         this.collator = createCollator(settings);
     }
 
-    @Override
-    public IcuCollationKeyAnalyzer get() {
-        return new IcuCollationKeyAnalyzer(collator);
-    }
-
     public static Collator createCollator(Settings settings) {
         Collator collator;
         String rules = settings.get("rules");
@@ -160,6 +155,11 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
         int maxVariable = settings.getAsInt("variableTop", Collator.ReorderCodes.DEFAULT);
         rbc.setMaxVariable(maxVariable);
         return collator;
+    }
+
+    @Override
+    public IcuCollationKeyAnalyzer get() {
+        return new IcuCollationKeyAnalyzer(collator);
     }
 
 }

@@ -52,7 +52,7 @@ public final class IcuNumberFormatTokenFilter extends TokenFilter {
             if (parsePosition.getIndex() > 0) {
                 // zehn-tausend -> zehntausend
                 // one hundred thousand -> onehundredthousand
-                s = numberFormat.format(result).replaceAll("[\u00AD\u0020]","");
+                s = numberFormat.format(result).replaceAll("[\u00AD\u0020]", "");
             }
             termAtt.setEmpty().append(s);
             return true;

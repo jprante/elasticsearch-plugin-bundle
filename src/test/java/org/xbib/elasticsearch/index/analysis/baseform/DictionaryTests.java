@@ -2,6 +2,7 @@ package org.xbib.elasticsearch.index.analysis.baseform;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.xbib.elasticsearch.common.fsa.Dictionary;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -33,6 +33,7 @@ import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.rest.RestModule;
 import org.xbib.elasticsearch.action.langdetect.LangdetectAction;
 import org.xbib.elasticsearch.action.langdetect.TransportLangdetectAction;
+import org.xbib.elasticsearch.index.analysis.autophrase.AutoPhrasingAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.baseform.BaseformAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.concat.ConcatAnalysisBinderProcessor;
 import org.xbib.elasticsearch.index.analysis.decompound.DecompoundAnalysisBinderProcessor;
@@ -160,6 +161,9 @@ public class BundlePlugin extends Plugin {
         }
         if (settings.getAsBoolean("plugins.naturalsort.enabled", true)) {
             module.addProcessor(new NaturalSortAnalysisBinderProcessor());
+        }
+        if (settings.getAsBoolean("plugins.autophrase.enabled", true)) {
+            module.addProcessor(new AutoPhrasingAnalysisBinderProcessor());
         }
     }
 

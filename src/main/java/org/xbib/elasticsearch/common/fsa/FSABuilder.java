@@ -1,18 +1,18 @@
-package org.xbib.elasticsearch.index.analysis.baseform;
+package org.xbib.elasticsearch.common.fsa;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static org.xbib.elasticsearch.index.analysis.baseform.ConstantArcSizeFSA.ADDRESS_OFFSET;
-import static org.xbib.elasticsearch.index.analysis.baseform.ConstantArcSizeFSA.ARC_SIZE;
-import static org.xbib.elasticsearch.index.analysis.baseform.ConstantArcSizeFSA.BIT_ARC_FINAL;
-import static org.xbib.elasticsearch.index.analysis.baseform.ConstantArcSizeFSA.BIT_ARC_LAST;
-import static org.xbib.elasticsearch.index.analysis.baseform.ConstantArcSizeFSA.FLAGS_OFFSET;
-import static org.xbib.elasticsearch.index.analysis.baseform.ConstantArcSizeFSA.LABEL_OFFSET;
-import static org.xbib.elasticsearch.index.analysis.baseform.ConstantArcSizeFSA.TARGET_ADDRESS_SIZE;
-import static org.xbib.elasticsearch.index.analysis.baseform.ConstantArcSizeFSA.TERMINAL_STATE;
+import static org.xbib.elasticsearch.common.fsa.ConstantArcSizeFSA.ADDRESS_OFFSET;
+import static org.xbib.elasticsearch.common.fsa.ConstantArcSizeFSA.ARC_SIZE;
+import static org.xbib.elasticsearch.common.fsa.ConstantArcSizeFSA.BIT_ARC_FINAL;
+import static org.xbib.elasticsearch.common.fsa.ConstantArcSizeFSA.BIT_ARC_LAST;
+import static org.xbib.elasticsearch.common.fsa.ConstantArcSizeFSA.FLAGS_OFFSET;
+import static org.xbib.elasticsearch.common.fsa.ConstantArcSizeFSA.LABEL_OFFSET;
+import static org.xbib.elasticsearch.common.fsa.ConstantArcSizeFSA.TARGET_ADDRESS_SIZE;
+import static org.xbib.elasticsearch.common.fsa.ConstantArcSizeFSA.TERMINAL_STATE;
 
 /**
  * Fast, memory-conservative finite state automaton builder, returning a

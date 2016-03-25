@@ -32,6 +32,17 @@ public class NodeTestUtils {
         return node;
     }
 
+    public static Node createNodeWithoutPlugin() {
+        Settings nodeSettings = Settings.settingsBuilder()
+                .put("path.home", System.getProperty("path.home"))
+                .put("index.number_of_shards", 1)
+                .put("index.number_of_replica", 0)
+                .build();
+        Node node = new MockNode(nodeSettings);
+        node.start();
+        return node;
+    }
+
     public static void releaseNode(Node node) throws IOException {
         if (node != null) {
             node.close();

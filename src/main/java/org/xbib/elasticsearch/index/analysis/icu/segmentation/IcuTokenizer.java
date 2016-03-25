@@ -17,6 +17,7 @@ import java.io.Reader;
  * (http://www.unicode.org/reports/tr29/)
  * Words are broken across script boundaries, then segmented according to
  * the BreakIterator and typing provided by the {@link IcuTokenizerConfig}
+ *
  * @see IcuTokenizerConfig
  */
 public final class IcuTokenizer extends Tokenizer {
@@ -24,6 +25,12 @@ public final class IcuTokenizer extends Tokenizer {
     private static final int IOBUFFER = 4096;
 
     private final char buffer[] = new char[IOBUFFER];
+    private final CompositeBreakIterator breaker; /* tokenizes a char[] of text */
+    private final IcuTokenizerConfig config;
+    private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
+    private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
+    private final TypeAttribute typeAtt = addAttribute(TypeAttribute.class);
+    private final ScriptAttribute scriptAtt = addAttribute(ScriptAttribute.class);
     /**
      * true length of text in the buffer
      */
@@ -36,13 +43,6 @@ public final class IcuTokenizer extends Tokenizer {
      * accumulated offset of previous buffers for this reader, for offsetAtt
      */
     private int offset = 0;
-
-    private final CompositeBreakIterator breaker; /* tokenizes a char[] of text */
-    private final IcuTokenizerConfig config;
-    private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
-    private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
-    private final TypeAttribute typeAtt = addAttribute(TypeAttribute.class);
-    private final ScriptAttribute scriptAtt = addAttribute(ScriptAttribute.class);
 
     /**
      * Construct a new ICUTokenizer that breaks text into words from the given
@@ -80,6 +80,23 @@ public final class IcuTokenizer extends Tokenizer {
         breaker = new CompositeBreakIterator(config);
     }
 
+    /**
+     * commons-io's readFully, but without bugs if offset != 0
+     */
+    private static int read(Reader input, char[] buffer, int offset, int length) throws IOException {
+        assert length >= 0 : "length must not be negative: " + length;
+        int remaining = length;
+        while (remaining > 0) {
+            int location = length - remaining;
+            int count = input.read(buffer, offset + location, remaining);
+            if (-1 == count) { // EOF
+                break;
+            }
+            remaining -= count;
+        }
+        return length - remaining;
+    }
+
     @Override
     public boolean incrementToken() throws IOException {
         clearAttributes();
@@ -103,13 +120,6 @@ public final class IcuTokenizer extends Tokenizer {
         length = usableLength = offset = 0;
     }
 
-    @Override
-    public void end() throws IOException {
-        super.end();
-        final int finalOffset = (length < 0) ? offset : offset + length;
-        offsetAtt.setOffset(correctOffset(finalOffset), correctOffset(finalOffset));
-    }
-
   /*
    * This tokenizes text based upon the longest matching rule, and because of 
    * this, isn't friendly to a Reader.
@@ -123,6 +133,13 @@ public final class IcuTokenizer extends Tokenizer {
    * an entire 4kB chunk of text (binary data). So there is a maximum word limit
    * of 4kB since it will not try to grow the buffer in this case.
    */
+
+    @Override
+    public void end() throws IOException {
+        super.end();
+        final int finalOffset = (length < 0) ? offset : offset + length;
+        offsetAtt.setOffset(correctOffset(finalOffset), correctOffset(finalOffset));
+    }
 
     /**
      * Returns the last unambiguous break position in the text.
@@ -163,23 +180,6 @@ public final class IcuTokenizer extends Tokenizer {
             }
         }
         breaker.setText(buffer, 0, Math.max(0, usableLength));
-    }
-
-    /**
-     * commons-io's readFully, but without bugs if offset != 0
-     */
-    private static int read(Reader input, char[] buffer, int offset, int length) throws IOException {
-        assert length >= 0 : "length must not be negative: " + length;
-        int remaining = length;
-        while (remaining > 0) {
-            int location = length - remaining;
-            int count = input.read(buffer, offset + location, remaining);
-            if (-1 == count) { // EOF
-                break;
-            }
-            remaining -= count;
-        }
-        return length - remaining;
     }
 
     /*

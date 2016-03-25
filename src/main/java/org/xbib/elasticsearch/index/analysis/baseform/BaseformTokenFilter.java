@@ -29,6 +29,7 @@ import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PackedTokenAttributeImpl;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.util.AttributeSource;
+import org.xbib.elasticsearch.common.fsa.Dictionary;
 
 import java.io.IOException;
 import java.nio.charset.CharacterCodingException;

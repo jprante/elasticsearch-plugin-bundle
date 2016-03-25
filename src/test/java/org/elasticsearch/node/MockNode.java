@@ -19,10 +19,17 @@ public class MockNode extends Node {
         this(settings, list(classpathPlugin));
     }
 
+    public MockNode(Settings settings) {
+        this(settings, list());
+    }
+
+    private static Collection<Class<? extends Plugin>> list() {
+        return new ArrayList<>();
+    }
+
     private static Collection<Class<? extends Plugin>> list(Class<? extends Plugin> classpathPlugin) {
         Collection<Class<? extends Plugin>> list = new ArrayList<>();
         list.add(classpathPlugin);
         return list;
     }
-
 }

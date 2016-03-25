@@ -1,9 +1,4 @@
-package org.xbib.elasticsearch.index.analysis.baseform;
-
-import static org.xbib.elasticsearch.index.analysis.baseform.MatchResult.AUTOMATON_HAS_PREFIX;
-import static org.xbib.elasticsearch.index.analysis.baseform.MatchResult.EXACT_MATCH;
-import static org.xbib.elasticsearch.index.analysis.baseform.MatchResult.NO_MATCH;
-import static org.xbib.elasticsearch.index.analysis.baseform.MatchResult.SEQUENCE_IS_A_PREFIX;
+package org.xbib.elasticsearch.common.fsa;
 
 /**
  * This class implements some common matching and scanning operations on a
@@ -55,12 +50,12 @@ public final class FSATraversal {
 
                 if (fsa.isArcTerminal(arc)) {
                     /* The automaton contains a prefix of the input sequence. */
-                    return AUTOMATON_HAS_PREFIX;
+                    return MatchResult.AUTOMATON_HAS_PREFIX;
                 }
 
                 // The sequence is a prefix of one of the sequences stored in the automaton.
                 if (seqIndex == end) {
-                    return SEQUENCE_IS_A_PREFIX;
+                    return MatchResult.SEQUENCE_IS_A_PREFIX;
                 }
 
                 // Make a transition along the arc, go the target node's first arc.
@@ -81,7 +76,7 @@ public final class FSATraversal {
 
         // Labels of this node ended without a match on the sequence.
         // Perfect hash does not exist.
-        return NO_MATCH;
+        return MatchResult.NO_MATCH;
     }
 
     /**
@@ -102,7 +97,7 @@ public final class FSATraversal {
     public MatchResult match(MatchResult result,
                              byte[] sequence, int start, int length, int node) {
         if (node == 0) {
-            result.reset(NO_MATCH, start, node);
+            result.reset(MatchResult.NO_MATCH, start, node);
             return result;
         }
         final FSA fsa = this.fsa;
@@ -112,23 +107,23 @@ public final class FSATraversal {
             if (arc != 0) {
                 if (fsa.isArcFinal(arc) && i + 1 == end) {
                     /* The automaton has an exact match of the input sequence. */
-                    result.reset(EXACT_MATCH, i, node);
+                    result.reset(MatchResult.EXACT_MATCH, i, node);
                     return result;
                 }
                 if (fsa.isArcTerminal(arc)) {
 					/* The automaton contains a prefix of the input sequence. */
-                    result.reset(AUTOMATON_HAS_PREFIX, i + 1, 0);
+                    result.reset(MatchResult.AUTOMATON_HAS_PREFIX, i + 1, 0);
                     return result;
                 }
                 // Make a transition along the arc.
                 node = fsa.getEndNode(arc);
             } else {
-                result.reset(NO_MATCH, i, node);
+                result.reset(MatchResult.NO_MATCH, i, node);
                 return result;
             }
         }
 		/* The sequence is a prefix of at least one sequence in the automaton. */
-        result.reset(SEQUENCE_IS_A_PREFIX, 0, node);
+        result.reset(MatchResult.SEQUENCE_IS_A_PREFIX, 0, node);
         return result;
     }
 

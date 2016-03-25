@@ -22,9 +22,9 @@
  */
 package org.xbib.elasticsearch.index.analysis.icu;
 
+import com.ibm.icu.text.FilteredNormalizer2;
 import com.ibm.icu.text.Normalizer2;
-import org.apache.lucene.analysis.icu.ICUFoldingFilter;
-import org.apache.lucene.analysis.icu.ICUNormalizer2CharFilter;
+import com.ibm.icu.text.UnicodeSet;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
@@ -32,6 +32,7 @@ import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractCharFilterFactory;
 import org.elasticsearch.index.settings.IndexSettingsService;
 
+import java.io.InputStream;
 import java.io.Reader;
 
 /**
@@ -50,10 +51,35 @@ public class IcuFoldingCharFilterFactory extends AbstractCharFilterFactory {
                                        @Assisted String name,
                                        @Assisted Settings settings) {
         super(index, indexSettingsService.indexSettings(), name);
-        String normalizationName = "utr30";
-        Normalizer2.Mode normalizationMode = Normalizer2.Mode.COMPOSE;
-        this.normalizer =  Normalizer2.getInstance(ICUFoldingFilter.class.getResourceAsStream("utr30.nrm"),
-                normalizationName, normalizationMode);
+        String normalizationName = settings.get("name", "utr30");
+        Normalizer2.Mode normalizationMode;
+        switch (settings.get("mode", "compose")) {
+            case "compose_contiguous":
+                normalizationMode = Normalizer2.Mode.COMPOSE_CONTIGUOUS;
+                break;
+            case "decompose":
+                normalizationMode = Normalizer2.Mode.DECOMPOSE;
+                break;
+            case "fcd":
+                normalizationMode = Normalizer2.Mode.FCD;
+                break;
+            default:
+                normalizationMode = Normalizer2.Mode.COMPOSE;
+                break;
+        }
+        InputStream inputStream = null;
+        if ("utr30".equals(normalizationName)) {
+            inputStream = getClass().getResourceAsStream("/icu/utr30.nrm");
+        }
+        Normalizer2 base = Normalizer2.getInstance(inputStream, normalizationName, normalizationMode);
+        String unicodeSetFilter = settings.get("unicodeSetFilter");
+        if (unicodeSetFilter != null) {
+            UnicodeSet unicodeSet = new UnicodeSet(unicodeSetFilter);
+            unicodeSet.freeze();
+            this.normalizer = new FilteredNormalizer2(base, unicodeSet);
+        } else {
+            this.normalizer = base;
+        }
     }
 
     @Override

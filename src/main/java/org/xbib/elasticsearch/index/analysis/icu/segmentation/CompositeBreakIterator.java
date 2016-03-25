@@ -23,11 +23,8 @@ final class CompositeBreakIterator {
     private final IcuTokenizerConfig config;
 
     private final BreakIteratorWrapper wordBreakers[] = new BreakIteratorWrapper[UScript.CODE_LIMIT];
-
-    private BreakIteratorWrapper rbbi;
-
     private final ScriptIterator scriptIterator;
-
+    private BreakIteratorWrapper rbbi;
     private char text[];
 
     CompositeBreakIterator(IcuTokenizerConfig config) {

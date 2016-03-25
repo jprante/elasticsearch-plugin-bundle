@@ -23,27 +23,39 @@ import com.ibm.icu.text.UTF16;
  */
 final class ScriptIterator {
 
-    private char text[];
+    /**
+     * linear fast-path for basic latin case
+     */
+    private static final int basicLatin[] = new int[128];
 
-    private int start;
-
-    private int limit;
-
-    private int index;
-
-    private int scriptStart;
-
-    private int scriptLimit;
-
-    private int scriptCode;
+    static {
+        for (int i = 0; i < basicLatin.length; i++) {
+            basicLatin[i] = UScript.getScript(i);
+        }
+    }
 
     private final boolean combineCJ;
+    private char text[];
+    private int start;
+    private int limit;
+    private int index;
+    private int scriptStart;
+    private int scriptLimit;
+    private int scriptCode;
 
     /**
      * @param combineCJ if true: Han,Hiragana,Katakana will all return as {@link UScript#JAPANESE}
      */
     ScriptIterator(boolean combineCJ) {
         this.combineCJ = combineCJ;
+    }
+
+    /**
+     * Determine if two scripts are compatible.
+     */
+    private static boolean isSameScript(int scriptOne, int scriptTwo) {
+        return scriptOne <= UScript.INHERITED || scriptTwo <= UScript.INHERITED
+                || scriptOne == scriptTwo;
     }
 
     /**
@@ -112,14 +124,6 @@ final class ScriptIterator {
     }
 
     /**
-     * Determine if two scripts are compatible.
-     */
-    private static boolean isSameScript(int scriptOne, int scriptTwo) {
-        return scriptOne <= UScript.INHERITED || scriptTwo <= UScript.INHERITED
-                || scriptOne == scriptTwo;
-    }
-
-    /**
      * Set a new region of text to be examined by this iterator
      *
      * @param text   text buffer to examine
@@ -134,17 +138,6 @@ final class ScriptIterator {
         this.scriptStart = start;
         this.scriptLimit = start;
         this.scriptCode = UScript.INVALID_CODE;
-    }
-
-    /**
-     * linear fast-path for basic latin case
-     */
-    private static final int basicLatin[] = new int[128];
-
-    static {
-        for (int i = 0; i < basicLatin.length; i++) {
-            basicLatin[i] = UScript.getScript(i);
-        }
     }
 
     /**

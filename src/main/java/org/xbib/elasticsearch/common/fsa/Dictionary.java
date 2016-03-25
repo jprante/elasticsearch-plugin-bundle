@@ -1,4 +1,4 @@
-package org.xbib.elasticsearch.index.analysis.baseform;
+package org.xbib.elasticsearch.common.fsa;
 
 import java.io.BufferedReader;
 import java.io.IOException;

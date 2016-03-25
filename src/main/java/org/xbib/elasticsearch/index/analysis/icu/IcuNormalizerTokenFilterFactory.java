@@ -32,7 +32,7 @@ import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.settings.IndexSettingsService;
 
 /**
- * Uses the {@link org.apache.lucene.analysis.icu.ICUNormalizer2Filter} to normalize tokens.
+ * Uses the {@link ICUNormalizer2Filter} to normalize tokens.
  *
  * The <code>name</code> can be used to provide the type of normalization to perform,
  * the <code>mode</code> can be used to provide the mode of normalization.
@@ -50,16 +50,24 @@ public class IcuNormalizerTokenFilterFactory extends AbstractTokenFilterFactory 
         String normalizationName = settings.get("name", "nfkc_cf");
         Normalizer2.Mode normalizationMode;
         switch (settings.get("mode", "compose")) {
-            case "compose_contiguous" : normalizationMode = Normalizer2.Mode.COMPOSE_CONTIGUOUS; break;
-            case "decompose" : normalizationMode = Normalizer2.Mode.DECOMPOSE; break;
-            case "fcd" : normalizationMode = Normalizer2.Mode.FCD; break;
-            default: normalizationMode = Normalizer2.Mode.COMPOSE; break;
+            case "compose_contiguous":
+                normalizationMode = Normalizer2.Mode.COMPOSE_CONTIGUOUS;
+                break;
+            case "decompose":
+                normalizationMode = Normalizer2.Mode.DECOMPOSE;
+                break;
+            case "fcd":
+                normalizationMode = Normalizer2.Mode.FCD;
+                break;
+            default:
+                normalizationMode = Normalizer2.Mode.COMPOSE;
+                break;
         }
-        this.normalizer =  Normalizer2.getInstance(null, normalizationName, normalizationMode);
+        this.normalizer = Normalizer2.getInstance(null, normalizationName, normalizationMode);
     }
 
     @Override
     public TokenStream create(TokenStream tokenStream) {
-        return new org.apache.lucene.analysis.icu.ICUNormalizer2Filter(tokenStream, normalizer);
+        return new ICUNormalizer2Filter(tokenStream, normalizer);
     }
 }

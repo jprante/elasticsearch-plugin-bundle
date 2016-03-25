@@ -31,6 +31,19 @@ abstract class BreakIteratorWrapper {
 
     protected int length;
 
+    /**
+     * If its a RuleBasedBreakIterator, the rule status can be used for token type. If its
+     * any other BreakIterator, the rulestatus method is not available, so treat
+     * it like a generic BreakIterator.
+     */
+    static BreakIteratorWrapper wrap(BreakIterator breakIterator) {
+        if (breakIterator instanceof RuleBasedBreakIterator) {
+            return new RBBIWrapper((RuleBasedBreakIterator) breakIterator);
+        } else {
+            return new BIWrapper(breakIterator);
+        }
+    }
+
     abstract int next();
 
     abstract int current();
@@ -45,19 +58,6 @@ abstract class BreakIteratorWrapper {
         this.length = length;
         textIterator.setText(text, start, length);
         setText(textIterator);
-    }
-
-    /**
-     * If its a RuleBasedBreakIterator, the rule status can be used for token type. If its
-     * any other BreakIterator, the rulestatus method is not available, so treat
-     * it like a generic BreakIterator.
-     */
-    static BreakIteratorWrapper wrap(BreakIterator breakIterator) {
-        if (breakIterator instanceof RuleBasedBreakIterator) {
-            return new RBBIWrapper((RuleBasedBreakIterator) breakIterator);
-        } else {
-            return new BIWrapper(breakIterator);
-        }
     }
 
     /**

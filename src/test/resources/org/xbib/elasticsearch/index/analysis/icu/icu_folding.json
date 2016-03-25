@@ -5,6 +5,33 @@
                 "my_icu_folder" : {
                    "type" : "icu_folding"
                 }
+            },
+            "tokenizer" : {
+                "my_icu_tokenizer" : {
+                    "type" : "icu_tokenizer"
+                }
+            },
+            "filter" : {
+                "my_icu_folder_filter" : {
+                    "type" : "icu_folding"
+                },
+                "my_icu_folder_filter_with_exceptions" : {
+                    "type" : "icu_folding",
+                    "name" : "utr30",
+                    "unicodeSetFilter" : "[^åäöÅÄÖ]"
+                }
+            },
+            "analyzer" : {
+                "my_icu_analyzer" : {
+                    "type" : "custom",
+                    "tokenizer" : "my_icu_tokenizer",
+                    "filter" : [ "my_icu_folder_filter" ]
+                },
+                "my_icu_analyzer_with_exceptions" : {
+                    "type" : "custom",
+                    "tokenizer" : "my_icu_tokenizer",
+                    "filter" : [ "my_icu_folder_filter_with_exceptions" ]
+                }
             }
         }
     }

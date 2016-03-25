@@ -48,22 +48,23 @@ public class IcuNumberFormatTokenFilterFactory extends AbstractTokenFilterFactor
         String formatStr = settings.get("format", "SPELLOUT");
         int format;
         switch (formatStr.toUpperCase()) {
-            case "SPELLOUT" :
+            case "SPELLOUT":
                 format = RuleBasedNumberFormat.SPELLOUT;
                 break;
-            case "DURATION" :
+            case "DURATION":
                 format = RuleBasedNumberFormat.DURATION;
                 break;
-            case "NUMBERING_SYSTEM" :
+            case "NUMBERING_SYSTEM":
                 format = RuleBasedNumberFormat.NUMBERING_SYSTEM;
                 break;
-            case "NUMBERSTYLE" :
+            case "NUMBERSTYLE":
                 format = RuleBasedNumberFormat.NUMBERSTYLE;
                 break;
-            case "ORDINAL" :
+            case "ORDINAL":
                 format = RuleBasedNumberFormat.ORDINAL;
                 break;
-            default: format = RuleBasedNumberFormat.SPELLOUT;
+            default:
+                format = RuleBasedNumberFormat.SPELLOUT;
                 break;
         }
         RuleBasedNumberFormat ruleBasedNumberFormat = new RuleBasedNumberFormat(locale, format);

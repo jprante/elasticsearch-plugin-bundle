@@ -1,5 +1,5 @@
 group = 'org.xbib.elasticsearch.plugin'
-version = '2.2.0.4'
+version = '2.2.0.5'
 
 ext {
     pluginName = 'bundle'
@@ -71,6 +71,7 @@ dependencies {
     testCompile "org.apache.logging.log4j:log4j-slf4j-impl:${versions.log4j}"
     testCompile "org.apache.logging.log4j:log4j-core:${versions.log4j}"
     jflex 'de.jflex:jflex:1.6.0'
+    releaseJars "${project.group}:${project.name}:${project.version}"
     wagon 'org.apache.maven.wagon:wagon-ssh-external:2.10'
 }
 
@@ -82,6 +83,7 @@ tasks.withType(JavaCompile) {
 }
 
 test {
+    //include '**/CustomTokenizerTest*'
     systemProperties['path.home'] = System.getProperty("user.dir")
     testLogging {
         showStandardStreams = false
@@ -108,7 +110,6 @@ task makePluginDescriptor(type: Copy) {
 }
 
 task buildPluginZip(type: Zip, dependsOn: [':jar', ':makePluginDescriptor']) {
-    from files(libsDir)
     from configurations.releaseJars
     from 'build/tmp/plugin'
     classifier = 'plugin'
@@ -116,7 +117,6 @@ task buildPluginZip(type: Zip, dependsOn: [':jar', ':makePluginDescriptor']) {
 
 task unpackPlugin(type: Copy, dependsOn: [':buildPluginZip']) {
     delete "plugins"
-    from files(libsDir)
     from configurations.releaseJars
     from 'build/tmp/plugin'
     into "plugins/${pluginName}"
