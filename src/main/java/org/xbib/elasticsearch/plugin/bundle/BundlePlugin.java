@@ -31,6 +31,8 @@ import org.elasticsearch.index.analysis.AnalysisModule;
 import org.elasticsearch.indices.IndicesModule;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.rest.RestModule;
+import org.xbib.elasticsearch.action.isbnformat.ISBNFormatAction;
+import org.xbib.elasticsearch.action.isbnformat.TransportISBNFormatAction;
 import org.xbib.elasticsearch.action.langdetect.LangdetectAction;
 import org.xbib.elasticsearch.action.langdetect.TransportLangdetectAction;
 import org.xbib.elasticsearch.index.analysis.autophrase.AutoPhrasingAnalysisBinderProcessor;
@@ -57,6 +59,7 @@ import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapper;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapperModule;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapperTypeParser;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberService;
+import org.xbib.elasticsearch.rest.action.isbnformat.RestISBNFormatterAction;
 import org.xbib.elasticsearch.rest.action.langdetect.RestLangdetectAction;
 
 import java.util.ArrayList;
@@ -186,11 +189,17 @@ public class BundlePlugin extends Plugin {
         if (settings.getAsBoolean("plugins.langdetect.enabled", true)) {
             module.registerAction(LangdetectAction.INSTANCE, TransportLangdetectAction.class);
         }
+        if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
+            module.registerAction(ISBNFormatAction.INSTANCE, TransportISBNFormatAction.class);
+        }
     }
 
     public void onModule(RestModule module) {
         if (settings.getAsBoolean("plugins.langdetect.enabled", true)) {
             module.addRestAction(RestLangdetectAction.class);
+        }
+        if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
+            module.addRestAction(RestISBNFormatterAction.class);
         }
     }
 }
