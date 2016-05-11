@@ -196,6 +196,10 @@ public class LangdetectMapper extends StringFieldMapper {
                 String fieldName = entry.getKey();
                 Object fieldNode = entry.getValue();
                 switch (fieldName) {
+                    case "analyzer" : {
+                        iterator.remove();
+                        break;
+                    }
                     case "search_quote_analyzer": {
                         NamedAnalyzer analyzer = parserContext.analysisService().analyzer(fieldNode.toString());
                         if (analyzer == null) {

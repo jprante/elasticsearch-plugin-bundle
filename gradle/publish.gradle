@@ -38,7 +38,7 @@ uploadArchives {
                     description pluginDescription
                     packaging 'jar'
                     inceptionYear '2012'
-                    url url
+                    url scmUrl
                     organization {
                         name 'xbib'
                         url 'http://xbib.org'

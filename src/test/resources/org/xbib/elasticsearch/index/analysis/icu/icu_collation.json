@@ -1,15 +1,23 @@
 {
-    "index":{
-        "analysis":{
-            "analyzer" : {
-                "icu_german_collate" : {
-                   "type" : "icu_collation",
-                   "language" : "de",
-                   "country" : "DE",
-                   "strength" : "primary",
-                   "rules" : "& ae , a\u0308 & AE , A\u0308& oe , o\u0308 & OE , O\u0308& ue , u\u0308 & UE , u\u0308"
-                }
-            }
+  "index":{
+    "analysis":{
+      "analyzer" : {
+        "icu_german_collate" : {
+          "type" : "icu_collation",
+          "language" : "de",
+          "country" : "DE",
+          "strength" : "primary",
+          "rules" : "& ae , a\u0308 & AE , A\u0308& oe , o\u0308 & OE , O\u0308& ue , u\u0308 & UE , u\u0308"
+        },
+        "icu_german_collate_without_punct" : {
+          "type" : "icu_collation",
+          "language" : "de",
+          "country" : "DE",
+          "strength" : "quaternary",
+          "alternate" : "shifted",
+          "rules" : "& ae , a\u0308 & AE , A\u0308& oe , o\u0308 & OE , O\u0308& ue , u\u0308 & UE , u\u0308"
         }
+      }
     }
+  }
 }

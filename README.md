@@ -28,6 +28,7 @@ A plugin that consists of a compilation of useful Elasticsearch plugins related 
 
 | Elasticsearch version    | Plugin        | Release date |
 | ------------------------ | ------------- | -------------|
+| 2.3.2                    | 2.3.2.0       | May 11, 2016 |
 | 2.2.0                    | 2.2.0.6       | Mar 25, 2016 |
 | 2.2.0                    | 2.2.0.3       | Mar  6, 2016 |
 | 2.2.0                    | 2.2.0.2       | Mar  3, 2016 |

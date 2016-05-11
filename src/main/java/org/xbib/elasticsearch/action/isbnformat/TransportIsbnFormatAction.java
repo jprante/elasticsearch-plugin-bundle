@@ -29,14 +29,17 @@ import org.elasticsearch.cluster.metadata.IndexNameExpressionResolver;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.threadpool.ThreadPool;
+import org.elasticsearch.transport.TransportService;
 import org.xbib.elasticsearch.common.standardnumber.ISBN;
 
 public class TransportISBNFormatAction extends TransportAction<ISBNFormatRequest, ISBNFormatResponse> {
 
     @Inject
     public TransportISBNFormatAction(Settings settings, ThreadPool threadPool,
-                                     ActionFilters actionFilters, IndexNameExpressionResolver indexNameExpressionResolver) {
-        super(settings, ISBNFormatAction.NAME, threadPool, actionFilters, indexNameExpressionResolver);
+                                     ActionFilters actionFilters,
+                                     IndexNameExpressionResolver indexNameExpressionResolver,
+                                     TransportService transportService) {
+        super(settings, ISBNFormatAction.NAME, threadPool, actionFilters, indexNameExpressionResolver, transportService.getTaskManager());
     }
 
     @Override

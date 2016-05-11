@@ -1,5 +1,5 @@
 group = 'org.xbib.elasticsearch.plugin'
-version = '2.2.1.1'
+version = '2.3.2.0'
 
 ext {
     pluginName = 'bundle'
@@ -11,7 +11,7 @@ ext {
     scmConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
     scmDeveloperConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
     versions = [
-        'elasticsearch' : '2.2.1',
+        'elasticsearch' : '2.3.2',
         'lucene' : '5.4.1',
         'jackson': '2.6.2',
         'log4j': '2.5',
@@ -35,7 +35,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'org.xbib.gradle.plugin:gradle-plugin-jflex:1.0.1'
+        classpath 'org.xbib.gradle.plugin:gradle-plugin-jflex:1.1.0'
         classpath 'org.ajoberstar:gradle-git:1.4.2'
         classpath 'co.riiid:gradle-github-plugin:0.4.2'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
@@ -79,7 +79,6 @@ dependencies {
     testCompile "junit:junit:${versions.junit}"
     testCompile "org.apache.logging.log4j:log4j-slf4j-impl:${versions.log4j}"
     testCompile "org.apache.logging.log4j:log4j-core:${versions.log4j}"
-    jflex 'de.jflex:jflex:1.6.0'
     releaseJars "${project.group}:${project.name}:${project.version}"
     wagon 'org.apache.maven.wagon:wagon-ssh-external:2.10'
 }

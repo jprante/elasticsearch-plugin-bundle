@@ -104,7 +104,7 @@ public class MapperTestUtils {
         return new DocumentMapperParser(
                 forcedSettings,
                 mapperService,
-                MapperTestUtils.newAnalysisService(forcedSettings),
+                newAnalysisService(forcedSettings),
                 similarityLookupService,
                 null,
                 mapperRegistry);

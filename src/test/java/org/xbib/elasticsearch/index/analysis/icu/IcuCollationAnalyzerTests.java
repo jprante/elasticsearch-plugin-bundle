@@ -254,7 +254,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     }
 
     @Test
-    public void testCustomFromJson() throws Exception {
+    public void testPrimaryStrengthFromJson() throws Exception {
         AnalysisService analysisService = MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/icu/icu_collation.json");
         Analyzer analyzer = analysisService.analyzer("icu_german_collate").analyzer();
 
@@ -276,6 +276,32 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
         assertEquals("[Götz]",it.next().toString());
         assertEquals("[Goldmann]",it.next().toString());
     }
+
+    @Test
+    public void testQuaternaryStrengthFromJson() throws Exception {
+        AnalysisService analysisService = MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/icu/icu_collation.json");
+        Analyzer analyzer = analysisService.analyzer("icu_german_collate_without_punct").analyzer();
+
+        String[] words = new String[]{
+                "Göbel",
+                "G-oethe",
+                "Gold*mann",
+                "Göthe",
+                "Götz"
+        };
+        MultiMap<BytesRef,String> bytesRefMap = new TreeMultiMap<>();
+        for (String s : words) {
+            TokenStream ts = analyzer.tokenStream(null, s);
+            bytesRefMap.put(bytesFromTokenStream(ts), s);
+        }
+        Iterator<Set<String>> it = bytesRefMap.values().iterator();
+        assertEquals("[Göbel]",it.next().toString());
+        assertEquals("[G-oethe]",it.next().toString());
+        assertEquals("[Göthe]",it.next().toString());
+        assertEquals("[Götz]",it.next().toString());
+        assertEquals("[Gold*mann]",it.next().toString());
+    }
+
 
     private BytesRef bytesFromTokenStream(TokenStream stream) throws IOException {
         TermToBytesRefAttribute termAttr = stream.getAttribute(TermToBytesRefAttribute.class);

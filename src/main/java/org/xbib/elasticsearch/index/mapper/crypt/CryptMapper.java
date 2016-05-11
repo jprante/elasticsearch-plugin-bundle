@@ -136,9 +136,6 @@ public class CryptMapper extends StringFieldMapper {
         if (fieldType().hasDocValues()) {
             fields.add(new SortedSetDocValuesField(fieldType().names().indexName(), new BytesRef(valueAndBoost.value())));
         }
-        if (fields.isEmpty()) {
-            context.ignoredValue(fieldType().names().indexName(), valueAndBoost.value());
-        }
     }
 
     static StringFieldMapper.ValueAndBoost parseCreateFieldForCrypt(ParseContext context, String nullValue, float defaultBoost, String algo) throws IOException {
