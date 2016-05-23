@@ -16,7 +16,9 @@ nexusStaging {
     packageGroup = "org.xbib"
 }
 
-uploadArchives {
+task xbibUpload(type: Upload) {
+    configuration = configurations.archives
+    uploadDescriptor = true
     repositories {
         if (project.hasProperty("xbibUsername")) {
             mavenDeployer {
@@ -26,6 +28,13 @@ uploadArchives {
                         authentication: [userName: xbibUsername, privateKey: xbibPrivateKey])
             }
         }
+    }
+}
+
+task mavenCentralUpload(type: Upload) {
+    configuration = configurations.archives
+    uploadDescriptor = true
+    repositories {
         if (project.hasProperty('ossrhUsername')) {
             mavenDeployer {
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
@@ -58,8 +67,8 @@ uploadArchives {
                     }
                     licenses {
                         license {
-                            name 'The Apache License, Version 2.0'
-                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            name 'Affero GNU Public License Version 2'
+                            url 'http://www.gnu.org/licenses/agpl-3.0.html'
                         }
                     }
                 }

@@ -28,6 +28,7 @@ A plugin that consists of a compilation of useful Elasticsearch plugins related 
 
 | Elasticsearch version    | Plugin        | Release date |
 | ------------------------ | ------------- | -------------|
+| 2.3.3                    | 2.3.3.0       | May 23, 2016 |
 | 2.3.2                    | 2.3.2.0       | May 11, 2016 |
 | 2.2.0                    | 2.2.0.6       | Mar 25, 2016 |
 | 2.2.0                    | 2.2.0.3       | Mar  6, 2016 |
@@ -54,7 +55,7 @@ A plugin that consists of a compilation of useful Elasticsearch plugins related 
 
 ### Elasticsearch 2.x
 
-    ./bin/plugin install 'http://search.maven.org/remotecontent?filepath=org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/2.2.0.6/elasticsearch-plugin-bundle-2.2.0.6-plugin.zip'
+    ./bin/plugin install 'http://search.maven.org/remotecontent?filepath=org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/2.3.3.0/elasticsearch-plugin-bundle-2.3.3.0-plugin.zip'
 
 ### Elasticsearch 1.x
 
