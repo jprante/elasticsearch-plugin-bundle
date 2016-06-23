@@ -354,7 +354,6 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
                 return (OffsetAttribute)attrImp;
             }
         }
-
         return null;
     }
 
@@ -455,7 +454,7 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
         return fixed;
     }
 
-    class Token {
+    private class Token {
         char[] tok;
         int startPos;
         int endPos;

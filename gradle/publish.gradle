@@ -23,9 +23,9 @@ task xbibUpload(type: Upload) {
         if (project.hasProperty("xbibUsername")) {
             mavenDeployer {
                 configuration = configurations.wagon
-                repository(id: 'xbib.org',
-                        url: uri('scpexe://xbib.org/repository'),
-                        authentication: [userName: xbibUsername, privateKey: xbibPrivateKey])
+                repository(url: uri('scpexe://xbib.org/repository')) {
+                        authentication(userName: xbibUsername, privateKey: xbibPrivateKey)
+                }
             }
         }
     }
@@ -38,10 +38,12 @@ task mavenCentralUpload(type: Upload) {
         if (project.hasProperty('ossrhUsername')) {
             mavenDeployer {
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-                repository(id: 'ossrh', url: uri(ossrhReleaseUrl),
-                        authentication: [userName: ossrhUsername, password: ossrhPassword])
-                snapshotRepository(id: 'ossrh', url: uri(ossrhSnapshotUrl),
-                        authentication: [userName: ossrhUsername, password: ossrhPassword])
+                repository(url: uri(ossrhReleaseUrl)) {
+                        authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+                snapshotRepository(url: uri(ossrhSnapshotUrl)) {
+                        authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
                 pom.project {
                     name pluginName
                     description pluginDescription

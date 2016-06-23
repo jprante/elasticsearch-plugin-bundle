@@ -25,7 +25,6 @@ package org.xbib.elasticsearch.index.analysis.standardnumber;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PackedTokenAttributeImpl;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.elasticsearch.common.settings.Settings;
@@ -45,8 +44,6 @@ public class StandardnumberTokenFilter extends TokenFilter {
     private final Settings settings;
 
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
-
-    private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
 
     private final PositionIncrementAttribute posIncAtt = addAttribute(PositionIncrementAttribute.class);
 
@@ -68,7 +65,6 @@ public class StandardnumberTokenFilter extends TokenFilter {
             PackedTokenAttributeImpl token = tokens.removeFirst();
             restoreState(current);
             termAtt.setEmpty().append(token);
-            offsetAtt.setOffset(token.startOffset(), token.endOffset());
             posIncAtt.setPositionIncrement(0);
             return true;
         }

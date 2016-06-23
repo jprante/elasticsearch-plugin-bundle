@@ -26,7 +26,6 @@ import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.KeywordAttribute;
-import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.util.AttributeSource;
 
@@ -35,12 +34,11 @@ import java.util.LinkedList;
 
 public class DecompoundTokenFilter extends TokenFilter {
 
-    private final LinkedList<DecompoundToken> tokens;
+    private final LinkedList<String> tokens;
 
     private final Decompounder decomp;
 
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
-    private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
     private final KeywordAttribute keywordAtt = addAttribute(KeywordAttribute.class);
     private final PositionIncrementAttribute posIncAtt = addAttribute(PositionIncrementAttribute.class);
 
@@ -52,7 +50,7 @@ public class DecompoundTokenFilter extends TokenFilter {
 
     protected DecompoundTokenFilter(TokenStream input, Decompounder decomp, boolean respectKeywords, boolean subwordsonly) {
         super(input);
-        this.tokens = new LinkedList<DecompoundToken>();
+        this.tokens = new LinkedList<>();
         this.decomp = decomp;
         this.respectKeywords = respectKeywords;
         this.subwordsonly = subwordsonly;
@@ -62,10 +60,9 @@ public class DecompoundTokenFilter extends TokenFilter {
     public final boolean incrementToken() throws IOException {
         if (!tokens.isEmpty()) {
             assert current != null;
-            DecompoundToken token = tokens.removeFirst();
+            String token = tokens.removeFirst();
             restoreState(current);
-            termAtt.setEmpty().append(token.txt);
-            offsetAtt.setOffset(token.startOffset, token.endOffset);
+            termAtt.setEmpty().append(token);
             if (!subwordsonly) {
                 posIncAtt.setPositionIncrement(0);
             }
@@ -80,10 +77,9 @@ public class DecompoundTokenFilter extends TokenFilter {
         if (!decompound()) {
             current = captureState();
             if (subwordsonly) {
-                DecompoundToken token = tokens.removeFirst();
+                String token = tokens.removeFirst();
                 restoreState(current);
-                termAtt.setEmpty().append(token.txt);
-                offsetAtt.setOffset(token.startOffset, token.endOffset);
+                termAtt.setEmpty().append(token);
                 return true;
             }
         }
@@ -91,11 +87,9 @@ public class DecompoundTokenFilter extends TokenFilter {
     }
 
     protected boolean decompound() {
-        int start = offsetAtt.startOffset();
-        int len = termAtt.length();
-        String term = new String(termAtt.buffer(), 0, len);
+        String term = new String(termAtt.buffer(), 0, termAtt.length());
         for (String s : decomp.decompound(term)) {
-            tokens.add(new DecompoundToken(s, start, len));
+            tokens.add(s);
         }
         return tokens.isEmpty();
     }
@@ -106,25 +100,5 @@ public class DecompoundTokenFilter extends TokenFilter {
         super.reset();
         tokens.clear();
         current = null;
-    }
-
-    private class DecompoundToken {
-
-        public final CharSequence txt;
-        public final int startOffset;
-        public final int endOffset;
-
-        public DecompoundToken(CharSequence txt, int offset, int length) {
-            this.txt = txt;
-            int startOff = DecompoundTokenFilter.this.offsetAtt.startOffset();
-            int endOff = DecompoundTokenFilter.this.offsetAtt.endOffset();
-            if (endOff - startOff != DecompoundTokenFilter.this.termAtt.length()) {
-                this.startOffset = startOff;
-                this.endOffset = endOff;
-            } else {
-                this.startOffset = offset;
-                this.endOffset = offset + length;
-            }
-        }
     }
 }

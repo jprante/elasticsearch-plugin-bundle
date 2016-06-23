@@ -25,11 +25,8 @@ package org.xbib.elasticsearch.index.analysis.symbolname;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PackedTokenAttributeImpl;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.elasticsearch.common.logging.ESLogger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.CharacterCodingException;
@@ -41,13 +38,9 @@ import java.util.regex.Pattern;
 
 public class SymbolnameTokenFilter extends TokenFilter {
 
-    private final static ESLogger logger = ESLoggerFactory.getLogger(SymbolnameTokenFilter.class.getName());
-
     private final LinkedList<PackedTokenAttributeImpl> tokens;
 
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
-
-    private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
 
     private final PositionIncrementAttribute posIncAtt = addAttribute(PositionIncrementAttribute.class);
 
@@ -65,7 +58,6 @@ public class SymbolnameTokenFilter extends TokenFilter {
             PackedTokenAttributeImpl token = tokens.removeFirst();
             restoreState(current);
             termAtt.setEmpty().append(token);
-            offsetAtt.setOffset(token.startOffset(), token.endOffset());
             posIncAtt.setPositionIncrement(0);
             return true;
         }
@@ -105,7 +97,7 @@ public class SymbolnameTokenFilter extends TokenFilter {
         while (m.find()) {
             String symbol = m.group();
             Character ch = symbol.charAt(0);
-            String symbolname = " __" + Character.getName(ch.charValue()).toUpperCase()
+            String symbolname = " __" + Character.getName(ch).toUpperCase()
                     .replaceAll("\\s","").replaceAll("\\-","") + "__";
             m.appendReplacement(sb, symbolname);
         }
