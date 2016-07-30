@@ -1,5 +1,5 @@
 group = 'org.xbib.elasticsearch.plugin'
-version = '2.3.3.0'
+version = '2.3.4.0'
 
 ext {
     pluginName = 'bundle'
@@ -11,8 +11,8 @@ ext {
     scmConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
     scmDeveloperConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
     versions = [
-        'elasticsearch' : '2.3.3',
-        'lucene' : '5.4.1',
+        'elasticsearch' : '2.3.4',
+        'lucene' : '5.5.0',
         'jackson': '2.6.6',
         'log4j': '2.5',
         'junit' : '4.12'
@@ -44,9 +44,9 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'maven'
-apply plugin: 'jflex'
 apply plugin: 'signing'
 apply plugin: 'co.riiid.gradle'
+apply plugin: 'org.xbib.gradle.plugin.jflex'
 
 repositories {
     mavenCentral()
@@ -74,6 +74,8 @@ configurations {
 
 dependencies {
     compile "org.elasticsearch:elasticsearch:${versions.elasticsearch}"
+    // override Lucene's old ICU 53
+    compile "com.ibm.icu:icu4j:57.1"
     compile "org.apache.lucene:lucene-analyzers-icu:${versions.lucene}"
     compile "com.fasterxml.jackson.core:jackson-databind:${versions.jackson}"
     testCompile "junit:junit:${versions.junit}"

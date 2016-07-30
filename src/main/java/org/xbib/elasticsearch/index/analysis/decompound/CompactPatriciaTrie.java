@@ -195,28 +195,28 @@ public class CompactPatriciaTrie {
         }
     }
 
-    public void setThreshold(double threshold) {
-        this.thresh = threshold;
-    }
-
     public double getThreshold() {
         return this.thresh;
     }
 
-    public void setIgnoreCase(boolean b) {
-        this.ignorecase = b;
-    }
-
-    public void setReverse(boolean b) {
-        this.reverse = b;
+    public void setThreshold(double threshold) {
+        this.thresh = threshold;
     }
 
     public boolean getIgnoreCase() {
         return this.ignorecase;
     }
 
+    public void setIgnoreCase(boolean b) {
+        this.ignorecase = b;
+    }
+
     public boolean getReverse() {
         return this.reverse;
+    }
+
+    public void setReverse(boolean b) {
+        this.reverse = b;
     }
 
     private String reverse(String s) {
@@ -262,7 +262,7 @@ public class CompactPatriciaTrie {
 
     private List<String> add(List<String> one, List<String> two) {
         List<String> list = new ArrayList<String>();
-        Map<String, Object> hash = new HashMap<String,Object>();
+        Map<String, Object> hash = new HashMap<String, Object>();
         String clas;
         String snr;
         int nr;
@@ -655,7 +655,7 @@ public class CompactPatriciaTrie {
         }
     }
 
-    private void addStringToMap(Map<String,String> m, char[] treestring, int pos,
+    private void addStringToMap(Map<String, String> m, char[] treestring, int pos,
                                 StringBuilder content) {
         int i = pos;
         i++;
@@ -687,7 +687,7 @@ public class CompactPatriciaTrie {
         }
     }
 
-    private void addObjectToMap(Map<String,String> m, Node node, StringBuilder content) {
+    private void addObjectToMap(Map<String, String> m, Node node, StringBuilder content) {
         content.append(node.content);
         m.put(content.toString(), formatClasses(node).toString());
         for (Node child : node.children()) {

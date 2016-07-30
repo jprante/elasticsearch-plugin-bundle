@@ -12,6 +12,7 @@ public final class FSATraversal {
 
     /**
      * Traversals of the given FSA.
+     *
      * @param fsa fsa
      */
     public FSATraversal(FSA fsa) {
@@ -24,9 +25,9 @@ public final class FSATraversal {
      * order of input sequences used at automaton construction time.
      *
      * @param sequence sequence
-     * @param start  Start index in the sequence array.
-     * @param length Length of the byte sequence, must be at least 1.
-     * @param node node
+     * @param start    Start index in the sequence array.
+     * @param length   Length of the byte sequence, must be at least 1.
+     * @param node     node
      * @return Returns a unique integer assigned to the input sequence in the automaton (reflecting
      * the number of that sequence in the input used to build the automaton). Returns a negative
      * integer if the input sequence was not part of the input from which the automaton was created.
@@ -86,11 +87,12 @@ public final class FSATraversal {
      * Same as {@link #match(byte[], int, int, int)}, but allows passing
      * a reusable {@link MatchResult} object so that no intermediate garbage is
      * produced.
-     * @param result result
+     *
+     * @param result   result
      * @param sequence sequence
-     * @param start start
-     * @param length length
-     * @param node node
+     * @param start    start
+     * @param length   length
+     * @param node     node
      * @return The same object as <code>result</code>, but with reset internal
      * type and other fields.
      */
@@ -111,7 +113,7 @@ public final class FSATraversal {
                     return result;
                 }
                 if (fsa.isArcTerminal(arc)) {
-					/* The automaton contains a prefix of the input sequence. */
+                    /* The automaton contains a prefix of the input sequence. */
                     result.reset(MatchResult.AUTOMATON_HAS_PREFIX, i + 1, 0);
                     return result;
                 }

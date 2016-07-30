@@ -26,11 +26,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *  European Article Number is a 13-digit barcoding standard for marking products
- *  sold at retail point of sale.
+ * European Article Number is a 13-digit barcoding standard for marking products
+ * sold at retail point of sale.
  *
- *  Numbers encoded in UPC and EAN barcodes are known as
- *  Global Trade Item Numbers (GTIN).
+ * Numbers encoded in UPC and EAN barcodes are known as
+ * Global Trade Item Numbers (GTIN).
  */
 public class EAN extends AbstractStandardNumber implements Comparable<EAN>, StandardNumber {
 
@@ -115,7 +115,7 @@ public class EAN extends AbstractStandardNumber implements Comparable<EAN>, Stan
         }
         int chk = 10 - checksum % 10;
         if (createWithChecksum) {
-            char ch = (char)('0' + chk);
+            char ch = (char) ('0' + chk);
             value = value.substring(0, l) + ch;
         }
         return chk == (value.charAt(l) - '0');

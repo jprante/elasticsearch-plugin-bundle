@@ -30,7 +30,7 @@ import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.settings.IndexSettingsService;
 
-public class SymbolnameTokenFilterFactory extends AbstractTokenFilterFactory  {
+public class SymbolnameTokenFilterFactory extends AbstractTokenFilterFactory {
 
     @Inject
     public SymbolnameTokenFilterFactory(Index index,

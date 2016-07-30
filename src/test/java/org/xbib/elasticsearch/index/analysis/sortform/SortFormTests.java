@@ -47,7 +47,7 @@ public class SortFormTests extends BaseTokenStreamTest {
     @Test
     public void testFromJson() throws Exception {
         AnalysisService analysisService =
-                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/sortform/sortform.json");
+                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/sortform/sortform.json");
         Analyzer analyzer = analysisService.analyzer("german_phonebook_with_sortform").analyzer();
 
         String[] words = new String[]{

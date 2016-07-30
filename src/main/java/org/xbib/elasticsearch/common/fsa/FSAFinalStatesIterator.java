@@ -49,7 +49,8 @@ public final class FSAFinalStatesIterator implements Iterator<ByteBuffer> {
 
     /**
      * Create an instance of the iterator for a given node.
-     * @param fsa fsa
+     *
+     * @param fsa  fsa
      * @param node node
      */
     public FSAFinalStatesIterator(FSA fsa, int node) {
@@ -62,6 +63,7 @@ public final class FSAFinalStatesIterator implements Iterator<ByteBuffer> {
 
     /**
      * Restart walking from <code>node</code>. Allows iterator reuse.
+     *
      * @param node node
      */
     public void restartFrom(int node) {

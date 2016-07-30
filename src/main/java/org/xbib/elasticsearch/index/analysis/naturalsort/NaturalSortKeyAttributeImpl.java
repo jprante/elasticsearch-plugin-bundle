@@ -64,7 +64,7 @@ public class NaturalSortKeyAttributeImpl extends CharTermAttributeImpl {
             String repl = String.format("%0" + digits + "d", len) + m.group();
             m.appendReplacement(sb, repl);
             foundTokens++;
-            if (foundTokens >= maxTokens){
+            if (foundTokens >= maxTokens) {
                 break;
             }
         }

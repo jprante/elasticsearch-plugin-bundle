@@ -29,18 +29,17 @@ import org.elasticsearch.common.settings.Settings;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 public class LangdetectService {
 
-    private final static ESLogger logger = ESLoggerFactory.getLogger(LangdetectService.class.getName());
-
-    private final Settings settings;
-
-    private final static Pattern word = Pattern.compile("[\\P{IsWord}]", Pattern.UNICODE_CHARACTER_CLASS);
-
-    public final static String[] DEFAULT_LANGUAGES = new String[] {
+    public final static String[] DEFAULT_LANGUAGES = new String[]{
             // "af",
             "ar",
             "bg",
@@ -95,16 +94,17 @@ public class LangdetectService {
             "zh-cn",
             "zh-tw"
     };
-
+    private final static ESLogger logger = ESLoggerFactory.getLogger(LangdetectService.class.getName());
+    private final static Pattern word = Pattern.compile("[\\P{IsWord}]", Pattern.UNICODE_CHARACTER_CLASS);
     private final static Settings DEFAULT_SETTINGS = Settings.builder()
             .putArray("languages", DEFAULT_LANGUAGES)
             .build();
-
+    private final Settings settings;
     private Map<String, double[]> wordLangProbMap = new HashMap<>();
 
     private List<String> langlist = new LinkedList<>();
 
-    private Map<String,String> langmap = new HashMap<>();
+    private Map<String, String> langmap = new HashMap<>();
 
     private String profile;
 
@@ -138,7 +138,7 @@ public class LangdetectService {
 
     public LangdetectService(Settings settings, String profile) {
         this.settings = settings;
-        this.profile = settings.get("profile", profile) ;
+        this.profile = settings.get("profile", profile);
         load(settings);
         init();
     }
@@ -197,14 +197,14 @@ public class LangdetectService {
         this.alpha_width = settings.getAsDouble("alpha_width", 0.05);
         this.iteration_limit = settings.getAsInt("iteration_limit", 10000);
         this.prob_threshold = settings.getAsDouble("prob_threshold", 0.1);
-        this.conv_threshold = settings.getAsDouble("conv_threshold",  0.99999);
+        this.conv_threshold = settings.getAsDouble("conv_threshold", 0.99999);
         this.base_freq = settings.getAsInt("base_freq", 10000);
         this.filterPattern = settings.get("pattern") != null ?
-                Pattern.compile(settings.get("pattern"),Pattern.UNICODE_CHARACTER_CLASS) : null;
+                Pattern.compile(settings.get("pattern"), Pattern.UNICODE_CHARACTER_CLASS) : null;
         isStarted = true;
     }
 
-    public void loadProfileFromResource(String resource,  int index, int langsize) throws IOException {
+    public void loadProfileFromResource(String resource, int index, int langsize) throws IOException {
         String profile = "/langdetect/" + (this.profile != null ? this.profile + "/" : "");
         InputStream in = getClass().getResourceAsStream(profile + resource);
         if (in == null) {

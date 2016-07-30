@@ -40,11 +40,9 @@ import java.util.regex.Pattern;
 public class ISNI extends AbstractStandardNumber implements Comparable<ISNI>, StandardNumber {
 
     private final static Pattern PATTERN = Pattern.compile("[\\p{Digit}xX\\p{Pd}\\s]{16,24}");
-
+    private final static MOD112 check = new MOD112();
     private String value;
-
     private String formatted;
-
     private boolean createWithChecksum;
 
     @Override
@@ -89,6 +87,7 @@ public class ISNI extends AbstractStandardNumber implements Comparable<ISNI>, St
 
     /**
      * Returns the value representation of the standard number
+     *
      * @return value
      */
     @Override
@@ -125,8 +124,6 @@ public class ISNI extends AbstractStandardNumber implements Comparable<ISNI>, St
         this.createWithChecksum = false;
         return this;
     }
-
-    private final static MOD112 check = new MOD112();
 
     private boolean check() {
         if (createWithChecksum) {

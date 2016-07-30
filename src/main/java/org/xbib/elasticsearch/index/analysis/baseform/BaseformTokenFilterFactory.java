@@ -37,6 +37,8 @@ import java.io.InputStreamReader;
 
 public class BaseformTokenFilterFactory extends AbstractTokenFilterFactory {
 
+    private final boolean respectKeywords;
+
     private final Dictionary dictionary;
 
     @Inject
@@ -45,12 +47,13 @@ public class BaseformTokenFilterFactory extends AbstractTokenFilterFactory {
                                       @Assisted String name,
                                       @Assisted Settings settings) {
         super(index, indexSettingsService.indexSettings(), name, settings);
+        this.respectKeywords = settings.getAsBoolean("respect_keywords", false);
         this.dictionary = createDictionary(settings);
     }
 
     @Override
     public TokenStream create(TokenStream tokenStream) {
-        return new BaseformTokenFilter(tokenStream, dictionary);
+        return new BaseformTokenFilter(tokenStream, dictionary, respectKeywords);
     }
 
     private Dictionary createDictionary(Settings settings) {

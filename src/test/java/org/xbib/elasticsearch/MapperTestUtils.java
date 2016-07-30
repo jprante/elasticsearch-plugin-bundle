@@ -57,6 +57,7 @@ import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapperTy
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberService;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -171,12 +172,12 @@ public class MapperTestUtils {
         return newMapperService(newSettings, null).analysisService();
     }
 
-    public static AnalysisService analysisService(String resource) {
+    public static AnalysisService analysisService(String resource) throws IOException {
         Settings settings = Settings.settingsBuilder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("path.home", System.getProperty("path.home"))
                 .put("client.type", "node")
-                .loadFromStream(resource, MapperTestUtils.class.getResourceAsStream(resource))
+                .loadFromStream(resource, MapperTestUtils.class.getClassLoader().getResource(resource).openStream())
                 .build();
         return newMapperService(settings, null).analysisService();
     }

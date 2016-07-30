@@ -65,7 +65,6 @@ import java.util.regex.Pattern;
  * (format, etc.) of the referent, but by reference to the functionalities it provides
  * and the context of use. The DOI system provides, within networks of DOI applications,
  * for unique identification, persistence, resolution, metadata and semantic interoperability.
- *
  */
 public class DOI extends AbstractStandardNumber implements Comparable<DOI>, StandardNumber {
 

@@ -32,7 +32,7 @@ public class GermanNormalizationTests extends Assert {
             "Strassenecke"
         };
         AnalysisService analysisService =
-                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/german/german_normalization_analysis.json");
+                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/german/german_normalization_analysis.json");
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("umlaut");
         Tokenizer tokenizer = analysisService.tokenizer("standard").create();
         tokenizer.setReader(new StringReader(source));

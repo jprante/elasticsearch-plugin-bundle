@@ -31,8 +31,6 @@ import java.util.regex.Pattern;
 
 public class SortformTokenFilter extends TokenFilter {
 
-    private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
-
     private final static Pattern[] patterns = new Pattern[]{
             Pattern.compile("\\s*<<.*?>>\\s*"),
             Pattern.compile("\\s*<.*?>\\s*"),
@@ -40,6 +38,7 @@ public class SortformTokenFilter extends TokenFilter {
             Pattern.compile("\\s*\u02BE.*?\u02BB\\s*"),
             Pattern.compile("\\s*\u00AC.*?\u00AC\\s*")
     };
+    private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
 
     protected SortformTokenFilter(TokenStream input) {
         super(input);

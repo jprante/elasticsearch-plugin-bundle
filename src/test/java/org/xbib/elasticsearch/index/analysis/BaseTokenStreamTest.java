@@ -164,8 +164,8 @@ public abstract class BaseTokenStreamTest extends Assert {
                 final int startOffset = offsetAtt.startOffset();
                 final int endOffset = offsetAtt.endOffset();
                 if (finalOffset != null) {
-                    assertTrue(startOffset <= finalOffset.intValue());
-                    assertTrue(endOffset <= finalOffset.intValue());
+                    assertTrue(startOffset <= finalOffset);
+                    assertTrue(endOffset <= finalOffset);
                 }
 
                 if (offsetsAreCorrect) {

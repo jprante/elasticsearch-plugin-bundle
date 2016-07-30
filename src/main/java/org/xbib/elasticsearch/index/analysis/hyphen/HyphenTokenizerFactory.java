@@ -45,7 +45,7 @@ public class HyphenTokenizerFactory extends AbstractTokenizerFactory {
 
     @Override
     public Tokenizer create() {
-        HyphenTokenizer tokenizer =  new HyphenTokenizer();
+        HyphenTokenizer tokenizer = new HyphenTokenizer();
         if (tokenLength != null) {
             tokenizer.setMaxTokenLength(tokenLength);
         }

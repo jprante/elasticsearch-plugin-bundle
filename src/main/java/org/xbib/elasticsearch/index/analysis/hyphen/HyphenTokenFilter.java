@@ -25,6 +25,7 @@ package org.xbib.elasticsearch.index.analysis.hyphen;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.analysis.tokenattributes.KeywordAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.util.AttributeSource;
 
@@ -48,31 +49,27 @@ import java.util.regex.Pattern;
  * Examples:
  *
  * Bindestrich-Wort =&gt;
- *     Bindestrich-Wort, BindestrichWort, Wort, Bindestrich
+ * Bindestrich-Wort, BindestrichWort, Wort, Bindestrich
  *
  * E-Book =&gt;
- *     E-Book, EBook, Book
+ * E-Book, EBook, Book
  *
  * Service-Center-Mitarbeiterin =&gt;
- *    Service-Center-Mitarbeiterin,
- *    ServiceCenterMitarbeiterin,
- *    Mitarbeiterin,
- *    ServiceCenter,
- *    ServiceCenter-Mitarbeiterin,
- *    Center-Mitarbeiterin,
- *    Service
- *
- *
+ * Service-Center-Mitarbeiterin,
+ * ServiceCenterMitarbeiterin,
+ * Mitarbeiterin,
+ * ServiceCenter,
+ * ServiceCenter-Mitarbeiterin,
+ * Center-Mitarbeiterin,
+ * Service
  */
 public class HyphenTokenFilter extends TokenFilter {
 
+    final static char[] HYPHEN = new char[]{'-'};
     // TODO use TypeAttribute, LETTER_COMP or something
     private final static Pattern letter = Pattern.compile("\\p{L}+", Pattern.UNICODE_CHARACTER_CLASS);
-
-    final static char[] HYPHEN = new char[]{'-'};
-
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
-
+    private final KeywordAttribute keywordAtt = addAttribute(KeywordAttribute.class);
     private final PositionIncrementAttribute posIncrAtt = addAttribute(PositionIncrementAttribute.class);
 
     private final Stack<String> stack;
@@ -81,13 +78,16 @@ public class HyphenTokenFilter extends TokenFilter {
 
     private final boolean subwords;
 
+    private final boolean respectKeywords;
+
     private AttributeSource.State current;
 
-    protected HyphenTokenFilter(TokenStream input, char[] hyphenchars, boolean subwords) {
+    protected HyphenTokenFilter(TokenStream input, char[] hyphenchars, boolean subwords, boolean respectKeywords) {
         super(input);
-        this.stack = new Stack<String>();
+        this.stack = new Stack<>();
         this.hyphenchars = hyphenchars;
         this.subwords = subwords;
+        this.respectKeywords = respectKeywords;
     }
 
     @Override
@@ -101,6 +101,9 @@ public class HyphenTokenFilter extends TokenFilter {
         }
         if (!input.incrementToken()) {
             return false;
+        }
+        if (respectKeywords && keywordAtt.isKeyword()) {
+            return true;
         }
         if (addToStack()) {
             current = captureState();

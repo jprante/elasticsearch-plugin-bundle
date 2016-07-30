@@ -55,12 +55,12 @@ public class NaturalSortKeyAnalyzerProvider extends AbstractIndexAnalyzerProvide
         this.bufferSize = settings.getAsInt("bufferSize", KeywordTokenizer.DEFAULT_BUFFER_SIZE);
     }
 
+    protected static Collator createCollator(Settings settings) {
+        return Collator.getInstance(new Locale(settings.get("locale", Locale.getDefault().toString())));
+    }
+
     @Override
     public NaturalSortKeyAnalyzer get() {
         return new NaturalSortKeyAnalyzer(collator, bufferSize, digits, maxTokens);
-    }
-
-    protected static Collator createCollator(Settings settings) {
-        return Collator.getInstance(new Locale(settings.get("locale", Locale.getDefault().toString())));
     }
 }

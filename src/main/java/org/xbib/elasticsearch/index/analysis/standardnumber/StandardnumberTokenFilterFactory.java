@@ -32,7 +32,7 @@ import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.settings.IndexSettingsService;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberService;
 
-public class StandardnumberTokenFilterFactory extends AbstractTokenFilterFactory  {
+public class StandardnumberTokenFilterFactory extends AbstractTokenFilterFactory {
 
     private final Settings settings;
 

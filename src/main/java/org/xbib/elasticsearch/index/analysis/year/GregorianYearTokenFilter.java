@@ -32,11 +32,9 @@ import java.util.regex.Pattern;
 
 public class GregorianYearTokenFilter extends TokenFilter {
 
-    private final static Pattern pattern =  Pattern.compile("(\\d{4})");
-
-    private final String defaultYear;
-
+    private final static Pattern pattern = Pattern.compile("(\\d{4})");
     protected final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
+    private final String defaultYear;
 
     protected GregorianYearTokenFilter(TokenStream input, String defaultYear) {
         super(input);
@@ -53,8 +51,10 @@ public class GregorianYearTokenFilter extends TokenFilter {
             termAtt.setEmpty();
             if (!m.matches()) {
                 termAtt.append(defaultYear);
-            } else while (m.find()) {
-                termAtt.append(m.group());
+            } else {
+                while (m.find()) {
+                    termAtt.append(m.group());
+                }
             }
             return true;
         }

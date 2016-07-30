@@ -57,11 +57,9 @@ import java.util.regex.Pattern;
 public class ISAN extends AbstractStandardNumber implements Comparable<ISAN>, StandardNumber {
 
     private static final Pattern PATTERN = Pattern.compile("[\\p{Alnum}\\p{Pd}]{16,34}");
-
+    private final static MOD3736 check = new MOD3736();
     private String value;
-
     private String formatted;
-
     private boolean versioned;
 
     @Override
@@ -134,12 +132,10 @@ public class ISAN extends AbstractStandardNumber implements Comparable<ISAN>, St
         return this;
     }
 
-    private final static MOD3736 check = new MOD3736();
-
     private boolean check() {
         if (versioned) {
-            int chk1 = value.length() >= 17 ? check.compute(value.substring(0,17)) : -1;
-            int chk2 = value.length() >= 26 ? check.compute(value.substring(0,16) + value.substring(17,26)) : -1;
+            int chk1 = value.length() >= 17 ? check.compute(value.substring(0, 17)) : -1;
+            int chk2 = value.length() >= 26 ? check.compute(value.substring(0, 16) + value.substring(17, 26)) : -1;
             if (chk1 != 1) {
                 return false;
             }
@@ -169,23 +165,23 @@ public class ISAN extends AbstractStandardNumber implements Comparable<ISAN>, St
         }
         this.formatted = "ISAN "
                 + (sb.length() < 4 ? sb :
-                    sb.substring(0,4) + "-"
-                + (sb.length() < 8 ? sb.substring(4) :
-                    sb.substring(4,8) + "-"
-                + (sb.length() < 12 ? sb.substring(8) :
-                    sb.substring(8,12) + "-"
-                + (sb.length() < 16 ? sb.substring(12) :
-                    sb.substring(12,16) + "-"
-                + (sb.length() < 17 ? sb.substring(16) :
-                    sb.substring(16,17))))));
+                sb.substring(0, 4) + "-"
+                        + (sb.length() < 8 ? sb.substring(4) :
+                        sb.substring(4, 8) + "-"
+                                + (sb.length() < 12 ? sb.substring(8) :
+                                sb.substring(8, 12) + "-"
+                                        + (sb.length() < 16 ? sb.substring(12) :
+                                        sb.substring(12, 16) + "-"
+                                                + (sb.length() < 17 ? sb.substring(16) :
+                                                sb.substring(16, 17))))));
         if (sb.length() > 17) {
             this.formatted = this.formatted + "-"
                     + (sb.length() < 21 ? sb.substring(17) :
-                      (sb.substring(17, 21) + "-"
-                    + (sb.length() < 25 ? sb.substring(21) :
-                      (sb.substring(21, 25)  + "-"
-                    + (sb.length() < 26 ? sb.substring(25) :
-                      sb.substring(25, 26))))));
+                    (sb.substring(17, 21) + "-"
+                            + (sb.length() < 25 ? sb.substring(21) :
+                            (sb.substring(21, 25) + "-"
+                                    + (sb.length() < 26 ? sb.substring(25) :
+                                    sb.substring(25, 26))))));
         }
         return sb.toString();
     }

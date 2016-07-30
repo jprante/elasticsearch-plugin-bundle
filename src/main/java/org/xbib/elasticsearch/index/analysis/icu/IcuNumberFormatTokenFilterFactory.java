@@ -24,6 +24,7 @@ package org.xbib.elasticsearch.index.analysis.icu;
 
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.RuleBasedNumberFormat;
+import com.ibm.icu.util.ULocale;
 import org.apache.lucene.analysis.TokenStream;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.assistedinject.Assisted;
@@ -31,8 +32,6 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.settings.IndexSettingsService;
-
-import java.util.Locale;
 
 public class IcuNumberFormatTokenFilterFactory extends AbstractTokenFilterFactory {
 
@@ -44,7 +43,7 @@ public class IcuNumberFormatTokenFilterFactory extends AbstractTokenFilterFactor
                                              @Assisted String name,
                                              @Assisted Settings settings) {
         super(index, indexSettingsService.indexSettings(), name, settings);
-        Locale locale = settings.get("locale") != null ? new Locale(settings.get("locale")) : Locale.getDefault();
+        ULocale locale = settings.get("locale") != null ? new ULocale(settings.get("locale")) : ULocale.getDefault();
         String formatStr = settings.get("format", "SPELLOUT");
         int format;
         switch (formatStr.toUpperCase()) {

@@ -1,7 +1,5 @@
 package org.xbib.elasticsearch.index.analysis.hyphen;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -31,7 +29,7 @@ public class HyphenTokenizerTests extends Assert {
                 "Bindestrich"
         };
         AnalysisService analysisService =
-                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json");
+                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json");
         Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("hyphen");
@@ -55,7 +53,7 @@ public class HyphenTokenizerTests extends Assert {
                 "Buchbinder"
         };
         AnalysisService analysisService =
-                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json");
+                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json");
         Tokenizer tokenizer = analysisService.tokenizer("my_icu_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("hyphen");
@@ -87,7 +85,7 @@ public class HyphenTokenizerTests extends Assert {
                 "arbeiten"
         };
         AnalysisService analysisService =
-                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json");
+                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json");
         Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("hyphen");
@@ -113,8 +111,7 @@ public class HyphenTokenizerTests extends Assert {
                 "O'Reilly-Verlag"
         };
         AnalysisService analysisService =
-                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json");
-                //AnalyzerTestUtils.createAnalysisService("/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json");
+                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json");
         Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("hyphen");
@@ -132,7 +129,7 @@ public class HyphenTokenizerTests extends Assert {
         };
 
         AnalysisService analysisService =
-                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json");
+                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json");
         Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("hyphen");
@@ -151,7 +148,7 @@ public class HyphenTokenizerTests extends Assert {
         };
 
         AnalysisService analysisService =
-                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json");
+                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json");
         Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("hyphen");
@@ -177,7 +174,7 @@ public class HyphenTokenizerTests extends Assert {
         };
 
         AnalysisService analysisService =
-                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json");
+                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json");
         Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("hyphen");
@@ -207,7 +204,7 @@ public class HyphenTokenizerTests extends Assert {
                 "arbeiten"
         };
         AnalysisService analysisService =
-                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer_without_subwords.json");
+                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer_without_subwords.json");
         Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("my_hyphen_tokenfilter");
@@ -237,7 +234,7 @@ public class HyphenTokenizerTests extends Assert {
 
         };
         AnalysisService analysisService =
-                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer_without_subwords.json");
+                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer_without_subwords.json");
         Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("my_hyphen_tokenfilter");

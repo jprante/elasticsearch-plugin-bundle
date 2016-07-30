@@ -22,19 +22,19 @@
  */
 package org.xbib.elasticsearch.index.analysis.autophrase;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.lucene.util.AttributeImpl;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.analysis.util.CharArrayMap;
+import org.apache.lucene.analysis.util.CharArraySet;
+import org.apache.lucene.util.AttributeImpl;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Performs "auto phrasing" on a token stream. Auto phrases refer to sequences of tokens that
@@ -117,9 +117,8 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
                     emit(phrase);
                     return true;
                 }
-            }
-            else if (!emitSingleTokens && currentSetToCheck != null && currentSetToCheck.size() > 0) {
-                char[] currBuff = getCurrentBuffer(new char[0] );
+            } else if (!emitSingleTokens && currentSetToCheck != null && currentSetToCheck.size() > 0) {
+                char[] currBuff = getCurrentBuffer(new char[0]);
                 if (lastEmitted != null && !equals(fixWhitespace(lastEmitted), currBuff)) {
                     discardCharTokens(currentPhrase, unusedTokens);
                     currentSetToCheck = null;
@@ -134,12 +133,11 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
             }
             if (lastEmitted == null && (currentPhrase != null && currentPhrase.length() > 0)) {
                 char[] lastTok = getCurrentBuffer(new char[0]);
-                if (currentSetToCheck.contains(lastTok, 0, lastTok.length )) {
+                if (currentSetToCheck.contains(lastTok, 0, lastTok.length)) {
                     emit(lastTok);
                     currentPhrase.setLength(0);
                     return true;
-                }
-                else if (!emitSingleTokens) {
+                } else if (!emitSingleTokens) {
                     discardCharTokens(currentPhrase, unusedTokens);
                     currentSetToCheck = null;
                     currentPhrase.setLength(0);
@@ -155,9 +153,9 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
         if (emitSingleTokens) {
             lastToken = nextToken;
         }
-        if (currentSetToCheck == null || currentSetToCheck.size() == 0 ) {
-            if (phraseMap.keySet().contains(nextToken, 0, nextToken.length )) {
-                currentSetToCheck = phraseMap.get(nextToken, 0, nextToken.length );
+        if (currentSetToCheck == null || currentSetToCheck.size() == 0) {
+            if (phraseMap.keySet().contains(nextToken, 0, nextToken.length)) {
+                currentSetToCheck = phraseMap.get(nextToken, 0, nextToken.length);
                 if (currentPhrase == null) {
                     currentPhrase = new StringBuilder();
                 } else {
@@ -165,14 +163,12 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
                 }
                 currentPhrase.append(nextToken);
                 return incrementToken();
-            }
-            else {
+            } else {
                 emit(nextToken);
                 lastToken = null;
                 return true;
             }
-        }
-        else {
+        } else {
             char[] currentBuffer = getCurrentBuffer(nextToken);
             if (currentSetToCheck.contains(currentBuffer, 0, currentBuffer.length)) {
                 currentSetToCheck = remove(currentBuffer);
@@ -180,8 +176,7 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
                     emit(currentBuffer);
                     lastValid = null;
                     --positionIncr;
-                }
-                else {
+                } else {
                     if (emitSingleTokens) {
                         lastToken = currentBuffer;
                         return true;
@@ -189,7 +184,7 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
                     lastValid = currentBuffer;
                 }
                 if (phraseMap.keySet().contains(nextToken, 0, nextToken.length)) {
-                    currentSetToCheck = phraseMap.get(nextToken, 0, nextToken.length );
+                    currentSetToCheck = phraseMap.get(nextToken, 0, nextToken.length);
                     if (currentPhrase == null) {
                         currentPhrase = new StringBuilder();
                     } else {
@@ -247,27 +242,41 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
     }
 
     private boolean startsWith(char[] buffer, char[] phrase) {
-        if (phrase.length > buffer.length) return false;
-        for (int i = 0; i < phrase.length; i++){
-            if (buffer[i] != phrase[i]) return false;
+        if (phrase.length > buffer.length) {
+            return false;
+        }
+        for (int i = 0; i < phrase.length; i++) {
+            if (buffer[i] != phrase[i]) {
+                return false;
+            }
         }
         return true;
     }
 
     private boolean equals(char[] buffer, char[] phrase) {
-        if (phrase.length != buffer.length) return false;
-        for (int i = 0; i < phrase.length; i++){
-            if (buffer[i] != phrase[i]) return false;
+        if (phrase.length != buffer.length) {
+            return false;
+        }
+        for (int i = 0; i < phrase.length; i++) {
+            if (buffer[i] != phrase[i]) {
+                return false;
+            }
         }
         return true;
     }
 
     private boolean endsWith(char[] buffer, char[] phrase) {
-        if (buffer == null || phrase == null) return false;
+        if (buffer == null || phrase == null) {
+            return false;
+        }
 
-        if (phrase.length >= buffer.length) return false;
-        for (int i = 1; i < phrase.length-1; ++i){
-            if (buffer[buffer.length - i] != phrase[phrase.length - i]) return false;
+        if (phrase.length >= buffer.length) {
+            return false;
+        }
+        for (int i = 1; i < phrase.length - 1; ++i) {
+            if (buffer[buffer.length - i] != phrase[phrase.length - i]) {
+                return false;
+            }
         }
         return true;
     }
@@ -277,10 +286,12 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
             currentPhrase = new StringBuilder();
         }
         if (newToken != null && newToken.length > 0) {
-            if (currentPhrase.length() > 0) currentPhrase.append(' ');
+            if (currentPhrase.length() > 0) {
+                currentPhrase.append(' ');
+            }
             currentPhrase.append(newToken);
         }
-        char[] currentBuff = new char[ currentPhrase.length() ];
+        char[] currentBuff = new char[currentPhrase.length()];
         currentPhrase.getChars(0, currentPhrase.length(), currentBuff, 0);
         return currentBuff;
     }
@@ -290,7 +301,7 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
             return null;
         }
         Iterator<Object> phraseIt = charSet.iterator();
-        return (char[])phraseIt.next();
+        return (char[]) phraseIt.next();
     }
 
     private void emit(char[] token) {
@@ -302,7 +313,7 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
         termAttr.setEmpty();
         termAttr.append(new StringBuilder().append(token));
         OffsetAttribute offAttr = getOffsetAttribute();
-        if (offAttr != null && offAttr.endOffset() >= token.length){
+        if (offAttr != null && offAttr.endOffset() >= token.length) {
             int start = offAttr.endOffset() - token.length;
             offAttr.setOffset(start, offAttr.endOffset());
         }
@@ -323,12 +334,11 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
     }
 
     private char[] replaceWhiteSpace(char[] token) {
-        char[] replaced = new char[ token.length ];
-        for (int i = 0; i < token.length; i++ ) {
-            if (token[i] == ' ' ) {
+        char[] replaced = new char[token.length];
+        for (int i = 0; i < token.length; i++) {
+            if (token[i] == ' ') {
                 replaced[i] = replaceWhitespaceWith;
-            }
-            else {
+            } else {
                 replaced[i] = token[i];
             }
         }
@@ -337,10 +347,10 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
 
     private CharTermAttribute getTermAttribute() {
         Iterator<AttributeImpl> attrIt = getAttributeImplsIterator();
-        while (attrIt != null && attrIt.hasNext() ) {
+        while (attrIt != null && attrIt.hasNext()) {
             AttributeImpl attrImp = attrIt.next();
             if (attrImp instanceof CharTermAttribute) {
-                return (CharTermAttribute)attrImp;
+                return (CharTermAttribute) attrImp;
             }
         }
         return null;
@@ -348,10 +358,10 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
 
     private OffsetAttribute getOffsetAttribute() {
         Iterator<AttributeImpl> attrIt = getAttributeImplsIterator();
-        while (attrIt != null && attrIt.hasNext() ) {
+        while (attrIt != null && attrIt.hasNext()) {
             AttributeImpl attrImp = attrIt.next();
             if (attrImp instanceof OffsetAttribute) {
-                return (OffsetAttribute)attrImp;
+                return (OffsetAttribute) attrImp;
             }
         }
         return null;
@@ -359,16 +369,16 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
 
     private PositionIncrementAttribute getPositionIncrementAttribute() {
         Iterator<AttributeImpl> attrIt = getAttributeImplsIterator();
-        while (attrIt != null && attrIt.hasNext() ) {
+        while (attrIt != null && attrIt.hasNext()) {
             AttributeImpl attrImp = attrIt.next();
             if (attrImp instanceof PositionIncrementAttribute) {
-                return (PositionIncrementAttribute)attrImp;
+                return (PositionIncrementAttribute) attrImp;
             }
         }
         return null;
     }
 
-    private CharArrayMap<CharArraySet> convertPhraseSet(CharArraySet phraseSet ) {
+    private CharArrayMap<CharArraySet> convertPhraseSet(CharArraySet phraseSet) {
         CharArrayMap<CharArraySet> phraseMap = new CharArrayMap<>(100, false);
         for (Object aPhraseSet : phraseSet) {
             char[] phrase = (char[]) aPhraseSet;
@@ -390,12 +400,12 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
                 break;
             }
         }
-        char[] firstCh = new char[ spNdx-1 ];
-        System.arraycopy(phrase, 0, firstCh, 0, spNdx-1);
+        char[] firstCh = new char[spNdx - 1];
+        System.arraycopy(phrase, 0, firstCh, 0, spNdx - 1);
         return firstCh;
     }
 
-    private boolean isSpaceChar(char ch ) {
+    private boolean isSpaceChar(char ch) {
         return " \t\n\r".indexOf(ch) >= 0;
     }
 
@@ -405,11 +415,11 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
         int endPos = offAttr.endOffset();
         int startPos = endPos - phrase.length();
         int lastSp = 0;
-        for (int i = 0; i < phrase.length(); i++ ) {
+        for (int i = 0; i < phrase.length(); i++) {
             char chAt = phrase.charAt(i);
-            if (isSpaceChar(chAt ) && i > lastSp) {
-                char[] tok = new char[ i - lastSp ];
-                phrase.getChars(lastSp, i, tok, 0 );
+            if (isSpaceChar(chAt) && i > lastSp) {
+                char[] tok = new char[i - lastSp];
+                phrase.getChars(lastSp, i, tok, 0);
                 if (lastEmitted == null || !endsWith(lastEmitted, tok)) {
                     Token token = new Token();
                     token.tok = tok;
@@ -417,7 +427,7 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
                     token.endPos = token.startPos + tok.length;
                     tokenList.add(token);
                 }
-                lastSp = i+1;
+                lastSp = i + 1;
             }
         }
         char[] tok = new char[phrase.length() - lastSp];
@@ -441,13 +451,14 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
     }
 
     private char[] fixWhitespace(char[] phrase) {
-        if (replaceWhitespaceWith == null) return phrase;
-        char[] fixed = new char[ phrase.length ];
+        if (replaceWhitespaceWith == null) {
+            return phrase;
+        }
+        char[] fixed = new char[phrase.length];
         for (int i = 0; i < phrase.length; i++) {
             if (phrase[i] == replaceWhitespaceWith) {
                 fixed[i] = ' ';
-            }
-            else {
+            } else {
                 fixed[i] = phrase[i];
             }
         }

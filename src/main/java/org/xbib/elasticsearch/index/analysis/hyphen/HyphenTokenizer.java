@@ -34,13 +34,10 @@ import java.io.IOException;
 
 public final class HyphenTokenizer extends Tokenizer {
 
-    private HyphenTokenizerImpl scanner;
-
     public static final int ALPHANUM = 0;
     public static final int ALPHANUM_COMP = 1;
     public static final int NUM = 2;
     public static final int CJ = 3;
-
     /**
      * String token types that correspond to token type int constants
      */
@@ -50,30 +47,13 @@ public final class HyphenTokenizer extends Tokenizer {
             "<NUM>",
             "<CJ>"
     };
-
+    private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
+    private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
+    private final PositionIncrementAttribute posIncrAtt = addAttribute(PositionIncrementAttribute.class);
+    private final TypeAttribute typeAtt = addAttribute(TypeAttribute.class);
+    private HyphenTokenizerImpl scanner;
     private int skippedPositions;
-
     private int maxTokenLength = StandardAnalyzer.DEFAULT_MAX_TOKEN_LENGTH;
-
-    /**
-     * Set the max allowed token length.  Any token longer
-     * than this is skipped.
-     * @param length length
-     */
-    public void setMaxTokenLength(int length) {
-        if (length < 1) {
-            throw new IllegalArgumentException("maxTokenLength must be greater than zero");
-        }
-        this.maxTokenLength = length;
-    }
-
-    /**
-     * @see #setMaxTokenLength
-     * @return max token length
-     */
-    public int getMaxTokenLength() {
-        return maxTokenLength;
-    }
 
     /**
      * Creates a new instance of the {@link HyphenTokenizer}.  Attaches
@@ -86,6 +66,7 @@ public final class HyphenTokenizer extends Tokenizer {
 
     /**
      * Creates a new {@link HyphenTokenizer} with a given {@link org.apache.lucene.util.AttributeFactory}
+     *
      * @param factory factory
      */
     public HyphenTokenizer(AttributeFactory factory) {
@@ -93,14 +74,30 @@ public final class HyphenTokenizer extends Tokenizer {
         init();
     }
 
+    /**
+     * @return max token length
+     * @see #setMaxTokenLength
+     */
+    public int getMaxTokenLength() {
+        return maxTokenLength;
+    }
+
+    /**
+     * Set the max allowed token length.  Any token longer
+     * than this is skipped.
+     *
+     * @param length length
+     */
+    public void setMaxTokenLength(int length) {
+        if (length < 1) {
+            throw new IllegalArgumentException("maxTokenLength must be greater than zero");
+        }
+        this.maxTokenLength = length;
+    }
+
     private void init() {
         this.scanner = new HyphenTokenizerImpl(input);
     }
-
-    private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
-    private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
-    private final PositionIncrementAttribute posIncrAtt = addAttribute(PositionIncrementAttribute.class);
-    private final TypeAttribute typeAtt = addAttribute(TypeAttribute.class);
 
     @Override
     public final boolean incrementToken() throws IOException {

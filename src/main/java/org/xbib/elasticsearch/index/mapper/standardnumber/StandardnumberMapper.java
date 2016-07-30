@@ -46,9 +46,75 @@ import static org.elasticsearch.index.mapper.MapperBuilders.stringField;
 public class StandardnumberMapper extends FieldMapper {
 
     public static final String CONTENT_TYPE = "standardnumber";
+    private final StandardnumberService service;
+    private final FieldMapper contentMapper;
+    private final FieldMapper stdnumMapper;
+
+    public StandardnumberMapper(String simpleName,
+                                MappedFieldType fieldType,
+                                MappedFieldType defaultFieldType,
+                                Settings indexSettings,
+                                MultiFields multiFields,
+                                CopyTo copyTo,
+                                StandardnumberService service,
+                                FieldMapper contentMapper,
+                                FieldMapper stdnumMapper) {
+        super(simpleName, fieldType, defaultFieldType, indexSettings, multiFields, copyTo);
+        this.service = service;
+        this.contentMapper = contentMapper;
+        this.stdnumMapper = stdnumMapper;
+    }
+
+    @Override
+    public Mapper parse(ParseContext context) throws IOException {
+        String content = null;
+        XContentParser parser = context.parser();
+        XContentParser.Token token = parser.currentToken();
+        if (token == XContentParser.Token.VALUE_STRING) {
+            content = parser.text();
+        }
+        if (content == null) {
+            return null;
+        }
+        context = context.createExternalValueContext(content);
+        contentMapper.parse(context);
+        try {
+            Collection<StandardNumber> stdnums = service.detect(content);
+            for (StandardNumber stdnum : stdnums) {
+                context = context.createExternalValueContext(stdnum.normalizedValue());
+                stdnumMapper.parse(context);
+            }
+        } catch (NumberFormatException e) {
+            context = context.createExternalValueContext("unknown");
+            stdnumMapper.parse(context);
+        }
+        return null;
+    }
+
+    @Override
+    protected void parseCreateField(ParseContext parseContext, List<Field> fields) throws IOException {
+    }
+
+    @Override
+    public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
+        builder.startObject(simpleName());
+        builder.field("type", CONTENT_TYPE);
+        builder.startObject("fields");
+        contentMapper.toXContent(builder, params);
+        stdnumMapper.toXContent(builder, params);
+        builder.endObject();
+        builder.endObject();
+        return builder;
+    }
+
+    @Override
+    protected String contentType() {
+        return CONTENT_TYPE;
+    }
 
     public static final class Defaults {
         public static final StandardnumberFieldType FIELD_TYPE = new StandardnumberFieldType();
+
         static {
             FIELD_TYPE.freeze();
         }
@@ -143,7 +209,7 @@ public class StandardnumberMapper extends FieldMapper {
             this.service = service;
         }
 
-        @SuppressWarnings({"unchecked","rawtypes"})
+        @SuppressWarnings({"unchecked", "rawtypes"})
         @Override
         public Mapper.Builder parse(String name, Map<String, Object> mapping, ParserContext parserContext)
                 throws MapperParsingException {
@@ -172,71 +238,5 @@ public class StandardnumberMapper extends FieldMapper {
 
             return builder;
         }
-    }
-
-    private final StandardnumberService service;
-    private final FieldMapper contentMapper;
-    private final FieldMapper stdnumMapper;
-
-    public StandardnumberMapper(String simpleName,
-                                MappedFieldType fieldType,
-                                MappedFieldType defaultFieldType,
-                                Settings indexSettings,
-                                MultiFields multiFields,
-                                CopyTo copyTo,
-                                StandardnumberService service,
-                                FieldMapper contentMapper,
-                                FieldMapper stdnumMapper) {
-        super(simpleName, fieldType, defaultFieldType, indexSettings, multiFields, copyTo);
-        this.service = service;
-        this.contentMapper = contentMapper;
-        this.stdnumMapper = stdnumMapper;
-    }
-
-    @Override
-    public Mapper parse(ParseContext context) throws IOException {
-        String content = null;
-        XContentParser parser = context.parser();
-        XContentParser.Token token = parser.currentToken();
-        if (token == XContentParser.Token.VALUE_STRING) {
-            content = parser.text();
-        }
-        if (content == null) {
-            return null;
-        }
-        context = context.createExternalValueContext(content);
-        contentMapper.parse(context);
-        try {
-            Collection<StandardNumber> stdnums = service.detect(content);
-            for (StandardNumber stdnum : stdnums) {
-                context = context.createExternalValueContext(stdnum.normalizedValue());
-                stdnumMapper.parse(context);
-            }
-        } catch(NumberFormatException e) {
-            context = context.createExternalValueContext("unknown");
-            stdnumMapper.parse(context);
-        }
-        return null;
-    }
-
-    @Override
-    protected void parseCreateField(ParseContext parseContext, List<Field> fields) throws IOException {
-    }
-
-    @Override
-    public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
-        builder.startObject(simpleName());
-        builder.field("type", CONTENT_TYPE);
-        builder.startObject("fields");
-        contentMapper.toXContent(builder, params);
-        stdnumMapper.toXContent(builder, params);
-        builder.endObject();
-        builder.endObject();
-        return builder;
-    }
-
-    @Override
-    protected String contentType() {
-        return CONTENT_TYPE;
     }
 }

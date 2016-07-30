@@ -44,7 +44,6 @@ import java.util.regex.Pattern;
  * The standard was formally published in March 2009
  *
  * Checksum algorithm is ISO 7064 MOD 16/3
- *
  */
 public class ISTC extends AbstractStandardNumber implements Comparable<ISTC>, StandardNumber {
 
@@ -141,11 +140,11 @@ public class ISTC extends AbstractStandardNumber implements Comparable<ISTC>, St
         }
         int chk = checksum % 16;
         if (createWithChecksum) {
-            char ch = chk > 9 ? (char)(10 + (chk - 'A')) : (char)('0' + chk);
+            char ch = chk > 9 ? (char) (10 + (chk - 'A')) : (char) ('0' + chk);
             value = value.substring(0, l) + ch;
         }
         char digit = value.charAt(l);
-        int chk2 = (digit >= '0' && digit <= '9') ? digit - '0' : digit -'A' + 10;
+        int chk2 = (digit >= '0' && digit <= '9') ? digit - '0' : digit - 'A' + 10;
         return chk == chk2;
     }
 
@@ -169,10 +168,10 @@ public class ISTC extends AbstractStandardNumber implements Comparable<ISTC>, St
         }
         if (sb.length() > 15) {
             this.formatted = "ISTC "
-                + sb.substring(0,3) + "-"
-                + sb.substring(3,7) + "-"
-                + sb.substring(7,15) + "-"
-                + sb.substring(15);
+                    + sb.substring(0, 3) + "-"
+                    + sb.substring(3, 7) + "-"
+                    + sb.substring(7, 15) + "-"
+                    + sb.substring(15);
         }
         return sb.toString();
     }

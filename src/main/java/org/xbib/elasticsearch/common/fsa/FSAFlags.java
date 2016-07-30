@@ -53,7 +53,7 @@ public enum FSAFlags {
     }
 
     /**
-     * @param flag flag
+     * @param flag  flag
      * @param flags flags
      * @return <code>true</code> if the corresponding flag is set in the bit set.
      */

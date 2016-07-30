@@ -25,6 +25,7 @@ package org.xbib.elasticsearch.index.analysis.baseform;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.analysis.tokenattributes.KeywordAttribute;
 import org.apache.lucene.analysis.tokenattributes.PackedTokenAttributeImpl;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.util.AttributeSource;
@@ -40,16 +41,19 @@ public class BaseformTokenFilter extends TokenFilter {
 
     private final Dictionary dictionary;
 
-    private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
+    private final boolean respectKeywords;
 
+    private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
+    private final KeywordAttribute keywordAtt = addAttribute(KeywordAttribute.class);
     private final PositionIncrementAttribute posIncAtt = addAttribute(PositionIncrementAttribute.class);
 
     private AttributeSource.State current;
 
-    protected BaseformTokenFilter(TokenStream input, Dictionary dictionary) {
+    protected BaseformTokenFilter(TokenStream input, Dictionary dictionary, boolean respectKeywords) {
         super(input);
         this.tokens = new LinkedList<>();
         this.dictionary = dictionary;
+        this.respectKeywords = respectKeywords;
     }
 
     @Override
@@ -62,18 +66,20 @@ public class BaseformTokenFilter extends TokenFilter {
             posIncAtt.setPositionIncrement(0);
             return true;
         }
-        if (input.incrementToken()) {
-            baseform();
-            if (!tokens.isEmpty()) {
-                current = captureState();
-            }
-            return true;
-        } else {
+        if (!input.incrementToken()) {
             return false;
         }
+        if (respectKeywords && keywordAtt.isKeyword()) {
+            return true;
+        }
+        baseform();
+        if (!tokens.isEmpty()) {
+            current = captureState();
+        }
+        return true;
     }
 
-    protected void baseform() throws CharacterCodingException {
+    private void baseform() throws CharacterCodingException {
         CharSequence term = new String(termAtt.buffer(), 0, termAtt.length());
         CharSequence s = dictionary.lookup(term);
         if (s != null && s.length() > 0) {

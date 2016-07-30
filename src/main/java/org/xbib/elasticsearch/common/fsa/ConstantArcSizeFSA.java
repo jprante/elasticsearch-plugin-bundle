@@ -44,23 +44,19 @@ public final class ConstantArcSizeFSA extends FSA {
      * Offset of the address field inside an arc.
      */
     public final static int ADDRESS_OFFSET = LABEL_OFFSET + LABEL_SIZE;
-
-    /**
-     * A dummy address of the terminal state.
-     */
-    final static int TERMINAL_STATE = 0;
-
     /**
      * An arc flag indicating the target node of an arc corresponds to a final
      * state.
      */
     public final static int BIT_ARC_FINAL = 1 << 1;
-
     /**
      * An arc flag indicating the arc is last within its state.
      */
     public final static int BIT_ARC_LAST = 1 << 0;
-
+    /**
+     * A dummy address of the terminal state.
+     */
+    final static int TERMINAL_STATE = 0;
     /**
      * An epsilon state. The first and only arc of this state points either
      * to the root or to the terminal state, indicating an empty automaton.

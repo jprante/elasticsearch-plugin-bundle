@@ -1,0 +1,3 @@
+The ConcatTokenFilter is authored by Sujit Pal and was taken from
+
+http://sujitpal.blogspot.de/2011/07/lucene-token-concatenating-tokenfilter_30.html

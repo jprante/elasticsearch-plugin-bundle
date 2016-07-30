@@ -255,7 +255,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
 
     @Test
     public void testPrimaryStrengthFromJson() throws Exception {
-        AnalysisService analysisService = MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/icu/icu_collation.json");
+        AnalysisService analysisService = MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/icu/icu_collation.json");
         Analyzer analyzer = analysisService.analyzer("icu_german_collate").analyzer();
 
         String[] words = new String[]{
@@ -279,7 +279,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
 
     @Test
     public void testQuaternaryStrengthFromJson() throws Exception {
-        AnalysisService analysisService = MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/icu/icu_collation.json");
+        AnalysisService analysisService = MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/icu/icu_collation.json");
         Analyzer analyzer = analysisService.analyzer("icu_german_collate_without_punct").analyzer();
 
         String[] words = new String[]{

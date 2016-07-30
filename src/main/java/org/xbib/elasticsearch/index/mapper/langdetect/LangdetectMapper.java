@@ -51,6 +51,99 @@ import static org.elasticsearch.index.mapper.core.TypeParsers.parseStore;
 public class LangdetectMapper extends StringFieldMapper {
 
     public static final String CONTENT_TYPE = "langdetect";
+    private final LangdetectService langdetectService;
+    private final int positionIncrementGap;
+
+    public LangdetectMapper(String simpleName,
+                            MappedFieldType fieldType,
+                            MappedFieldType defaultFieldType,
+                            int positionIncrementGap,
+                            int ignoreAbove,
+                            Settings indexSettings,
+                            MultiFields multiFields,
+                            CopyTo copyTo,
+                            LangdetectService langdetectService) {
+        super(simpleName, fieldType, defaultFieldType,
+                positionIncrementGap, ignoreAbove, indexSettings, multiFields, copyTo);
+        this.langdetectService = langdetectService;
+        this.positionIncrementGap = positionIncrementGap;
+    }
+
+    @Override
+    protected String contentType() {
+        return CONTENT_TYPE;
+    }
+
+    @Override
+    protected void parseCreateField(ParseContext context, List<Field> fields) throws IOException {
+        if (context.externalValueSet()) {
+            return;
+        }
+        XContentParser parser = context.parser();
+        if (parser.currentToken() == XContentParser.Token.VALUE_NULL) {
+            return;
+        }
+        String value = fieldType().nullValueAsString();
+        if (parser.currentToken() == XContentParser.Token.START_OBJECT) {
+            XContentParser.Token token;
+            String currentFieldName = null;
+            while ((token = parser.nextToken()) != XContentParser.Token.END_OBJECT) {
+                if (token == XContentParser.Token.FIELD_NAME) {
+                    currentFieldName = parser.currentName();
+                } else {
+                    if ("value".equals(currentFieldName) || "_value".equals(currentFieldName)) {
+                        value = parser.textOrNull();
+                    }
+                }
+            }
+        } else {
+            value = parser.textOrNull();
+        }
+        if (langdetectService.getSettings().getAsBoolean("binary", false)) {
+            try {
+                byte[] b = parser.binaryValue();
+                if (b != null && b.length > 0) {
+                    value = new String(b, Charset.forName("UTF-8"));
+                }
+            } catch (Exception e) {
+                // ignore
+            }
+        }
+        try {
+            List<Language> langs = langdetectService.detectAll(value);
+            for (Language lang : langs) {
+                Field field = new Field(fieldType().names().indexName(), lang.getLanguage(), fieldType());
+                fields.add(field);
+            }
+        } catch (LanguageDetectionException e) {
+            context.createExternalValueContext("unknown");
+        }
+    }
+
+    @Override
+    protected void doXContentBody(XContentBuilder builder, boolean includeDefaults, Params params) throws IOException {
+        super.doXContentBody(builder, includeDefaults, params);
+        if (includeDefaults || fieldType().nullValue() != null) {
+            builder.field("null_value", fieldType().nullValue());
+        }
+        if (includeDefaults || positionIncrementGap != -1) {
+            builder.field("position_increment_gap", positionIncrementGap);
+        }
+        NamedAnalyzer searchQuoteAnalyzer = fieldType().searchQuoteAnalyzer();
+        if (searchQuoteAnalyzer != null && !searchQuoteAnalyzer.name().equals(fieldType().searchAnalyzer().name())) {
+            builder.field("search_quote_analyzer", searchQuoteAnalyzer.name());
+        } else if (includeDefaults) {
+            if (searchQuoteAnalyzer == null) {
+                builder.field("search_quote_analyzer", "default");
+            } else {
+                builder.field("search_quote_analyzer", searchQuoteAnalyzer.name());
+            }
+        }
+        Map<String, Object> map = langdetectService.getSettings().getAsStructuredMap();
+        for (String key : map.keySet()) {
+            builder.field(key, map.get(key));
+        }
+    }
 
     public static class Defaults {
 
@@ -143,7 +236,7 @@ public class LangdetectMapper extends StringFieldMapper {
             return this;
         }
 
-        public Builder map(Map<String,Object> map) {
+        public Builder map(Map<String, Object> map) {
             for (String key : map.keySet()) {
                 settingsBuilder.put("map." + key, map.get(key));
             }
@@ -196,7 +289,7 @@ public class LangdetectMapper extends StringFieldMapper {
                 String fieldName = entry.getKey();
                 Object fieldNode = entry.getValue();
                 switch (fieldName) {
-                    case "analyzer" : {
+                    case "analyzer": {
                         iterator.remove();
                         break;
                     }
@@ -227,7 +320,7 @@ public class LangdetectMapper extends StringFieldMapper {
                         iterator.remove();
                         break;
                     }
-                    case "store" : {
+                    case "store": {
                         builder.store(parseStore(fieldName, fieldNode.toString()));
                         iterator.remove();
                         break;
@@ -283,17 +376,17 @@ public class LangdetectMapper extends StringFieldMapper {
                         iterator.remove();
                         break;
                     }
-                    case "map" : {
+                    case "map": {
                         builder.map(XContentMapValues.nodeMapValue(fieldNode, "map"));
                         iterator.remove();
                         break;
                     }
-                    case "languages" : {
+                    case "languages": {
                         builder.languages(XContentMapValues.nodeStringArrayValue(fieldNode));
                         iterator.remove();
                         break;
                     }
-                    case "profile" : {
+                    case "profile": {
                         builder.profile(XContentMapValues.nodeStringValue(fieldNode, null));
                         iterator.remove();
                         break;
@@ -301,101 +394,6 @@ public class LangdetectMapper extends StringFieldMapper {
                 }
             }
             return builder;
-        }
-    }
-
-    private final LangdetectService langdetectService;
-
-    private final int positionIncrementGap;
-
-    public LangdetectMapper(String simpleName,
-                            MappedFieldType fieldType,
-                            MappedFieldType defaultFieldType,
-                            int positionIncrementGap,
-                            int ignoreAbove,
-                            Settings indexSettings,
-                            MultiFields multiFields,
-                            CopyTo copyTo,
-                            LangdetectService langdetectService) {
-        super(simpleName, fieldType, defaultFieldType,
-                positionIncrementGap, ignoreAbove, indexSettings, multiFields, copyTo);
-        this.langdetectService = langdetectService;
-        this.positionIncrementGap = positionIncrementGap;
-    }
-
-    @Override
-    protected String contentType() {
-        return CONTENT_TYPE;
-    }
-
-    @Override
-    protected void parseCreateField(ParseContext context, List<Field> fields) throws IOException {
-        if (context.externalValueSet()) {
-            return;
-        }
-        XContentParser parser = context.parser();
-        if (parser.currentToken() == XContentParser.Token.VALUE_NULL) {
-            return;
-        }
-        String value = fieldType().nullValueAsString();
-        if (parser.currentToken() == XContentParser.Token.START_OBJECT) {
-            XContentParser.Token token;
-            String currentFieldName = null;
-            while ((token = parser.nextToken()) != XContentParser.Token.END_OBJECT) {
-                if (token == XContentParser.Token.FIELD_NAME) {
-                    currentFieldName = parser.currentName();
-                } else {
-                    if ("value".equals(currentFieldName) || "_value".equals(currentFieldName)) {
-                        value = parser.textOrNull();
-                    }
-                }
-            }
-        } else {
-            value = parser.textOrNull();
-        }
-        if (langdetectService.getSettings().getAsBoolean("binary", false)) {
-            try {
-                byte[] b = parser.binaryValue();
-                if (b != null && b.length > 0) {
-                    value = new String(b, Charset.forName("UTF-8"));
-                }
-            } catch (Exception e) {
-                // ignore
-            }
-        }
-        try {
-            List<Language> langs = langdetectService.detectAll(value);
-            for (Language lang : langs) {
-                Field field = new Field(fieldType().names().indexName(), lang.getLanguage(), fieldType());
-                fields.add(field);
-            }
-        } catch (LanguageDetectionException e) {
-            context.createExternalValueContext("unknown");
-        }
-    }
-
-    @Override
-    protected void doXContentBody(XContentBuilder builder, boolean includeDefaults, Params params) throws IOException {
-        super.doXContentBody(builder, includeDefaults, params);
-        if (includeDefaults || fieldType().nullValue() != null) {
-            builder.field("null_value", fieldType().nullValue());
-        }
-        if (includeDefaults || positionIncrementGap != -1) {
-            builder.field("position_increment_gap", positionIncrementGap);
-        }
-        NamedAnalyzer searchQuoteAnalyzer = fieldType().searchQuoteAnalyzer();
-        if (searchQuoteAnalyzer != null && !searchQuoteAnalyzer.name().equals(fieldType().searchAnalyzer().name())) {
-            builder.field("search_quote_analyzer", searchQuoteAnalyzer.name());
-        } else if (includeDefaults) {
-            if (searchQuoteAnalyzer == null) {
-                builder.field("search_quote_analyzer", "default");
-            } else {
-                builder.field("search_quote_analyzer", searchQuoteAnalyzer.name());
-            }
-        }
-        Map<String, Object> map = langdetectService.getSettings().getAsStructuredMap();
-        for (String key : map.keySet()) {
-            builder.field(key, map.get(key));
         }
     }
 }

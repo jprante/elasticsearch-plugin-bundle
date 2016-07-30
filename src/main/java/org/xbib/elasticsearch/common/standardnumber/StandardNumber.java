@@ -38,7 +38,6 @@ import java.util.Collection;
  * - must have a createChecksum
  *
  * - can be formatted to a printable representation
- *
  */
 public interface StandardNumber {
 
@@ -52,6 +51,7 @@ public interface StandardNumber {
     /**
      * Set the input value of this standard number. The input must be normalized
      * and verified before being accepted as valid.
+     *
      * @param value the raw input value
      * @return this standard number
      */
@@ -60,18 +60,21 @@ public interface StandardNumber {
     /**
      * Normalize the value by removing all unwanted characters or
      * replacing characters with the ones required for verification.
+     *
      * @return this standard number
      */
     StandardNumber normalize();
 
     /**
      * Check this number for validity.
+     *
      * @return true if valid, false otherwise
      */
     boolean isValid();
 
     /**
      * Verify the number.
+     *
      * @return this standard number if verification was successful
      * @throws NumberFormatException if verification failed
      */
@@ -79,6 +82,7 @@ public interface StandardNumber {
 
     /**
      * Indicate that a correct check sum should be computed.
+     *
      * @param withChecksum if checksum is included
      * @return this standard number
      */
@@ -89,6 +93,7 @@ public interface StandardNumber {
      * In most cases, this is also the canonical form of the standard number.
      * This is a representation without unneccessary characters, useful
      * for computation purposes, like comparing for equivalence.
+     *
      * @return the normalized value
      */
     String normalizedValue();

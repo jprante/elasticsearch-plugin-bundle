@@ -47,13 +47,13 @@ public class ISBNFormatRequest extends ActionRequest<ISBNFormatRequest> {
         return validationException;
     }
 
+    public String getValue() {
+        return value;
+    }
+
     public ISBNFormatRequest setValue(String value) {
         this.value = value;
         return this;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     @Override

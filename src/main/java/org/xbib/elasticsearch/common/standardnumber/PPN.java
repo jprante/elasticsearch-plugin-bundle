@@ -30,7 +30,6 @@ import java.util.regex.Pattern;
  *
  * A catalog record numbering system, uniquely identifying records, used by PICA
  * (Project voor geIntegreerde Catalogus Automatisering) integrated library systems.
- *
  */
 public class PPN extends AbstractStandardNumber implements Comparable<PPN>, StandardNumber {
 
@@ -98,7 +97,7 @@ public class PPN extends AbstractStandardNumber implements Comparable<PPN>, Stan
     public String format() {
         if (formatted == null) {
             StringBuilder sb = new StringBuilder(value);
-            this.formatted = sb.insert(sb.length()-1,"-").toString();
+            this.formatted = sb.insert(sb.length() - 1, "-").toString();
         }
         return formatted;
     }
@@ -121,7 +120,7 @@ public class PPN extends AbstractStandardNumber implements Comparable<PPN>, Stan
             checksum += val * weight++;
         }
         if (createWithChecksum) {
-            char ch = checksum % 11 == 10 ? 'X' : (char)('0' + (checksum % 11));
+            char ch = checksum % 11 == 10 ? 'X' : (char) ('0' + (checksum % 11));
             value = value.substring(0, l) + ch;
         }
         return 11 - checksum % 11 ==

@@ -123,6 +123,7 @@ public class BundlePlugin extends Plugin {
 
     /**
      * Automatically called with the analysis module.
+     *
      * @param module the analysis module
      */
     public void onModule(AnalysisModule module) {

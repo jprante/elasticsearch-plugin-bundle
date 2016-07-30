@@ -53,28 +53,27 @@ import java.util.regex.Pattern;
  * may be an "X" if the result of the computing is equal to "10",
  * in order to avoid any ambiguity.
  *
- *  The ISSN is linked to a standardized form of the title of the
- *  identified serial, known as the "key title", which repeats
- *  the title of the publication, qualifying it with additional elements
- *  in order to distinguish it from other publications having identical
- *  titles.
+ * The ISSN is linked to a standardized form of the title of the
+ * identified serial, known as the "key title", which repeats
+ * the title of the publication, qualifying it with additional elements
+ * in order to distinguish it from other publications having identical
+ * titles.
  *
- *  If the title of the publication changes in any significant way,
- *  a new ISSN must be assigned in order to correspond to this new form
- *  of title and avoid any confusion. A serial publication whose
- *  title is modified several times in the course of its existence
- *  will be assigned each time a new ISSN, thus allowing precise
- *  identification of each form of the title : in fact it is then
- *  considered that they are different publications even if there
- *  is a logical link between them.
+ * If the title of the publication changes in any significant way,
+ * a new ISSN must be assigned in order to correspond to this new form
+ * of title and avoid any confusion. A serial publication whose
+ * title is modified several times in the course of its existence
+ * will be assigned each time a new ISSN, thus allowing precise
+ * identification of each form of the title : in fact it is then
+ * considered that they are different publications even if there
+ * is a logical link between them.
  *
- *  Contrary to other types of publications, the world of serial
- *  publications is particularly changeable and complex :
- *  the lifetime of a title may be extremely short; many publications
- *  may be part of a complex set of relationships, etc.
- *  These particularities themselves necessitated the introduction
- *  of the ISSN.
- *
+ * Contrary to other types of publications, the world of serial
+ * publications is particularly changeable and complex :
+ * the lifetime of a title may be extremely short; many publications
+ * may be part of a complex set of relationships, etc.
+ * These particularities themselves necessitated the introduction
+ * of the ISSN.
  */
 public class ISSN extends AbstractStandardNumber implements Comparable<ISSN>, StandardNumber {
 
@@ -133,6 +132,7 @@ public class ISSN extends AbstractStandardNumber implements Comparable<ISSN>, St
 
     /**
      * Returns the value representation of the standard number
+     *
      * @return value
      */
     @Override
@@ -178,7 +178,7 @@ public class ISSN extends AbstractStandardNumber implements Comparable<ISSN>, St
             checksum += weight * val;
         }
         int chk = checksum % 11;
-        char p = chk == 0 ? '0' : chk == 1 ? 'X' : (char)((11-chk) + '0');
+        char p = chk == 0 ? '0' : chk == 1 ? 'X' : (char) ((11 - chk) + '0');
         return p == Character.toUpperCase(value.charAt(l));
     }
 

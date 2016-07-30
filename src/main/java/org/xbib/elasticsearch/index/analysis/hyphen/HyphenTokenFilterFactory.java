@@ -36,6 +36,8 @@ public class HyphenTokenFilterFactory extends AbstractTokenFilterFactory {
 
     private final boolean subwords;
 
+    private final boolean respectKeywords;
+
     @Inject
     public HyphenTokenFilterFactory(Index index,
                                     IndexSettingsService indexSettingsService,
@@ -44,10 +46,11 @@ public class HyphenTokenFilterFactory extends AbstractTokenFilterFactory {
         super(index, indexSettingsService.indexSettings(), name, settings);
         this.hyphenchars = settings.get("hyphens") != null ? settings.get("hyphens").toCharArray() : HyphenTokenFilter.HYPHEN;
         this.subwords = settings.getAsBoolean("subwords", true);
+        this.respectKeywords = settings.getAsBoolean("respect_keywords", false);
     }
 
     @Override
     public TokenStream create(TokenStream tokenStream) {
-        return new HyphenTokenFilter(tokenStream, hyphenchars, subwords);
+        return new HyphenTokenFilter(tokenStream, hyphenchars, subwords, respectKeywords);
     }
 }

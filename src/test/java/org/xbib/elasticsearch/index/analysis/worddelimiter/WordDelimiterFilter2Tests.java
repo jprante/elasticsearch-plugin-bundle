@@ -33,7 +33,7 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
 
     @Test
     public void testOffsets() throws IOException {
-        AnalysisService analysisService = MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json");
+        AnalysisService analysisService = MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json");
         Tokenizer tokenizer = analysisService.tokenizer("keyword").create();
         tokenizer.setReader(new StringReader("foo-bar"));
         TokenStream ts = analysisService.tokenFilter("wd").create(tokenizer);
@@ -47,7 +47,7 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
 
     @Test
     public void testOffsetChange() throws Exception {
-        AnalysisService analysisService = MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json");
+        AnalysisService analysisService = MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json");
         Tokenizer tokenizer = analysisService.tokenizer("keyword").create();
         tokenizer.setReader(new StringReader("übelkeit"));
         TokenStream ts = analysisService.tokenFilter("wd").create(tokenizer);

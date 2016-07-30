@@ -26,7 +26,8 @@ public interface Digit {
 
     /**
      * Add check digits to a string containing digits
-     * @param digits  the input data string containing only digits '0'-'9'
+     *
+     * @param digits the input data string containing only digits '0'-'9'
      * @return a new string containing data and check digits
      */
     String encode(String digits);

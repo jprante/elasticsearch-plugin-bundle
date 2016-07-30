@@ -9,7 +9,11 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ConcatTokenFilter extends TokenFilter {
+/**
+ * The ConcatTokenFilter is authored by Sujit Pal and was taken from
+ * http://sujitpal.blogspot.de/2011/07/lucene-token-concatenating-tokenfilter_30.html
+ */
+public final class ConcatTokenFilter extends TokenFilter {
 
     private CharTermAttribute termAttr;
     private PositionIncrementAttribute posIncAttr;
@@ -24,8 +28,8 @@ public class ConcatTokenFilter extends TokenFilter {
         super(input);
         this.termAttr = addAttribute(CharTermAttribute.class);
         this.posIncAttr = addAttribute(PositionIncrementAttribute.class);
-        this.words = new LinkedList<List<String>>();
-        this.phrases = new LinkedList<String>();
+        this.words = new LinkedList<>();
+        this.phrases = new LinkedList<>();
     }
 
     @Override
@@ -37,7 +41,6 @@ public class ConcatTokenFilter extends TokenFilter {
             word.add(term);
             words.add(word);
         }
-        // now write out as a single token
         if (!concat) {
             makePhrases(words, phrases, 0);
             concat = true;
@@ -52,6 +55,8 @@ public class ConcatTokenFilter extends TokenFilter {
             return true;
         }
         concat = false;
+        phrases.clear();
+        words.clear();
         return false;
     }
 
@@ -60,7 +65,7 @@ public class ConcatTokenFilter extends TokenFilter {
             if (phrases.size() == 0) {
                 phrases.addAll(words.get(i));
             } else {
-                List<String> newPhrases = new LinkedList<String>();
+                List<String> newPhrases = new LinkedList<>();
                 for (String phrase : phrases) {
                     for (String word : words.get(i)) {
                         newPhrases.add(phrase + " " + word);

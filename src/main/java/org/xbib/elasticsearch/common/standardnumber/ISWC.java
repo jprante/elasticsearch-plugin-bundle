@@ -41,7 +41,6 @@ import java.util.regex.Pattern;
  * to simply declare an ISWC as obsolete. In such cases, as soon as they are identified,
  * the system will deal with duplicate registrations by linking such registration records
  * in the ISWC database.
- *
  */
 public class ISWC extends AbstractStandardNumber implements Comparable<ISWC>, StandardNumber {
 
@@ -148,9 +147,9 @@ public class ISWC extends AbstractStandardNumber implements Comparable<ISWC>, St
         }
         if (sb.length() > 10) {
             this.formatted = "ISWC "
-                + "T-"
-                + sb.substring(1,10) + "-"
-                + sb.substring(10,11);
+                    + "T-"
+                    + sb.substring(1, 10) + "-"
+                    + sb.substring(10, 11);
         }
         return sb.toString();
     }

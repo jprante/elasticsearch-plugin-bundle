@@ -21,32 +21,6 @@ import static org.xbib.elasticsearch.common.fsa.ConstantArcSizeFSA.TERMINAL_STAT
  */
 public final class FSABuilder {
     /**
-     * Debug and information constants.
-     *
-     * @see FSABuilder#getInfo()
-     */
-    public enum InfoEntry {
-        SERIALIZATION_BUFFER_SIZE("Serialization buffer size"),
-        SERIALIZATION_BUFFER_REALLOCATIONS("Serialization buffer reallocs"),
-        CONSTANT_ARC_AUTOMATON_SIZE("Constant arc FSA size"),
-        MAX_ACTIVE_PATH_LENGTH("Max active path"),
-        STATE_REGISTRY_TABLE_SLOTS("Registry hash slots"),
-        STATE_REGISTRY_SIZE("Registry hash entries"),
-        ESTIMATED_MEMORY_CONSUMPTION_MB("Estimated mem consumption (MB)");
-
-        private final String stringified;
-
-        InfoEntry(String stringified) {
-            this.stringified = stringified;
-        }
-
-        @Override
-        public String toString() {
-            return stringified;
-        }
-    }
-
-    /**
      * Comparator comparing full byte arrays consistently with
      * {@link #compare(byte[], int, int, byte[], int, int)}.
      */
@@ -55,92 +29,80 @@ public final class FSABuilder {
             return FSABuilder.compare(o1, 0, o1.length, o2, 0, o2.length);
         }
     };
-
     /**
      * A megabyte.
      */
     private final static int MB = 1024 * 1024;
-
     /**
      * Internal serialized FSA buffer expand ratio.
      */
     private final static int BUFFER_GROWTH_SIZE = 5 * MB;
-
     /**
      * Maximum number of labels from a single state.
      */
     private final static int MAX_LABELS = 256;
-
     /**
      * Internal serialized FSA buffer expand ratio.
      */
     private final int bufferGrowthSize;
-
     /**
      * Holds serialized and mutable states. Each state is a sequential list of
      * arcs, the last arc is marked with {@link ConstantArcSizeFSA#BIT_ARC_LAST}.
      */
     private byte[] serialized = new byte[0];
-
     /**
      * Number of bytes already taken in {@link #serialized}. Start from 1 to
      * keep 0 a sentinel value (for the hash set and final state).
      */
     private int size;
-
     /**
      * States on the "active path" (still mutable). Values are addresses of each
      * state's first arc.
      */
     private int[] activePath = new int[0];
-
     /**
      * Current length of the active path.
      */
     private int activePathLen;
-
     /**
      * The next offset at which an arc will be added to the given state on
      * {@link #activePath}.
      */
     private int[] nextArcOffset = new int[0];
-
     /**
      * Root state. If negative, the automaton has been built already and cannot be extended.
      */
     private int root;
-
     /**
      * An epsilon state. The first and only arc of this state points either
      * to the root or to the terminal state, indicating an empty automaton.
      */
     private int epsilon;
-
     /**
      * Hash set of state addresses in {@link #serialized}, hashed by
      * {@link #hash(int, int)}. Zero reserved for an unoccupied slot.
      */
     private int[] hashSet = new int[2];
-
     /**
      * Number of entries currently stored in {@link #hashSet}.
      */
     private int hashSize = 0;
-
     /**
      * Previous sequence added to the automaton in {@link #add(byte[], int, int)}. Used in assertions only.
      */
     private byte[] previous;
-
     /**
      * Information about the automaton and its compilation.
      */
     private Map<InfoEntry, Object> info;
-
     /**
      * {@link #previous} sequence's length, used in assertions only.
      */
     private int previousLength;
+    /**
+     * Number of serialization buffer reallocations.
+     */
+    private int serializationBufferReallocations;
 
     /** */
     public FSABuilder() {
@@ -161,12 +123,65 @@ public final class FSABuilder {
     }
 
     /**
+     * Build a minimal, deterministic automaton from a sorted list of byte sequences.
+     *
+     * @param input input
+     * @return FSA
+     */
+    public static FSA build(byte[][] input) {
+        final FSABuilder builder = new FSABuilder();
+        for (byte[] chs : input) {
+            builder.add(chs, 0, chs.length);
+        }
+        return builder.complete();
+    }
+
+    /**
+     * Build a minimal, deterministic automaton from an iterable list of byte sequences.
+     *
+     * @param input input
+     * @return FSA
+     */
+    public static FSA build(Iterable<byte[]> input) {
+        final FSABuilder builder = new FSABuilder();
+        for (byte[] chs : input) {
+            builder.add(chs, 0, chs.length);
+        }
+        return builder.complete();
+    }
+
+    /**
+     * Lexicographic order of input sequences. By default, consistent with the "C" sort
+     * (absolute value of bytes, 0-255).
+     *
+     * @param s1     s1
+     * @param start1 start1
+     * @param lens1  lens1
+     * @param s2     s2
+     * @param start2 start2
+     * @param lens2  lens2
+     * @return diffence of length
+     */
+    public static int compare(byte[] s1, int start1, int lens1,
+                              byte[] s2, int start2, int lens2) {
+        final int max = Math.min(lens1, lens2);
+        for (int i = 0; i < max; i++) {
+            final byte c1 = s1[start1++];
+            final byte c2 = s2[start2++];
+            if (c1 != c2) {
+                return (c1 & 0xff) - (c2 & 0xff);
+            }
+        }
+        return lens1 - lens2;
+    }
+
+    /**
      * Add a single sequence of bytes to the FSA. The input must be lexicographically greater
      * than any previously added sequence.
-     * @param sequence sequence
-     * @param start start
-     * @param len len
      *
+     * @param sequence sequence
+     * @param start    start
+     * @param len      len
      */
     public void add(byte[] sequence, int start, int len) {
         assert serialized != null : "Automaton already built.";
@@ -198,12 +213,8 @@ public final class FSABuilder {
     }
 
     /**
-     * Number of serialization buffer reallocations.
-     */
-    private int serializationBufferReallocations;
-
-    /**
      * Complete the automaton.
+     *
      * @return FSA
      */
     public FSA complete() {
@@ -229,32 +240,6 @@ public final class FSABuilder {
         this.serialized = null;
         this.hashSet = null;
         return fsa;
-    }
-
-    /**
-     * Build a minimal, deterministic automaton from a sorted list of byte sequences.
-     * @param input input
-     * @return FSA
-     */
-    public static FSA build(byte[][] input) {
-        final FSABuilder builder = new FSABuilder();
-        for (byte[] chs : input) {
-            builder.add(chs, 0, chs.length);
-        }
-        return builder.complete();
-    }
-
-    /**
-     * Build a minimal, deterministic automaton from an iterable list of byte sequences.
-     * @param input input
-     * @return FSA
-     */
-    public static FSA build(Iterable<byte[]> input) {
-        final FSABuilder builder = new FSABuilder();
-        for (byte[] chs : input) {
-            builder.add(chs, 0, chs.length);
-        }
-        return builder.complete();
     }
 
     /**
@@ -478,27 +463,28 @@ public final class FSABuilder {
     }
 
     /**
-     * Lexicographic order of input sequences. By default, consistent with the "C" sort
-     * (absolute value of bytes, 0-255).
-     * @param s1 s1
-     * @param start1 start1
-     * @param lens1 lens1
-     * @param s2 s2
-     * @param start2 start2
-     * @param lens2 lens2
-     * @return diffence of length
+     * Debug and information constants.
      *
+     * @see FSABuilder#getInfo()
      */
-    public static int compare(byte[] s1, int start1, int lens1,
-                              byte[] s2, int start2, int lens2) {
-        final int max = Math.min(lens1, lens2);
-        for (int i = 0; i < max; i++) {
-            final byte c1 = s1[start1++];
-            final byte c2 = s2[start2++];
-            if (c1 != c2) {
-                return (c1 & 0xff) - (c2 & 0xff);
-            }
+    public enum InfoEntry {
+        SERIALIZATION_BUFFER_SIZE("Serialization buffer size"),
+        SERIALIZATION_BUFFER_REALLOCATIONS("Serialization buffer reallocs"),
+        CONSTANT_ARC_AUTOMATON_SIZE("Constant arc FSA size"),
+        MAX_ACTIVE_PATH_LENGTH("Max active path"),
+        STATE_REGISTRY_TABLE_SLOTS("Registry hash slots"),
+        STATE_REGISTRY_SIZE("Registry hash entries"),
+        ESTIMATED_MEMORY_CONSUMPTION_MB("Estimated mem consumption (MB)");
+
+        private final String stringified;
+
+        InfoEntry(String stringified) {
+            this.stringified = stringified;
         }
-        return lens1 - lens2;
+
+        @Override
+        public String toString() {
+            return stringified;
+        }
     }
 }

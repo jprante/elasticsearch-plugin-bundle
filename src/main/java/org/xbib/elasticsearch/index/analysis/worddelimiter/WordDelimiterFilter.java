@@ -81,12 +81,10 @@ public final class WordDelimiterFilter extends TokenFilter implements WordDelimi
 
     // used for concatenating runs of similar typed subwords (word,number)
     private final WordDelimiterConcatenation concat = new WordDelimiterConcatenation();
-    // number of subwords last output by concat.
-    private int lastConcatCount = 0;
-
     // used for catenate all
     private final WordDelimiterConcatenation concatAll = new WordDelimiterConcatenation();
-
+    // number of subwords last output by concat.
+    private int lastConcatCount = 0;
     // used for accumulating position increment gaps
     private int accumPosInc = 0;
 
@@ -131,6 +129,48 @@ public final class WordDelimiterFilter extends TokenFilter implements WordDelimi
      */
     public WordDelimiterFilter(TokenStream in, int configurationFlags, CharArraySet protWords) {
         this(in, WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE, configurationFlags, protWords);
+    }
+
+    /**
+     * Checks if the given word type includes {@link #ALPHA}
+     *
+     * @param type Word type to check
+     * @return {@code true} if the type contains ALPHA, {@code false} otherwise
+     */
+    static boolean isAlpha(int type) {
+        return (type & ALPHA) != 0;
+    }
+
+    /**
+     * Checks if the given word type includes {@link #DIGIT}
+     *
+     * @param type Word type to check
+     * @return {@code true} if the type contains DIGIT, {@code false} otherwise
+     */
+    static boolean isDigit(int type) {
+        return (type & DIGIT) != 0;
+    }
+
+    // ================================================= Helper Methods ================================================
+
+    /**
+     * Checks if the given word type includes {@link #SUBWORD_DELIM}
+     *
+     * @param type Word type to check
+     * @return {@code true} if the type contains SUBWORD_DELIM, {@code false} otherwise
+     */
+    static boolean isSubwordDelim(int type) {
+        return (type & SUBWORD_DELIM) != 0;
+    }
+
+    /**
+     * Checks if the given word type includes {@link #UPPER}
+     *
+     * @param type Word type to check
+     * @return {@code true} if the type contains UPPER, {@code false} otherwise
+     */
+    static boolean isUpper(int type) {
+        return (type & UPPER) != 0;
     }
 
     @Override
@@ -256,8 +296,6 @@ public final class WordDelimiterFilter extends TokenFilter implements WordDelimi
         accumPosInc = 0;
     }
 
-    // ================================================= Helper Methods ================================================
-
     /**
      * Saves the existing attribute states
      */
@@ -379,46 +417,6 @@ public final class WordDelimiterFilter extends TokenFilter implements WordDelimi
         // clear the accumulated position increment
         accumPosInc = 0;
         return Math.max(1, posInc);
-    }
-
-    /**
-     * Checks if the given word type includes {@link #ALPHA}
-     *
-     * @param type Word type to check
-     * @return {@code true} if the type contains ALPHA, {@code false} otherwise
-     */
-    static boolean isAlpha(int type) {
-        return (type & ALPHA) != 0;
-    }
-
-    /**
-     * Checks if the given word type includes {@link #DIGIT}
-     *
-     * @param type Word type to check
-     * @return {@code true} if the type contains DIGIT, {@code false} otherwise
-     */
-    static boolean isDigit(int type) {
-        return (type & DIGIT) != 0;
-    }
-
-    /**
-     * Checks if the given word type includes {@link #SUBWORD_DELIM}
-     *
-     * @param type Word type to check
-     * @return {@code true} if the type contains SUBWORD_DELIM, {@code false} otherwise
-     */
-    static boolean isSubwordDelim(int type) {
-        return (type & SUBWORD_DELIM) != 0;
-    }
-
-    /**
-     * Checks if the given word type includes {@link #UPPER}
-     *
-     * @param type Word type to check
-     * @return {@code true} if the type contains UPPER, {@code false} otherwise
-     */
-    static boolean isUpper(int type) {
-        return (type & UPPER) != 0;
     }
 
     /**

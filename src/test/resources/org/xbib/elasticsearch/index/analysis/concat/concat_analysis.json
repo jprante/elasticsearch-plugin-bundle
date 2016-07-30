@@ -1,0 +1,13 @@
+{
+    "index":{
+        "analysis":{
+            "analyzer" : {
+                "concat" : {
+                    "type" : "custom",
+                    "tokenizer" : "standard",
+                    "filter" : [ "concat" ]
+                }
+            }
+        }
+    }
+}

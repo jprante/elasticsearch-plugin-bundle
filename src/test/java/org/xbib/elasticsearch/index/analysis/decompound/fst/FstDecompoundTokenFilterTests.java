@@ -47,7 +47,7 @@ public class FstDecompoundTokenFilterTests extends Assert {
             "gekostet",
             "gekostet"
         };
-        AnalysisService analysisService = MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/decompound/fst/decompound_analysis.json");
+        AnalysisService analysisService = MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/decompound/fst/decompound_analysis.json");
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("decomp");
         assertNotNull(tokenFilter);
         Tokenizer tokenizer = analysisService.tokenizer("standard").create();

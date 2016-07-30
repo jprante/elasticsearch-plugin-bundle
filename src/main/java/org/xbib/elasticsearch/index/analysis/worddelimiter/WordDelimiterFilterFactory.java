@@ -22,6 +22,9 @@ import java.util.regex.Pattern;
 
 public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory implements WordDelimiterFlags {
 
+    // source => type
+    private static Pattern typePattern = Pattern.compile("(.*)\\s*=>\\s*(.*)\\s*$");
+    private final char[] out = new char[256];
     private Set<String> protectedWords = null;
     private int flags;
     private byte[] typeTable = null;
@@ -81,9 +84,6 @@ public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory imple
         return 0;
     }
 
-    // source => type
-    private static Pattern typePattern = Pattern.compile("(.*)\\s*=>\\s*(.*)\\s*$");
-
     // parses a list of MappingCharFilter style rules into a custom byte[] type table
     private byte[] parseTypes(List<String> rules) {
         SortedMap<Character, Byte> typeMap = new TreeMap<>();
@@ -132,8 +132,6 @@ public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory imple
                 return null;
         }
     }
-
-    private final char[] out = new char[256];
 
     private String parseString(String s) {
         int readPos = 0;

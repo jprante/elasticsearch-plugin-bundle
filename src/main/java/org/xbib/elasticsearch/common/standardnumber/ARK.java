@@ -42,7 +42,6 @@ import java.util.regex.Pattern;
  * of service and not a property of a naming syntax.
  *
  * @see <a href="http://tools.ietf.org/html/draft-kunze-ark-18">ARK IETF RFC</a>
- * 
  * @see <a href="http://www.cdlib.org/services/uc3/docs/jak_ARKs_Berlin_2012.pdf">10 years ARK</a>
  */
 public class ARK extends AbstractStandardNumber implements Comparable<ARK> {
@@ -98,7 +97,7 @@ public class ARK extends AbstractStandardNumber implements Comparable<ARK> {
 
     @Override
     public boolean isValid() {
-       return value != null && "ark".equals(value.getScheme());
+        return value != null && "ark".equals(value.getScheme());
     }
 
     /**

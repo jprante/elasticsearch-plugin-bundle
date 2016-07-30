@@ -103,7 +103,7 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
 
     @Override
     public int compareTo(ISBN isbn) {
-        return value != null ? value.compareTo(isbn.normalizedValue()): -1;
+        return value != null ? value.compareTo(isbn.normalizedValue()) : -1;
     }
 
     @Override
@@ -138,7 +138,7 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
 
     /**
      * Get the normalized value of this standard book number
-     * 
+     *
      * @return the value of this standard book number
      */
     @Override
@@ -157,8 +157,8 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
             return null;
         }
         return eanPreferred ?
-                        fix(eanvalue) :
-                        fix("978" + value).substring(4);
+                fix(eanvalue) :
+                fix("978" + value).substring(4);
     }
 
     @Override
@@ -178,6 +178,7 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
 
     /**
      * Prefer European Article Number (EAN, ISBN-13)
+     *
      * @param preferEAN true if EAN should be preferred
      * @return this ISBN object
      */
@@ -191,7 +192,7 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
      *
      * @return the country/publisher code from ISBN
      */
-    public String getCountryAndPublisherCode()  {
+    public String getCountryAndPublisherCode() {
         // we don't care about the wrong createChecksum when we fix the value
         String code = eanvalue != null ? fix(eanvalue) : fix("978" + value);
         String s = code.substring(4);
@@ -338,7 +339,6 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
      *
      * @param value the value
      * @return check digit
-     *
      * @throws NumberFormatException
      */
     private char createCheckDigit10(String value) throws NumberFormatException {
@@ -350,10 +350,10 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
             if (val < 0 || val > 9) {
                 throw new NumberFormatException("not a digit in " + value);
             }
-            checksum += val * (10-i);
+            checksum += val * (10 - i);
         }
         int mod = checksum % 11;
-        return mod == 0 ? '0' : mod == 1 ? 'X' : (char)((11-mod) + '0');
+        return mod == 0 ? '0' : mod == 1 ? 'X' : (char) ((11 - mod) + '0');
     }
 
     /**
@@ -361,7 +361,6 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
      *
      * @param value the value
      * @return check digit
-     *
      * @throws NumberFormatException
      */
     private char createCheckDigit13(String value) throws NumberFormatException {
@@ -378,7 +377,7 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
             checksum += weight * val;
         }
         int mod = 10 - checksum % 10;
-        return mod == 10 ? '0' : (char)(mod + '0');
+        return mod == 10 ? '0' : (char) (mod + '0');
     }
 
     private String fix(String isbn) {
@@ -395,9 +394,10 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
 
     /**
      * Check if ISBN is within a given value range
-     * @param isbn ISBN to check
+     *
+     * @param isbn  ISBN to check
      * @param begin lower ISBN
-     * @param end  higher ISBN
+     * @param end   higher ISBN
      * @return -1 if too low, 1 if too high, 0 if range matches
      */
     private int isInRange(String isbn, String begin, String end) {

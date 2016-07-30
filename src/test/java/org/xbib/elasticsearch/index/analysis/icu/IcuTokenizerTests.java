@@ -33,7 +33,7 @@ public class IcuTokenizerTests extends Assert {
                 "Ende"
         };
         AnalysisService analysisService =
-                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json");
+                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json");
         Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenizer, expected);
@@ -49,7 +49,7 @@ public class IcuTokenizerTests extends Assert {
                 "3-428-84350-9"
         };
         AnalysisService analysisService =
-                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json");
+                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json");
         Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenizer, expected);
@@ -64,10 +64,10 @@ public class IcuTokenizerTests extends Assert {
                 "3-428-84350-9"
         };
         AnalysisService analysisService =
-                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json");
+                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json");
         Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
-        // THIS FAILS
+        // THIS FAILS BUT WHY?
         //assertSimpleTSOutput(tokenizer, expected);
     }
 

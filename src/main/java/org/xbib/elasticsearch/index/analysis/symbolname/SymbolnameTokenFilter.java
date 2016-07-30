@@ -38,12 +38,10 @@ import java.util.regex.Pattern;
 
 public class SymbolnameTokenFilter extends TokenFilter {
 
+    private final static Pattern pattern = Pattern.compile("\\P{L}", Pattern.UNICODE_CHARACTER_CLASS);
     private final LinkedList<PackedTokenAttributeImpl> tokens;
-
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
-
     private final PositionIncrementAttribute posIncAtt = addAttribute(PositionIncrementAttribute.class);
-
     private State current;
 
     protected SymbolnameTokenFilter(TokenStream input) {
@@ -98,7 +96,7 @@ public class SymbolnameTokenFilter extends TokenFilter {
             String symbol = m.group();
             Character ch = symbol.charAt(0);
             String symbolname = " __" + Character.getName(ch).toUpperCase()
-                    .replaceAll("\\s","").replaceAll("\\-","") + "__";
+                    .replaceAll("\\s", "").replaceAll("\\-", "") + "__";
             m.appendReplacement(sb, symbolname);
         }
         m.appendTail(sb);
@@ -111,8 +109,5 @@ public class SymbolnameTokenFilter extends TokenFilter {
         }
         return variants;
     }
-
-
-    private final static Pattern pattern = Pattern.compile("\\P{L}", Pattern.UNICODE_CHARACTER_CLASS);
 
 }

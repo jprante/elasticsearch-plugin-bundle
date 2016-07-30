@@ -41,7 +41,6 @@ import java.util.regex.Pattern;
  *
  * All of these data structures follow the global GS1 specification which bases on
  * international standards.
- *
  */
 public class UPC extends AbstractStandardNumber implements Comparable<UPC>, StandardNumber {
 
@@ -122,12 +121,12 @@ public class UPC extends AbstractStandardNumber implements Comparable<UPC>, Stan
         int val;
         for (int i = 0; i < l; i++) {
             val = value.charAt(i) - '0';
-            weight = i%2 == 0 ? 3 : 1;
+            weight = i % 2 == 0 ? 3 : 1;
             checksum += val * weight;
         }
         int chk = 10 - checksum % 10;
         if (createWithChecksum) {
-            char ch = (char)('0' + chk);
+            char ch = (char) ('0' + chk);
             value = value.substring(0, l) + ch;
         }
         return chk == (value.charAt(l) - '0');

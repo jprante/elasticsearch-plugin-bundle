@@ -31,7 +31,7 @@ public class IcuNumberFormatTests extends Assert {
                 "zahlen"
         };
         AnalysisService analysisService =
-                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/icu/icu_numberformat.json");
+                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/icu/icu_numberformat.json");
         Tokenizer tokenizer = analysisService.tokenizer("my_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("spellout_de");
@@ -58,7 +58,7 @@ public class IcuNumberFormatTests extends Assert {
                 "year"
         };
         AnalysisService analysisService =
-                MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/icu/icu_numberformat.json");
+                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/icu/icu_numberformat.json");
         Tokenizer tokenizer = analysisService.tokenizer("my_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("spellout_en");

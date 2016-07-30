@@ -49,7 +49,7 @@ public class DecompoundTokenFilterTests extends Assert {
             "gekostet",
             "gekosten"
         };
-        AnalysisService analysisService = MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/decompound/decompound_analysis.json");
+        AnalysisService analysisService = MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/decompound/decompound_analysis.json");
         TokenFilterFactory tokenFilter = analysisService.tokenFilter("decomp");
         Tokenizer tokenizer = analysisService.tokenizer("standard").create();
         tokenizer.setReader(new StringReader(source));
@@ -69,7 +69,7 @@ public class DecompoundTokenFilterTests extends Assert {
                 "Bindestrich",
                 "wort"
         };
-        AnalysisService analysisService = MapperTestUtils.analysisService("/org/xbib/elasticsearch/index/analysis/decompound/keywords_analysis.json");
+        AnalysisService analysisService = MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/decompound/keywords_analysis.json");
         Analyzer analyzer = analysisService.analyzer("with_subwords_only");
         assertNotNull(analyzer);
         assertSimpleTSOutput(analyzer.tokenStream("test-field", source), expected);

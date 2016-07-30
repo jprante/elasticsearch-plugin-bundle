@@ -58,7 +58,7 @@ public class LuhnMOD10 implements Digit {
         }
         for (int i = 1; i < digits.length(); i += 2) {
             int c = digits.charAt(i) - '0';
-            val += (c >= 5) ? (2*c - 9) : (2*c);
+            val += (c >= 5) ? (2 * c - 9) : (2 * c);
         }
         return val % 10;
     }

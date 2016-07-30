@@ -22,12 +22,6 @@
  */
 package org.xbib.elasticsearch.index.analysis.autophrase;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.StopFilter;
 import org.apache.lucene.analysis.util.CharArraySet;
@@ -41,6 +35,12 @@ import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.settings.IndexSettingsService;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class AutoPhrasingTokenFilterFactory extends AbstractTokenFilterFactory implements ResourceLoaderAware {
 
     private final String phraseSetFiles;
@@ -52,9 +52,9 @@ public class AutoPhrasingTokenFilterFactory extends AbstractTokenFilterFactory i
 
     @Inject
     public AutoPhrasingTokenFilterFactory(Index index,
-                                      IndexSettingsService indexSettingsService,
-                                      @Assisted String name,
-                                      @Assisted Settings settings) {
+                                          IndexSettingsService indexSettingsService,
+                                          @Assisted String name,
+                                          @Assisted Settings settings) {
         super(index, indexSettingsService.indexSettings(), name, settings);
         this.phraseSetFiles = settings.get("phrases");
         this.ignoreCase = settings.getAsBoolean("ignoreCase", false);
@@ -70,8 +70,8 @@ public class AutoPhrasingTokenFilterFactory extends AbstractTokenFilterFactory i
     }
 
     @Override
-    public TokenStream create( TokenStream input ) {
-        AutoPhrasingTokenFilter autoPhraseFilter = new AutoPhrasingTokenFilter( input, phraseSets, emitSingleTokens );
+    public TokenStream create(TokenStream input) {
+        AutoPhrasingTokenFilter autoPhraseFilter = new AutoPhrasingTokenFilter(input, phraseSets, emitSingleTokens);
         if (replaceWhitespaceWith != null) {
             autoPhraseFilter.setReplaceWhitespaceWith(replaceWhitespaceWith.charAt(0));
         }

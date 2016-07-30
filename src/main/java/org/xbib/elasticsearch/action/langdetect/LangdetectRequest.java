@@ -49,23 +49,22 @@ public class LangdetectRequest extends ActionRequest<LangdetectRequest> {
         return validationException;
     }
 
+    public String getProfile() {
+        return profile;
+    }
+
     public LangdetectRequest setProfile(String profile) {
         this.profile = profile;
         return this;
     }
 
-    public String getProfile() {
-        return profile;
+    public String getText() {
+        return text;
     }
-
 
     public LangdetectRequest setText(String text) {
         this.text = text;
         return this;
-    }
-
-    public String getText() {
-        return text;
     }
 
     @Override

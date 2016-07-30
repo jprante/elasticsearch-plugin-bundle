@@ -28,10 +28,11 @@ import java.util.regex.Pattern;
 /**
  * Zeitschriftendatenbank ID
  *
- *  ZDB is the world’s largest specialized database for serial titles (journals, annuals, newspapers, also
- *  e-journals).
+ * ZDB is the world’s largest specialized database for serial titles (journals, annuals, newspapers, also
+ * e-journals).
  *
- * See <a href="http://support.d-nb.de/iltis/onlineRoutinen/Pruefziffernberechnung.htm">Prüfziffernberechnung in ILTIS</a>
+ * See <a href="http://support.d-nb.de/iltis/onlineRoutinen/Pruefziffernberechnung.htm">Prüfziffernberechnung in
+ * ILTIS</a>
  * See <a href="https://wiki.dnb.de/pages/viewpage.action?pageId=48139522">DNB Wiki</a>
  */
 public class ZDB extends AbstractStandardNumber implements Comparable<ZDB>, StandardNumber {
@@ -57,7 +58,7 @@ public class ZDB extends AbstractStandardNumber implements Comparable<ZDB>, Stan
 
     @Override
     public int compareTo(ZDB o) {
-        return value != null ?  value.compareTo(o.normalizedValue()) : -1;
+        return value != null ? value.compareTo(o.normalizedValue()) : -1;
     }
 
     @Override
@@ -100,7 +101,7 @@ public class ZDB extends AbstractStandardNumber implements Comparable<ZDB>, Stan
     public String format() {
         if (formatted == null) {
             StringBuilder sb = new StringBuilder(value);
-            this.formatted = sb.insert(sb.length()-1,"-").toString();
+            this.formatted = sb.insert(sb.length() - 1, "-").toString();
         }
         return formatted;
     }
@@ -118,12 +119,12 @@ public class ZDB extends AbstractStandardNumber implements Comparable<ZDB>, Stan
         int checksum = 0;
         int weight = 2;
         int val;
-        for (int i = l-1; i >= 0; i--) {
+        for (int i = l - 1; i >= 0; i--) {
             val = value.charAt(i) - '0';
             checksum += val * weight++;
         }
         if (createWithChecksum) {
-            char ch = checksum % 11 == 10 ? 'X' : (char)('0' + (checksum % 11));
+            char ch = checksum % 11 == 10 ? 'X' : (char) ('0' + (checksum % 11));
             value = value.substring(0, l) + ch;
         }
         return checksum % 11 ==

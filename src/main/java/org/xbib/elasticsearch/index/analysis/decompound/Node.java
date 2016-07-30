@@ -27,10 +27,10 @@ import java.util.List;
 
 class Node {
 
-    private List<String> classes;
     public String content;
-    private List<Node> children;
     public int pos;
+    private List<String> classes;
+    private List<Node> children;
 
     public Node() {
         this.content = "";

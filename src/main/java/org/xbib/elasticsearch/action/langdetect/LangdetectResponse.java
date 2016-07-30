@@ -44,22 +44,22 @@ public class LangdetectResponse extends ActionResponse implements StatusToXConte
     public LangdetectResponse() {
     }
 
+    public String getProfile() {
+        return profile;
+    }
+
     public LangdetectResponse setProfile(String profile) {
         this.profile = profile;
         return this;
     }
 
-    public String getProfile() {
-        return profile;
+    public List<Language> getLanguages() {
+        return languages;
     }
 
     public LangdetectResponse setLanguages(List<Language> languages) {
         this.languages = languages;
         return this;
-    }
-
-    public List<Language> getLanguages() {
-        return languages;
     }
 
     @Override

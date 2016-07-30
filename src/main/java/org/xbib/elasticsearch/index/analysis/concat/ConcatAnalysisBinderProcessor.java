@@ -29,5 +29,6 @@ public class ConcatAnalysisBinderProcessor extends AnalysisModule.AnalysisBinder
     @Override
     public void processTokenFilters(TokenFiltersBindings tokenFiltersBindings) {
         tokenFiltersBindings.processTokenFilter("concat", ConcatTokenFilterFactory.class);
+        tokenFiltersBindings.processTokenFilter("pair", PairTokenFilterFactory.class);
     }
 }

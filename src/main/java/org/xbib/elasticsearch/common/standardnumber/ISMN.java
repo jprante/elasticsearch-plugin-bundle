@@ -133,7 +133,7 @@ public class ISMN extends AbstractStandardNumber implements Comparable<ISMN>, St
         }
         int chk = 10 - checksum % 10;
         if (createWithChecksum) {
-            char ch = (char)('0' + chk);
+            char ch = (char) ('0' + chk);
             value = value + ch;
         }
         return chk == value.charAt(l) - '0';

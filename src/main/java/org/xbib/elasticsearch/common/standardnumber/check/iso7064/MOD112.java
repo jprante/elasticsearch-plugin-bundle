@@ -28,13 +28,13 @@ public class MOD112 implements Digit {
 
     @Override
     public int getDigit(String digits) {
-        char c = digits.charAt(digits.length() -1);
-        return  c == 'X' || c == 'x' ? 10 : c - '0';
+        char c = digits.charAt(digits.length() - 1);
+        return c == 'X' || c == 'x' ? 10 : c - '0';
     }
 
     @Override
     public String getNumber(String digits) {
-        return digits.substring(0, digits.length() -1);
+        return digits.substring(0, digits.length() - 1);
     }
 
 }
