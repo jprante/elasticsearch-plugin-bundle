@@ -69,7 +69,7 @@ task mavenCentralUpload(type: Upload) {
                     }
                     licenses {
                         license {
-                            name 'Affero GNU Public License Version 2'
+                            name 'Affero GNU Public License Version 3'
                             url 'http://www.gnu.org/licenses/agpl-3.0.html'
                         }
                     }
