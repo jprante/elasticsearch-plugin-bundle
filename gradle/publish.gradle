@@ -1,37 +1,20 @@
-apply plugin: 'io.codearte.nexus-staging'
 
-
-/*
-nexus {
-    attachJavadoc = true
-    attachSources = true
-    attachTests = true
-    sign = true
-    repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
-    snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
-}
-*/
-
-nexusStaging {
-    packageGroup = "org.xbib"
-}
-
-task xbibUpload(type: Upload) {
+task xbibUpload(type: Upload, dependsOn: build) {
     configuration = configurations.archives
     uploadDescriptor = true
     repositories {
-        if (project.hasProperty("xbibUsername")) {
+        if (project.hasProperty('xbibUsername')) {
             mavenDeployer {
                 configuration = configurations.wagon
                 repository(url: uri('scpexe://xbib.org/repository')) {
-                        authentication(userName: xbibUsername, privateKey: xbibPrivateKey)
+                    authentication(userName: xbibUsername, privateKey: xbibPrivateKey)
                 }
             }
         }
     }
 }
 
-task mavenCentralUpload(type: Upload) {
+task sonatypeUpload(type: Upload, dependsOn: build) {
     configuration = configurations.archives
     uploadDescriptor = true
     repositories {
@@ -39,16 +22,19 @@ task mavenCentralUpload(type: Upload) {
             mavenDeployer {
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
                 repository(url: uri(ossrhReleaseUrl)) {
-                        authentication(userName: ossrhUsername, password: ossrhPassword)
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
                 }
                 snapshotRepository(url: uri(ossrhSnapshotUrl)) {
-                        authentication(userName: ossrhUsername, password: ossrhPassword)
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
                 }
                 pom.project {
-                    name pluginName
-                    description pluginDescription
+                    groupId project.group
+                    artifactId project.name
+                    version project.version
+                    name project.name
+                    description projectDescription
                     packaging 'jar'
-                    inceptionYear '2012'
+                    inceptionYear '2016'
                     url scmUrl
                     organization {
                         name 'xbib'
@@ -69,29 +55,12 @@ task mavenCentralUpload(type: Upload) {
                     }
                     licenses {
                         license {
-                            name 'Affero GNU Public License Version 3'
-                            url 'http://www.gnu.org/licenses/agpl-3.0.html'
+                            name 'The Apache License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                         }
                     }
                 }
             }
         }
-    }
-}
-
-if (project.hasProperty('githubToken')) {
-    github {
-        owner = user
-        token = githubToken
-        repo = project.name
-        name = project.version
-        tagName = project.version
-        targetCommitish = 'master'
-        assets = [
-                "build/distributions/${project.name}-${project.version}-plugin.zip"
-        ]
-    }
-    githubRelease {
-        dependsOn gitRelease, buildPluginZip
     }
 }
