@@ -10,16 +10,19 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * The ConcatTokenFilter is authored by Sujit Pal and was taken from
- * http://sujitpal.blogspot.de/2011/07/lucene-token-concatenating-tokenfilter_30.html
+ * The ConcatTokenFilter is authored by
+ * <a href="http://sujitpal.blogspot.de/2011/07/lucene-token-concatenating-tokenfilter_30.html">Sujit Pal</a>.
  */
 public final class ConcatTokenFilter extends TokenFilter {
 
     private CharTermAttribute termAttr;
+
     private PositionIncrementAttribute posIncAttr;
 
     private State current;
+
     private LinkedList<List<String>> words;
+
     private LinkedList<String> phrases;
 
     private boolean concat = false;

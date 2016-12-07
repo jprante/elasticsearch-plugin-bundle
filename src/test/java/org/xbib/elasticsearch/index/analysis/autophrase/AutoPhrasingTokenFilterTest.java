@@ -2,13 +2,16 @@ package org.xbib.elasticsearch.index.analysis.autophrase;
 
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.analysis.util.CharArraySet;
+import org.apache.lucene.analysis.CharArraySet;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.StringReader;
 import java.util.Arrays;
 
+/**
+ *
+ */
 public class AutoPhrasingTokenFilterTest extends Assert {
 
     @Test

@@ -1,25 +1,3 @@
-/*
- * Copyright (C) 2014 Jörg Prante
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses
- * or write to the Free Software Foundation, Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * The interactive user interfaces in modified source and object code
- * versions of this program must display Appropriate Legal Notices,
- * as required under Section 5 of the GNU Affero General Public License.
- *
- */
 package org.xbib.elasticsearch.common.standardnumber;
 
 import javax.xml.stream.XMLEventReader;
@@ -53,8 +31,7 @@ import java.util.regex.Pattern;
  * Every ISBN consists of thirteen digits and whenever it is printed it is preceded by the letters ISBN.
  * The thirteen-digit number is divided into four parts of variable length, each part separated by a hyphen.
  *
- * This class is based upon the ISBN converter and formatter class
- * Copyright 2000-2005 by Openly Informatics, Inc. http://www.openly.com/
+ * This class is based upon the ISBN converter and formatter class by Openly Informatics, Inc. http://www.openly.com/
  *
  * @see <a href="http://www.s.org/standards/home/s/international/html/usm12.htm">The ISBN Users' Manual</a>
  * @see <a href="http://www.ietf.org/html.charters/OLD/urn-charter.html">The IETF URN Charter</a>
@@ -512,7 +489,7 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
             }
         }
 
-        public List<String> getRanges() {
+        List<String> getRanges() {
             return ranges;
         }
     }

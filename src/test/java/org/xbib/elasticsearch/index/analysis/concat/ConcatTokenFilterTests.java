@@ -10,6 +10,9 @@ import org.xbib.elasticsearch.MapperTestUtils;
 
 import java.io.IOException;
 
+/**
+ *
+ */
 public class ConcatTokenFilterTests extends Assert {
 
     @Test

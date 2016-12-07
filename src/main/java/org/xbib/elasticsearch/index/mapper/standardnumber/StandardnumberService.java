@@ -1,31 +1,7 @@
-/*
- * Copyright (C) 2014 Jörg Prante
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses
- * or write to the Free Software Foundation, Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * The interactive user interfaces in modified source and object code
- * versions of this program must display Appropriate Legal Notices,
- * as required under Section 5 of the GNU Affero General Public License.
- *
- */
 package org.xbib.elasticsearch.index.mapper.standardnumber;
 
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.common.component.AbstractLifecycleComponent;
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.settings.Settings;
 import org.xbib.elasticsearch.common.standardnumber.ARK;
 import org.xbib.elasticsearch.common.standardnumber.DOI;
@@ -53,15 +29,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class StandardnumberService extends AbstractLifecycleComponent<StandardnumberService> {
+/**
+ *
+ */
+public class StandardnumberService extends AbstractLifecycleComponent {
 
-    private final static ThreadLocal<Set<StandardNumber>> stdnums = new ThreadLocal<>();
-    private final Injector injector;
+    private static final ThreadLocal<Set<StandardNumber>> stdnums = new ThreadLocal<>();
 
-    @Inject
-    public StandardnumberService(Settings settings, Injector injector) {
+    private final StandardnumberMapper.TypeParser standardNumberTypeParser;
+
+    public StandardnumberService(Settings settings, StandardnumberMapper.TypeParser standardNumberTypeParser) {
         super(settings);
-        this.injector = injector;
+        this.standardNumberTypeParser = standardNumberTypeParser;
     }
 
     public static StandardNumber create(String type) {
@@ -134,8 +113,7 @@ public class StandardnumberService extends AbstractLifecycleComponent<Standardnu
 
     @Override
     protected void doStart() throws ElasticsearchException {
-        StandardnumberMapperTypeParser typeParser = injector.getInstance(StandardnumberMapperTypeParser.class);
-        typeParser.setService(this);
+        standardNumberTypeParser.setService(this);
     }
 
     @Override

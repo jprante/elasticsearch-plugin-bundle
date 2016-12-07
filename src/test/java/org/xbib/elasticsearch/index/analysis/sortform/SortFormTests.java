@@ -18,11 +18,14 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ *
+ */
 public class SortFormTests extends BaseTokenStreamTest {
 
     @Test
     public void testBasicUsage() throws Exception {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myanalyzer.type", "sortform")
                 .put("index.analysis.analyzer.myanalyzer.filter", "sortform")
                 .build();
@@ -33,7 +36,7 @@ public class SortFormTests extends BaseTokenStreamTest {
 
     @Test
     public void testUnicodeUsage() throws Exception {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myanalyzer.type", "sortform")
                 .put("index.analysis.analyzer.myanalyzer.filter", "sortform")
                 .build();

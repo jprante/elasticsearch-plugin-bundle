@@ -1,25 +1,3 @@
-/*
- * Copyright (C) 2014 Jörg Prante
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses
- * or write to the Free Software Foundation, Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * The interactive user interfaces in modified source and object code
- * versions of this program must display Appropriate Legal Notices,
- * as required under Section 5 of the GNU Affero General Public License.
- *
- */
 package org.xbib.elasticsearch.index.mapper.langdetect;
 
 import org.apache.lucene.document.Field;
@@ -35,7 +13,7 @@ import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
 import org.elasticsearch.index.mapper.ParseContext;
-import org.elasticsearch.index.mapper.core.StringFieldMapper;
+import org.elasticsearch.index.mapper.StringFieldMapper;
 import org.xbib.elasticsearch.common.langdetect.LangdetectService;
 import org.xbib.elasticsearch.common.langdetect.Language;
 import org.xbib.elasticsearch.common.langdetect.LanguageDetectionException;
@@ -46,25 +24,31 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static org.elasticsearch.index.mapper.core.TypeParsers.parseStore;
+import static org.elasticsearch.index.mapper.TypeParsers.parseStore;
 
+/**
+ *
+ */
 public class LangdetectMapper extends StringFieldMapper {
 
     public static final String CONTENT_TYPE = "langdetect";
+
     private final LangdetectService langdetectService;
+
     private final int positionIncrementGap;
 
     public LangdetectMapper(String simpleName,
-                            MappedFieldType fieldType,
+                            StringFieldType fieldType,
                             MappedFieldType defaultFieldType,
                             int positionIncrementGap,
                             int ignoreAbove,
+                            boolean includeInAll,
                             Settings indexSettings,
                             MultiFields multiFields,
                             CopyTo copyTo,
                             LangdetectService langdetectService) {
         super(simpleName, fieldType, defaultFieldType,
-                positionIncrementGap, ignoreAbove, indexSettings, multiFields, copyTo);
+                positionIncrementGap, ignoreAbove, includeInAll, indexSettings, multiFields, copyTo);
         this.langdetectService = langdetectService;
         this.positionIncrementGap = positionIncrementGap;
     }
@@ -112,7 +96,7 @@ public class LangdetectMapper extends StringFieldMapper {
         try {
             List<Language> langs = langdetectService.detectAll(value);
             for (Language lang : langs) {
-                Field field = new Field(fieldType().names().indexName(), lang.getLanguage(), fieldType());
+                Field field = new Field(fieldType().name(), lang.getLanguage(), fieldType());
                 fields.add(field);
             }
         } catch (LanguageDetectionException e) {
@@ -154,7 +138,7 @@ public class LangdetectMapper extends StringFieldMapper {
             LANG_FIELD_TYPE.setOmitNorms(true);
             LANG_FIELD_TYPE.setIndexAnalyzer(Lucene.KEYWORD_ANALYZER);
             LANG_FIELD_TYPE.setSearchAnalyzer(Lucene.KEYWORD_ANALYZER);
-            LANG_FIELD_TYPE.setNames(new MappedFieldType.Names(CONTENT_TYPE));
+            LANG_FIELD_TYPE.setName(CONTENT_TYPE);
             LANG_FIELD_TYPE.freeze();
         }
     }
@@ -163,7 +147,7 @@ public class LangdetectMapper extends StringFieldMapper {
 
         protected int positionIncrementGap = -1;
 
-        protected Settings.Builder settingsBuilder = Settings.settingsBuilder();
+        protected Settings.Builder settingsBuilder = Settings.builder();
 
         public Builder(String name) {
             super(name, Defaults.LANG_FIELD_TYPE, Defaults.LANG_FIELD_TYPE);
@@ -272,7 +256,8 @@ public class LangdetectMapper extends StringFieldMapper {
             }
             setupFieldType(context);
             LangdetectService service = new LangdetectService(settingsBuilder.build());
-            return new LangdetectMapper(name, fieldType, defaultFieldType, 100, -1,
+            return new LangdetectMapper(name, (StringFieldType) fieldType(), defaultFieldType,
+                    100, -1, false,
                     context.indexSettings(), multiFieldsBuilder.build(this, context), copyTo, service);
         }
     }
@@ -321,7 +306,7 @@ public class LangdetectMapper extends StringFieldMapper {
                         break;
                     }
                     case "store": {
-                        builder.store(parseStore(fieldName, fieldNode.toString()));
+                        builder.store(parseStore(fieldName, fieldNode.toString(), parserContext));
                         iterator.remove();
                         break;
                     }

@@ -1,13 +1,12 @@
 
 plugins {
     id "org.sonarqube" version "2.2"
-    id "org.ajoberstar.github-pages" version "1.6.0-rc.1"
     id "org.xbib.gradle.plugin.jbake" version "1.2.1"
     id "org.xbib.gradle.plugin.jflex" version "1.1.0"
 }
 
 group = 'org.xbib.elasticsearch.plugin'
-version = '5.0.1.0'
+version = '5.0.2.0'
 
 printf "Host: %s\nOS: %s %s %s\nJVM: %s %s %s %s\nGroovy: %s\nGradle: %s\n" +
         "Build: group: ${project.group} name: ${project.name} version: ${project.version}\n",
@@ -32,7 +31,7 @@ ext {
     scmConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
     scmDeveloperConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
     versions = [
-        'elasticsearch' : '5.0.1',
+        'elasticsearch' : '5.0.2',
         'lucene' : '6.2.1',
         'jackson': '2.8.1',
         'log4j': '2.7',
@@ -47,7 +46,6 @@ apply plugin: 'findbugs'
 apply plugin: 'pmd'
 apply plugin: 'checkstyle'
 apply plugin: "jacoco"
-apply plugin: 'org.ajoberstar.github-pages'
 apply plugin: 'org.xbib.gradle.plugin.jflex'
 
 repositories {
@@ -89,7 +87,6 @@ tasks.withType(JavaCompile) {
     options.compilerArgs << "-Xlint:all" << "-profile" << "compact2"
 }
 
-
 test {
     systemProperties['path.home'] = System.getProperty("user.dir")
     testLogging {
@@ -106,9 +103,6 @@ task makePluginDescriptor(type: Copy) {
                 'name': pluginName,
                 'classname': pluginClassname,
                 'description': pluginDescription,
-                'jvm': true,
-                'site': false,
-                'isolated': true,
                 'version': project.property('version'),
                 'javaVersion': project.property('targetCompatibility'),
                 'elasticsearchVersion' : versions.elasticsearch

@@ -1,9 +1,12 @@
 package org.xbib.elasticsearch;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.MockNode;
 import org.elasticsearch.node.Node;
+import org.elasticsearch.node.NodeValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
@@ -16,30 +19,44 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
+/**
+ *
+ */
 public class NodeTestUtils {
 
+    private static final Logger logger = LogManager.getLogger(NodeTestUtils.class.getName());
+
     private Node node;
+
     private Client client;
 
     public static Node createNode() {
-        Settings nodeSettings = Settings.settingsBuilder()
+        Settings nodeSettings = Settings.builder()
                 .put("path.home", System.getProperty("path.home"))
                 .put("index.number_of_shards", 1)
                 .put("index.number_of_replica", 0)
                 .build();
         Node node = new MockNode(nodeSettings, BundlePlugin.class);
-        node.start();
+        try {
+            node.start();
+        } catch (NodeValidationException e) {
+            logger.error(e.getMessage(), e);
+        }
         return node;
     }
 
     public static Node createNodeWithoutPlugin() {
-        Settings nodeSettings = Settings.settingsBuilder()
+        Settings nodeSettings = Settings.builder()
                 .put("path.home", System.getProperty("path.home"))
                 .put("index.number_of_shards", 1)
                 .put("index.number_of_replica", 0)
                 .build();
         Node node = new MockNode(nodeSettings);
-        node.start();
+        try {
+            node.start();
+        } catch (NodeValidationException e) {
+            logger.error(e.getMessage(), e);
+        }
         return node;
     }
 

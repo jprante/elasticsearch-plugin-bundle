@@ -11,6 +11,9 @@ import org.xbib.elasticsearch.MapperTestUtils;
 import java.io.IOException;
 import java.io.StringReader;
 
+/**
+ *
+ */
 public class IcuTokenizerTests extends Assert {
 
     @Test

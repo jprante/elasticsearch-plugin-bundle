@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ *
+ */
 public class Dictionary {
 
     private final Charset UTF8 = Charset.forName("UTF-8");
@@ -81,5 +84,4 @@ public class Dictionary {
         }
         return request;
     }
-
 }

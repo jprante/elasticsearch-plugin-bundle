@@ -2,9 +2,12 @@ package org.xbib.elasticsearch.common.standardnumber.check.iso7064;
 
 import org.xbib.elasticsearch.common.standardnumber.check.Digit;
 
+/**
+ *
+ */
 public class MOD1110 implements Digit {
 
-    private final static String ALPHABET = "0123456789";
+    private static final String ALPHABET = "0123456789";
 
     @Override
     public String encode(String digits) {

@@ -1,41 +1,31 @@
-/*
- * Copyright (C) 2014 Jörg Prante
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses
- * or write to the Free Software Foundation, Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * The interactive user interfaces in modified source and object code
- * versions of this program must display Appropriate Legal Notices,
- * as required under Section 5 of the GNU Affero General Public License.
- *
- */
 package org.xbib.elasticsearch.plugin.bundle;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.elasticsearch.action.ActionRequest;
+import org.elasticsearch.action.ActionResponse;
+import org.elasticsearch.common.component.LifecycleComponent;
+import org.elasticsearch.common.inject.Module;
 import org.elasticsearch.index.analysis.AnalyzerProvider;
 import org.elasticsearch.index.analysis.CharFilterFactory;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.index.analysis.TokenizerFactory;
+import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.indices.analysis.AnalysisModule;
+import org.elasticsearch.plugins.ActionPlugin;
 import org.elasticsearch.plugins.AnalysisPlugin;
 import org.elasticsearch.plugins.MapperPlugin;
 import org.elasticsearch.plugins.Plugin;
+import org.elasticsearch.rest.RestHandler;
+import org.xbib.elasticsearch.action.isbnformat.ISBNFormatAction;
+import org.xbib.elasticsearch.action.isbnformat.TransportISBNFormatAction;
+import org.xbib.elasticsearch.action.langdetect.LangdetectAction;
+import org.xbib.elasticsearch.action.langdetect.TransportLangdetectAction;
 import org.xbib.elasticsearch.index.analysis.autophrase.AutoPhrasingTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.baseform.BaseformTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.concat.ConcatTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.concat.PairTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.decompound.DecompoundTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.decompound.fst.FstDecompoundTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.german.GermanNormalizationFilterFactory;
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenAnalyzerProvider;
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenFilterFactory;
@@ -55,18 +45,43 @@ import org.xbib.elasticsearch.index.analysis.sortform.SortformAnalyzerProvider;
 import org.xbib.elasticsearch.index.analysis.sortform.SortformTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberAnalyzerProvider;
 import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.symbolname.SymbolnameTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2Factory;
+import org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilterFactory;
+import org.xbib.elasticsearch.index.analysis.year.GregorianYearTokenFilterFactory;
+import org.xbib.elasticsearch.index.mapper.crypt.CryptMapper;
+import org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper;
+import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapper;
+import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapperModule;
+import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapperTypeParser;
+import org.xbib.elasticsearch.index.mapper.reference.ReferenceService;
+import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapper;
+import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapperModule;
+import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapperTypeParser;
+import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberService;
+import org.xbib.elasticsearch.rest.action.isbnformat.RestISBNFormatterAction;
+import org.xbib.elasticsearch.rest.action.langdetect.RestLangdetectAction;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  *
  */
-public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin {
+public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin, ActionPlugin {
+
+    private static final StandardnumberMapperTypeParser standardNumberTypeParser =
+            new StandardnumberMapperTypeParser();
+
+    private static final ReferenceMapperTypeParser referenceMapperTypeParser =
+            new ReferenceMapperTypeParser();
 
     @Override
     public Map<String, AnalysisModule.AnalysisProvider<CharFilterFactory>> getCharFilters() {
-        Map<String, AnalysisModule.AnalysisProvider<CharFilterFactory>> extra = new HashMap<>();
+        Map<String, AnalysisModule.AnalysisProvider<CharFilterFactory>> extra = new LinkedHashMap<>();
         extra.put("icu_normalizer", IcuNormalizerCharFilterFactory::new);
         extra.put("icu_folding", IcuFoldingCharFilterFactory::new);
         return extra;
@@ -74,7 +89,7 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
 
     @Override
     public Map<String, AnalysisModule.AnalysisProvider<TokenFilterFactory>> getTokenFilters() {
-        Map<String, AnalysisModule.AnalysisProvider<TokenFilterFactory>> extra = new HashMap<>();
+        Map<String, AnalysisModule.AnalysisProvider<TokenFilterFactory>> extra = new LinkedHashMap<>();
         extra.put("icu_normalizer", IcuNormalizerTokenFilterFactory::new);
         extra.put("icu_folding", IcuFoldingTokenFilterFactory::new);
         extra.put("icu_transform", IcuTransformTokenFilterFactory::new);
@@ -87,13 +102,19 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
         extra.put("german_normalize", GermanNormalizationFilterFactory::new);
         extra.put("hyphen", HyphenTokenFilterFactory::new);
         extra.put("sortform", SortformTokenFilterFactory::new);
-        extra.put("standardnumber", StandardnumberTokenFilterFactory::new);
+        extra.put("standardnumber", (indexSettings, environment, name, settings) ->
+                new StandardnumberTokenFilterFactory(indexSettings, environment, name, settings, standardNumberTypeParser));
+        extra.put("fst_decompounder", FstDecompoundTokenFilterFactory::new);
+        extra.put("worddelimiter", WordDelimiterFilterFactory::new);
+        extra.put("worddelimiter2", WordDelimiterFilter2Factory::new);
+        extra.put("symbolname", SymbolnameTokenFilterFactory::new);
+        extra.put("year", GregorianYearTokenFilterFactory::new);
         return extra;
     }
 
     @Override
     public Map<String, AnalysisModule.AnalysisProvider<TokenizerFactory>> getTokenizers() {
-        Map<String, AnalysisModule.AnalysisProvider<TokenizerFactory>> extra = new HashMap<>();
+        Map<String, AnalysisModule.AnalysisProvider<TokenizerFactory>> extra = new LinkedHashMap<>();
         extra.put("icu_collation_tokenizer", IcuCollationTokenizerFactory::new);
         extra.put("icu_tokenizer", IcuTokenizerFactory::new);
         extra.put("hyphen", HyphenTokenizerFactory::new);
@@ -103,12 +124,54 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
 
     @Override
     public Map<String, AnalysisModule.AnalysisProvider<AnalyzerProvider<? extends Analyzer>>> getAnalyzers() {
-        Map<String, AnalysisModule.AnalysisProvider<AnalyzerProvider<? extends Analyzer>>> extra = new HashMap<>();
+        Map<String, AnalysisModule.AnalysisProvider<AnalyzerProvider<? extends Analyzer>>> extra = new LinkedHashMap<>();
         extra.put("icu_collation", IcuCollationKeyAnalyzerProvider::new);
         extra.put("hyphen", HyphenAnalyzerProvider::new);
         extra.put("naturalsort", NaturalSortKeyAnalyzerProvider::new);
         extra.put("sortform", SortformAnalyzerProvider::new);
-        extra.put("standardnumber", StandardnumberAnalyzerProvider::new);
+        extra.put("standardnumber", (indexSettings, environment, name, settings) ->
+                new StandardnumberAnalyzerProvider(indexSettings, environment, name, settings, standardNumberTypeParser));
+        return extra;
+    }
+
+    @Override
+    public Map<String, Mapper.TypeParser> getMappers() {
+        Map<String, Mapper.TypeParser> extra = new LinkedHashMap<>();
+        extra.put(StandardnumberMapper.CONTENT_TYPE, standardNumberTypeParser);
+        extra.put(ReferenceMapper.CONTENT_TYPE, referenceMapperTypeParser);
+        extra.put(CryptMapper.CONTENT_TYPE, new CryptMapper.TypeParser());
+        extra.put(LangdetectMapper.CONTENT_TYPE, new LangdetectMapper.TypeParser());
+        return extra;
+    }
+
+    @Override
+    public List<ActionHandler<? extends ActionRequest<?>, ? extends ActionResponse>> getActions() {
+        List<ActionHandler<? extends ActionRequest<?>, ? extends ActionResponse>> extra = new ArrayList<>();
+        extra.add(new ActionHandler<>(ISBNFormatAction.INSTANCE, TransportISBNFormatAction.class));
+        extra.add(new ActionHandler<>(LangdetectAction.INSTANCE, TransportLangdetectAction.class));
+        return extra;
+    }
+
+    @Override
+    public List<Class<? extends RestHandler>> getRestHandlers() {
+        List<Class<? extends RestHandler>> extra = new ArrayList<>();
+        extra.add(RestISBNFormatterAction.class);
+        extra.add(RestLangdetectAction.class);
+        return extra;
+    }
+
+    public Collection<Module> createGuiceModules() {
+        Collection<Module> extra = new ArrayList<>();
+        extra.add(new ReferenceMapperModule(referenceMapperTypeParser));
+        extra.add(new StandardnumberMapperModule(standardNumberTypeParser));
+        return extra;
+    }
+
+    @Override
+    public Collection<Class<? extends LifecycleComponent>> getGuiceServiceClasses() {
+        Collection<Class<? extends LifecycleComponent>> extra = new ArrayList<>();
+        extra.add(ReferenceService.class);
+        extra.add(StandardnumberService.class);
         return extra;
     }
 }

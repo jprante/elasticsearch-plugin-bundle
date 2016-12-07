@@ -11,6 +11,9 @@ import org.xbib.elasticsearch.MapperTestUtils;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+/**
+ *
+ */
 public class IcuAnalysisTests {
 
     @Test

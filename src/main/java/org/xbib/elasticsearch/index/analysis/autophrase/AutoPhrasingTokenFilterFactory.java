@@ -1,33 +1,11 @@
-/*
- * Copyright (C) 2016 Jörg Prante
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses
- * or write to the Free Software Foundation, Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * The interactive user interfaces in modified source and object code
- * versions of this program must display Appropriate Legal Notices,
- * as required under Section 5 of the GNU Affero General Public License.
- *
- */
 package org.xbib.elasticsearch.index.analysis.autophrase;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.StopFilter;
-import org.apache.lucene.analysis.util.CharArraySet;
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.util.ResourceLoader;
 import org.apache.lucene.analysis.util.ResourceLoaderAware;
-import org.apache.lucene.analysis.util.WordlistLoader;
+import org.apache.lucene.analysis.WordlistLoader;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
@@ -75,7 +53,7 @@ public class AutoPhrasingTokenFilterFactory extends AbstractTokenFilterFactory i
         return autoPhraseFilter;
     }
 
-    protected final CharArraySet getWordSet(ResourceLoader loader,
+    private CharArraySet getWordSet(ResourceLoader loader,
                                             String wordFiles, boolean ignoreCase) throws IOException {
         List<String> files = splitFileNames(wordFiles);
         CharArraySet words = null;
@@ -89,7 +67,7 @@ public class AutoPhrasingTokenFilterFactory extends AbstractTokenFilterFactory i
         return words;
     }
 
-    protected final List<String> splitFileNames(String fileNames) {
+    private List<String> splitFileNames(String fileNames) {
         if (fileNames == null) {
             return Collections.emptyList();
         }
@@ -100,8 +78,7 @@ public class AutoPhrasingTokenFilterFactory extends AbstractTokenFilterFactory i
         return result;
     }
 
-    protected final List<String> getLines(ResourceLoader loader, String resource) throws IOException {
+    private List<String> getLines(ResourceLoader loader, String resource) throws IOException {
         return WordlistLoader.getLines(loader.openResource(resource), StandardCharsets.UTF_8);
     }
-
 }

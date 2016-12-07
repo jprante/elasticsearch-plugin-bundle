@@ -1,8 +1,9 @@
 package org.xbib.elasticsearch.index.analysis;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.logging.ESLogger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.node.Node;
 import org.junit.Test;
 import org.xbib.elasticsearch.NodeTestUtils;
@@ -13,9 +14,12 @@ import java.nio.charset.StandardCharsets;
 
 import static org.elasticsearch.common.io.Streams.copyToString;
 
+/**
+ *
+ */
 public class CustomTokenizerTest {
 
-    private final static ESLogger logger = ESLoggerFactory.getLogger(CustomTokenizerTest.class.getName());
+    private static final Logger logger = LogManager.getLogger(CustomTokenizerTest.class.getName());
 
     @Test
     public void testCustomTokenizerRemoval() throws IOException {
@@ -33,7 +37,8 @@ public class CustomTokenizerTest {
         // use tokenizer
         client.prepareIndex("demo", "demo", "1")
                 .setSource(document)
-                .setRefresh(true).execute().actionGet();
+                .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
+                .execute().actionGet();
         // delete old index with custom tokenizer
         client.admin().indices().prepareDelete("demo").execute().actionGet();
         node.close();

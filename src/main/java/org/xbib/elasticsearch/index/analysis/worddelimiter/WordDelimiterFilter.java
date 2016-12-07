@@ -8,9 +8,8 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
-import org.apache.lucene.analysis.util.CharArraySet;
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.util.ArrayUtil;
-import org.apache.lucene.util.RamUsageEstimator;
 
 import java.io.IOException;
 
@@ -72,8 +71,11 @@ public final class WordDelimiterFilter extends TokenFilter implements WordDelimi
     private final int flags;
 
     private final CharTermAttribute termAttribute = addAttribute(CharTermAttribute.class);
+
     private final OffsetAttribute offsetAttribute = addAttribute(OffsetAttribute.class);
+
     private final PositionIncrementAttribute posIncAttribute = addAttribute(PositionIncrementAttribute.class);
+
     private final TypeAttribute typeAttribute = addAttribute(TypeAttribute.class);
 
     // used for iterating word delimiter breaks
@@ -150,8 +152,6 @@ public final class WordDelimiterFilter extends TokenFilter implements WordDelimi
     static boolean isDigit(int type) {
         return (type & DIGIT) != 0;
     }
-
-    // ================================================= Helper Methods ================================================
 
     /**
      * Checks if the given word type includes {@link #SUBWORD_DELIM}
@@ -308,7 +308,7 @@ public final class WordDelimiterFilter extends TokenFilter implements WordDelimi
         savedType = typeAttribute.type();
 
         if (savedBuffer.length < termAttribute.length()) {
-            savedBuffer = new char[ArrayUtil.oversize(termAttribute.length(), RamUsageEstimator.NUM_BYTES_CHAR)];
+            savedBuffer = new char[ArrayUtil.oversize(termAttribute.length(), Character.BYTES)];
         }
 
         System.arraycopy(termAttribute.buffer(), 0, savedBuffer, 0, termAttribute.length());

@@ -2,14 +2,11 @@ package org.xbib.elasticsearch.index.analysis.worddelimiter;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
-import org.elasticsearch.index.Index;
+import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.analysis.Analysis;
-import org.elasticsearch.index.settings.IndexSettingsService;
 
 import java.util.HashSet;
 import java.util.List;
@@ -20,22 +17,25 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ *
+ */
 public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory implements WordDelimiterFlags {
 
     // source => type
     private static Pattern typePattern = Pattern.compile("(.*)\\s*=>\\s*(.*)\\s*$");
+
     private final char[] out = new char[256];
+
     private Set<String> protectedWords = null;
+
     private int flags;
+
     private byte[] typeTable = null;
 
-    @Inject
-    public WordDelimiterFilterFactory(Index index,
-                                      IndexSettingsService indexSettingsService,
-                                      Environment env,
-                                      @Assisted String name,
-                                      @Assisted Settings settings) {
-        super(index, indexSettingsService.indexSettings(), name, settings);
+    public WordDelimiterFilterFactory(IndexSettings indexSettings, Environment environment, String name,
+                                      Settings settings) {
+        super(indexSettings, name, settings);
 
         // Sample Format for the type table:
         // $ => DIGIT
@@ -43,7 +43,7 @@ public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory imple
         // . => DIGIT
         // \u002C => DIGIT
         // \u200D => ALPHANUM
-        List<String> charTypeTableValues = Analysis.getWordList(env, settings, "type_table");
+        List<String> charTypeTableValues = Analysis.getWordList(environment, settings, "type_table");
         if (charTypeTableValues == null) {
             this.typeTable = WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE;
         } else {
@@ -69,7 +69,7 @@ public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory imple
         // If 1, causes trailing "'s" to be removed for each subword: "O'Neil's" => "O", "Neil"
         flags |= getFlag(STEM_ENGLISH_POSSESSIVE, settings, "stem_english_possessive", true);
         // If not null is the set of tokens to protect from being delimited
-        List<String> protoWords = Analysis.getWordList(env, settings, "protected_words");
+        List<String> protoWords = Analysis.getWordList(environment, settings, "protected_words");
         protectedWords = protoWords == null ? null : new HashSet<>(protoWords);
     }
 

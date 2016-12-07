@@ -1,33 +1,19 @@
-/*
- * Copyright (C) 2014 Jörg Prante
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses
- * or write to the Free Software Foundation, Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * The interactive user interfaces in modified source and object code
- * versions of this program must display Appropriate Legal Notices,
- * as required under Section 5 of the GNU Affero General Public License.
- *
- */
 package org.xbib.elasticsearch.index.mapper.reference;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexOptions;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queries.TermsQuery;
+import org.apache.lucene.search.BoostQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.util.BytesRef;
+import org.elasticsearch.Version;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.logging.ESLogger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
+import org.elasticsearch.common.lucene.BytesRefs;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
@@ -37,6 +23,8 @@ import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
 import org.elasticsearch.index.mapper.ParseContext;
+import org.elasticsearch.index.mapper.StringFieldMapper;
+import org.elasticsearch.index.query.QueryShardContext;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -45,19 +33,29 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static org.elasticsearch.index.mapper.MapperBuilders.stringField;
-import static org.elasticsearch.index.mapper.core.TypeParsers.parseField;
+import static org.elasticsearch.index.mapper.TypeParsers.parseField;
 
+/**
+ *
+ */
 public class ReferenceMapper extends FieldMapper {
 
+    private static final Logger logger = LogManager.getLogger(ReferenceMapper.class.getName());
+
     public static final String CONTENT_TYPE = "ref";
-    private final static ESLogger logger = ESLoggerFactory.getLogger("", "reference");
-    private final static CopyTo COPYTO_EMPTY = new CopyTo.Builder().build();
+
+    private static final CopyTo COPYTO_EMPTY = new CopyTo.Builder().build();
+
     private final Client client;
+
     private String index;
+
     private String type;
+
     private List<String> fields;
+
     private FieldMapper contentMapper;
+
     private CopyTo copyTo;
 
     public ReferenceMapper(String simpleName,
@@ -170,11 +168,12 @@ public class ReferenceMapper extends FieldMapper {
                         .setIndex(index)
                         .setType(type)
                         .setId(content)
-                        .setFields(fields.toArray(new String[fields.size()]))
+                        .setStoredFields(fields.toArray(new String[fields.size()]))
                         .execute()
                         .actionGet();
                 if (response != null && response.isExists()) {
                     for (String field : fields) {
+                        // deprecated???
                         GetField getField = response.getField(field);
                         if (getField != null) {
                             for (Object object : getField.getValues()) {
@@ -252,6 +251,35 @@ public class ReferenceMapper extends FieldMapper {
         public String value(Object value) {
             return value == null ? null : value.toString();
         }
+
+        /** Returns the indexed value used to construct search "values".
+         *  This method is used for the default implementations of most
+         *  query factory methods such as {@link #termQuery}. */
+        protected BytesRef indexedValueForSearch(Object value) {
+            return BytesRefs.toBytesRef(value);
+        }
+
+        @Override
+        public Query termQuery(Object value, QueryShardContext context) {
+            failIfNotIndexed();
+            TermQuery query = new TermQuery(new Term(name(), indexedValueForSearch(value)));
+            if (boost() == 1f ||
+                    (context != null && context.indexVersionCreated().before(Version.V_5_0_0_alpha1))) {
+                return query;
+            }
+            return new BoostQuery(query, boost());
+        }
+
+        @Override
+        public Query termsQuery(List<?> values, QueryShardContext context) {
+            failIfNotIndexed();
+            BytesRef[] bytesRefs = new BytesRef[values.size()];
+            for (int i = 0; i < bytesRefs.length; i++) {
+                bytesRefs[i] = indexedValueForSearch(values.get(i));
+            }
+            return new TermsQuery(name(), bytesRefs);
+        }
+
     }
 
     @SuppressWarnings({"rawtypes"})
@@ -271,7 +299,7 @@ public class ReferenceMapper extends FieldMapper {
             super(name, Defaults.FIELD_TYPE, Defaults.FIELD_TYPE);
             this.client = client;
             this.refFields = new LinkedList<>();
-            this.contentBuilder = stringField(name);
+            this.contentBuilder = new StringFieldMapper.Builder(name);
         }
 
         public Builder refIndex(String refIndex) {
@@ -325,11 +353,13 @@ public class ReferenceMapper extends FieldMapper {
         }
     }
 
-    /* copied from org.elasticsearch.index.mapper.DocumentParser private methods */
-
     public static class TypeParser implements Mapper.TypeParser {
 
         private Client client;
+
+        public void setClient(Client client) {
+            this.client = client;
+        }
 
         @Override
         @SuppressWarnings({"unchecked", "rawtypes"})
@@ -363,11 +393,6 @@ public class ReferenceMapper extends FieldMapper {
             }
             return builder;
         }
-
-        public void setClient(Client client) {
-            this.client = client;
-        }
-
     }
 
 }

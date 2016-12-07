@@ -3,6 +3,9 @@ package org.xbib.elasticsearch.index.analysis;
 import java.io.IOException;
 import java.io.Writer;
 
+/**
+ *
+ */
 public class HexDump {
 
     private static final String EOL = System.getProperty("line.separator");

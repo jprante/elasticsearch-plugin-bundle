@@ -29,6 +29,9 @@ import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterF
 import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.SPLIT_ON_NUMERICS;
 import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.STEM_ENGLISH_POSSESSIVE;
 
+/**
+ *
+ */
 public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
 
     @Test

@@ -290,7 +290,7 @@ public final class WordDelimiterFilter2 extends TokenFilter implements WordDelim
         savedType = typeAttribute.type();
 
         if (savedBuffer.length < termAttribute.length()) {
-            savedBuffer = new char[ArrayUtil.oversize(termAttribute.length(), RamUsageEstimator.NUM_BYTES_CHAR)];
+            savedBuffer = new char[ArrayUtil.oversize(termAttribute.length(), Character.BYTES)];
         }
 
         System.arraycopy(termAttribute.buffer(), 0, savedBuffer, 0, termAttribute.length());

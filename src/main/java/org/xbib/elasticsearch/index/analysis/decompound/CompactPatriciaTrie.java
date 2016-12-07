@@ -12,23 +12,41 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+/**
+ *
+ */
 public class CompactPatriciaTrie {
 
-    public static final int EXACT = 0;
-    public static final int LOWER = 2;
+    private static final int EXACT = 0;
+
+    private static final int LOWER = 2;
+
     private static String TAB = "\t";
+
     private static String NL = "\n";
+
     private boolean reverse = false;
+
     private boolean ignorecase = false;
+
     private double thresh = 0.0;
+
     private Node root;
+
     private char[] stringtree;
+
     private int offset;
+
     private int basis;
+
     private int startchar;
+
     private int endchar;
+
     private char attentionNumber;
+
     private char attentionNode;
+
     private char endOfWordChar;
 
     public CompactPatriciaTrie() {

@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ *
+ */
 public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
 
     /*
@@ -30,7 +33,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testBasicUsage() throws Exception {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "tr")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
@@ -50,7 +53,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testNormalization() throws IOException {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "tr")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
@@ -70,7 +73,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testSecondaryStrength() throws IOException {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "en")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "secondary")
@@ -91,7 +94,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testIgnorePunctuation() throws IOException {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "en")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
@@ -112,7 +115,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testIgnoreWhitespace() throws IOException {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "en")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
@@ -139,7 +142,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testNumerics() throws IOException {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "en")
                 .put("index.analysis.analyzer.myAnalyzer.numeric", true)
@@ -159,7 +162,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testIgnoreAccentsButNotCase() throws IOException {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "en")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
@@ -199,7 +202,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testUpperCaseFirst() throws IOException {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "en")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "tertiary")
@@ -233,7 +236,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
         RuleBasedCollator tailoredCollator = new RuleBasedCollator(baseCollator.getRules() + DIN5007_2_tailorings);
         String tailoredRules = tailoredCollator.getRules();
 
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.rules", tailoredRules)
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")

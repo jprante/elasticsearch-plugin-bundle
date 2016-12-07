@@ -8,45 +8,34 @@ import org.elasticsearch.common.inject.ModulesBuilder;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.SettingsModule;
 import org.elasticsearch.env.Environment;
-import org.elasticsearch.env.EnvironmentModule;
 import org.elasticsearch.index.Index;
-import org.elasticsearch.index.IndexNameModule;
-import org.elasticsearch.index.analysis.AnalysisModule;
 import org.elasticsearch.index.analysis.AnalysisService;
+import org.elasticsearch.index.mapper.AllFieldMapper;
+import org.elasticsearch.index.mapper.BinaryFieldMapper;
+import org.elasticsearch.index.mapper.BooleanFieldMapper;
+import org.elasticsearch.index.mapper.CompletionFieldMapper;
+import org.elasticsearch.index.mapper.DateFieldMapper;
 import org.elasticsearch.index.mapper.DocumentMapperParser;
+import org.elasticsearch.index.mapper.GeoPointFieldMapper;
+import org.elasticsearch.index.mapper.IdFieldMapper;
+import org.elasticsearch.index.mapper.IndexFieldMapper;
+import org.elasticsearch.index.mapper.IpFieldMapper;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperService;
 import org.elasticsearch.index.mapper.MetadataFieldMapper;
-import org.elasticsearch.index.mapper.core.BinaryFieldMapper;
-import org.elasticsearch.index.mapper.core.BooleanFieldMapper;
-import org.elasticsearch.index.mapper.core.ByteFieldMapper;
-import org.elasticsearch.index.mapper.core.CompletionFieldMapper;
-import org.elasticsearch.index.mapper.core.DateFieldMapper;
-import org.elasticsearch.index.mapper.core.DoubleFieldMapper;
-import org.elasticsearch.index.mapper.core.FloatFieldMapper;
-import org.elasticsearch.index.mapper.core.IntegerFieldMapper;
-import org.elasticsearch.index.mapper.core.LongFieldMapper;
-import org.elasticsearch.index.mapper.core.ShortFieldMapper;
-import org.elasticsearch.index.mapper.core.StringFieldMapper;
-import org.elasticsearch.index.mapper.core.TokenCountFieldMapper;
-import org.elasticsearch.index.mapper.core.TypeParsers;
-import org.elasticsearch.index.mapper.geo.GeoPointFieldMapper;
-import org.elasticsearch.index.mapper.internal.AllFieldMapper;
-import org.elasticsearch.index.mapper.internal.IdFieldMapper;
-import org.elasticsearch.index.mapper.internal.IndexFieldMapper;
-import org.elasticsearch.index.mapper.internal.ParentFieldMapper;
-import org.elasticsearch.index.mapper.internal.RoutingFieldMapper;
-import org.elasticsearch.index.mapper.internal.SourceFieldMapper;
-import org.elasticsearch.index.mapper.internal.TTLFieldMapper;
-import org.elasticsearch.index.mapper.internal.TimestampFieldMapper;
-import org.elasticsearch.index.mapper.internal.TypeFieldMapper;
-import org.elasticsearch.index.mapper.internal.UidFieldMapper;
-import org.elasticsearch.index.mapper.internal.VersionFieldMapper;
-import org.elasticsearch.index.mapper.ip.IpFieldMapper;
-import org.elasticsearch.index.mapper.object.ObjectMapper;
-import org.elasticsearch.index.settings.IndexSettingsModule;
-import org.elasticsearch.index.similarity.SimilarityLookupService;
-import org.elasticsearch.indices.analysis.IndicesAnalysisService;
+import org.elasticsearch.index.mapper.NumberFieldMapper;
+import org.elasticsearch.index.mapper.ObjectMapper;
+import org.elasticsearch.index.mapper.ParentFieldMapper;
+import org.elasticsearch.index.mapper.RoutingFieldMapper;
+import org.elasticsearch.index.mapper.SourceFieldMapper;
+import org.elasticsearch.index.mapper.StringFieldMapper;
+import org.elasticsearch.index.mapper.TTLFieldMapper;
+import org.elasticsearch.index.mapper.TimestampFieldMapper;
+import org.elasticsearch.index.mapper.TokenCountFieldMapper;
+import org.elasticsearch.index.mapper.TypeFieldMapper;
+import org.elasticsearch.index.mapper.UidFieldMapper;
+import org.elasticsearch.index.mapper.VersionFieldMapper;
+import org.elasticsearch.indices.analysis.AnalysisModule;
 import org.elasticsearch.indices.mapper.MapperRegistry;
 import org.xbib.elasticsearch.index.mapper.crypt.CryptMapper;
 import org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper;
@@ -111,7 +100,7 @@ public class MapperTestUtils {
                 mapperRegistry);
     }
 
-    public static MapperService newMapperService(Settings settings, Client client) {
+    public static MapperService newMapperService(Settings settings, Client client) throws IOException {
         Settings indexSettings = Settings.builder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("path.home", System.getProperty("path.home"))
@@ -154,7 +143,7 @@ public class MapperTestUtils {
     }
 
     public static AnalysisService analysisService() {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("path.home", System.getProperty("path.home"))
                 .put("client.type", "node")
@@ -163,7 +152,7 @@ public class MapperTestUtils {
     }
 
     public static AnalysisService analysisService(Settings settings) {
-        Settings newSettings = Settings.settingsBuilder()
+        Settings newSettings = Settings.builder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("path.home", System.getProperty("path.home"))
                 .put("client.type", "node")
@@ -173,7 +162,7 @@ public class MapperTestUtils {
     }
 
     public static AnalysisService analysisService(String resource) throws IOException {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("path.home", System.getProperty("path.home"))
                 .put("client.type", "node")
@@ -185,12 +174,12 @@ public class MapperTestUtils {
     // copy from org.elasticsearch.indices.IndicesModule
     private static Map<String, Mapper.TypeParser> registerBuiltInMappers() {
         Map<String, Mapper.TypeParser> mapperParsers = new LinkedHashMap<>();
-        mapperParsers.put(ByteFieldMapper.CONTENT_TYPE, new ByteFieldMapper.TypeParser());
-        mapperParsers.put(ShortFieldMapper.CONTENT_TYPE, new ShortFieldMapper.TypeParser());
-        mapperParsers.put(IntegerFieldMapper.CONTENT_TYPE, new IntegerFieldMapper.TypeParser());
-        mapperParsers.put(LongFieldMapper.CONTENT_TYPE, new LongFieldMapper.TypeParser());
-        mapperParsers.put(FloatFieldMapper.CONTENT_TYPE, new FloatFieldMapper.TypeParser());
-        mapperParsers.put(DoubleFieldMapper.CONTENT_TYPE, new DoubleFieldMapper.TypeParser());
+        mapperParsers.put(NumberFieldMapper.NumberType.BYTE.typeName(), new NumberFieldMapper.TypeParser(NumberFieldMapper.NumberType.BYTE));
+        mapperParsers.put(NumberFieldMapper.NumberType.SHORT.typeName(), new NumberFieldMapper.TypeParser(NumberFieldMapper.NumberType.SHORT));
+        mapperParsers.put(NumberFieldMapper.NumberType.INTEGER.typeName(), new NumberFieldMapper.TypeParser(NumberFieldMapper.NumberType.INTEGER));
+        mapperParsers.put(NumberFieldMapper.NumberType.LONG.typeName(), new NumberFieldMapper.TypeParser(NumberFieldMapper.NumberType.LONG));
+        mapperParsers.put(NumberFieldMapper.NumberType.FLOAT.typeName(), new NumberFieldMapper.TypeParser(NumberFieldMapper.NumberType.FLOAT));
+        mapperParsers.put(NumberFieldMapper.NumberType.DOUBLE.typeName(), new NumberFieldMapper.TypeParser(NumberFieldMapper.NumberType.DOUBLE));
         mapperParsers.put(BooleanFieldMapper.CONTENT_TYPE, new BooleanFieldMapper.TypeParser());
         mapperParsers.put(BinaryFieldMapper.CONTENT_TYPE, new BinaryFieldMapper.TypeParser());
         mapperParsers.put(DateFieldMapper.CONTENT_TYPE, new DateFieldMapper.TypeParser());
@@ -199,7 +188,7 @@ public class MapperTestUtils {
         mapperParsers.put(TokenCountFieldMapper.CONTENT_TYPE, new TokenCountFieldMapper.TypeParser());
         mapperParsers.put(ObjectMapper.CONTENT_TYPE, new ObjectMapper.TypeParser());
         mapperParsers.put(ObjectMapper.NESTED_CONTENT_TYPE, new ObjectMapper.TypeParser());
-        mapperParsers.put(TypeParsers.MULTI_FIELD_CONTENT_TYPE, TypeParsers.multiFieldConverterTypeParser);
+        //mapperParsers.put(TypeParsers.MULTI_FIELD_CONTENT_TYPE, TypeParsers.multiFieldConverterTypeParser);
         mapperParsers.put(CompletionFieldMapper.CONTENT_TYPE, new CompletionFieldMapper.TypeParser());
         mapperParsers.put(GeoPointFieldMapper.CONTENT_TYPE, new GeoPointFieldMapper.TypeParser());
         return mapperParsers;

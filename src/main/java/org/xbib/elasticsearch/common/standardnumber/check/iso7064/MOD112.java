@@ -2,6 +2,9 @@ package org.xbib.elasticsearch.common.standardnumber.check.iso7064;
 
 import org.xbib.elasticsearch.common.standardnumber.check.Digit;
 
+/**
+ *
+ */
 public class MOD112 implements Digit {
 
     @Override

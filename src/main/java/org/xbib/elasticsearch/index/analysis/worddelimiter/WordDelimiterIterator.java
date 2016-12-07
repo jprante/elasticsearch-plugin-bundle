@@ -22,8 +22,8 @@ public final class WordDelimiterIterator {
 
     public static final byte[] DEFAULT_WORD_DELIM_TABLE;
 
-    // TODO: should there be a WORD_DELIM category for chars that only separate words (no catenation of subwords will be
-    // done if separated by these chars?) "," would be an obvious candidate...
+    // TODO(jprante) should there be a WORD_DELIM category for chars that only separate words
+    // (no catenation of subwords will be done if separated by these chars?) "," would be an obvious candidate...
     static {
         byte[] tab = new byte[256];
         for (int i = 0; i < 256; i++) {
@@ -217,8 +217,6 @@ public final class WordDelimiterIterator {
                 return type;
         }
     }
-
-    // ================================================= Helper Methods ================================================
 
     /**
      * Reset the text to a new value, and reset all state

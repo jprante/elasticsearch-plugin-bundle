@@ -4,18 +4,16 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.SortedSetDocValuesField;
 import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.util.BytesRef;
-import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.index.analysis.NamedAnalyzer;
-import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
 import org.elasticsearch.index.mapper.ParseContext;
-import org.elasticsearch.index.mapper.core.StringFieldMapper;
+import org.elasticsearch.index.mapper.StringFieldMapper;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -25,33 +23,34 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static org.elasticsearch.index.mapper.core.TypeParsers.parseField;
-import static org.elasticsearch.index.mapper.core.TypeParsers.parseMultiField;
+import static org.elasticsearch.index.mapper.TypeParsers.parseField;
+import static org.elasticsearch.index.mapper.TypeParsers.parseMultiField;
 
+/**
+ *
+ */
 public class CryptMapper extends StringFieldMapper {
 
     public static final String CONTENT_TYPE = "crypt";
-    private final static char[] hexDigit = new char[]{
+
+    private static final  char[] hexDigit = new char[]{
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+
     private int ignoreAbove;
+
     private String algo;
 
-    public CryptMapper(String simpleName,
-                       MappedFieldType fieldType,
-                       MappedFieldType defaultFieldType,
-                       int positionOffsetGap,
-                       int ignoreAbove,
-                       Settings indexSettings,
-                       FieldMapper.MultiFields multiFields,
-                       FieldMapper.CopyTo copyTo,
-                       String algo) {
-        super(simpleName, fieldType, defaultFieldType, positionOffsetGap, ignoreAbove,
+    public CryptMapper(String simpleName, StringFieldType fieldType, MappedFieldType defaultFieldType,
+                       int positionIncrementGap, int ignoreAbove, Boolean includeInAll,
+                       Settings indexSettings, MultiFields multiFields, CopyTo copyTo, String algo) {
+        super(simpleName, fieldType, defaultFieldType, positionIncrementGap, ignoreAbove, includeInAll,
                 indexSettings, multiFields, copyTo);
         this.ignoreAbove = ignoreAbove;
         this.algo = algo;
     }
 
-    static StringFieldMapper.ValueAndBoost parseCreateFieldForCrypt(ParseContext context, String nullValue, float defaultBoost, String algo) throws IOException {
+    static StringFieldMapper.ValueAndBoost parseCreateFieldForCrypt(ParseContext context, String nullValue,
+                                                                    float defaultBoost, String algo) throws IOException {
         if (context.externalValueSet()) {
             return new StringFieldMapper.ValueAndBoost((String) context.externalValue(), defaultBoost);
         }
@@ -111,7 +110,8 @@ public class CryptMapper extends StringFieldMapper {
 
     @Override
     protected void parseCreateField(ParseContext context, List<Field> fields) throws IOException {
-        StringFieldMapper.ValueAndBoost valueAndBoost = parseCreateFieldForCrypt(context, fieldType().nullValueAsString(), fieldType().boost(), algo);
+        StringFieldMapper.ValueAndBoost valueAndBoost =
+                parseCreateFieldForCrypt(context, fieldType().nullValueAsString(), fieldType().boost(), algo);
         if (valueAndBoost.value() == null) {
             return;
         }
@@ -119,12 +119,12 @@ public class CryptMapper extends StringFieldMapper {
             return;
         }
         if (fieldType().indexOptions() != IndexOptions.NONE || fieldType().stored()) {
-            Field field = new Field(fieldType().names().indexName(), valueAndBoost.value(), fieldType());
+            Field field = new Field(fieldType().name(), valueAndBoost.value(), fieldType());
             field.setBoost(valueAndBoost.boost());
             fields.add(field);
         }
         if (fieldType().hasDocValues()) {
-            fields.add(new SortedSetDocValuesField(fieldType().names().indexName(), new BytesRef(valueAndBoost.value())));
+            fields.add(new SortedSetDocValuesField(fieldType().name(), new BytesRef(valueAndBoost.value())));
         }
     }
 
@@ -167,16 +167,15 @@ public class CryptMapper extends StringFieldMapper {
                 }
             }
             setupFieldType(context);
-            CryptMapper fieldMapper = new CryptMapper(
-                    name, fieldType, defaultFieldType, positionIncrementGap, ignoreAbove,
-                    context.indexSettings(), multiFieldsBuilder.build(this, context), copyTo, algo);
-            fieldMapper.includeInAll(includeInAll);
-            return fieldMapper;
+            return new CryptMapper(name, fieldType(), defaultFieldType, positionIncrementGap,
+                    ignoreAbove, includeInAll, context.indexSettings(),
+                    multiFieldsBuilder.build(this, context), copyTo, algo);
         }
     }
 
     public static class TypeParser implements Mapper.TypeParser {
 
+        @SuppressWarnings({"unchecked", "rawtypes"})
         @Override
         public Mapper.Builder parse(String name, Map<String, Object> node, Mapper.TypeParser.ParserContext parserContext)
                 throws MapperParsingException {
@@ -185,7 +184,7 @@ public class CryptMapper extends StringFieldMapper {
             Iterator<Map.Entry<String, Object>> iterator = node.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<String, Object> entry = iterator.next();
-                String propName = Strings.toUnderscoreCase(entry.getKey());
+                String propName = entry.getKey();
                 Object propNode = entry.getValue();
                 if (propName.equals("algo")) {
                     builder.algo(propNode.toString());
@@ -197,5 +196,4 @@ public class CryptMapper extends StringFieldMapper {
             return builder;
         }
     }
-
 }

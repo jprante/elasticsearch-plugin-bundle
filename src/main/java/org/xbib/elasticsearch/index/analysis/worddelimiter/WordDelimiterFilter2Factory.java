@@ -2,14 +2,11 @@ package org.xbib.elasticsearch.index.analysis.worddelimiter;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.miscellaneous.WordDelimiterIterator;
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
-import org.elasticsearch.index.Index;
+import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.analysis.Analysis;
-import org.elasticsearch.index.settings.IndexSettingsService;
 
 import java.util.HashSet;
 import java.util.List;
@@ -27,18 +24,18 @@ public class WordDelimiterFilter2Factory extends AbstractTokenFilterFactory impl
 
     // source => type
     private static Pattern typePattern = Pattern.compile("(.*)\\s*=>\\s*(.*)\\s*$");
+
     private final char[] out = new char[256];
+
     private Set<String> protectedWords = null;
+
     private int flags;
+
     private byte[] typeTable = null;
 
-    @Inject
-    public WordDelimiterFilter2Factory(Index index,
-                                       IndexSettingsService indexSettingsService,
-                                       Environment env,
-                                       @Assisted String name,
-                                       @Assisted Settings settings) {
-        super(index, indexSettingsService.indexSettings(), name, settings);
+    public WordDelimiterFilter2Factory(IndexSettings indexSettings, Environment environment, String name,
+                                       Settings settings) {
+        super(indexSettings, name, settings);
 
         // Sample Format for the type table:
         // $ => DIGIT
@@ -46,7 +43,7 @@ public class WordDelimiterFilter2Factory extends AbstractTokenFilterFactory impl
         // . => DIGIT
         // \u002C => DIGIT
         // \u200D => ALPHANUM
-        List<String> charTypeTableValues = Analysis.getWordList(env, settings, "type_table");
+        List<String> charTypeTableValues = Analysis.getWordList(environment, settings, "type_table");
         if (charTypeTableValues == null) {
             this.typeTable = WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE;
         } else {
@@ -74,7 +71,7 @@ public class WordDelimiterFilter2Factory extends AbstractTokenFilterFactory impl
         // If 1, causes generated subwords to stick at the same position, they otherwise take a new position
         flags |= getFlag(ALL_PARTS_AT_SAME_POSITION, settings, "all_parts_at_same_position", false);
         // If not null is the set of tokens to protect from being delimited
-        List<String> protoWords = Analysis.getWordList(env, settings, "protected_words");
+        List<String> protoWords = Analysis.getWordList(environment, settings, "protected_words");
         protectedWords = protoWords == null ? null : new HashSet<>(protoWords);
     }
 

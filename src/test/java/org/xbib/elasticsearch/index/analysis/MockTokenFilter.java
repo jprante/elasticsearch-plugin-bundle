@@ -25,7 +25,7 @@ public final class MockTokenFilter extends TokenFilter {
     /**
      * Empty set of stopwords
      */
-    public static final CharacterRunAutomaton EMPTY_STOPSET =
+    static final CharacterRunAutomaton EMPTY_STOPSET =
             new CharacterRunAutomaton(makeEmpty());
 
     /**

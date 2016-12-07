@@ -7,6 +7,9 @@ import org.apache.lucene.util.automaton.CharacterRunAutomaton;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *
+ */
 public final class MockAnalyzer extends Analyzer {
     private final CharacterRunAutomaton runAutomaton;
     private final boolean lowerCase;

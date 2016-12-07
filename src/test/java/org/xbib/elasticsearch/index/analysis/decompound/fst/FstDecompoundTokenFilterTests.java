@@ -14,6 +14,9 @@ import org.xbib.elasticsearch.MapperTestUtils;
 import java.io.IOException;
 import java.io.StringReader;
 
+/**
+ *
+ */
 public class FstDecompoundTokenFilterTests extends Assert {
 
     @Test

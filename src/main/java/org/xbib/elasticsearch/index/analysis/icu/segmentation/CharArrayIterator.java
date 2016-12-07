@@ -6,10 +6,15 @@ import java.text.CharacterIterator;
  * Wraps a char[] as CharacterIterator for processing with a BreakIterator
  */
 final class CharArrayIterator implements CharacterIterator {
+
     private char array[];
+
     private int start;
+
     private int index;
+
     private int length;
+
     private int limit;
 
     public char[] getText() {

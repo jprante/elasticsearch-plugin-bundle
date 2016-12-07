@@ -16,6 +16,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *
+ */
 public abstract class BaseTokenStreamTest extends Assert {
 
     /**
