@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
 
+/**
+ *
+ */
 public final class PairTokenFilter extends TokenFilter {
 
     private final CharTermAttribute termAttr;

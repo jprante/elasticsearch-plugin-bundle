@@ -26,25 +26,23 @@ import com.ibm.icu.text.Collator;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.KeywordTokenizer;
 import org.apache.lucene.collation.ICUCollationAttributeFactory;
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.Index;
+import org.elasticsearch.env.Environment;
+import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenizerFactory;
-import org.elasticsearch.index.settings.IndexSettingsService;
 
+/**
+ *
+ */
 public class IcuCollationTokenizerFactory extends AbstractTokenizerFactory {
 
     private final ICUCollationAttributeFactory factory;
 
     private final int bufferSize;
 
-    @Inject
-    public IcuCollationTokenizerFactory(Index index,
-                                        IndexSettingsService indexSettingsService,
-                                        @Assisted String name,
-                                        @Assisted Settings settings) {
-        super(index, indexSettingsService.indexSettings(), name, settings);
+    public IcuCollationTokenizerFactory(IndexSettings indexSettings, Environment environment, String name,
+                                        Settings settings) {
+        super(indexSettings, name, settings);
         Collator collator = IcuCollationKeyAnalyzerProvider.createCollator(settings);
         this.factory = new ICUCollationAttributeFactory(collator);
         this.bufferSize = settings.getAsInt("buffer_size", KeywordTokenizer.DEFAULT_BUFFER_SIZE);

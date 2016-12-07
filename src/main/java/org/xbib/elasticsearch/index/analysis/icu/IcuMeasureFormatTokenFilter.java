@@ -32,6 +32,9 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import java.io.IOException;
 import java.text.ParsePosition;
 
+/**
+ *
+ */
 public final class IcuMeasureFormatTokenFilter extends TokenFilter {
 
     private final CharTermAttribute termAtt;

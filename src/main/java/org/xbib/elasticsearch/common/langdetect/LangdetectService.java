@@ -22,9 +22,9 @@
  */
 package org.xbib.elasticsearch.common.langdetect;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.common.logging.ESLogger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.common.settings.Settings;
 
 import java.io.IOException;
@@ -94,9 +94,9 @@ public class LangdetectService {
             "zh-cn",
             "zh-tw"
     };
-    private final static ESLogger logger = ESLoggerFactory.getLogger(LangdetectService.class.getName());
-    private final static Pattern word = Pattern.compile("[\\P{IsWord}]", Pattern.UNICODE_CHARACTER_CLASS);
-    private final static Settings DEFAULT_SETTINGS = Settings.builder()
+    private static final Logger logger = LogManager.getLogger(LangdetectService.class.getName());
+    private static final Pattern word = Pattern.compile("[\\P{IsWord}]", Pattern.UNICODE_CHARACTER_CLASS);
+    private static final Settings DEFAULT_SETTINGS = Settings.builder()
             .putArray("languages", DEFAULT_LANGUAGES)
             .build();
     private final Settings settings;
@@ -172,7 +172,7 @@ public class LangdetectService {
             // map by settings
             Settings map = Settings.EMPTY;
             if (settings.getByPrefix("map.") != null) {
-                map = Settings.settingsBuilder().put(settings.getByPrefix("map.")).build();
+                map = Settings.builder().put(settings.getByPrefix("map.")).build();
             }
             if (map.getAsMap().isEmpty()) {
                 // is in "map" a resource name?
@@ -180,7 +180,7 @@ public class LangdetectService {
                         settings.get("map") : this.profile + "language.json";
                 InputStream in = getClass().getResourceAsStream(s);
                 if (in != null) {
-                    map = Settings.settingsBuilder().loadFromStream(s, in).build();
+                    map = Settings.builder().loadFromStream(s, in).build();
                 }
             }
             this.langmap = map.getAsMap();

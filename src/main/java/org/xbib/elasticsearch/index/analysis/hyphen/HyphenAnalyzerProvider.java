@@ -22,16 +22,14 @@
  */
 package org.xbib.elasticsearch.index.analysis.hyphen;
 
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.Index;
+import org.elasticsearch.env.Environment;
+import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AnalysisService;
 import org.elasticsearch.index.analysis.CharFilterFactory;
 import org.elasticsearch.index.analysis.CustomAnalyzer;
 import org.elasticsearch.index.analysis.CustomAnalyzerProvider;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
-import org.elasticsearch.index.settings.IndexSettingsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,14 +45,9 @@ public class HyphenAnalyzerProvider extends CustomAnalyzerProvider {
 
     private CustomAnalyzer customAnalyzer;
 
-    @Inject
-    public HyphenAnalyzerProvider(Index index,
-                                  IndexSettingsService indexSettingsService,
-                                  HyphenTokenizerFactory tokenizerFactory,
-                                  @Assisted String name,
-                                  @Assisted Settings settings) {
-        super(index, indexSettingsService, name, settings);
-        this.tokenizerFactory = tokenizerFactory;
+    public HyphenAnalyzerProvider(IndexSettings indexSettings, Environment environment, String name, Settings settings) {
+        super(indexSettings, name, settings);
+        this.tokenizerFactory = new HyphenTokenizerFactory(indexSettings, environment, name, settings);
         this.analyzerSettings = settings;
     }
 

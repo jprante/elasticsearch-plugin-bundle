@@ -27,6 +27,9 @@ import org.apache.lucene.analysis.core.KeywordTokenizer;
 
 import java.text.Collator;
 
+/**
+ *
+ */
 public class NaturalSortKeyAnalyzer extends Analyzer {
 
     private final NaturalSortKeyAttributeFactory factory;

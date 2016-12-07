@@ -26,12 +26,10 @@ import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
 import com.ibm.icu.util.ULocale;
 import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.Index;
+import org.elasticsearch.env.Environment;
+import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractIndexAnalyzerProvider;
-import org.elasticsearch.index.settings.IndexSettingsService;
 
 /**
  * An ICU collation analyzer provider.
@@ -49,12 +47,8 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
 
     private final Collator collator;
 
-    @Inject
-    public IcuCollationKeyAnalyzerProvider(Index index,
-                                           IndexSettingsService indexSettingsService,
-                                           @Assisted String name,
-                                           @Assisted Settings settings) {
-        super(index, indexSettingsService.indexSettings(), name, settings);
+    public IcuCollationKeyAnalyzerProvider(IndexSettings indexSettings, Environment environment, String name, Settings settings) {
+        super(indexSettings, name, settings);
         this.collator = createCollator(settings);
     }
 

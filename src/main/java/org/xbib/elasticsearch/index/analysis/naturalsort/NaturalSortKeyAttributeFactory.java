@@ -27,6 +27,9 @@ import org.apache.lucene.util.AttributeFactory;
 
 import java.text.Collator;
 
+/**
+ *
+ */
 public class NaturalSortKeyAttributeFactory extends AttributeFactory.StaticImplementationAttributeFactory<NaturalSortKeyAttributeImpl> {
 
     private final Collator collator;

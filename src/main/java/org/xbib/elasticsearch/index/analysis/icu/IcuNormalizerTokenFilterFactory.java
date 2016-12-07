@@ -24,12 +24,10 @@ package org.xbib.elasticsearch.index.analysis.icu;
 
 import com.ibm.icu.text.Normalizer2;
 import org.apache.lucene.analysis.TokenStream;
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.Index;
+import org.elasticsearch.env.Environment;
+import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
-import org.elasticsearch.index.settings.IndexSettingsService;
 
 /**
  * Uses the {@link ICUNormalizer2Filter} to normalize tokens.
@@ -41,12 +39,8 @@ public class IcuNormalizerTokenFilterFactory extends AbstractTokenFilterFactory 
 
     private final Normalizer2 normalizer;
 
-    @Inject
-    public IcuNormalizerTokenFilterFactory(Index index,
-                                           IndexSettingsService indexSettingsService,
-                                           @Assisted String name,
-                                           @Assisted Settings settings) {
-        super(index, indexSettingsService.indexSettings(), name, settings);
+    public IcuNormalizerTokenFilterFactory(IndexSettings indexSettings, Environment environment, String name, Settings settings) {
+        super(indexSettings, name, settings);
         String normalizationName = settings.get("name", "nfkc_cf");
         Normalizer2.Mode normalizationMode;
         switch (settings.get("mode", "compose")) {

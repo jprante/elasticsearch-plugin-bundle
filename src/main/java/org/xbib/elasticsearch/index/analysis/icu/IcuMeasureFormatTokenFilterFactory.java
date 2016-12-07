@@ -25,23 +25,20 @@ package org.xbib.elasticsearch.index.analysis.icu;
 import com.ibm.icu.text.MeasureFormat;
 import com.ibm.icu.util.ULocale;
 import org.apache.lucene.analysis.TokenStream;
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.Index;
+import org.elasticsearch.env.Environment;
+import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
-import org.elasticsearch.index.settings.IndexSettingsService;
 
+/**
+ *
+ */
 public class IcuMeasureFormatTokenFilterFactory extends AbstractTokenFilterFactory {
 
     private final MeasureFormat measureFormat;
 
-    @Inject
-    public IcuMeasureFormatTokenFilterFactory(Index index,
-                                              IndexSettingsService indexSettingsService,
-                                              @Assisted String name,
-                                              @Assisted Settings settings) {
-        super(index, indexSettingsService.indexSettings(), name, settings);
+    public IcuMeasureFormatTokenFilterFactory(IndexSettings indexSettings, Environment environment, String name, Settings settings) {
+        super(indexSettings, name, settings);
         ULocale locale = settings.get("locale") != null ?
                 new ULocale(settings.get("locale")) : ULocale.getDefault();
         String formatWidthStr = settings.get("format", "NARROW");

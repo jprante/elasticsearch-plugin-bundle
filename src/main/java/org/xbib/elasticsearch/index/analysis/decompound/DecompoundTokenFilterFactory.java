@@ -24,25 +24,22 @@ package org.xbib.elasticsearch.index.analysis.decompound;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.Index;
+import org.elasticsearch.env.Environment;
+import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
-import org.elasticsearch.index.settings.IndexSettingsService;
 
+/**
+ *
+ */
 public class DecompoundTokenFilterFactory extends AbstractTokenFilterFactory {
 
     private final Decompounder decompounder;
     private final Boolean respectKeywords;
     private final Boolean subwordsonly;
 
-    @Inject
-    public DecompoundTokenFilterFactory(Index index,
-                                        IndexSettingsService indexSettingsService,
-                                        @Assisted String name,
-                                        @Assisted Settings settings) {
-        super(index, indexSettingsService.indexSettings(), name, settings);
+    public DecompoundTokenFilterFactory(IndexSettings indexSettings, Environment environment, String name, Settings settings) {
+        super(indexSettings, name, settings);
         this.decompounder = createDecompounder(settings);
         this.respectKeywords = settings.getAsBoolean("respect_keywords", false);
         this.subwordsonly = settings.getAsBoolean("subwords_only", false);

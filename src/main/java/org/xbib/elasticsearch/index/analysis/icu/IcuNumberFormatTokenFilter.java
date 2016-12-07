@@ -30,6 +30,9 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import java.io.IOException;
 import java.text.ParsePosition;
 
+/**
+ *
+ */
 public final class IcuNumberFormatTokenFilter extends TokenFilter {
 
     private final NumberFormat numberFormat;

@@ -22,16 +22,14 @@
  */
 package org.xbib.elasticsearch.index.analysis.sortform;
 
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.Index;
+import org.elasticsearch.env.Environment;
+import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AnalysisService;
 import org.elasticsearch.index.analysis.CharFilterFactory;
 import org.elasticsearch.index.analysis.CustomAnalyzer;
 import org.elasticsearch.index.analysis.CustomAnalyzerProvider;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
-import org.elasticsearch.index.settings.IndexSettingsService;
 import org.xbib.elasticsearch.index.analysis.icu.IcuCollationTokenizerFactory;
 
 import java.util.ArrayList;
@@ -48,14 +46,10 @@ public class SortformAnalyzerProvider extends CustomAnalyzerProvider {
 
     private CustomAnalyzer customAnalyzer;
 
-    @Inject
-    public SortformAnalyzerProvider(Index index,
-                                    IndexSettingsService indexSettingsService,
-                                    IcuCollationTokenizerFactory tokenizerFactory,
-                                    @Assisted String name,
-                                    @Assisted Settings settings) {
-        super(index, indexSettingsService, name, settings);
-        this.tokenizerFactory = tokenizerFactory;
+    public SortformAnalyzerProvider(IndexSettings indexSettings, Environment environment, String name,
+                                    Settings settings) {
+        super(indexSettings, name, settings);
+        this.tokenizerFactory = new IcuCollationTokenizerFactory(indexSettings, environment, name, settings);
         this.analyzerSettings = settings;
     }
 

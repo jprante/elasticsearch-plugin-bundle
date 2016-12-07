@@ -32,7 +32,7 @@ import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
 import org.elasticsearch.index.mapper.ParseContext;
-import org.elasticsearch.index.mapper.core.StringFieldMapper;
+import org.elasticsearch.index.mapper.StringFieldMapper;
 import org.xbib.elasticsearch.common.standardnumber.StandardNumber;
 
 import java.io.IOException;
@@ -41,8 +41,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static org.elasticsearch.index.mapper.MapperBuilders.stringField;
-
+/**
+ *
+ */
 public class StandardnumberMapper extends FieldMapper {
 
     public static final String CONTENT_TYPE = "standardnumber";

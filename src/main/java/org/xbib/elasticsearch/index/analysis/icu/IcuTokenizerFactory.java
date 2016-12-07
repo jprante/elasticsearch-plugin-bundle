@@ -29,12 +29,10 @@ import com.ibm.icu.text.BreakIterator;
 import com.ibm.icu.text.RuleBasedBreakIterator;
 import org.apache.lucene.analysis.Tokenizer;
 import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.Index;
+import org.elasticsearch.env.Environment;
+import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenizerFactory;
-import org.elasticsearch.index.settings.IndexSettingsService;
 import org.xbib.elasticsearch.index.analysis.icu.segmentation.DefaultIcuTokenizerConfig;
 import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizer;
 import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizerConfig;
@@ -54,12 +52,8 @@ public class IcuTokenizerFactory extends AbstractTokenizerFactory {
 
     private final IcuTokenizerConfig config;
 
-    @Inject
-    public IcuTokenizerFactory(Index index,
-                               IndexSettingsService indexSettingsService,
-                               @Assisted String name,
-                               @Assisted Settings settings) {
-        super(index, indexSettingsService.indexSettings(), name, settings);
+    public IcuTokenizerFactory(IndexSettings indexSettings, Environment environment, String name, Settings settings) {
+        super(indexSettings, name, settings);
         boolean cjkAsWords = settings.getAsBoolean("cjk_as_words", true);
         Map<Integer, String> tailored = new HashMap<>();
         String[] scriptAndResourcePaths = settings.getAsArray("rulefiles");

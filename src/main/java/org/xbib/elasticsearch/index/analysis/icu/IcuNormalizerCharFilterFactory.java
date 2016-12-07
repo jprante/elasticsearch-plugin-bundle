@@ -23,25 +23,23 @@
 package org.xbib.elasticsearch.index.analysis.icu;
 
 import com.ibm.icu.text.Normalizer2;
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.Index;
+import org.elasticsearch.env.Environment;
+import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractCharFilterFactory;
-import org.elasticsearch.index.settings.IndexSettingsService;
+import org.elasticsearch.index.analysis.MultiTermAwareComponent;
 
 import java.io.Reader;
 
-public class IcuNormalizerCharFilterFactory extends AbstractCharFilterFactory {
+/**
+ *
+ */
+public class IcuNormalizerCharFilterFactory extends AbstractCharFilterFactory implements MultiTermAwareComponent {
 
     private final Normalizer2 normalizer;
 
-    @Inject
-    public IcuNormalizerCharFilterFactory(Index index,
-                                          IndexSettingsService indexSettingsService,
-                                          @Assisted String name,
-                                          @Assisted Settings settings) {
-        super(index, indexSettingsService.indexSettings(), name);
+    public IcuNormalizerCharFilterFactory(IndexSettings indexSettings, Environment environment, String name, Settings settings) {
+        super(indexSettings, name);
         String normalizationName = settings.get("name", "nfkc_cf");
         Normalizer2.Mode normalizationMode;
         switch (settings.get("mode", "compose")) {
@@ -64,5 +62,10 @@ public class IcuNormalizerCharFilterFactory extends AbstractCharFilterFactory {
     @Override
     public Reader create(Reader reader) {
         return new ICUNormalizer2CharFilter(reader, normalizer);
+    }
+
+    @Override
+    public Object getMultiTermComponent() {
+        return this;
     }
 }

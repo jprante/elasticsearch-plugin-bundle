@@ -26,23 +26,21 @@ import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.RuleBasedNumberFormat;
 import com.ibm.icu.util.ULocale;
 import org.apache.lucene.analysis.TokenStream;
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.Index;
+import org.elasticsearch.env.Environment;
+import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
-import org.elasticsearch.index.settings.IndexSettingsService;
 
+/**
+ *
+ */
 public class IcuNumberFormatTokenFilterFactory extends AbstractTokenFilterFactory {
 
     private final NumberFormat numberFormat;
 
-    @Inject
-    public IcuNumberFormatTokenFilterFactory(Index index,
-                                             IndexSettingsService indexSettingsService,
-                                             @Assisted String name,
-                                             @Assisted Settings settings) {
-        super(index, indexSettingsService.indexSettings(), name, settings);
+    public IcuNumberFormatTokenFilterFactory(IndexSettings indexSettings, Environment environment, String name,
+                                             Settings settings) {
+        super(indexSettings, name, settings);
         ULocale locale = settings.get("locale") != null ? new ULocale(settings.get("locale")) : ULocale.getDefault();
         String formatStr = settings.get("format", "SPELLOUT");
         int format;

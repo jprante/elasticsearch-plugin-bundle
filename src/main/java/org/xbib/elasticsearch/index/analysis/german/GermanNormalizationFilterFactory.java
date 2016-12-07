@@ -24,21 +24,18 @@ package org.xbib.elasticsearch.index.analysis.german;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.de.GermanNormalizationFilter;
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.Index;
+import org.elasticsearch.env.Environment;
+import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
-import org.elasticsearch.index.settings.IndexSettingsService;
 
+/**
+ *
+ */
 public class GermanNormalizationFilterFactory extends AbstractTokenFilterFactory {
 
-    @Inject
-    public GermanNormalizationFilterFactory(Index index,
-                                            IndexSettingsService indexSettingsService,
-                                            @Assisted String name,
-                                            @Assisted Settings settings) {
-        super(index, indexSettingsService.indexSettings(), name, settings);
+    public GermanNormalizationFilterFactory(IndexSettings indexSettings, Environment environment, String name, Settings settings) {
+        super(indexSettings, name, settings);
     }
 
     @Override
