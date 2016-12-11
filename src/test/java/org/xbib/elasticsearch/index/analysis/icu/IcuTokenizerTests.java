@@ -3,13 +3,13 @@ package org.xbib.elasticsearch.index.analysis.icu;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.elasticsearch.index.analysis.AnalysisService;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xbib.elasticsearch.MapperTestUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
+
+import static org.xbib.elasticsearch.MapperTestUtils.tokenizerFactory;
 
 /**
  *
@@ -35,9 +35,8 @@ public class IcuTokenizerTests extends Assert {
                 "zum",
                 "Ende"
         };
-        AnalysisService analysisService =
-                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json");
-        Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create();
+        String resource = "org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json";
+        Tokenizer tokenizer = tokenizerFactory(resource,"my_hyphen_icu_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenizer, expected);
     }
@@ -51,9 +50,8 @@ public class IcuTokenizerTests extends Assert {
                 "ISBN",
                 "3-428-84350-9"
         };
-        AnalysisService analysisService =
-                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json");
-        Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create();
+        String resource = "org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json";
+        Tokenizer tokenizer = tokenizerFactory(resource,"my_hyphen_icu_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenizer, expected);
     }
@@ -66,9 +64,8 @@ public class IcuTokenizerTests extends Assert {
         String[] expected = {
                 "3-428-84350-9"
         };
-        AnalysisService analysisService =
-                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json");
-        Tokenizer tokenizer = analysisService.tokenizer("my_hyphen_icu_tokenizer").create();
+        String resource = "org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json";
+        Tokenizer tokenizer = tokenizerFactory(resource,"my_hyphen_icu_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         // THIS FAILS BUT WHY?
         //assertSimpleTSOutput(tokenizer, expected);

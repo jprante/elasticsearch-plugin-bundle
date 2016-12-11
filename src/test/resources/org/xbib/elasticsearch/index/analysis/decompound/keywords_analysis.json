@@ -1,8 +1,5 @@
 {
     "index": {
-        "version": {
-            "created": "1040499"
-        },
         "analysis": {
             "analyzer": {
                 "decompounding_default": {

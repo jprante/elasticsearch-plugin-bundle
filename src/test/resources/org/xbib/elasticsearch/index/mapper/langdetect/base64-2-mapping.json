@@ -5,7 +5,7 @@
         "type": "multi_field",
         "fields": {
           "content": {
-            "type": "string"
+            "type": "text"
           },
           "language": {
             "type": "langdetect",

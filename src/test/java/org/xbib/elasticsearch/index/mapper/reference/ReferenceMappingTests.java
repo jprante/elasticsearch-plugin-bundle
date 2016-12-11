@@ -1,15 +1,16 @@
 package org.xbib.elasticsearch.index.mapper.reference;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.index.IndexableField;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.compress.CompressedXContent;
-import org.elasticsearch.common.logging.ESLogger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.mapper.DocumentMapper;
 import org.elasticsearch.index.mapper.DocumentMapperParser;
@@ -18,7 +19,6 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.search.SearchHit;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.xbib.elasticsearch.MapperTestUtils;
@@ -31,10 +31,16 @@ import java.io.Reader;
 import static org.elasticsearch.common.io.Streams.copyToString;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.matchPhraseQuery;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.xbib.elasticsearch.MapperTestUtils.newDocumentMapperParser;
 
-public class ReferenceMappingTests extends Assert {
+/**
+ *
+ */
+public class ReferenceMappingTests extends NodeTestUtils {
 
-    private final static ESLogger logger = ESLoggerFactory.getLogger(ReferenceMappingTests.class.getName());
+    private static final Logger logger = LogManager.getLogger(ReferenceMappingTests.class.getName());
 
     private Node node;
     private Client client;
@@ -42,7 +48,7 @@ public class ReferenceMappingTests extends Assert {
 
     @Before
     public void setupMapperParser() throws IOException {
-        node = NodeTestUtils.createNode();
+        node = startNode();
         client = node.client();
         try {
             client.admin().indices().prepareDelete("test").execute().actionGet();
@@ -60,12 +66,15 @@ public class ReferenceMappingTests extends Assert {
         json = jsonBuilder().startObject().field("author", "John Doe").endObject().bytes();
         client.prepareIndex("authorities", "persons", "1").setSource(json).execute().actionGet();
 
-        mapperParser = MapperTestUtils.newMapperService(Settings.EMPTY, client).documentMapperParser();
+        mapperParser = //MapperTestUtils.newMapperService(Settings.EMPTY).documentMapperParser();
+           newDocumentMapperParser();
     }
 
     @After
     public void cleanup() throws IOException {
-        NodeTestUtils.releaseNode(node);
+        if (node != null) {
+            node.close();
+        }
     }
 
     @Test
@@ -151,7 +160,8 @@ public class ReferenceMappingTests extends Assert {
         client.admin().indices().prepareCreate("books")
                 .addMapping("test", mapping)
                 .execute().actionGet();
-        client.prepareIndex("books", "test", "1").setSource(json).setRefresh(true).execute().actionGet();
+        client.prepareIndex("books", "test", "1").setSource(json)
+                .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).execute().actionGet();
 
         // get mappings
         GetMappingsResponse getMappingsResponse= client.admin().indices().getMappings(new GetMappingsRequest()

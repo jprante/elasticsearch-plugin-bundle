@@ -145,8 +145,8 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
     }
 
     @Override
-    public List<ActionHandler<? extends ActionRequest<?>, ? extends ActionResponse>> getActions() {
-        List<ActionHandler<? extends ActionRequest<?>, ? extends ActionResponse>> extra = new ArrayList<>();
+    public List<ActionHandler<? extends ActionRequest, ? extends ActionResponse>> getActions() {
+        List<ActionHandler<? extends ActionRequest, ? extends ActionResponse>> extra = new ArrayList<>();
         extra.add(new ActionHandler<>(ISBNFormatAction.INSTANCE, TransportISBNFormatAction.class));
         extra.add(new ActionHandler<>(LangdetectAction.INSTANCE, TransportLangdetectAction.class));
         return extra;

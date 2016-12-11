@@ -12,7 +12,7 @@ import static org.elasticsearch.action.ValidateActions.addValidationError;
 /**
  *
  */
-public class ISBNFormatRequest extends ActionRequest<ISBNFormatRequest> {
+public class ISBNFormatRequest extends ActionRequest {
 
     private String value;
 

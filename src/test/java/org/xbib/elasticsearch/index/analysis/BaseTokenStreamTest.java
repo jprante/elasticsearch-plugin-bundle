@@ -10,6 +10,7 @@ import org.apache.lucene.analysis.tokenattributes.PositionLengthAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.util.Attribute;
 import org.apache.lucene.util.AttributeImpl;
+import org.apache.lucene.util.AttributeReflector;
 import org.junit.Assert;
 
 import java.io.IOException;
@@ -48,6 +49,11 @@ public abstract class BaseTokenStreamTest extends Assert {
         @Override
         public void clear() {
             clearCalled = true;
+        }
+
+        @Override
+        public void reflectWith(AttributeReflector reflector) {
+
         }
 
         @Override
@@ -356,6 +362,10 @@ public abstract class BaseTokenStreamTest extends Assert {
     }
 
     static void checkResetException(Analyzer a, String input) throws IOException {
+        if (a == null) {
+            fail("no analyzer");
+            return;
+        }
         TokenStream ts = a.tokenStream("bogus", input);
         try {
             if (ts.incrementToken()) {

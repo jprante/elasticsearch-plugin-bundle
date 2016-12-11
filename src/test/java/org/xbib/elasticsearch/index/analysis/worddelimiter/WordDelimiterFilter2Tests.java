@@ -8,9 +8,7 @@ import org.apache.lucene.analysis.core.StopFilter;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.elasticsearch.index.analysis.AnalysisService;
 import org.junit.Test;
-import org.xbib.elasticsearch.MapperTestUtils;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
 import org.xbib.elasticsearch.index.analysis.MockTokenizer;
 
@@ -20,6 +18,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.xbib.elasticsearch.MapperTestUtils.tokenFilterFactory;
+import static org.xbib.elasticsearch.MapperTestUtils.tokenizerFactory;
 import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.ALL_PARTS_AT_SAME_POSITION;
 import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.CATENATE_ALL;
 import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.CATENATE_WORDS;
@@ -36,10 +36,10 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
 
     @Test
     public void testOffsets() throws IOException {
-        AnalysisService analysisService = MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json");
-        Tokenizer tokenizer = analysisService.tokenizer("keyword").create();
+        String resource = "org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json";
+        Tokenizer tokenizer = tokenizerFactory(resource, "keyword").create();
         tokenizer.setReader(new StringReader("foo-bar"));
-        TokenStream ts = analysisService.tokenFilter("wd").create(tokenizer);
+        TokenStream ts = tokenFilterFactory(resource, "wd").create(tokenizer);
 
         assertTokenStreamContents(ts,
                 new String[]{"foo", "bar", "foobar"},
@@ -50,10 +50,10 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
 
     @Test
     public void testOffsetChange() throws Exception {
-        AnalysisService analysisService = MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json");
-        Tokenizer tokenizer = analysisService.tokenizer("keyword").create();
+        String resource = "org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json";
+        Tokenizer tokenizer = tokenizerFactory(resource, "keyword").create();
         tokenizer.setReader(new StringReader("übelkeit"));
-        TokenStream ts = analysisService.tokenFilter("wd").create(tokenizer);
+        TokenStream ts = tokenFilterFactory(resource,"wd").create(tokenizer);
 
         assertTokenStreamContents(ts,
                 new String[]{"übelkeit" },

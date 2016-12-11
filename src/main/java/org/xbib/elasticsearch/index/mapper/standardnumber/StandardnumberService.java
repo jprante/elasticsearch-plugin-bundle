@@ -2,6 +2,7 @@ package org.xbib.elasticsearch.index.mapper.standardnumber;
 
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.common.component.AbstractLifecycleComponent;
+import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
 import org.xbib.elasticsearch.common.standardnumber.ARK;
 import org.xbib.elasticsearch.common.standardnumber.DOI;
@@ -36,11 +37,13 @@ public class StandardnumberService extends AbstractLifecycleComponent {
 
     private static final ThreadLocal<Set<StandardNumber>> stdnums = new ThreadLocal<>();
 
-    private final StandardnumberMapper.TypeParser standardNumberTypeParser;
-
-    public StandardnumberService(Settings settings, StandardnumberMapper.TypeParser standardNumberTypeParser) {
+    @Inject
+    public StandardnumberService(Settings settings) {
         super(settings);
-        this.standardNumberTypeParser = standardNumberTypeParser;
+    }
+
+    public void setStandardNumberTypeParser(StandardnumberMapper.TypeParser standardNumberTypeParser) {
+        standardNumberTypeParser.setService(this);
     }
 
     public static StandardNumber create(String type) {
@@ -113,7 +116,6 @@ public class StandardnumberService extends AbstractLifecycleComponent {
 
     @Override
     protected void doStart() throws ElasticsearchException {
-        standardNumberTypeParser.setService(this);
     }
 
     @Override

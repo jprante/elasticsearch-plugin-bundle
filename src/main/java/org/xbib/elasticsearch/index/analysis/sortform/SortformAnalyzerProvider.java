@@ -3,15 +3,16 @@ package org.xbib.elasticsearch.index.analysis.sortform;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
-import org.elasticsearch.index.analysis.AnalysisService;
 import org.elasticsearch.index.analysis.CharFilterFactory;
 import org.elasticsearch.index.analysis.CustomAnalyzer;
 import org.elasticsearch.index.analysis.CustomAnalyzerProvider;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
+import org.elasticsearch.index.analysis.TokenizerFactory;
 import org.xbib.elasticsearch.index.analysis.icu.IcuCollationTokenizerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Like CustomAnalyzerProvider, but with IcuCollationTokenizerFactory as tokenizer.
@@ -32,30 +33,31 @@ public class SortformAnalyzerProvider extends CustomAnalyzerProvider {
     }
 
     @Override
-    public void build(AnalysisService analysisService) {
-        List<CharFilterFactory> charFilters = new ArrayList<>();
+    public void build(final Map<String, TokenizerFactory> tokenizers, final Map<String, CharFilterFactory> charFilters,
+                      final Map<String, TokenFilterFactory> tokenFilters) {
+        List<CharFilterFactory> myCharFilters = new ArrayList<>();
         String[] charFilterNames = analyzerSettings.getAsArray("char_filter");
         for (String charFilterName : charFilterNames) {
-            CharFilterFactory charFilter = analysisService.charFilter(charFilterName);
+            CharFilterFactory charFilter = charFilters.get(charFilterName);
             if (charFilter == null) {
                 throw new IllegalArgumentException("Sortform Analyzer [" + name() + "] failed to find char_filter under name [" + charFilterName + "]");
             }
-            charFilters.add(charFilter);
+            myCharFilters.add(charFilter);
         }
-        List<TokenFilterFactory> tokenFilters = new ArrayList<>();
+        List<TokenFilterFactory> myTokenFilters = new ArrayList<>();
         String[] tokenFilterNames = analyzerSettings.getAsArray("filter");
         for (String tokenFilterName : tokenFilterNames) {
-            TokenFilterFactory tokenFilter = analysisService.tokenFilter(tokenFilterName);
+            TokenFilterFactory tokenFilter = tokenFilters.get(tokenFilterName);
             if (tokenFilter == null) {
                 throw new IllegalArgumentException("Sortform Analyzer [" + name() + "] failed to find filter under name [" + tokenFilterName + "]");
             }
-            tokenFilters.add(tokenFilter);
+            myTokenFilters.add(tokenFilter);
         }
         int positionOffsetGap = analyzerSettings.getAsInt("position_offset_gap", 0);
         int offsetGap = analyzerSettings.getAsInt("offset_gap", -1);
         this.customAnalyzer = new CustomAnalyzer(tokenizerFactory,
-                charFilters.toArray(new CharFilterFactory[charFilters.size()]),
-                tokenFilters.toArray(new TokenFilterFactory[tokenFilters.size()]),
+                myCharFilters.toArray(new CharFilterFactory[charFilters.size()]),
+                myTokenFilters.toArray(new TokenFilterFactory[tokenFilters.size()]),
                 positionOffsetGap,
                 offsetGap
         );

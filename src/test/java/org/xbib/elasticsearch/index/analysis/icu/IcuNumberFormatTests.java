@@ -3,14 +3,15 @@ package org.xbib.elasticsearch.index.analysis.icu;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.elasticsearch.index.analysis.AnalysisService;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xbib.elasticsearch.MapperTestUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
+
+import static org.xbib.elasticsearch.MapperTestUtils.tokenFilterFactory;
+import static org.xbib.elasticsearch.MapperTestUtils.tokenizerFactory;
 
 /**
  *
@@ -33,11 +34,10 @@ public class IcuNumberFormatTests extends Assert {
                 "Strafe",
                 "zahlen"
         };
-        AnalysisService analysisService =
-                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/icu/icu_numberformat.json");
-        Tokenizer tokenizer = analysisService.tokenizer("my_tokenizer").create();
+        String resource = "org/xbib/elasticsearch/index/analysis/icu/icu_numberformat.json";
+        Tokenizer tokenizer = tokenizerFactory(resource, "my_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
-        TokenFilterFactory tokenFilter = analysisService.tokenFilter("spellout_de");
+        TokenFilterFactory tokenFilter = tokenFilterFactory(resource, "spellout_de");
         TokenStream tokenStream = tokenFilter.create(tokenizer);
         assertSimpleTSOutput(tokenStream, expected);
     }
@@ -60,11 +60,10 @@ public class IcuNumberFormatTests extends Assert {
                 "per",
                 "year"
         };
-        AnalysisService analysisService =
-                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/icu/icu_numberformat.json");
-        Tokenizer tokenizer = analysisService.tokenizer("my_tokenizer").create();
+        String resource = "org/xbib/elasticsearch/index/analysis/icu/icu_numberformat.json";
+        Tokenizer tokenizer = tokenizerFactory(resource, "my_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
-        TokenFilterFactory tokenFilter = analysisService.tokenFilter("spellout_en");
+        TokenFilterFactory tokenFilter = tokenFilterFactory(resource,"spellout_en");
         TokenStream tokenStream = tokenFilter.create(tokenizer);
         assertSimpleTSOutput(tokenStream, expected);
     }

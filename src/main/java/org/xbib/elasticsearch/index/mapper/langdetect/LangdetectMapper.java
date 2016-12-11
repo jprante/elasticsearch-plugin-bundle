@@ -13,7 +13,7 @@ import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
 import org.elasticsearch.index.mapper.ParseContext;
-import org.elasticsearch.index.mapper.StringFieldMapper;
+import org.elasticsearch.index.mapper.TextFieldMapper;
 import org.xbib.elasticsearch.common.langdetect.LangdetectService;
 import org.xbib.elasticsearch.common.langdetect.Language;
 import org.xbib.elasticsearch.common.langdetect.LanguageDetectionException;
@@ -29,7 +29,7 @@ import static org.elasticsearch.index.mapper.TypeParsers.parseStore;
 /**
  *
  */
-public class LangdetectMapper extends StringFieldMapper {
+public class LangdetectMapper extends TextFieldMapper {
 
     public static final String CONTENT_TYPE = "langdetect";
 
@@ -38,17 +38,16 @@ public class LangdetectMapper extends StringFieldMapper {
     private final int positionIncrementGap;
 
     public LangdetectMapper(String simpleName,
-                            StringFieldType fieldType,
+                            TextFieldType fieldType,
                             MappedFieldType defaultFieldType,
                             int positionIncrementGap,
-                            int ignoreAbove,
                             boolean includeInAll,
                             Settings indexSettings,
                             MultiFields multiFields,
                             CopyTo copyTo,
                             LangdetectService langdetectService) {
         super(simpleName, fieldType, defaultFieldType,
-                positionIncrementGap, ignoreAbove, includeInAll, indexSettings, multiFields, copyTo);
+                positionIncrementGap, includeInAll, indexSettings, multiFields, copyTo);
         this.langdetectService = langdetectService;
         this.positionIncrementGap = positionIncrementGap;
     }
@@ -131,7 +130,7 @@ public class LangdetectMapper extends StringFieldMapper {
 
     public static class Defaults {
 
-        public static final MappedFieldType LANG_FIELD_TYPE = new StringFieldType();
+        public static final MappedFieldType LANG_FIELD_TYPE = new TextFieldType();
 
         static {
             LANG_FIELD_TYPE.setStored(true);
@@ -143,7 +142,7 @@ public class LangdetectMapper extends StringFieldMapper {
         }
     }
 
-    public static class Builder extends FieldMapper.Builder<Builder, StringFieldMapper> {
+    public static class Builder extends FieldMapper.Builder<Builder, TextFieldMapper> {
 
         protected int positionIncrementGap = -1;
 
@@ -256,8 +255,8 @@ public class LangdetectMapper extends StringFieldMapper {
             }
             setupFieldType(context);
             LangdetectService service = new LangdetectService(settingsBuilder.build());
-            return new LangdetectMapper(name, (StringFieldType) fieldType(), defaultFieldType,
-                    100, -1, false,
+            return new LangdetectMapper(name, (TextFieldType) fieldType(), defaultFieldType,
+                    positionIncrementGap, includeInAll,
                     context.indexSettings(), multiFieldsBuilder.build(this, context), copyTo, service);
         }
     }
@@ -278,8 +277,12 @@ public class LangdetectMapper extends StringFieldMapper {
                         iterator.remove();
                         break;
                     }
+                    case "include_in_all": {
+                        iterator.remove();
+                        break;
+                    }
                     case "search_quote_analyzer": {
-                        NamedAnalyzer analyzer = parserContext.analysisService().analyzer(fieldNode.toString());
+                        NamedAnalyzer analyzer = parserContext.getIndexAnalyzers().get(fieldNode.toString());
                         if (analyzer == null) {
                             throw new MapperParsingException("Analyzer [" + fieldNode.toString() + "] not found for field [" + name + "]");
                         }
@@ -294,13 +297,13 @@ public class LangdetectMapper extends StringFieldMapper {
                         }
                         builder.positionIncrementGap(newPositionIncrementGap);
                         if (builder.fieldType().indexAnalyzer() == null) {
-                            builder.fieldType().setIndexAnalyzer(parserContext.analysisService().defaultIndexAnalyzer());
+                            builder.fieldType().setIndexAnalyzer(parserContext.getIndexAnalyzers().getDefaultIndexAnalyzer());
                         }
                         if (builder.fieldType().searchAnalyzer() == null) {
-                            builder.fieldType().setSearchAnalyzer(parserContext.analysisService().defaultSearchAnalyzer());
+                            builder.fieldType().setSearchAnalyzer(parserContext.getIndexAnalyzers().getDefaultSearchAnalyzer());
                         }
                         if (builder.fieldType().searchQuoteAnalyzer() == null) {
-                            builder.fieldType().setSearchQuoteAnalyzer(parserContext.analysisService().defaultSearchQuoteAnalyzer());
+                            builder.fieldType().setSearchQuoteAnalyzer(parserContext.getIndexAnalyzers().getDefaultSearchQuoteAnalyzer());
                         }
                         iterator.remove();
                         break;

@@ -57,10 +57,11 @@ public class DefaultIcuTokenizerConfig extends IcuTokenizerConfig {
     // the same as ROOT, except no dictionary segmentation for cjk
     private static final BreakIterator defaultBreakIterator =
             readBreakIterator("Default.brk");
-    private static final BreakIterator khmerBreakIterator =
-            readBreakIterator("Khmer.brk");
+    private static final BreakIterator myanmarSyllableIterator =
+            readBreakIterator("MyanmarSyllable.brk");
 
     private final boolean cjkAsWords;
+    private final boolean myanmarAsWords;
 
     /**
      * Creates a new config. This object is lightweight, but the first
@@ -70,13 +71,16 @@ public class DefaultIcuTokenizerConfig extends IcuTokenizerConfig {
      *                   otherwise text will be segmented according to UAX#29 defaults.
      *                   If this is true, all Han+Hiragana+Katakana words will be tagged as
      *                   IDEOGRAPHIC.
+     * @param myanmarAsWords true if Myanmar text should undergo dictionary-based segmentation,
+     *                       otherwise it will be tokenized as syllables.
      */
-    public DefaultIcuTokenizerConfig(boolean cjkAsWords) {
+    public DefaultIcuTokenizerConfig(boolean cjkAsWords, boolean myanmarAsWords) {
         this.cjkAsWords = cjkAsWords;
+        this.myanmarAsWords = myanmarAsWords;
     }
 
     private static RuleBasedBreakIterator readBreakIterator(String filename) {
-        InputStream is = DefaultIcuTokenizerConfig.class.getResourceAsStream("/org/apache/lucene/analysis/icu/segmentation/" + filename);
+        InputStream is = DefaultIcuTokenizerConfig.class.getResourceAsStream(filename);
         try {
             RuleBasedBreakIterator bi = RuleBasedBreakIterator.getInstanceFromCompiledRules(is);
             is.close();
@@ -94,8 +98,12 @@ public class DefaultIcuTokenizerConfig extends IcuTokenizerConfig {
     @Override
     public BreakIterator getBreakIterator(int script) {
         switch (script) {
-            case UScript.KHMER:
-                return (BreakIterator) khmerBreakIterator.clone();
+            case UScript.MYANMAR:
+                if (myanmarAsWords) {
+                    return (BreakIterator)defaultBreakIterator.clone();
+                } else {
+                    return (BreakIterator)myanmarSyllableIterator.clone();
+                }
             case UScript.JAPANESE:
                 return (BreakIterator) cjkBreakIterator.clone();
             default:

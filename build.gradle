@@ -5,9 +5,6 @@ plugins {
     id "org.xbib.gradle.plugin.jflex" version "1.1.0"
 }
 
-group = 'org.xbib.elasticsearch.plugin'
-version = '5.0.2.0'
-
 printf "Host: %s\nOS: %s %s %s\nJVM: %s %s %s %s\nGroovy: %s\nGradle: %s\n" +
         "Build: group: ${project.group} name: ${project.name} version: ${project.version}\n",
         InetAddress.getLocalHost(),
@@ -31,11 +28,10 @@ ext {
     scmConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
     scmDeveloperConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
     versions = [
-        'elasticsearch' : '5.0.2',
-        'lucene' : '6.2.1',
+        'elasticsearch' : '5.1.1',
+        'lucene' : '6.3.0',
         'jackson': '2.8.1',
-        'log4j': '2.7',
-        'junit' : '4.12'
+        'log4j': '2.7'
     ]
 }
 
@@ -54,7 +50,7 @@ repositories {
 
 configurations {
     wagon
-    releaseJars {
+    distJars {
         extendsFrom runtime
         exclude group: 'org.elasticsearch'
         exclude module: 'lucene-core'
@@ -69,13 +65,13 @@ configurations {
 
 dependencies {
     compile "org.elasticsearch:elasticsearch:${versions.elasticsearch}"
-    compile "com.ibm.icu:icu4j:58.1"
+    compile "com.ibm.icu:icu4j:58.2"
     compile "org.apache.lucene:lucene-analyzers-icu:${versions.lucene}"
     compile "com.fasterxml.jackson.core:jackson-databind:${versions.jackson}"
     compile "org.apache.logging.log4j:log4j-api:${versions.log4j}"
-    testCompile "junit:junit:${versions.junit}"
+    testCompile "junit:junit:4.12"
     testCompile "org.apache.logging.log4j:log4j-core:${versions.log4j}"
-    releaseJars "${project.group}:${project.name}:${project.version}"
+    distJars "${project.group}:${project.name}:${project.version}"
     wagon 'org.apache.maven.wagon:wagon-ssh-external:2.10'
 }
 
@@ -111,14 +107,14 @@ task makePluginDescriptor(type: Copy) {
 }
 
 task buildPluginZip(type: Zip, dependsOn: [':jar', ':makePluginDescriptor']) {
-    from configurations.releaseJars
+    from configurations.distJars
     from 'build/tmp/plugin'
     classifier = 'plugin'
 }
 
 task unpackPlugin(type: Copy, dependsOn: [':buildPluginZip']) {
     delete "plugins"
-    from configurations.releaseJars
+    from configurations.distJars
     from 'build/tmp/plugin'
     into "plugins/${pluginName}"
 }
@@ -152,3 +148,4 @@ if (project.hasProperty('signing.keyId')) {
 }
 
 apply from: 'gradle/publish.gradle'
+apply from: 'gradle/sonarqube.gradle'

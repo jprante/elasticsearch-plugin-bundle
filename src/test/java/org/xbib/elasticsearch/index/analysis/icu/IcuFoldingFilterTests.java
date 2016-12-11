@@ -3,7 +3,6 @@ package org.xbib.elasticsearch.index.analysis.icu;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.elasticsearch.index.analysis.AnalysisService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.xbib.elasticsearch.MapperTestUtils;
@@ -11,6 +10,8 @@ import org.xbib.elasticsearch.MapperTestUtils;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+
+import static org.xbib.elasticsearch.MapperTestUtils.charFilterFactory;
 
 /**
  *
@@ -20,8 +21,8 @@ public class IcuFoldingFilterTests extends Assert {
     @Test
     public void testFoldingCharFilter() throws IOException {
         String source = "Jörg Prante";
-        AnalysisService analysisService = MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/icu/icu_folding.json");
-        Reader charFilter = analysisService.charFilter("my_icu_folder").create(new StringReader(source));
+        String resource = "org/xbib/elasticsearch/index/analysis/icu/icu_folding.json";
+        Reader charFilter = charFilterFactory(resource, "my_icu_folder").create(new StringReader(source));
         StringBuilder sb = new StringBuilder();
         int ch;
         while ((ch = charFilter.read()) != -1) {
@@ -32,9 +33,9 @@ public class IcuFoldingFilterTests extends Assert {
 
     @Test
     public void testFoldingTokenFilter() throws IOException {
-        AnalysisService analysisService = MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/icu/icu_folding.json");
-        Analyzer analyzer = analysisService.analyzer("my_icu_analyzer").analyzer();
-        TokenStream ts = analyzer.tokenStream(null, "Jörg Prante");
+        String resource = "org/xbib/elasticsearch/index/analysis/icu/icu_folding.json";
+        Analyzer analyzer = MapperTestUtils.analyzer(resource,"my_icu_analyzer");
+        TokenStream ts = analyzer.tokenStream("test", "Jörg Prante");
         String[] expected = {
                 "jorg",
                 "prante"
@@ -44,9 +45,9 @@ public class IcuFoldingFilterTests extends Assert {
 
     @Test
     public void testFoldingTokenFilterWithExceptions() throws IOException {
-        AnalysisService analysisService = MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/icu/icu_folding.json");
-        Analyzer analyzer = analysisService.analyzer("my_icu_analyzer_with_exceptions").analyzer();
-        TokenStream ts = analyzer.tokenStream(null, "Jörg Prante");
+        String resource = "org/xbib/elasticsearch/index/analysis/icu/icu_folding.json";
+        Analyzer analyzer = MapperTestUtils.analyzer(resource, "my_icu_analyzer_with_exceptions");
+        TokenStream ts = analyzer.tokenStream("test", "Jörg Prante");
         String[] expected = {
                 "jörg",
                 "prante"

@@ -4,7 +4,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.elasticsearch.index.analysis.AnalysisService;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,6 +11,9 @@ import org.xbib.elasticsearch.MapperTestUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
+
+import static org.xbib.elasticsearch.MapperTestUtils.tokenFilterFactory;
+import static org.xbib.elasticsearch.MapperTestUtils.tokenizerFactory;
 
 /**
  *
@@ -52,9 +54,9 @@ public class DecompoundTokenFilterTests extends Assert {
             "gekostet",
             "gekosten"
         };
-        AnalysisService analysisService = MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/decompound/decompound_analysis.json");
-        TokenFilterFactory tokenFilter = analysisService.tokenFilter("decomp");
-        Tokenizer tokenizer = analysisService.tokenizer("standard").create();
+        String resource = "org/xbib/elasticsearch/index/analysis/decompound/decompound_analysis.json";
+        TokenFilterFactory tokenFilter = tokenFilterFactory(resource, "decomp");
+        Tokenizer tokenizer = tokenizerFactory(resource, "standard").create();
         tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
@@ -72,8 +74,8 @@ public class DecompoundTokenFilterTests extends Assert {
                 "Bindestrich",
                 "wort"
         };
-        AnalysisService analysisService = MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/decompound/keywords_analysis.json");
-        Analyzer analyzer = analysisService.analyzer("with_subwords_only");
+        String resource = "org/xbib/elasticsearch/index/analysis/decompound/keywords_analysis.json";
+        Analyzer analyzer = MapperTestUtils.analyzer(resource, "with_subwords_only");
         assertNotNull(analyzer);
         assertSimpleTSOutput(analyzer.tokenStream("test-field", source), expected);
     }

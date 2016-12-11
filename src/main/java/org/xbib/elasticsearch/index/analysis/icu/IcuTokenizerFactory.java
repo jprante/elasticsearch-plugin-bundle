@@ -32,6 +32,7 @@ public class IcuTokenizerFactory extends AbstractTokenizerFactory {
     public IcuTokenizerFactory(IndexSettings indexSettings, Environment environment, String name, Settings settings) {
         super(indexSettings, name, settings);
         boolean cjkAsWords = settings.getAsBoolean("cjk_as_words", true);
+        boolean myanmarAsWords = settings.getAsBoolean("myanmar_as_words", true);
         Map<Integer, String> tailored = new HashMap<>();
         String[] scriptAndResourcePaths = settings.getAsArray("rulefiles");
         if (scriptAndResourcePaths != null) {
@@ -44,7 +45,7 @@ public class IcuTokenizerFactory extends AbstractTokenizerFactory {
             }
         }
         if (tailored.isEmpty()) {
-            this.config = new DefaultIcuTokenizerConfig(cjkAsWords);
+            this.config = new DefaultIcuTokenizerConfig(cjkAsWords, myanmarAsWords);
         } else {
             final BreakIterator breakers[] = new BreakIterator[UCharacter.getIntPropertyMaxValue(UProperty.SCRIPT)];
             for (Map.Entry<Integer, String> entry : tailored.entrySet()) {
@@ -70,7 +71,7 @@ public class IcuTokenizerFactory extends AbstractTokenizerFactory {
                 }
                 breakers[code] = new RuleBasedBreakIterator(rules.toString());
             }
-            this.config = new DefaultIcuTokenizerConfig(cjkAsWords) {
+            this.config = new DefaultIcuTokenizerConfig(cjkAsWords, myanmarAsWords) {
 
                 @Override
                 public BreakIterator getBreakIterator(int script) {

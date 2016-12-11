@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.node.Node;
+import org.elasticsearch.node.NodeValidationException;
 import org.junit.Test;
 import org.xbib.elasticsearch.NodeTestUtils;
 
@@ -13,11 +14,12 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 import static org.elasticsearch.common.io.Streams.copyToString;
+import static org.junit.Assert.fail;
 
 /**
  *
  */
-public class CustomTokenizerTest {
+public class CustomTokenizerTest extends NodeTestUtils {
 
     private static final Logger logger = LogManager.getLogger(CustomTokenizerTest.class.getName());
 
@@ -25,10 +27,10 @@ public class CustomTokenizerTest {
     public void testCustomTokenizerRemoval() throws IOException {
 
         // start node with plugin
-        Node node = NodeTestUtils.createNode();
+        Node node = startNode();
         Client client = node.client();
 
-        // custome tokenizer in settings
+        // custom tokenizer in settings
         client.admin().indices().prepareCreate("demo")
                 .setSettings(copyToStringFromClasspath("settings.json"))
                 .addMapping("demo", copyToStringFromClasspath("mapping.json"))
@@ -44,7 +46,12 @@ public class CustomTokenizerTest {
         node.close();
 
         // start a new node but without plugin
-        node = NodeTestUtils.createNodeWithoutPlugin();
+        node = buildNodeWithoutPlugins();
+        try {
+            node.start();
+        } catch (NodeValidationException e) {
+            fail("node not valid");
+        }
         client = node.client();
         try {
             // create another index without custom tokenizer
@@ -54,10 +61,10 @@ public class CustomTokenizerTest {
             // will fail with java.lang.IllegalArgumentException: Unknown Tokenizer type [icu_tokenizer] for [my_hyphen_icu_tokenizer]
             logger.warn(e.getMessage(), e);
         }
-        NodeTestUtils.releaseNode(node);
+        node.close();
     }
 
-    public String copyToStringFromClasspath(String path) throws IOException {
+    private String copyToStringFromClasspath(String path) throws IOException {
         return copyToString(new InputStreamReader(getClass().getResource(path).openStream(), StandardCharsets.UTF_8));
     }
 }

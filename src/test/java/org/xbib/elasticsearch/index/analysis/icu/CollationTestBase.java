@@ -34,11 +34,11 @@ import java.util.Random;
  */
 public abstract class CollationTestBase extends LuceneTestCase {
 
-    protected String firstRangeBeginningOriginal = "\u062F";
-    protected String firstRangeEndOriginal = "\u0698";
+    String firstRangeBeginningOriginal = "\u062F";
+    String firstRangeEndOriginal = "\u0698";
 
-    protected String secondRangeBeginningOriginal = "\u0633";
-    protected String secondRangeEndOriginal = "\u0638";
+    String secondRangeBeginningOriginal = "\u0633";
+    String secondRangeEndOriginal = "\u0638";
 
     public void testFarsiRangeFilterCollating(Analyzer analyzer, BytesRef firstBeg,
                                               BytesRef firstEnd, BytesRef secondBeg,

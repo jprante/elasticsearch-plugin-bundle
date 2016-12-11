@@ -14,6 +14,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+/**
+ *
+ */
 public class LangDetectActionTest extends NodeTestUtils {
 
     @Test
@@ -50,7 +53,7 @@ public class LangDetectActionTest extends NodeTestUtils {
 
     @Test
     public void testSort() throws Exception {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .build();
 
         client().admin().indices().prepareCreate("test")
@@ -100,5 +103,4 @@ public class LangDetectActionTest extends NodeTestUtils {
         assertEquals("Allons enfants de la Patrie, Le jour de gloire est arrivé!",
                 searchResponse.getHits().getAt(0).getSource().get("content").toString());
     }
-
 }

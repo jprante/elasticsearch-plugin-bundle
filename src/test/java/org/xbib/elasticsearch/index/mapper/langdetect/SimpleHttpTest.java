@@ -1,7 +1,5 @@
-
 package org.xbib.elasticsearch.index.mapper.langdetect;
 
-import com.google.common.base.Charsets;
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoAction;
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoRequestBuilder;
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
@@ -36,9 +34,9 @@ public class SimpleHttpTest extends NodeTestUtils {
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);
         connection.setDoInput(true);
-        Streams.copy(new StringReader("Das ist ein Text"), new OutputStreamWriter(connection.getOutputStream(), Charsets.UTF_8));
+        Streams.copy(new StringReader("Das ist ein Text"), new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8));
         StringWriter response = new StringWriter();
-        Streams.copy(new InputStreamReader(connection.getInputStream(), Charsets.UTF_8), response);
+        Streams.copy(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8), response);
         assertEquals("{\"languages\":[{\"language\":\"de\",\"probability\":0.9999967609942226}]}", response.toString());
     }
 
@@ -64,7 +62,7 @@ public class SimpleHttpTest extends NodeTestUtils {
         NodesInfoRequestBuilder nodesInfoRequestBuilder = new NodesInfoRequestBuilder(client, NodesInfoAction.INSTANCE);
         nodesInfoRequestBuilder.setHttp(true).setTransport(false);
         NodesInfoResponse response = nodesInfoRequestBuilder.execute().actionGet();
-        Object obj = response.iterator().next().getHttp().getAddress().publishAddress();
+        Object obj = response.getNodes().iterator().next().getHttp().getAddress().publishAddress();
         if (obj instanceof InetSocketTransportAddress) {
             return (InetSocketTransportAddress) obj;
         }

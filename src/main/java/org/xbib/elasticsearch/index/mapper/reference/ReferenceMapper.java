@@ -252,10 +252,15 @@ public class ReferenceMapper extends FieldMapper {
             return value == null ? null : value.toString();
         }
 
-        /** Returns the indexed value used to construct search "values".
-         *  This method is used for the default implementations of most
-         *  query factory methods such as {@link #termQuery}. */
-        protected BytesRef indexedValueForSearch(Object value) {
+        /**
+         * Returns the indexed value used to construct search "values".
+         * This method is used for the default implementations of most
+         * query factory methods such as {@link #termQuery}.
+         *
+         * @param value the value
+         * @return indexed value
+         */
+        BytesRef indexedValueForSearch(Object value) {
             return BytesRefs.toBytesRef(value);
         }
 

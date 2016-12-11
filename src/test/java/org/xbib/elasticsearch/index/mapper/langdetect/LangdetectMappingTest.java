@@ -56,7 +56,7 @@ public class LangdetectMappingTest extends Assert {
 
     @Test
     public void testCustomMappings() throws Exception {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("path.home", System.getProperty("path.home"))
                 .loadFromStream("settings.json", getClass().getResourceAsStream("settings.json")).build();
         String mapping = copyToStringFromClasspath("mapping.json");

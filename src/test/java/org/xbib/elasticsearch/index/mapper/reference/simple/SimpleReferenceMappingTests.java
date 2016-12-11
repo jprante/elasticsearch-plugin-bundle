@@ -1,13 +1,13 @@
 package org.xbib.elasticsearch.index.mapper.reference.simple;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.logging.ESLogger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.search.SearchHit;
-import org.junit.Assert;
 import org.junit.Test;
 import org.xbib.elasticsearch.NodeTestUtils;
 
@@ -17,14 +17,18 @@ import java.io.Reader;
 
 import static org.elasticsearch.common.io.Streams.copyToString;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.junit.Assert.assertEquals;
 
-public class SimpleReferenceMappingTests extends Assert {
+/**
+ *
+ */
+public class SimpleReferenceMappingTests extends NodeTestUtils {
 
-    private final static ESLogger logger = ESLoggerFactory.getLogger(SimpleReferenceMappingTests.class.getName());
+    private static final Logger logger = LogManager.getLogger(SimpleReferenceMappingTests.class.getName());
 
     @Test
     public void testSimpleRef() throws IOException {
-        Node node = NodeTestUtils.createNode();
+        Node node = startNode();
         Client client = node.client();
 
         try {
@@ -38,7 +42,7 @@ public class SimpleReferenceMappingTests extends Assert {
                 .execute().actionGet();
         client.prepareIndex("ref", "ref", "1")
                 .setSource(copyToStringFromClasspath("ref-simple-document.json"))
-                .setRefresh(true).execute().actionGet();
+                .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).execute().actionGet();
 
         try {
             client.admin().indices().prepareDelete("doc").execute().actionGet();
@@ -51,7 +55,7 @@ public class SimpleReferenceMappingTests extends Assert {
                 .execute().actionGet();
         client.prepareIndex("doc", "doc", "1")
                 .setSource(copyToStringFromClasspath("doc-simple-document.json"))
-                .setRefresh(true).execute().actionGet();
+                .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).execute().actionGet();
 
         // search for "first"
         QueryBuilder queryBuilder = matchQuery("dc.creator", "first");
@@ -76,7 +80,7 @@ public class SimpleReferenceMappingTests extends Assert {
         assertEquals(1, searchResponse.getHits().getTotalHits());
 
         client.close();
-        NodeTestUtils.releaseNode(node);
+        node.close();
     }
 
     private String copyToStringFromClasspath(String path) throws IOException {

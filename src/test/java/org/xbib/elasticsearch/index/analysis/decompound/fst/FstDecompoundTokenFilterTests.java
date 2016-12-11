@@ -5,14 +5,15 @@ import org.apache.logging.log4j.Logger;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.elasticsearch.index.analysis.AnalysisService;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xbib.elasticsearch.MapperTestUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
+
+import static org.xbib.elasticsearch.MapperTestUtils.tokenFilterFactory;
+import static org.xbib.elasticsearch.MapperTestUtils.tokenizerFactory;
 
 /**
  *
@@ -50,10 +51,10 @@ public class FstDecompoundTokenFilterTests extends Assert {
             "gekostet",
             "gekostet"
         };
-        AnalysisService analysisService = MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/decompound/fst/decompound_analysis.json");
-        TokenFilterFactory tokenFilter = analysisService.tokenFilter("decomp");
+        String resource = "org/xbib/elasticsearch/index/analysis/decompound/fst/decompound_analysis.json";
+        TokenFilterFactory tokenFilter = tokenFilterFactory(resource, "decomp");
         assertNotNull(tokenFilter);
-        Tokenizer tokenizer = analysisService.tokenizer("standard").create();
+        Tokenizer tokenizer = tokenizerFactory(resource, "standard").create();
         tokenizer.setReader(new StringReader(source));
         assertNotNull(tokenizer);
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);

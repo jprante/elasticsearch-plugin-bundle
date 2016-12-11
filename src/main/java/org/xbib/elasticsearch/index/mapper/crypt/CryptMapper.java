@@ -8,12 +8,12 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
-import org.elasticsearch.index.analysis.NamedAnalyzer;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.mapper.StringFieldMapper;
+import org.elasticsearch.index.mapper.TextFieldMapper;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -29,23 +29,20 @@ import static org.elasticsearch.index.mapper.TypeParsers.parseMultiField;
 /**
  *
  */
-public class CryptMapper extends StringFieldMapper {
+public class CryptMapper extends TextFieldMapper {
 
     public static final String CONTENT_TYPE = "crypt";
 
     private static final  char[] hexDigit = new char[]{
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
-    private int ignoreAbove;
-
     private String algo;
 
-    public CryptMapper(String simpleName, StringFieldType fieldType, MappedFieldType defaultFieldType,
-                       int positionIncrementGap, int ignoreAbove, Boolean includeInAll,
+    public CryptMapper(String simpleName, TextFieldType fieldType, MappedFieldType defaultFieldType,
+                       int positionIncrementGap, Boolean includeInAll,
                        Settings indexSettings, MultiFields multiFields, CopyTo copyTo, String algo) {
-        super(simpleName, fieldType, defaultFieldType, positionIncrementGap, ignoreAbove, includeInAll,
+        super(simpleName, fieldType, defaultFieldType, positionIncrementGap, includeInAll,
                 indexSettings, multiFields, copyTo);
-        this.ignoreAbove = ignoreAbove;
         this.algo = algo;
     }
 
@@ -115,9 +112,6 @@ public class CryptMapper extends StringFieldMapper {
         if (valueAndBoost.value() == null) {
             return;
         }
-        if (ignoreAbove > 0 && valueAndBoost.value().length() > ignoreAbove) {
-            return;
-        }
         if (fieldType().indexOptions() != IndexOptions.NONE || fieldType().stored()) {
             Field field = new Field(fieldType().name(), valueAndBoost.value(), fieldType());
             field.setBoost(valueAndBoost.boost());
@@ -134,7 +128,7 @@ public class CryptMapper extends StringFieldMapper {
         builder.field("algo", algo);
     }
 
-    public static class Builder extends StringFieldMapper.Builder {
+    public static class Builder extends TextFieldMapper.Builder {
 
         private String algo;
 
@@ -151,11 +145,6 @@ public class CryptMapper extends StringFieldMapper {
 
         @Override
         public CryptMapper build(Mapper.BuilderContext context) {
-            if (this.positionIncrementGap != -1) {
-                fieldType.setIndexAnalyzer(new NamedAnalyzer(fieldType.indexAnalyzer(), this.positionIncrementGap));
-                fieldType.setSearchAnalyzer(new NamedAnalyzer(fieldType.searchAnalyzer(), this.positionIncrementGap));
-                fieldType.setSearchQuoteAnalyzer(new NamedAnalyzer(fieldType.searchQuoteAnalyzer(), this.positionIncrementGap));
-            }
             if (fieldType.indexOptions() != IndexOptions.NONE && !fieldType.tokenized()) {
                 defaultFieldType.setOmitNorms(true);
                 defaultFieldType.setIndexOptions(IndexOptions.DOCS);
@@ -167,8 +156,8 @@ public class CryptMapper extends StringFieldMapper {
                 }
             }
             setupFieldType(context);
-            return new CryptMapper(name, fieldType(), defaultFieldType, positionIncrementGap,
-                    ignoreAbove, includeInAll, context.indexSettings(),
+            return new CryptMapper(name, fieldType(), defaultFieldType, 100,
+                    includeInAll, context.indexSettings(),
                     multiFieldsBuilder.build(this, context), copyTo, algo);
         }
     }

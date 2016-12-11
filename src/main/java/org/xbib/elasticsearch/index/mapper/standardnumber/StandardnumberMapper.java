@@ -10,8 +10,8 @@ import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
 import org.elasticsearch.index.mapper.ParseContext;
-import org.elasticsearch.index.mapper.StringFieldMapper;
 import org.elasticsearch.index.mapper.StringFieldType;
+import org.elasticsearch.index.mapper.TextFieldMapper;
 import org.xbib.elasticsearch.common.standardnumber.StandardNumber;
 
 import java.io.IOException;
@@ -105,26 +105,26 @@ public class StandardnumberMapper extends FieldMapper {
 
     public static class Builder extends FieldMapper.Builder<Builder, StandardnumberMapper> {
 
-        private StringFieldMapper.Builder contentBuilder;
+        private TextFieldMapper.Builder contentBuilder;
 
-        private StringFieldMapper.Builder stdnumBuilder;
+        private TextFieldMapper.Builder stdnumBuilder;
 
         private StandardnumberService service;
 
         public Builder(String name, StandardnumberService service) {
             super(name, Defaults.FIELD_TYPE, Defaults.FIELD_TYPE);
             this.service = service;
-            this.stdnumBuilder = new StringFieldMapper.Builder("standardnumber");
-            this.contentBuilder = new StringFieldMapper.Builder(name);
+            this.stdnumBuilder = new TextFieldMapper.Builder("standardnumber");
+            this.contentBuilder = new TextFieldMapper.Builder(name);
             this.builder = this;
         }
 
-        public Builder content(StringFieldMapper.Builder content) {
+        public Builder content(TextFieldMapper.Builder content) {
             this.contentBuilder = content;
             return this;
         }
 
-        public Builder stdnum(StringFieldMapper.Builder stdnum) {
+        public Builder stdnum(TextFieldMapper.Builder stdnum) {
             this.stdnumBuilder = stdnum;
             return this;
         }
@@ -146,8 +146,8 @@ public class StandardnumberMapper extends FieldMapper {
             this.setupFieldType(context);
 
             context.path().add(name);
-            StringFieldMapper contentMapper = contentBuilder.build(context);
-            StringFieldMapper stdnumMapper = stdnumBuilder.build(context);
+            TextFieldMapper contentMapper = contentBuilder.build(context);
+            TextFieldMapper stdnumMapper = stdnumBuilder.build(context);
             context.path().remove();
             return new StandardnumberMapper(name,
                     this.fieldType,
@@ -185,10 +185,10 @@ public class StandardnumberMapper extends FieldMapper {
                         String propName = fieldsEntry.getKey();
                         Object propNode = fieldsEntry.getValue();
                         if (name.equals(propName)) {
-                            builder.content((StringFieldMapper.Builder) parserContext.typeParser("string").parse(name,
+                            builder.content((TextFieldMapper.Builder) parserContext.typeParser("text").parse(name,
                                     (Map<String, Object>) propNode, parserContext));
                         } else if ("standardnumber".equals(propName)) {
-                            builder.stdnum((StringFieldMapper.Builder) parserContext.typeParser("string").parse(propName,
+                            builder.stdnum((TextFieldMapper.Builder) parserContext.typeParser("text").parse(propName,
                                     (Map<String, Object>) propNode, parserContext));
                         }
                     }

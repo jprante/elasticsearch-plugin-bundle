@@ -3,14 +3,15 @@ package org.xbib.elasticsearch.index.analysis.german;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.elasticsearch.index.analysis.AnalysisService;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xbib.elasticsearch.MapperTestUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
+
+import static org.xbib.elasticsearch.MapperTestUtils.tokenFilterFactory;
+import static org.xbib.elasticsearch.MapperTestUtils.tokenizerFactory;
 
 /**
  *
@@ -34,10 +35,9 @@ public class GermanNormalizationTests extends Assert {
             "der",
             "Strassenecke"
         };
-        AnalysisService analysisService =
-                MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/german/german_normalization_analysis.json");
-        TokenFilterFactory tokenFilter = analysisService.tokenFilter("umlaut");
-        Tokenizer tokenizer = analysisService.tokenizer("standard").create();
+        String resource = "org/xbib/elasticsearch/index/analysis/german/german_normalization_analysis.json";
+        TokenFilterFactory tokenFilter = tokenFilterFactory(resource, "umlaut");
+        Tokenizer tokenizer = tokenizerFactory(resource, "standard").create();
         tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }

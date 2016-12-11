@@ -12,7 +12,7 @@ import static org.elasticsearch.action.ValidateActions.addValidationError;
 /**
  *
  */
-public class LangdetectRequest extends ActionRequest<LangdetectRequest> {
+public class LangdetectRequest extends ActionRequest {
 
     private String profile;
 

@@ -7,12 +7,16 @@ import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.SearchAction;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Test;
 import org.xbib.elasticsearch.NodeTestUtils;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ *
+ */
 public class LangDetectBinaryTest extends NodeTestUtils {
 
     @Test
@@ -41,12 +45,12 @@ public class LangDetectBinaryTest extends NodeTestUtils {
                         .setIndex("test").setType("someType").setId("1")
                         //\"God Save the Queen\" (alternatively \"God Save the King\"
                         .setSource("content", "IkdvZCBTYXZlIHRoZSBRdWVlbiIgKGFsdGVybmF0aXZlbHkgIkdvZCBTYXZlIHRoZSBLaW5nIg==");
-        indexRequestBuilder.setRefresh(true).execute().actionGet();
+        indexRequestBuilder.setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).execute().actionGet();
         SearchRequestBuilder searchRequestBuilder =
                 new SearchRequestBuilder(client(), SearchAction.INSTANCE)
                         .setIndices("test")
                         .setQuery(QueryBuilders.matchAllQuery())
-                        .addFields("content", "content.language");
+                        .addStoredField("content.language");
         SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
         assertEquals(1L, searchResponse.getHits().getTotalHits());
         assertEquals("en", searchResponse.getHits().getAt(0).field("content.language").getValue());
