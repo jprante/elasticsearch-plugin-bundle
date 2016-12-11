@@ -7,26 +7,22 @@ import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.WriteRequest;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.compress.CompressedXContent;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.mapper.DocumentMapper;
 import org.elasticsearch.index.mapper.DocumentMapperParser;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.node.Node;
 import org.elasticsearch.search.SearchHit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.xbib.elasticsearch.MapperTestUtils;
 import org.xbib.elasticsearch.NodeTestUtils;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 
 import static org.elasticsearch.common.io.Streams.copyToString;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
@@ -42,44 +38,38 @@ public class ReferenceMappingTests extends NodeTestUtils {
 
     private static final Logger logger = LogManager.getLogger(ReferenceMappingTests.class.getName());
 
-    private Node node;
-    private Client client;
-    private DocumentMapperParser mapperParser;
-
     @Before
-    public void setupMapperParser() throws IOException {
-        node = startNode();
-        client = node.client();
+    public void setupReferences() throws IOException {
+        startCluster();
         try {
-            client.admin().indices().prepareDelete("test").execute().actionGet();
+            client().admin().indices().prepareDelete("test").execute().actionGet();
         } catch (Exception e) {
-            logger.warn("unable to delete test index");
+            logger.warn("unable to delete 'test' index");
         }
-        BytesReference json = jsonBuilder().startObject().array("myfield", "a","b","c").endObject().bytes();
-        client.prepareIndex("test", "test", "1234").setSource(json).execute().actionGet();
+        client().prepareIndex("test", "test", "1234")
+                .setSource(jsonBuilder().startObject().array("myfield", "a","b","c").endObject())
+                .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
+                .execute().actionGet();
         try {
-            client.admin().indices().prepareDelete("authorities").execute().actionGet();
+            client().admin().indices().prepareDelete("authorities").execute().actionGet();
         } catch (Exception e) {
-            logger.warn("unable to delete test index");
+            logger.warn("unable to delete 'authorities' index");
         }
-
-        json = jsonBuilder().startObject().field("author", "John Doe").endObject().bytes();
-        client.prepareIndex("authorities", "persons", "1").setSource(json).execute().actionGet();
-
-        mapperParser = //MapperTestUtils.newMapperService(Settings.EMPTY).documentMapperParser();
-           newDocumentMapperParser();
+        client().prepareIndex("authorities", "persons", "1")
+                .setSource(jsonBuilder().startObject().field("author", "John Doe").endObject())
+                .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
+                .execute().actionGet();
     }
 
     @After
     public void cleanup() throws IOException {
-        if (node != null) {
-            node.close();
-        }
+        stopCluster();
     }
 
     @Test
     public void testRefMappings() throws Exception {
         String mapping = copyToStringFromClasspath("ref-mapping.json");
+        DocumentMapperParser mapperParser = newDocumentMapperParser("someIndex");
         DocumentMapper docMapper = mapperParser.parse("someType", new CompressedXContent(mapping));
         BytesReference json = jsonBuilder().startObject()
                 .field("someField", "1234")
@@ -116,6 +106,7 @@ public class ReferenceMappingTests extends NodeTestUtils {
     @Test
     public void testRefInDoc() throws Exception {
         String mapping = copyToStringFromClasspath("ref-mapping-authorities.json");
+        DocumentMapperParser mapperParser = newDocumentMapperParser("docs");
         DocumentMapper docMapper = mapperParser.parse("docs", new CompressedXContent(mapping));
         BytesReference json = jsonBuilder().startObject()
                 .field("title", "A title")
@@ -138,6 +129,7 @@ public class ReferenceMappingTests extends NodeTestUtils {
     @Test
     public void testRefFromID() throws Exception {
         String mapping = copyToStringFromClasspath("ref-mapping-from-id.json");
+        DocumentMapperParser mapperParser = newDocumentMapperParser("docs");
         DocumentMapper docMapper = mapperParser.parse("docs", new CompressedXContent(mapping));
         BytesReference json = jsonBuilder().startObject()
                 .field("title", "A title")
@@ -153,49 +145,39 @@ public class ReferenceMappingTests extends NodeTestUtils {
         String json = copyToStringFromClasspath("ref-doc-book.json");
         String mapping = copyToStringFromClasspath("ref-mapping-books-test.json");
         try {
-            client.admin().indices().prepareDelete("books").execute().actionGet();
+            client().admin().indices().prepareDelete("books").execute().actionGet();
         } catch (Exception e) {
             logger.warn("unable to delete index 'books'");
         }
-        client.admin().indices().prepareCreate("books")
+        client().admin().indices().prepareCreate("books")
                 .addMapping("test", mapping)
                 .execute().actionGet();
-        client.prepareIndex("books", "test", "1").setSource(json)
+        client().prepareIndex("books", "test", "1").setSource(json)
                 .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).execute().actionGet();
 
         // get mappings
-        GetMappingsResponse getMappingsResponse= client.admin().indices().getMappings(new GetMappingsRequest()
+        GetMappingsResponse getMappingsResponse= client().admin().indices().getMappings(new GetMappingsRequest()
                 .indices("books")
                 .types("test"))
                 .actionGet();
         MappingMetaData md = getMappingsResponse.getMappings().get("books").get("test");
         logger.info("mappings={}", md.getSourceAsMap());
 
-        // search in field 1, referenced value
-        QueryBuilder queryBuilder = matchPhraseQuery("dc.creator", "John Doe");
-        SearchResponse searchResponse = client.prepareSearch("books")
-                .setQuery(queryBuilder).execute().actionGet();
-        logger.info("hits = {}", searchResponse.getHits().getTotalHits());
-        for (SearchHit hit : searchResponse.getHits().getHits()) {
-            logger.info("{}", hit.getSource());
-        }
-        assertEquals(1, searchResponse.getHits().getTotalHits());
-
         // search in field 1, unreferenced value
-        queryBuilder = matchPhraseQuery("dc.creator", "A creator");
-        searchResponse = client.prepareSearch("books")
+        QueryBuilder queryBuilder = matchPhraseQuery("dc.creator", "A creator");
+        SearchResponse searchResponse = client().prepareSearch("books")
                 .setQuery(queryBuilder).execute().actionGet();
-        logger.info("hits = {}", searchResponse.getHits().getTotalHits());
+        logger.info("unref hits = {}", searchResponse.getHits().getTotalHits());
         for (SearchHit hit : searchResponse.getHits().getHits()) {
             logger.info("{}", hit.getSource());
         }
         assertEquals(1, searchResponse.getHits().getTotalHits());
 
-        // search in field 2, referenced value
-        queryBuilder = matchPhraseQuery("bib.contributor", "John Doe");
-        searchResponse = client.prepareSearch("books")
+        // search in field 1, referenced value
+        queryBuilder = matchPhraseQuery("dc.creator", "John Doe");
+        searchResponse = client().prepareSearch("books")
                 .setQuery(queryBuilder).execute().actionGet();
-        logger.info("hits = {}", searchResponse.getHits().getTotalHits());
+        logger.info("ref hits = {}", searchResponse.getHits().getTotalHits());
         for (SearchHit hit : searchResponse.getHits().getHits()) {
             logger.info("{}", hit.getSource());
         }
@@ -203,9 +185,19 @@ public class ReferenceMappingTests extends NodeTestUtils {
 
         // search in field 2, unreferenced value
         queryBuilder = matchPhraseQuery("bib.contributor", "A contributor");
-        searchResponse = client.prepareSearch("books")
+        searchResponse = client().prepareSearch("books")
                 .setQuery(queryBuilder).execute().actionGet();
-        logger.info("hits = {}", searchResponse.getHits().getTotalHits());
+        logger.info("field 2 unref hits = {}", searchResponse.getHits().getTotalHits());
+        for (SearchHit hit : searchResponse.getHits().getHits()) {
+            logger.info("{}", hit.getSource());
+        }
+        assertEquals(1, searchResponse.getHits().getTotalHits());
+
+        // search in field 2, referenced value
+        queryBuilder = matchPhraseQuery("bib.contributor", "John Doe");
+        searchResponse = client().prepareSearch("books")
+                .setQuery(queryBuilder).execute().actionGet();
+        logger.info("field 2 ref hits = {}", searchResponse.getHits().getTotalHits());
         for (SearchHit hit : searchResponse.getHits().getHits()) {
             logger.info("{}", hit.getSource());
         }
@@ -213,15 +205,6 @@ public class ReferenceMappingTests extends NodeTestUtils {
     }
 
     private String copyToStringFromClasspath(String path) throws IOException {
-        Reader reader = null;
-        try {
-            reader = new InputStreamReader(getClass().getResource(path).openStream(), "UTF-8");
-            return copyToString(reader);
-        } finally {
-            if (reader != null) {
-                reader.close();
-            }
-        }
+        return copyToString(new InputStreamReader(getClass().getResource(path).openStream(), StandardCharsets.UTF_8));
     }
-
 }

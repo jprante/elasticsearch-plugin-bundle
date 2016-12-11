@@ -2,6 +2,11 @@
   "index" : {
     "number_of_shards" : 1,
     "number_of_replicas" : 0,
+    "mapping" : {
+      "total_fields" : {
+        "limit": 10000
+      }
+    },
     "analysis" : {
       "filter" : {
         "snowball_german_umlaut" : {
@@ -120,6 +125,7 @@
       "analyzer" : {
         "default" : {
           "type" : "custom",
+          "char_filter" : [],
           "tokenizer" : "hyphen",
           "filter" : [
             "lowercase",
@@ -135,6 +141,7 @@
         },
         "unstemmed" : {
           "type" : "custom",
+          "char_filter" : [],
           "tokenizer" : "hyphen",
           "filter" : [
             "lowercase",

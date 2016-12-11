@@ -1,5 +1,7 @@
 package org.xbib.elasticsearch;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.elasticsearch.Version;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
@@ -31,6 +33,8 @@ import static org.junit.Assert.assertNotNull;
  */
 public class MapperTestUtils {
 
+    private static final Logger logger = LogManager.getLogger(MapperTestUtils.class.getName());
+
     public static AnalysisRegistry analysisService(Settings customSettings) throws IOException {
         Settings settings = Settings.builder()
                 .put("path.home", System.getProperty("path.home", "/tmp"))
@@ -43,11 +47,11 @@ public class MapperTestUtils {
         return analysisModule.getAnalysisRegistry();
     }
 
-    public static DocumentMapperParser newDocumentMapperParser() throws IOException {
-        return newDocumentMapperParser(Settings.EMPTY);
+    public static DocumentMapperParser newDocumentMapperParser(String index) throws IOException {
+        return newDocumentMapperParser(Settings.EMPTY, index);
     }
 
-    public static DocumentMapperParser newDocumentMapperParser(Settings customSettings) throws IOException {
+    public static DocumentMapperParser newDocumentMapperParser(Settings customSettings, String index) throws IOException {
         Settings settings = Settings.builder()
                 .put("path.home", System.getProperty("path.home", "/tmp"))
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
@@ -59,14 +63,19 @@ public class MapperTestUtils {
         IndicesModule indicesModule = new IndicesModule(Collections.singletonList(bundlePlugin));
         MapperRegistry mapperRegistry = indicesModule.getMapperRegistry();
         AnalysisRegistry analysisRegistry = analysisModule.getAnalysisRegistry();
-        IndexMetaData indexMetaData = IndexMetaData.builder("test")
+        IndexMetaData indexMetaData = IndexMetaData.builder(index)
                 .settings(settings)
                 .numberOfShards(1)
                 .numberOfReplicas(1)
                 .build();
         IndexSettings indexSettings = new IndexSettings(indexMetaData, settings);
         SimilarityService similarityService = new SimilarityService(indexSettings, SimilarityService.BUILT_IN);
-        IndexAnalyzers indexAnalyzers = analysisRegistry.build(indexSettings);
+        Map<String, CharFilterFactory> charFilterFactoryMap = analysisRegistry.buildCharFilterFactories(indexSettings);
+        Map<String, TokenFilterFactory> tokenFilterFactoryMap = analysisRegistry.buildTokenFilterFactories(indexSettings);
+        Map<String, TokenizerFactory> tokenizerFactoryMap = analysisRegistry.buildTokenizerFactories(indexSettings);
+        Map<String, AnalyzerProvider<?>> analyzerProviderMap = analysisRegistry.buildAnalyzerFactories(indexSettings);
+        IndexAnalyzers indexAnalyzers = analysisRegistry.build(indexSettings, analyzerProviderMap,
+                tokenizerFactoryMap, charFilterFactoryMap, tokenFilterFactoryMap);
         MapperService mapperService = new MapperService(indexSettings, indexAnalyzers,
                 similarityService, mapperRegistry, null);
         return new DocumentMapperParser(indexSettings,
@@ -85,14 +94,21 @@ public class MapperTestUtils {
                 .numberOfReplicas(1)
                 .build();
         IndexSettings indexSettings = new IndexSettings(indexMetaData, settings);
-        Map<String, AnalyzerProvider<?>> map = analysisRegistry.buildAnalyzerFactories(indexSettings);
-        return map.containsKey(name) ? map.get(name).get() : analysisRegistry.getAnalyzer(name);
+        Map<String, CharFilterFactory> charFilterFactoryMap = analysisRegistry.buildCharFilterFactories(indexSettings);
+        Map<String, TokenFilterFactory> tokenFilterFactoryMap = analysisRegistry.buildTokenFilterFactories(indexSettings);
+        Map<String, TokenizerFactory> tokenizerFactoryMap = analysisRegistry.buildTokenizerFactories(indexSettings);
+        Map<String, AnalyzerProvider<?>> analyzerProviderMap = analysisRegistry.buildAnalyzerFactories(indexSettings);
+        IndexAnalyzers indexAnalyzers = analysisRegistry.build(indexSettings, analyzerProviderMap,
+                tokenizerFactoryMap, charFilterFactoryMap, tokenFilterFactoryMap);
+        Analyzer analyzer = indexAnalyzers.get(name) != null ? indexAnalyzers.get(name) : analysisRegistry.getAnalyzer(name);
+        assertNotNull(analyzer);
+        return analyzer;
     }
 
     public static Analyzer analyzer(Settings customSettings, String name) throws IOException {
         Settings settings = Settings.builder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
-                .put("path.home", System.getProperty("path.home"))
+                .put("path.home", System.getProperty("path.home", "/tmp"))
                 .put(customSettings)
                 .build();
         AnalysisRegistry analysisRegistry = analysisService(settings);
@@ -102,14 +118,21 @@ public class MapperTestUtils {
                 .numberOfReplicas(1)
                 .build();
         IndexSettings indexSettings = new IndexSettings(indexMetaData, settings);
-        Map<String, AnalyzerProvider<?>> map = analysisRegistry.buildAnalyzerFactories(indexSettings);
-        return map.containsKey(name) ? map.get(name).get() : analysisRegistry.getAnalyzer(name);
+        Map<String, CharFilterFactory> charFilterFactoryMap = analysisRegistry.buildCharFilterFactories(indexSettings);
+        Map<String, TokenFilterFactory> tokenFilterFactoryMap = analysisRegistry.buildTokenFilterFactories(indexSettings);
+        Map<String, TokenizerFactory> tokenizerFactoryMap = analysisRegistry.buildTokenizerFactories(indexSettings);
+        Map<String, AnalyzerProvider<?>> analyzerProviderMap = analysisRegistry.buildAnalyzerFactories(indexSettings);
+        IndexAnalyzers indexAnalyzers = analysisRegistry.build(indexSettings, analyzerProviderMap,
+                tokenizerFactoryMap, charFilterFactoryMap, tokenFilterFactoryMap);
+        Analyzer analyzer = indexAnalyzers.get(name) != null ? indexAnalyzers.get(name) : analysisRegistry.getAnalyzer(name);
+        assertNotNull(analyzer);
+        return analyzer;
     }
 
     public static Analyzer analyzer(String resource, String name) throws IOException {
         Settings settings = Settings.builder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
-                .put("path.home", System.getProperty("path.home"))
+                .put("path.home", System.getProperty("path.home", "/tmp"))
                 .loadFromStream(resource, MapperTestUtils.class.getClassLoader().getResource(resource).openStream())
                 .build();
         AnalysisRegistry analysisRegistry = analysisService(settings);
@@ -119,8 +142,14 @@ public class MapperTestUtils {
                 .numberOfReplicas(1)
                 .build();
         IndexSettings indexSettings = new IndexSettings(indexMetaData, settings);
-        Map<String, AnalyzerProvider<?>> map = analysisRegistry.buildAnalyzerFactories(indexSettings);
-        Analyzer analyzer = map.containsKey(name) ? map.get(name).get() : analysisRegistry.getAnalyzer(name);
+        Map<String, CharFilterFactory> charFilterFactoryMap = analysisRegistry.buildCharFilterFactories(indexSettings);
+        Map<String, TokenFilterFactory> tokenFilterFactoryMap = analysisRegistry.buildTokenFilterFactories(indexSettings);
+        Map<String, TokenizerFactory> tokenizerFactoryMap = analysisRegistry.buildTokenizerFactories(indexSettings);
+        Map<String, AnalyzerProvider<?>> analyzerProviderMap = analysisRegistry.buildAnalyzerFactories(indexSettings);
+        logger.info("{} {} {} {}", charFilterFactoryMap, tokenFilterFactoryMap, tokenizerFactoryMap, analyzerProviderMap);
+        IndexAnalyzers indexAnalyzers = analysisRegistry.build(indexSettings, analyzerProviderMap,
+                tokenizerFactoryMap, charFilterFactoryMap, tokenFilterFactoryMap);
+        Analyzer analyzer = indexAnalyzers.get(name) != null ? indexAnalyzers.get(name) : analysisRegistry.getAnalyzer(name);
         assertNotNull(analyzer);
         return analyzer;
     }
@@ -130,7 +159,6 @@ public class MapperTestUtils {
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("path.home", System.getProperty("path.home", "/tmp"))
                 .build();
-        Environment environment = new Environment(settings);
         AnalysisRegistry analysisRegistry = analysisService(settings);
         IndexMetaData indexMetaData = IndexMetaData.builder("test")
                 .settings(settings)
@@ -140,7 +168,7 @@ public class MapperTestUtils {
         IndexSettings indexSettings = new IndexSettings(indexMetaData, settings);
         Map<String, TokenizerFactory> map = analysisRegistry.buildTokenizerFactories(indexSettings);
         TokenizerFactory tokenizerFactory = map.containsKey(name) ? map.get(name) :
-                analysisRegistry.getTokenizerProvider(name).get(environment, name);
+                analysisRegistry.getTokenizerProvider(name).get(new Environment(settings), name);
         assertNotNull(tokenizerFactory);
         return tokenizerFactory;
     }

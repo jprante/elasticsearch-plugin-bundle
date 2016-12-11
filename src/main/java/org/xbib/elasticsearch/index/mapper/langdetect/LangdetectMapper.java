@@ -41,13 +41,12 @@ public class LangdetectMapper extends TextFieldMapper {
                             TextFieldType fieldType,
                             MappedFieldType defaultFieldType,
                             int positionIncrementGap,
-                            boolean includeInAll,
                             Settings indexSettings,
                             MultiFields multiFields,
                             CopyTo copyTo,
                             LangdetectService langdetectService) {
         super(simpleName, fieldType, defaultFieldType,
-                positionIncrementGap, includeInAll, indexSettings, multiFields, copyTo);
+                positionIncrementGap, false, indexSettings, multiFields, copyTo);
         this.langdetectService = langdetectService;
         this.positionIncrementGap = positionIncrementGap;
     }
@@ -255,9 +254,14 @@ public class LangdetectMapper extends TextFieldMapper {
             }
             setupFieldType(context);
             LangdetectService service = new LangdetectService(settingsBuilder.build());
-            return new LangdetectMapper(name, (TextFieldType) fieldType(), defaultFieldType,
-                    positionIncrementGap, includeInAll,
-                    context.indexSettings(), multiFieldsBuilder.build(this, context), copyTo, service);
+            return new LangdetectMapper(name,
+                    (TextFieldType) fieldType(),
+                    defaultFieldType,
+                    positionIncrementGap,
+                    context.indexSettings(),
+                    multiFieldsBuilder.build(this, context),
+                    copyTo,
+                    service);
         }
     }
 

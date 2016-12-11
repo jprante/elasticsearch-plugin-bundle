@@ -60,7 +60,7 @@ public class SortFormTests extends BaseTokenStreamTest {
 
         MultiMap<BytesRef,String> map = new TreeMultiMap<>();
         for (String s : words) {
-            TokenStream ts = analyzer.tokenStream(null, s);
+            TokenStream ts = analyzer.tokenStream("test", s);
             BytesRef sortKey = sortKeyFromTokenStream(ts);
             map.put(sortKey, s);
         }

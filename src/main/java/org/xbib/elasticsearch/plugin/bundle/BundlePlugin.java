@@ -104,7 +104,7 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
         extra.put("sortform", SortformTokenFilterFactory::new);
         extra.put("standardnumber", (indexSettings, environment, name, settings) ->
                 new StandardnumberTokenFilterFactory(indexSettings, environment, name, settings, standardNumberTypeParser));
-        extra.put("fst_decompounder", FstDecompoundTokenFilterFactory::new);
+        extra.put("fst_decompound", FstDecompoundTokenFilterFactory::new);
         extra.put("worddelimiter", WordDelimiterFilterFactory::new);
         extra.put("worddelimiter2", WordDelimiterFilter2Factory::new);
         extra.put("symbolname", SymbolnameTokenFilterFactory::new);

@@ -175,11 +175,17 @@ public class CryptMapper extends TextFieldMapper {
                 Map.Entry<String, Object> entry = iterator.next();
                 String propName = entry.getKey();
                 Object propNode = entry.getValue();
-                if (propName.equals("algo")) {
-                    builder.algo(propNode.toString());
-                    iterator.remove();
-                } else {
-                    parseMultiField(builder, name, parserContext, propName, propNode);
+                switch (propName) {
+                    case "algo" :
+                        builder.algo(propNode.toString());
+                        iterator.remove();
+                        break;
+                    case "position_increment_gap" :
+                        iterator.remove();
+                        break;
+                    default:
+                        parseMultiField(builder, name, parserContext, propName, propNode);
+                        break;
                 }
             }
             return builder;

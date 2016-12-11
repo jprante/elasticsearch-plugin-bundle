@@ -13,7 +13,7 @@
                 ]
             },
             "ref" : {
-                "type" : "string"
+                "type" : "text"
             }
         }
     }

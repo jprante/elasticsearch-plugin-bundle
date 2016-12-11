@@ -2,608 +2,608 @@
   "date_detection": false,
   "properties": {
     "foaf:page": {
-      "type": "string"
+      "type": "text"
     },
     "geo:hasGeometry": {
       "properties": {
         "geo:asWKT": {
-          "type": "string"
+          "type": "text"
         },
         "rdf:type": {
-          "type": "string"
+          "type": "text"
         }
       }
     },
     "geosparql:hasGeometry": {
       "properties": {
         "geosparql:asWKT": {
-          "type": "string"
+          "type": "text"
         },
         "rdf:type": {
-          "type": "string"
+          "type": "text"
         }
       }
     },
     "gnd:academicDegree": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:accordingWork": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:accreditedArtist": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:accreditedAuthor": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:accreditedComposer": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:acquaintanceshipOrFriendship": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:addressee": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:affiliation": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:architect": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:arranger": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:artist": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:author": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:benefactor": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:biographicalOrHistoricalInformation": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:bookdesigner": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:broaderTermGeneral": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:broaderTermGeneric": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:broaderTermInstantial": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:broaderTermPartitive": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:buildingOwner": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:cartographer": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:celebratedCorporateBody": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:celebratedPerson": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:celebratedTopic": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:characteristicPlace": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:choreographer": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:citedArtist": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:citedAuthor": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:citedComposer": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:collector": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:compiler": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:complexSeeReferenceSubject": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:composer": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:contributingCorporateBody": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:contributingPerson": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:contributingPlaceOrGeographicName": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:copist": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:corporateBodyIsMember": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:correspondent": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:creator": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:curator": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:dateOfBirth": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:dateOfBirthAndDeath": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:dateOfConferenceOrEvent": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:dateOfDeath": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:dateOfDiscovery": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:dateOfEstablishment": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:dateOfEstablishmentAndTermination": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:dateOfProduction": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:dateOfPublication": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:dateOfTermination": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:dedicatee": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:definition": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:designer": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:director": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:doubtfulArtist": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:doubtfulAuthor": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:doubtfulComposer": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:editor": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:engraver": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:exhibitor": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:familialRelationship": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:fieldOfActivity": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:fieldOfStudy": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:firstArtist": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:firstAuthor": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:firstComposer": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:formOfWorkAndExpression": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:formerOwner": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:founder": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:functionOrRole": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:gender": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:geographicAreaCode": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:gndIdentifier": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:gndSubjectCategory": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:hierarchicalSuperiorOfPlaceOrGeographicName": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:hierarchicalSuperiorOfTheConferenceOrEvent": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:hierarchicalSuperiorOfTheCorporateBody": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:homepage": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:illustratorOrIlluminator": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:initiator": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:instrumentalist": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:inventor": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:keyOfTheVersion": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:keyOfTheWork": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:languageCode": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:librettist": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:literarySource": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:manufacturer": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:mediumOfPerformance": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:memberOfTheFamily": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:musician": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:narrator": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:occasionOfTheSubjectHeading": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:oldAuthorityNumber": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:opusNumericDesignationOfMusicalWork": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:organizerOrHost": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:otherPlace": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:owner": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:painter": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:periodOfActivity": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:photographer": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:place": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:placeOfActivity": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:placeOfBirth": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:placeOfBusiness": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:placeOfConferenceOrEvent": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:placeOfCustody": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:placeOfDeath": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:placeOfDiscovery": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:placeOfExile": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:placeOfManufacture": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:playedInstrument": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:poet": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:precedingConferenceOrEvent": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:precedingCorporateBody": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:precedingPlaceOrGeographicName": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:precedingSubject": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:precedingWork": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:preferredNameEntityForThePerson": {
       "properties": {
         "gnd:addition": {
-          "type": "string"
+          "type": "text"
         },
         "gnd:counting": {
-          "type": "string"
+          "type": "text"
         },
         "gnd:epithetGenericNameTitleOrTerritory": {
-          "type": "string"
+          "type": "text"
         },
         "gnd:forename": {
-          "type": "string"
+          "type": "text"
         },
         "gnd:personalName": {
-          "type": "string"
+          "type": "text"
         },
         "gnd:prefix": {
-          "type": "string"
+          "type": "text"
         },
         "gnd:surname": {
-          "type": "string"
+          "type": "text"
         }
       }
     },
     "gnd:preferredNameForTheConferenceOrEvent": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:preferredNameForTheCorporateBody": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:preferredNameForTheFamily": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:preferredNameForThePerson": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:preferredNameForThePlaceOrGeographicName": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:preferredNameForTheSubjectHeading": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:preferredNameForTheWork": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:printer": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:professionOrOccupation": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:professionalRelationship": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:pseudonym": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:publication": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:relatedConferenceOrEvent": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:relatedCorporateBody": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:relatedDdcWithDegreeOfDeterminacy1": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:relatedDdcWithDegreeOfDeterminacy2": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:relatedDdcWithDegreeOfDeterminacy3": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:relatedDdcWithDegreeOfDeterminacy4": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:relatedPerson": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:relatedPlaceOrGeographicName": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:relatedSubjectHeading": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:relatedTerm": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:relatedWork": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:revisor": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:screenwriter": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:sculptor": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:singer": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:spatialAreaOfActivity": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:sponsorOrPatron": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:startingOrFinalPointOfADistance": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:subeditor": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:succeedingConferenceOrEvent": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:succeedingCorporateBody": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:succeedingPlaceOrGeographicName": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:succeedingSubjectHeading": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:succeedingWork": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:temporaryNameOfTheConferenceOrEvent": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:temporaryNameOfTheCorporateBody": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:temporaryNameOfThePlaceOrGeographicName": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:thematicIndexNumericDesignationOfMusicalWork": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:titleOfNobility": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:topic": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:translator": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:udkCode": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:variantNameEntityForThePerson": {
       "properties": {
         "gnd:addition": {
-          "type": "string"
+          "type": "text"
         },
         "gnd:counting": {
-          "type": "string"
+          "type": "text"
         },
         "gnd:epithetGenericNameTitleOrTerritory": {
-          "type": "string"
+          "type": "text"
         },
         "gnd:forename": {
-          "type": "string"
+          "type": "text"
         },
         "gnd:personalName": {
-          "type": "string"
+          "type": "text"
         },
         "gnd:prefix": {
-          "type": "string"
+          "type": "text"
         },
         "gnd:surname": {
-          "type": "string"
+          "type": "text"
         }
       }
     },
     "gnd:variantNameForTheConferenceOrEvent": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:variantNameForTheCorporateBody": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:variantNameForTheFamily": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:variantNameForThePerson": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:variantNameForThePlaceOrGeographicName": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:variantNameForTheSubjectHeading": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:variantNameForTheWork": {
-      "type": "string"
+      "type": "text"
     },
     "gnd:writerOfAddedCommentary": {
-      "type": "string"
+      "type": "text"
     },
     "owl:sameAs": {
-      "type": "string"
+      "type": "text"
     },
     "rdf:type": {
-      "type": "string"
+      "type": "text"
     },
     "skos:broadMatch": {
-      "type": "string"
+      "type": "text"
     },
     "skos:exactMatch": {
-      "type": "string"
+      "type": "text"
     },
     "skos:narrowMatch": {
-      "type": "string"
+      "type": "text"
     },
     "skos:relatedMatch": {
-      "type": "string"
+      "type": "text"
     }
   }
 }

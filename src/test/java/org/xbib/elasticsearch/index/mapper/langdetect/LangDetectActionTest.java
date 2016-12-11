@@ -21,86 +21,106 @@ public class LangDetectActionTest extends NodeTestUtils {
 
     @Test
     public void testLangDetectProfile() throws Exception {
-        // normal profile
-        LangdetectRequestBuilder langdetectRequestBuilder =
-                new LangdetectRequestBuilder(client())
-                        .setText("hello this is a test");
-        LangdetectResponse response = langdetectRequestBuilder.execute().actionGet();
-        assertFalse(response.getLanguages().isEmpty());
-        assertEquals("en", response.getLanguages().get(0).getLanguage());
-        assertNull(response.getProfile());
+        startCluster();
+        try {
+            // normal profile
+            LangdetectRequestBuilder langdetectRequestBuilder =
+                    new LangdetectRequestBuilder(client())
+                            .setText("hello this is a test");
+            LangdetectResponse response = langdetectRequestBuilder.execute().actionGet();
+            assertFalse(response.getLanguages().isEmpty());
+            assertEquals("en", response.getLanguages().get(0).getLanguage());
+            assertNull(response.getProfile());
 
-        // short-text profile
-        LangdetectRequestBuilder langdetectProfileRequestBuilder =
-                new LangdetectRequestBuilder(client())
-                        .setText("hello this is a test")
-                        .setProfile("short-text");
-        response = langdetectProfileRequestBuilder.execute().actionGet();
-        assertNotNull(response);
-        assertFalse(response.getLanguages().isEmpty());
-        assertEquals("en", response.getLanguages().get(0).getLanguage());
-        assertEquals("short-text", response.getProfile());
+            // short-text profile
+            LangdetectRequestBuilder langdetectProfileRequestBuilder =
+                    new LangdetectRequestBuilder(client())
+                            .setText("hello this is a test")
+                            .setProfile("short-text");
+            response = langdetectProfileRequestBuilder.execute().actionGet();
+            assertNotNull(response);
+            assertFalse(response.getLanguages().isEmpty());
+            assertEquals("en", response.getLanguages().get(0).getLanguage());
+            assertEquals("short-text", response.getProfile());
 
-        // again normal profile
-        langdetectRequestBuilder = new LangdetectRequestBuilder(client())
-                .setText("hello this is a test");
-        response = langdetectRequestBuilder.execute().actionGet();
-        assertNotNull(response);
-        assertFalse(response.getLanguages().isEmpty());
-        assertEquals("en", response.getLanguages().get(0).getLanguage());
-        assertNull(response.getProfile());
+            // again normal profile
+            langdetectRequestBuilder = new LangdetectRequestBuilder(client())
+                    .setText("hello this is a test");
+            response = langdetectRequestBuilder.execute().actionGet();
+            assertNotNull(response);
+            assertFalse(response.getLanguages().isEmpty());
+            assertEquals("en", response.getLanguages().get(0).getLanguage());
+            assertNull(response.getProfile());
+        } finally {
+            stopCluster();
+        }
     }
 
     @Test
     public void testSort() throws Exception {
-        Settings settings = Settings.builder()
-                .build();
+        startCluster();
+        try {
 
-        client().admin().indices().prepareCreate("test")
-                .setSettings(settings)
-                .addMapping("article",
-                        "{ article : { properties : { content : { type : \"langdetect\", languages : [\"de\", \"en\", \"fr\"] } } } }")
-                .execute().actionGet();
+            Settings settings = Settings.builder()
+                    .build();
 
-        client().admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
+            client().admin().indices().prepareCreate("test")
+                    .setSettings(settings)
+                    .addMapping("article",
+                            jsonBuilder().startObject()
+                                    .startObject("article")
+                                       .startObject("properties")
+                                           .startObject("content")
+                                             .field("type", "langdetect")
+                                             .array("languages", "de", "en", "fr")
+                                           .endObject()
+                                       .endObject()
+                                    .endObject()
+                            .endObject())
+                    .execute().actionGet();
 
-        client().prepareIndex("test", "article", "1")
-                .setSource(jsonBuilder().startObject()
-                        .field("title", "Some title")
-                        .field("content", "Oh, say can you see by the dawn`s early light, What so proudly we hailed at the twilight`s last gleaming?")
-                        .endObject()).execute().actionGet();
-        client().prepareIndex("test", "article", "2")
-                .setSource(jsonBuilder().startObject()
-                        .field("title", "Ein Titel")
-                        .field("content", "Einigkeit und Recht und Freiheit für das deutsche Vaterland!")
-                        .endObject()).execute().actionGet();
-        client().prepareIndex("test", "article", "3")
-                .setSource(jsonBuilder().startObject()
-                        .field("title", "Un titre")
-                        .field("content", "Allons enfants de la Patrie, Le jour de gloire est arrivé!")
-                        .endObject()).execute().actionGet();
+            client().admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
 
-        client().admin().indices().prepareRefresh().execute().actionGet();
+            client().prepareIndex("test", "article", "1")
+                    .setSource(jsonBuilder().startObject()
+                            .field("title", "Some title")
+                            .field("content", "Oh, say can you see by the dawn`s early light, What so proudly we hailed at the twilight`s last gleaming?")
+                            .endObject()).execute().actionGet();
+            client().prepareIndex("test", "article", "2")
+                    .setSource(jsonBuilder().startObject()
+                            .field("title", "Ein Titel")
+                            .field("content", "Einigkeit und Recht und Freiheit für das deutsche Vaterland!")
+                            .endObject()).execute().actionGet();
+            client().prepareIndex("test", "article", "3")
+                    .setSource(jsonBuilder().startObject()
+                            .field("title", "Un titre")
+                            .field("content", "Allons enfants de la Patrie, Le jour de gloire est arrivé!")
+                            .endObject()).execute().actionGet();
 
-        SearchResponse searchResponse = client().prepareSearch()
-                .setQuery(QueryBuilders.termQuery("content", "en"))
-                .execute().actionGet();
-        assertEquals(1L, searchResponse.getHits().totalHits());
-        assertEquals("Oh, say can you see by the dawn`s early light, What so proudly we hailed at the twilight`s last gleaming?",
-                searchResponse.getHits().getAt(0).getSource().get("content").toString());
+            client().admin().indices().prepareRefresh().execute().actionGet();
 
-        searchResponse = client().prepareSearch()
-                .setQuery(QueryBuilders.termQuery("content", "de"))
-                .execute().actionGet();
-        assertEquals(1L, searchResponse.getHits().totalHits());
-        assertEquals("Einigkeit und Recht und Freiheit für das deutsche Vaterland!",
-                searchResponse.getHits().getAt(0).getSource().get("content").toString());
+            SearchResponse searchResponse = client().prepareSearch()
+                    .setQuery(QueryBuilders.termQuery("content", "en"))
+                    .execute().actionGet();
+            assertEquals(1L, searchResponse.getHits().totalHits());
+            assertEquals("Oh, say can you see by the dawn`s early light, What so proudly we hailed at the twilight`s last gleaming?",
+                    searchResponse.getHits().getAt(0).getSource().get("content").toString());
 
-        searchResponse = client().prepareSearch()
-                .setQuery(QueryBuilders.termQuery("content", "fr"))
-                .execute().actionGet();
-        assertEquals(1L, searchResponse.getHits().totalHits());
-        assertEquals("Allons enfants de la Patrie, Le jour de gloire est arrivé!",
-                searchResponse.getHits().getAt(0).getSource().get("content").toString());
+            searchResponse = client().prepareSearch()
+                    .setQuery(QueryBuilders.termQuery("content", "de"))
+                    .execute().actionGet();
+            assertEquals(1L, searchResponse.getHits().totalHits());
+            assertEquals("Einigkeit und Recht und Freiheit für das deutsche Vaterland!",
+                    searchResponse.getHits().getAt(0).getSource().get("content").toString());
+
+            searchResponse = client().prepareSearch()
+                    .setQuery(QueryBuilders.termQuery("content", "fr"))
+                    .execute().actionGet();
+            assertEquals(1L, searchResponse.getHits().totalHits());
+            assertEquals("Allons enfants de la Patrie, Le jour de gloire est arrivé!",
+                    searchResponse.getHits().getAt(0).getSource().get("content").toString());
+        } finally {
+            stopCluster();
+        }
     }
 }

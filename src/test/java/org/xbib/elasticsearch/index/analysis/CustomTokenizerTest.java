@@ -2,6 +2,7 @@ package org.xbib.elasticsearch.index.analysis;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.ResourceAlreadyExistsException;
 import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.node.Node;
@@ -41,11 +42,15 @@ public class CustomTokenizerTest extends NodeTestUtils {
                 .setSource(document)
                 .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                 .execute().actionGet();
+
         // delete old index with custom tokenizer
         client.admin().indices().prepareDelete("demo").execute().actionGet();
+        client.close();
+        // do not wipe files!
+        //stopCluster();
         node.close();
 
-        // start a new node but without plugin
+        // start a new node, but without plugin, trying to recover from demo index (if present)
         node = buildNodeWithoutPlugins();
         try {
             node.start();
@@ -54,12 +59,16 @@ public class CustomTokenizerTest extends NodeTestUtils {
         }
         client = node.client();
         try {
-            // create another index without custom tokenizer
+            // create same index, but without custom tokenizer
             client.admin().indices().prepareCreate("demo")
                     .execute().actionGet();
-        } catch (Exception e) {
-            // will fail with java.lang.IllegalArgumentException: Unknown Tokenizer type [icu_tokenizer] for [my_hyphen_icu_tokenizer]
+        } catch (ResourceAlreadyExistsException e) {
+            // ok!
             logger.warn(e.getMessage(), e);
+        } catch (Exception e) {
+            // in case of ES bug, this will be java.lang.IllegalArgumentException: Unknown Tokenizer type [icu_tokenizer] for [my_hyphen_icu_tokenizer]
+            logger.warn(e.getMessage(), e);
+            fail();
         }
         node.close();
     }

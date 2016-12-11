@@ -5,8 +5,10 @@ import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthAction;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
-import org.elasticsearch.action.admin.cluster.node.info.NodesInfoRequest;
+import org.elasticsearch.action.admin.cluster.node.info.NodesInfoAction;
+import org.elasticsearch.action.admin.cluster.node.info.NodesInfoRequestBuilder;
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.support.AbstractClient;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.common.settings.Settings;
@@ -16,8 +18,6 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.node.MockNode;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeValidationException;
-import org.junit.After;
-import org.junit.Before;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ public class NodeTestUtils {
 
     private Node node;
 
-    private AbstractClient client;
+    private Client client;
 
     private AtomicInteger counter = new AtomicInteger();
 
@@ -47,14 +47,13 @@ public class NodeTestUtils {
 
     private String host;
 
-    private int port;
-
-    public void startNodes() {
+    public void startCluster() {
         try {
             logger.info("settings cluster name");
             setClusterName();
             logger.info("starting nodes");
-            startNode();
+            this.node = startNode();
+            this.client = node.client();
             findNodeAddress();
             ClusterHealthResponse healthResponse = client.execute(ClusterHealthAction.INSTANCE,
                     new ClusterHealthRequest().waitForStatus(ClusterHealthStatus.GREEN)
@@ -69,7 +68,7 @@ public class NodeTestUtils {
         }
     }
 
-    public void stopNode() {
+    public void stopCluster() {
         try {
             logger.info("stopping nodes");
             closeNodes();
@@ -103,24 +102,9 @@ public class NodeTestUtils {
         return Settings.builder()
                 .put("cluster.name", clustername)
                 .put("transport.type", "local")
-                // required to build a cluster, replica tests will test this.
-                //.put("discovery.zen.ping.unicast.hosts", hostname)
-                //.put("network.host", hostname)
                 .put("http.enabled", false)
                 .put("path.home", getHome())
-                .put("node.max_local_storage_nodes", 1)
-                .build();
-    }
-
-
-    protected Settings getClientSettings() {
-        if (host == null) {
-            throw new IllegalStateException("host is null");
-        }
-        // the host to which transport client should connect to
-        return Settings.builder()
-                .put("cluster.name", clustername)
-                .put("host", host + ":" + port)
+                //.put("node.max_local_storage_nodes", 1)
                 .build();
     }
 
@@ -136,7 +120,7 @@ public class NodeTestUtils {
         }
     }
 
-    public AbstractClient client() {
+    public Client client() {
         return client;
     }
 
@@ -150,24 +134,39 @@ public class NodeTestUtils {
     }
 
     protected void findNodeAddress() {
-        NodesInfoRequest nodesInfoRequest = new NodesInfoRequest().transport(true);
-        NodesInfoResponse response = client().admin().cluster().nodesInfo(nodesInfoRequest).actionGet();
-        Object obj = response.getNodes().iterator().next().getTransport().getAddress()
-                .publishAddress();
+        NodesInfoRequestBuilder nodesInfoRequestBuilder = new NodesInfoRequestBuilder(client, NodesInfoAction.INSTANCE);
+        nodesInfoRequestBuilder.setTransport(true);
+        NodesInfoResponse response = nodesInfoRequestBuilder.execute().actionGet();
+        Object obj = response.getNodes().iterator().next().getTransport().getAddress().publishAddress();
         if (obj instanceof InetSocketTransportAddress) {
             InetSocketTransportAddress address = (InetSocketTransportAddress) obj;
             host = address.address().getHostName();
-            port = address.address().getPort();
         } else if (obj instanceof LocalTransportAddress) {
             LocalTransportAddress address = (LocalTransportAddress) obj;
             host = address.getHost();
-            port = address.getPort();
         } else {
             logger.info("class=" + obj.getClass());
         }
         if (host == null) {
             throw new IllegalArgumentException("host not found");
         }
+    }
+
+    public static String findHttpAddress(Client client) {
+        NodesInfoRequestBuilder nodesInfoRequestBuilder = new NodesInfoRequestBuilder(client, NodesInfoAction.INSTANCE);
+        nodesInfoRequestBuilder.setHttp(true).setTransport(false);
+        NodesInfoResponse response = nodesInfoRequestBuilder.execute().actionGet();
+        Object obj = response.getNodes().iterator().next().getHttp().getAddress().publishAddress();
+        if (obj instanceof InetSocketTransportAddress) {
+            InetSocketTransportAddress httpAddress = (InetSocketTransportAddress) obj;
+            return "http://" + httpAddress.getHost() + ":" + httpAddress.getPort();
+        } else if (obj instanceof LocalTransportAddress) {
+            LocalTransportAddress httpAddress = (LocalTransportAddress) obj;
+            return "http://" + httpAddress.getHost() + ":" + httpAddress.getPort();
+        } else {
+            logger.info("class=" + obj.getClass());
+        }
+        return null;
     }
 
     public Node buildNodeWithoutPlugins() throws IOException {

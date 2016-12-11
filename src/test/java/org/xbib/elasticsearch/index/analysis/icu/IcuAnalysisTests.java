@@ -1,6 +1,7 @@
 package org.xbib.elasticsearch.index.analysis.icu;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.elasticsearch.index.analysis.NamedAnalyzer;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.index.analysis.TokenizerFactory;
 import org.junit.Test;
@@ -34,6 +35,6 @@ public class IcuAnalysisTests {
         assertThat(filterFactory, instanceOf(IcuTransformTokenFilterFactory.class));
 
         Analyzer analyzer = MapperTestUtils.analyzer( "icu_collation");
-        assertThat(analyzer, instanceOf(IcuCollationKeyAnalyzer.class));
+        assertThat(analyzer, instanceOf(NamedAnalyzer.class));
     }
 }

@@ -33,7 +33,8 @@ public class SortformAnalyzerProvider extends CustomAnalyzerProvider {
     }
 
     @Override
-    public void build(final Map<String, TokenizerFactory> tokenizers, final Map<String, CharFilterFactory> charFilters,
+    public void build(final Map<String, TokenizerFactory> tokenizers,
+                      final Map<String, CharFilterFactory> charFilters,
                       final Map<String, TokenFilterFactory> tokenFilters) {
         List<CharFilterFactory> myCharFilters = new ArrayList<>();
         String[] charFilterNames = analyzerSettings.getAsArray("char_filter");
@@ -56,8 +57,8 @@ public class SortformAnalyzerProvider extends CustomAnalyzerProvider {
         int positionOffsetGap = analyzerSettings.getAsInt("position_offset_gap", 0);
         int offsetGap = analyzerSettings.getAsInt("offset_gap", -1);
         this.customAnalyzer = new CustomAnalyzer(tokenizerFactory,
-                myCharFilters.toArray(new CharFilterFactory[charFilters.size()]),
-                myTokenFilters.toArray(new TokenFilterFactory[tokenFilters.size()]),
+                myCharFilters.toArray(new CharFilterFactory[myCharFilters.size()]),
+                myTokenFilters.toArray(new TokenFilterFactory[myTokenFilters.size()]),
                 positionOffsetGap,
                 offsetGap
         );

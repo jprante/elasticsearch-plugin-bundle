@@ -17,13 +17,13 @@ import org.elasticsearch.common.lucene.BytesRefs;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
-import org.elasticsearch.index.get.GetField;
+import org.elasticsearch.common.xcontent.support.XContentMapValues;
 import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
 import org.elasticsearch.index.mapper.ParseContext;
-import org.elasticsearch.index.mapper.StringFieldMapper;
+import org.elasticsearch.index.mapper.TextFieldMapper;
 import org.elasticsearch.index.query.QueryShardContext;
 
 import java.io.IOException;
@@ -168,19 +168,15 @@ public class ReferenceMapper extends FieldMapper {
                         .setIndex(index)
                         .setType(type)
                         .setId(content)
-                        .setStoredFields(fields.toArray(new String[fields.size()]))
                         .execute()
                         .actionGet();
                 if (response != null && response.isExists()) {
                     for (String field : fields) {
-                        // deprecated???
-                        GetField getField = response.getField(field);
-                        if (getField != null) {
-                            for (Object object : getField.getValues()) {
-                                context = context.createExternalValueContext(object);
-                                if (copyTo != null) {
-                                    parseCopyFields(context, copyTo.copyToFields());
-                                }
+                        List<Object> list = XContentMapValues.extractRawValues(field, response.getSource());
+                        for (Object object : list) {
+                            context = context.createExternalValueContext(object);
+                            if (copyTo != null) {
+                                parseCopyFields(context, copyTo.copyToFields());
                             }
                         }
                     }
@@ -304,7 +300,7 @@ public class ReferenceMapper extends FieldMapper {
             super(name, Defaults.FIELD_TYPE, Defaults.FIELD_TYPE);
             this.client = client;
             this.refFields = new LinkedList<>();
-            this.contentBuilder = new StringFieldMapper.Builder(name);
+            this.contentBuilder = new TextFieldMapper.Builder(name);
         }
 
         public Builder refIndex(String refIndex) {
