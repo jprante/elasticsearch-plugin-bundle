@@ -42,4 +42,15 @@ public class GregorianYearTokenFilter extends TokenFilter {
             return true;
         }
     }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof GregorianYearTokenFilter &&
+                defaultYear.equals(((GregorianYearTokenFilter)object).defaultYear);
+    }
+
+    @Override
+    public int hashCode() {
+        return defaultYear.hashCode();
+    }
 }

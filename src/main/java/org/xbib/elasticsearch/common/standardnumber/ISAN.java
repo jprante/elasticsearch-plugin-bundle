@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 public class ISAN extends AbstractStandardNumber implements Comparable<ISAN>, StandardNumber {
 
     private static final Pattern PATTERN = Pattern.compile("[\\p{Alnum}\\p{Pd}]{16,34}");
-    private final static MOD3736 check = new MOD3736();
+    private static final MOD3736 check = new MOD3736();
     private String value;
     private String formatted;
     private boolean versioned;
@@ -77,8 +77,8 @@ public class ISAN extends AbstractStandardNumber implements Comparable<ISAN>, St
     }
 
     @Override
-    public ISAN verify() throws NumberFormatException {
-        if (value == null) {
+    public ISAN verify() {
+        if (value == null || value.isEmpty()) {
             throw new NumberFormatException();
         }
         if (!check()) {
@@ -162,5 +162,15 @@ public class ISAN extends AbstractStandardNumber implements Comparable<ISAN>, St
                                     sb.substring(25, 26))))));
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof ISAN && value.equals(((ISAN)object).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 }

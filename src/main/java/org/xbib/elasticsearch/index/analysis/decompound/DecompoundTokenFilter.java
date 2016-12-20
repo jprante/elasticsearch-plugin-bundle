@@ -42,7 +42,9 @@ public class DecompoundTokenFilter extends TokenFilter {
     @Override
     public final boolean incrementToken() throws IOException {
         if (!tokens.isEmpty()) {
-            assert current != null;
+            if (current == null) {
+                throw new IllegalArgumentException("current is null");
+            }
             String token = tokens.removeFirst();
             restoreState(current);
             termAtt.setEmpty().append(token);
@@ -82,5 +84,18 @@ public class DecompoundTokenFilter extends TokenFilter {
         super.reset();
         tokens.clear();
         current = null;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof DecompoundTokenFilter &&
+                tokens.equals(((DecompoundTokenFilter)object).tokens) &&
+                respectKeywords == ((DecompoundTokenFilter)object).respectKeywords &&
+                subwordsonly == ((DecompoundTokenFilter)object).subwordsonly;
+    }
+
+    @Override
+    public int hashCode() {
+        return tokens.hashCode() ^ Boolean.hashCode(respectKeywords) ^ Boolean.hashCode(subwordsonly);
     }
 }

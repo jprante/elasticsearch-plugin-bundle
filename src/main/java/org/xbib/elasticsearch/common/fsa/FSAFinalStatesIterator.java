@@ -14,7 +14,7 @@ public final class FSAFinalStatesIterator implements Iterator<ByteBuffer> {
      * Default expected depth of the recursion stack (estimated longest sequence
      * in the automaton). Buffers expand by the same value if exceeded.
      */
-    private final static int EXPECTED_MAX_STATES = 15;
+    private static final int EXPECTED_MAX_STATES = 15;
 
     /**
      * The FSA to which this iterator belongs.

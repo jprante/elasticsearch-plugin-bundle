@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory implements WordDelimiterFlags {
 
     // source => type
-    private static Pattern typePattern = Pattern.compile("(.*)\\s*=>\\s*(.*)\\s*$");
+    private static final Pattern typePattern = Pattern.compile("(.*)\\s*=>\\s*(.*)\\s*$");
 
     private final char[] out = new char[256];
 
@@ -104,7 +104,7 @@ public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory imple
         }
 
         // ensure the table is always at least as big as DEFAULT_WORD_DELIM_TABLE for performance
-        byte types[] = new byte[Math.max(typeMap.lastKey() + 1, WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE.length)];
+        byte[] types = new byte[Math.max(typeMap.lastKey() + 1, WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE.length)];
         for (int i = 0; i < types.length; i++) {
             types[i] = WordDelimiterIterator.getType(i);
         }
@@ -169,6 +169,8 @@ public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory imple
                         }
                         c = (char) Integer.parseInt(s.substring(readPos, readPos + 4), 16);
                         readPos += 4;
+                        break;
+                    default:
                         break;
                 }
             }

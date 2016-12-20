@@ -40,7 +40,7 @@ public final class ConcatTokenFilter extends TokenFilter {
         while (input.incrementToken()) {
             String term = new String(termAttr.buffer(), 0, termAttr.length());
             List<String> word = posIncAttr.getPositionIncrement() > 0 ?
-                    new LinkedList<String>() : words.removeLast();
+                    new LinkedList<>() : words.removeLast();
             word.add(term);
             words.add(word);
         }
@@ -48,7 +48,7 @@ public final class ConcatTokenFilter extends TokenFilter {
             makePhrases(words, phrases, 0);
             concat = true;
         }
-        if (phrases.size() > 0) {
+        if (!phrases.isEmpty()) {
             String phrase = phrases.removeFirst();
             restoreState(current);
             clearAttributes();
@@ -65,7 +65,7 @@ public final class ConcatTokenFilter extends TokenFilter {
 
     private void makePhrases(List<List<String>> words, List<String> phrases, int currPos) {
         for (int i = currPos; i < words.size(); i++) {
-            if (phrases.size() == 0) {
+            if (phrases.isEmpty()) {
                 phrases.addAll(words.get(i));
             } else {
                 List<String> newPhrases = new LinkedList<>();
@@ -79,4 +79,15 @@ public final class ConcatTokenFilter extends TokenFilter {
             }
         }
     }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof ConcatTokenFilter;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
+
 }

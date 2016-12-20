@@ -81,9 +81,9 @@ public class GTIN extends AbstractStandardNumber implements Comparable<GTIN>, St
     }
 
     @Override
-    public GTIN verify() throws NumberFormatException {
+    public GTIN verify() {
         if (value == null || value.isEmpty()) {
-            throw new NumberFormatException("invalid");
+            throw new NumberFormatException("invalid value");
         }
         if (!check()) {
             throw new NumberFormatException("bad checksum");
@@ -134,5 +134,15 @@ public class GTIN extends AbstractStandardNumber implements Comparable<GTIN>, St
             i = sb.indexOf("-");
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof GTIN && value.equals(((GTIN)object).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 }

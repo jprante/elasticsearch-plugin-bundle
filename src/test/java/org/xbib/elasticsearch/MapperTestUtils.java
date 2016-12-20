@@ -42,7 +42,7 @@ public class MapperTestUtils {
                 .put(customSettings)
                 .build();
         Environment environment = new Environment(settings);
-        BundlePlugin bundlePlugin = new BundlePlugin();
+        BundlePlugin bundlePlugin = new BundlePlugin(settings);
         AnalysisModule analysisModule = new AnalysisModule(environment, Collections.singletonList(bundlePlugin));
         return analysisModule.getAnalysisRegistry();
     }
@@ -58,7 +58,7 @@ public class MapperTestUtils {
                 .put(customSettings)
                 .build();
         Environment environment = new Environment(settings);
-        BundlePlugin bundlePlugin = new BundlePlugin();
+        BundlePlugin bundlePlugin = new BundlePlugin(settings);
         AnalysisModule analysisModule = new AnalysisModule(environment, Collections.singletonList(bundlePlugin));
         IndicesModule indicesModule = new IndicesModule(Collections.singletonList(bundlePlugin));
         MapperRegistry mapperRegistry = indicesModule.getMapperRegistry();

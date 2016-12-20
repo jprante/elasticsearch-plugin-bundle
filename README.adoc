@@ -1,6 +1,54 @@
 # A plugin bundle for Elastisearch
 
-A plugin that consists of a compilation of useful Elasticsearch plugins related to indexing and searching documents.
+image:https://api.travis-ci.org/jprante/elasticsearch-plugin-bundle.svg[title="Build status", link="https://travis-ci.org/jprante/elasticsearch-plugin-bundle/"]
+image:https://img.shields.io/sonar/http/nemo.sonarqube.com/org.xbib.elasticsaerch.plugin%3Aelasticsearch-plugin-bundle/coverage.svg?style=flat-square[title="Coverage", link="https://sonarqube.com/dashboard/index?id=org.xbib.elasticsearch.plugin%3Aelasticsearch-plugin-bundle"]
+image:https://maven-badges.herokuapp.com/maven-central/org.jprante/elasticsearch-plugin-bundle/badge.svg[title="Maven Central", link="http://search.maven.org/#search%7Cga%7C1%7Cxbib%20elasticsearch-plugin-bundle"]
+image:https://img.shields.io/badge/License-Apache%202.0-blue.svg[title="Apache License 2.0", link="https://opensource.org/licenses/Apache-2.0"]
+image:https://img.shields.io/twitter/url/https/twitter.com/xbib.svg?style=social&label=Follow%20%40xbib[title="Twitter", link="https://twitter.com/xbib"]
+image:https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif[title="PayPal", link="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GVHFQYZ9WZ8HG"]
+
+This plugin contains 18 token filters, 4 tokenizers, 2 char filters, 5 analyzers, 4 field mappers,
+and 2 REST actions to enhance Elasticsearch.
+
+It's the combination of the following plugins:
+
+- elasticsearch-analysis-autophrase
+- elasticsearch-analysis-baseform
+- elasticsearch-analysis-concat
+- elasticsearch-analysis-decompound
+- elasticsearch-analysis-german
+- elasticsearch-analysis-hyphen
+- elasticsearch-analysis-icu
+- elasticsearch-analysis-naturalsort
+- elasticsearch-analysis-sortform
+- elasticsearch-analysis-standardnumber
+- elasticsearch-analysis-symbolname
+- elasticsearch-analysis-worddelimiter
+- elasticsearch-analysis-year
+- elasticsearch-mapper-crypt
+- elasticsearch-mapper-langdetect
+- elasticsearch-mapper-reference
+
+The plugin code in each plugin is equivalent to the code in this combined bundle plugin.
+
+# Overview
+
+## Analyzers
+
+- the `icu_collation` analyzer can apply rbbi ICU rule files on a field
+- the `hyphen` analyzer applies shingling and combining hyphenated words (german: Bindestrichwörter) on a field
+- the `naturalsort` analyzer applies natural sorting on a field (mixed numerical and strings in a value)
+
+## Tokenizers
+
+## Token filter
+
+## Char filters
+
+## Field mappers
+
+## REST actions
+
 
 - German normalizer: taken from Lucene
 
@@ -24,35 +72,41 @@ A plugin that consists of a compilation of useful Elasticsearch plugins related 
 
 - reference: 
 
-## Versions
 
-| Elasticsearch version    | Plugin        | Release date |
-| ------------------------ | ------------- | -------------|
-| 2.3.4                    | 2.3.4.0       | Jul 30, 2016 |
-| 2.3.3                    | 2.3.3.0       | May 23, 2016 |
-| 2.3.2                    | 2.3.2.0       | May 11, 2016 |
-| 2.2.0                    | 2.2.0.6       | Mar 25, 2016 |
-| 2.2.0                    | 2.2.0.3       | Mar  6, 2016 |
-| 2.2.0                    | 2.2.0.2       | Mar  3, 2016 |
-| 2.2.0                    | 2.2.0.1       | Feb 22, 2016 |
-| 2.2.0                    | 2.2.0.0       | Feb  8, 2016 |
-| 2.1.1                    | 2.1.1.2       | Dec 30, 2015 |
-| 2.1.1                    | 2.1.1.0       | Dec 21, 2015 |
-| 2.1.0                    | 2.1.0.0       | Nov 27, 2015 |
-| 2.0.0                    | 2.0.0.0       | Oct 28, 2015 |
-| 1.6.0                    | 1.6.0.0       | Jun 30, 2015 |
-| 1.5.2                    | 1.5.2.1       | Jun 30, 2015 |
-| 1.5.2                    | 1.5.2.0       | Apr 27, 2015 |
-| 1.5.1                    | 1.5.1.0       | Apr 23, 2015 |
-| 1.5.0                    | 1.5.0.0       | Mar 31, 2015 |
-| 1.4.4                    | 1.4.4.0       | Apr 26, 2015 |
-| 1.4.0                    | 1.4.0.6       | Feb 23, 2015 |
-| 1.4.0                    | 1.4.0.5       | Jan 28, 2015 |
-| 1.4.0                    | 1.4.0.4       | Jan 19, 2015 |
-| 1.4.0                    | 1.4.0.3       | Dec 16, 2014 |
-| 1.4.0                    | 1.4.0.1       | Nov 10, 2014 |
+.Table Compatibility matrix
+[frame="all"]
+|===
+| Plugin version | Elasticsearch version | Release date
+| 5.1.1.0  | 5.1.1     | Dec 19 2016
+| 2.3.4.0  | 2.3.4     | Jul 30, 2016
+| 2.3.3.0  | 2.3.3     | May 23, 2016
+| 2.3.2.0  | 2.3.2     | May 11, 2016
+| 2.2.0.6  | 2.2.0     | Mar 25, 2016
+| 2.2.0.3  | 2.2.0     | Mar  6, 2016
+| 2.2.0.2  | 2.2.0     | Mar  3, 2016
+| 2.2.0.1  | 2.2.0     | Feb 22, 2016
+| 2.2.0.0  | 2.2.0     | Feb  8, 2016
+| 2.1.1.2  | 2.1.1     | Dec 30, 2015
+| 2.1.1.0  | 2.1.1     | Dec 21, 2015
+| 2.1.0.0  | 2.1.0     | Nov 27, 2015
+| 2.0.0.0  | 2.0.0     | Oct 28, 2015
+| 1.6.0.0  | 1.6.0     | Jun 30, 2015
+| 1.5.2.1  | 1.5.2     | Jun 30, 2015
+| 1.5.2.0  | 1.5.2     | Apr 27, 2015
+| 1.5.1.0  | 1.5.1     | Apr 23, 2015
+| 1.5.0.0  | 1.5.0     | Mar 31, 2015
+| 1.4.4.0  | 1.4.4     | Apr 26, 2015
+| 1.4.0.6  | 1.4.0     | Feb 23, 2015
+| 1.4.0.5  | 1.4.0     | Jan 28, 2015
+| 1.4.0.4  | 1.4.0     | Jan 19, 2015
+| 1.4.0.3  | 1.4.0     | Dec 16, 2014
+| 1.4.0.1  | 1.4.0     | Nov 10, 2014
+|===
+
 
 ## Installation
+
+### Elasticsearch 5.x
 
 ### Elasticsearch 2.x
 

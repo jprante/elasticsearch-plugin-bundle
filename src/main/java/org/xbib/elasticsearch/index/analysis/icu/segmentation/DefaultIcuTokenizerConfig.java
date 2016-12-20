@@ -8,6 +8,7 @@ import org.apache.lucene.analysis.standard.StandardTokenizer;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 
 /**
  * Default {@link IcuTokenizerConfig} that is generally applicable
@@ -17,11 +18,10 @@ import java.io.InputStream;
  * but with the following tailorings:
  * <ul>
  * <li>Thai, Lao, and CJK text is broken into words with a dictionary.
- * <li>Myanmar, and Khmer text is broken into syllables
- * based on custom BreakIterator rules.
+ * <li>Myanmar, and Khmer text is broken into syllables based on custom BreakIterator rules.
  * </ul>
  */
-public class DefaultIcuTokenizerConfig extends IcuTokenizerConfig {
+public class DefaultIcuTokenizerConfig implements IcuTokenizerConfig {
     /**
      * Token type for words containing ideographic characters
      */
@@ -56,15 +56,15 @@ public class DefaultIcuTokenizerConfig extends IcuTokenizerConfig {
     private static final BreakIterator cjkBreakIterator = BreakIterator.getWordInstance(ULocale.ROOT);
     // the same as ROOT, except no dictionary segmentation for cjk
     private static final BreakIterator defaultBreakIterator =
-            readBreakIterator("Default.brk");
+            readBreakIterator(DefaultIcuTokenizerConfig.class.getClassLoader(), "icu/Default.brk");
     private static final BreakIterator myanmarSyllableIterator =
-            readBreakIterator("MyanmarSyllable.brk");
+            readBreakIterator(DefaultIcuTokenizerConfig.class.getClassLoader(), "icu/MyanmarSyllable.brk");
 
     private final boolean cjkAsWords;
     private final boolean myanmarAsWords;
 
     /**
-     * Creates a new config. This object is lightweight, but the first
+     * Creates a new config. The first
      * time the class is referenced, breakiterators will be initialized.
      *
      * @param cjkAsWords true if cjk text should undergo dictionary-based segmentation,
@@ -79,14 +79,11 @@ public class DefaultIcuTokenizerConfig extends IcuTokenizerConfig {
         this.myanmarAsWords = myanmarAsWords;
     }
 
-    private static RuleBasedBreakIterator readBreakIterator(String filename) {
-        InputStream is = DefaultIcuTokenizerConfig.class.getResourceAsStream(filename);
-        try {
-            RuleBasedBreakIterator bi = RuleBasedBreakIterator.getInstanceFromCompiledRules(is);
-            is.close();
-            return bi;
+    private static RuleBasedBreakIterator readBreakIterator(ClassLoader classLoader, String resourceName) {
+        try (InputStream inputStream = classLoader.getResource(resourceName).openStream()) {
+            return RuleBasedBreakIterator.getInstanceFromCompiledRules(inputStream);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException("unable to load resource " + resourceName + " " + e.getMessage(), e);
         }
     }
 

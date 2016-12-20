@@ -42,12 +42,7 @@ public class ARK extends AbstractStandardNumber implements Comparable<ARK> {
 
     @Override
     public ARK set(CharSequence value) {
-        try {
-            this.value = value != null ? URI.create(value.toString()) : null;
-        } catch (IllegalArgumentException e) {
-            this.value = null;
-
-        }
+        this.value = value != null ? URI.create(value.toString()) : null;
         return this;
     }
 
@@ -82,10 +77,9 @@ public class ARK extends AbstractStandardNumber implements Comparable<ARK> {
      * No verification.
      *
      * @return this ARK
-     * @throws NumberFormatException if verification failed
      */
     @Override
-    public ARK verify() throws NumberFormatException {
+    public ARK verify() {
         if (value == null || !"ark".equals(value.getScheme())) {
             throw new NumberFormatException();
         }
@@ -106,8 +100,19 @@ public class ARK extends AbstractStandardNumber implements Comparable<ARK> {
         return value;
     }
 
+    @Override
     public ARK reset() {
         this.value = null;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof ARK && value.equals(((ARK)object).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 }

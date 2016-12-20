@@ -5,6 +5,7 @@ import org.elasticsearch.action.ActionRequest;
 import org.elasticsearch.action.ActionResponse;
 import org.elasticsearch.common.component.LifecycleComponent;
 import org.elasticsearch.common.inject.Module;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.analysis.AnalyzerProvider;
 import org.elasticsearch.index.analysis.CharFilterFactory;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
@@ -79,21 +80,31 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
     private static final ReferenceMapperTypeParser referenceMapperTypeParser =
             new ReferenceMapperTypeParser();
 
+    private final Settings settings;
+
+    public BundlePlugin(Settings settings) {
+        this.settings = settings;
+    }
+
     @Override
     public Map<String, AnalysisModule.AnalysisProvider<CharFilterFactory>> getCharFilters() {
         Map<String, AnalysisModule.AnalysisProvider<CharFilterFactory>> extra = new LinkedHashMap<>();
-        extra.put("icu_normalizer", IcuNormalizerCharFilterFactory::new);
-        extra.put("icu_folding", IcuFoldingCharFilterFactory::new);
+        if (settings.getAsBoolean("plugins.xbib.icu.enabled", true)) {
+            extra.put("icu_normalizer", IcuNormalizerCharFilterFactory::new);
+            extra.put("icu_folding", IcuFoldingCharFilterFactory::new);
+        }
         return extra;
     }
 
     @Override
     public Map<String, AnalysisModule.AnalysisProvider<TokenFilterFactory>> getTokenFilters() {
         Map<String, AnalysisModule.AnalysisProvider<TokenFilterFactory>> extra = new LinkedHashMap<>();
-        extra.put("icu_normalizer", IcuNormalizerTokenFilterFactory::new);
-        extra.put("icu_folding", IcuFoldingTokenFilterFactory::new);
-        extra.put("icu_transform", IcuTransformTokenFilterFactory::new);
-        extra.put("icu_numberformat", IcuNumberFormatTokenFilterFactory::new);
+        if (settings.getAsBoolean("plugins.xbib.icu.enabled", true)) {
+            extra.put("icu_normalizer", IcuNormalizerTokenFilterFactory::new);
+            extra.put("icu_folding", IcuFoldingTokenFilterFactory::new);
+            extra.put("icu_transform", IcuTransformTokenFilterFactory::new);
+            extra.put("icu_numberformat", IcuNumberFormatTokenFilterFactory::new);
+        }
         extra.put("auto_phrase", AutoPhrasingTokenFilterFactory::new);
         extra.put("baseform", BaseformTokenFilterFactory::new);
         extra.put("concat", ConcatTokenFilterFactory::new);
@@ -102,8 +113,8 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
         extra.put("german_normalize", GermanNormalizationFilterFactory::new);
         extra.put("hyphen", HyphenTokenFilterFactory::new);
         extra.put("sortform", SortformTokenFilterFactory::new);
-        extra.put("standardnumber", (indexSettings, environment, name, settings) ->
-                new StandardnumberTokenFilterFactory(indexSettings, environment, name, settings, standardNumberTypeParser));
+        extra.put("standardnumber", (indexSettings, environment, name, factorySettings) ->
+                new StandardnumberTokenFilterFactory(indexSettings, environment, name, factorySettings, standardNumberTypeParser));
         extra.put("fst_decompound", FstDecompoundTokenFilterFactory::new);
         extra.put("worddelimiter", WordDelimiterFilterFactory::new);
         extra.put("worddelimiter2", WordDelimiterFilter2Factory::new);
@@ -115,8 +126,10 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
     @Override
     public Map<String, AnalysisModule.AnalysisProvider<TokenizerFactory>> getTokenizers() {
         Map<String, AnalysisModule.AnalysisProvider<TokenizerFactory>> extra = new LinkedHashMap<>();
-        extra.put("icu_collation_tokenizer", IcuCollationTokenizerFactory::new);
-        extra.put("icu_tokenizer", IcuTokenizerFactory::new);
+        if (settings.getAsBoolean("plugins.xbib.icu.enabled", true)) {
+            extra.put("icu_collation_tokenizer", IcuCollationTokenizerFactory::new);
+            extra.put("icu_tokenizer", IcuTokenizerFactory::new);
+        }
         extra.put("hyphen", HyphenTokenizerFactory::new);
         extra.put("naturalsort", NaturalSortKeyTokenizerFactory::new);
         return extra;
@@ -125,22 +138,24 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
     @Override
     public Map<String, AnalysisModule.AnalysisProvider<AnalyzerProvider<? extends Analyzer>>> getAnalyzers() {
         Map<String, AnalysisModule.AnalysisProvider<AnalyzerProvider<? extends Analyzer>>> extra = new LinkedHashMap<>();
-        extra.put("icu_collation", IcuCollationKeyAnalyzerProvider::new);
+        if (settings.getAsBoolean("plugins.xbib.icu.enabled", true)) {
+            extra.put("icu_collation", IcuCollationKeyAnalyzerProvider::new);
+        }
         extra.put("hyphen", HyphenAnalyzerProvider::new);
         extra.put("naturalsort", NaturalSortKeyAnalyzerProvider::new);
         extra.put("sortform", SortformAnalyzerProvider::new);
-        extra.put("standardnumber", (indexSettings, environment, name, settings) ->
-                new StandardnumberAnalyzerProvider(indexSettings, environment, name, settings, standardNumberTypeParser));
+        extra.put("standardnumber", (indexSettings, environment, name, factorySettings) ->
+                new StandardnumberAnalyzerProvider(indexSettings, environment, name, factorySettings, standardNumberTypeParser));
         return extra;
     }
 
     @Override
     public Map<String, Mapper.TypeParser> getMappers() {
         Map<String, Mapper.TypeParser> extra = new LinkedHashMap<>();
-        extra.put(StandardnumberMapper.CONTENT_TYPE, standardNumberTypeParser);
-        extra.put(ReferenceMapper.CONTENT_TYPE, referenceMapperTypeParser);
-        extra.put(CryptMapper.CONTENT_TYPE, new CryptMapper.TypeParser());
-        extra.put(LangdetectMapper.CONTENT_TYPE, new LangdetectMapper.TypeParser());
+        extra.put(StandardnumberMapper.MAPPER_TYPE, standardNumberTypeParser);
+        extra.put(ReferenceMapper.MAPPER_TYPE, referenceMapperTypeParser);
+        extra.put(CryptMapper.MAPPER_TYPE, new CryptMapper.TypeParser());
+        extra.put(LangdetectMapper.MAPPER_TYPE, new LangdetectMapper.TypeParser());
         return extra;
     }
 
@@ -160,6 +175,7 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
         return extra;
     }
 
+    @Override
     public Collection<Module> createGuiceModules() {
         Collection<Module> extra = new ArrayList<>();
         extra.add(new ReferenceMapperModule(referenceMapperTypeParser));

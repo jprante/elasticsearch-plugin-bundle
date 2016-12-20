@@ -25,7 +25,7 @@ abstract class BreakIteratorWrapper {
 
     protected final CharArrayIterator textIterator = new CharArrayIterator();
 
-    protected char text[];
+    protected char[] text;
 
     protected int start;
 

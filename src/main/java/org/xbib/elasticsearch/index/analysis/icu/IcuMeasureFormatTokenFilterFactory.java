@@ -22,26 +22,24 @@ public class IcuMeasureFormatTokenFilterFactory extends AbstractTokenFilterFacto
         String formatWidthStr = settings.get("format", "NARROW");
         MeasureFormat.FormatWidth formatWidth = MeasureFormat.FormatWidth.NARROW;
         switch (formatWidthStr) {
-            case "NARROW": {
+            case "NARROW":
                 // "3h"
                 formatWidth = MeasureFormat.FormatWidth.NARROW;
                 break;
-            }
-            case "NUMERIC": {
+            case "NUMERIC":
                 // "3:17"
                 formatWidth = MeasureFormat.FormatWidth.NUMERIC;
                 break;
-            }
-            case "WIDE": {
+            case "WIDE":
                 // "3 hours"
                 formatWidth = MeasureFormat.FormatWidth.WIDE;
                 break;
-            }
-            case "SHORT": {
+            case "SHORT":
                 // "3 hrs"
                 formatWidth = MeasureFormat.FormatWidth.SHORT;
                 break;
-            }
+            default:
+                break;
         }
         this.measureFormat = MeasureFormat.getInstance(locale, formatWidth);
     }

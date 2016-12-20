@@ -23,9 +23,6 @@ public class IcuNumberFormatTokenFilterFactory extends AbstractTokenFilterFactor
         String formatStr = settings.get("format", "SPELLOUT");
         int format;
         switch (formatStr.toUpperCase()) {
-            case "SPELLOUT":
-                format = RuleBasedNumberFormat.SPELLOUT;
-                break;
             case "DURATION":
                 format = RuleBasedNumberFormat.DURATION;
                 break;
@@ -38,6 +35,7 @@ public class IcuNumberFormatTokenFilterFactory extends AbstractTokenFilterFactor
             case "ORDINAL":
                 format = RuleBasedNumberFormat.ORDINAL;
                 break;
+            case "SPELLOUT":
             default:
                 format = RuleBasedNumberFormat.SPELLOUT;
                 break;

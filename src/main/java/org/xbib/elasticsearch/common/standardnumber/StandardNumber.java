@@ -56,7 +56,7 @@ public interface StandardNumber {
      * @return this standard number if verification was successful
      * @throws NumberFormatException if verification failed
      */
-    StandardNumber verify() throws NumberFormatException;
+    StandardNumber verify();
 
     /**
      * Indicate that a correct check sum should be computed.

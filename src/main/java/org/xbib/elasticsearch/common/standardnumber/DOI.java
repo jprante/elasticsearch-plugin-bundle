@@ -94,7 +94,7 @@ public class DOI extends AbstractStandardNumber implements Comparable<DOI>, Stan
     }
 
     @Override
-    public DOI verify() throws NumberFormatException {
+    public DOI verify() {
         if (value == null) {
             throw new NumberFormatException();
         }
@@ -121,6 +121,7 @@ public class DOI extends AbstractStandardNumber implements Comparable<DOI>, Stan
         );
     }
 
+    @Override
     public DOI reset() {
         this.value = null;
         return this;
@@ -147,5 +148,15 @@ public class DOI extends AbstractStandardNumber implements Comparable<DOI>, Stan
             this.httpDoi = URI.create("http://doi.org/" + value);
             this.httpDxDoi = URI.create("http://dx.doi.org/" + value);
         }
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof DOI && value.equals(((DOI)object).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 }

@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class TransportLangdetectAction extends TransportAction<LangdetectRequest, LangdetectResponse> {
 
-    private final static Map<String, LangdetectService> services = new HashMap<>();
+    private static final Map<String, LangdetectService> services = new HashMap<>();
 
     @Inject
     public TransportLangdetectAction(Settings settings, ThreadPool threadPool,

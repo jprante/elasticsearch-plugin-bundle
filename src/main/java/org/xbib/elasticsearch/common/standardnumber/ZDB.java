@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  */
 public class ZDB extends AbstractStandardNumber implements Comparable<ZDB>, StandardNumber {
 
-    private final static Pattern PATTERN = Pattern.compile("^[\\p{Digit}]{2,10}\\p{Pd}{0,1}[\\p{Digit}xX]{1}\\b");
+    private static final Pattern PATTERN = Pattern.compile("^[\\p{Digit}]{2,10}\\p{Pd}{0,1}[\\p{Digit}xX]{1}\\b");
 
     private String value;
 
@@ -65,7 +65,7 @@ public class ZDB extends AbstractStandardNumber implements Comparable<ZDB>, Stan
     }
 
     @Override
-    public ZDB verify() throws NumberFormatException {
+    public ZDB verify() {
         if (value == null || value.isEmpty()) {
             throw new NumberFormatException("invalid");
         }
@@ -117,5 +117,15 @@ public class ZDB extends AbstractStandardNumber implements Comparable<ZDB>, Stan
             i = sb.indexOf("-");
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof ZDB && value.equals(((ZDB)object).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 }

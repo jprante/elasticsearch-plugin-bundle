@@ -32,10 +32,15 @@ import java.util.regex.Pattern;
 public class SICI extends AbstractStandardNumber implements Comparable<SICI>, StandardNumber {
 
     private static final Pattern PATTERN = Pattern.compile("[\\p{Graph}\\p{Punct}]{12,64}");
-    private final static String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ#";
-    private final static int modulus = ALPHABET.length();
+
+    private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ#";
+
+    private static final int modulus = ALPHABET.length();
+
     private String value;
+
     private String formatted;
+
     private boolean createWithChecksum;
 
     @Override
@@ -75,7 +80,7 @@ public class SICI extends AbstractStandardNumber implements Comparable<SICI>, St
     }
 
     @Override
-    public SICI verify() throws NumberFormatException {
+    public SICI verify() {
         if (value == null) {
             throw new NumberFormatException("invalid");
         }
@@ -132,5 +137,15 @@ public class SICI extends AbstractStandardNumber implements Comparable<SICI>, St
         }
         this.formatted = "SICI " + sb;
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof SICI && value.equals(((SICI)object).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 }

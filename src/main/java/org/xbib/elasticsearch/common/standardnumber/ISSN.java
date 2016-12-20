@@ -55,7 +55,7 @@ import java.util.regex.Pattern;
  */
 public class ISSN extends AbstractStandardNumber implements Comparable<ISSN>, StandardNumber {
 
-    private final static Pattern PATTERN = Pattern.compile("[0-9]{4}\\p{Pd}?[0-9]{3}[0-9xX]");
+    private static final Pattern PATTERN = Pattern.compile("[0-9]{4}\\p{Pd}?[0-9]{3}[0-9xX]");
 
     private String value;
 
@@ -98,7 +98,7 @@ public class ISSN extends AbstractStandardNumber implements Comparable<ISSN>, St
     }
 
     @Override
-    public ISSN verify() throws NumberFormatException {
+    public ISSN verify() {
         if (value == null || value.isEmpty()) {
             throw new NumberFormatException("invalid");
         }
@@ -171,5 +171,15 @@ public class ISSN extends AbstractStandardNumber implements Comparable<ISSN>, St
             this.formatted = sb.substring(0, 4) + "-" + sb.substring(4, 8);
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof ISSN && value.equals(((ISSN)object).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 }

@@ -64,12 +64,12 @@ public class ISWC extends AbstractStandardNumber implements Comparable<ISWC>, St
     }
 
     @Override
-    public ISWC verify() throws NumberFormatException {
+    public ISWC verify() {
         if (value == null || value.isEmpty()) {
             throw new NumberFormatException("invalid");
         }
         if (!check()) {
-            throw new NumberFormatException("bad createChecksum");
+            throw new NumberFormatException("bad checksum");
         }
         return this;
     }
@@ -130,5 +130,15 @@ public class ISWC extends AbstractStandardNumber implements Comparable<ISWC>, St
                     + sb.substring(10, 11);
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof ISWC && value.equals(((ISWC)object).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 }

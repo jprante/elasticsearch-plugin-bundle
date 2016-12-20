@@ -71,8 +71,9 @@ public final class ConstantArcSizeFSA extends FSA {
      * @param data FSA data. There must be no trailing bytes after the last state.
      */
     ConstantArcSizeFSA(byte[] data, int epsilon) {
-        assert epsilon == 0 : "Epsilon is not zero?";
-
+        if (epsilon != 0) {
+            throw new IllegalArgumentException("Epsilon is not zero?");
+        }
         this.epsilon = epsilon;
         this.data = data;
     }
@@ -112,8 +113,10 @@ public final class ConstantArcSizeFSA extends FSA {
 
     /**
      * Fills the target state address of an arc.
+     * @param a arc
      */
-    private int getArcTarget(int arc) {
+    private int getArcTarget(int a) {
+        int arc =a;
         arc += ADDRESS_OFFSET;
         return (data[arc]) << 24 |
                 (data[arc + 1] & 0xff) << 16 |

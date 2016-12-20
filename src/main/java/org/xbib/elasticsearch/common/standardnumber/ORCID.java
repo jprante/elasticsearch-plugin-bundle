@@ -35,12 +35,22 @@ public class ORCID extends ISNI {
     }
 
     @Override
-    public ORCID verify() throws NumberFormatException {
+    public ORCID verify() {
         super.verify();
         return this;
     }
 
     public URI toURI() {
         return URI.create("http://orcid.org/" + normalizedValue());
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof ORCID && value.equals(((ORCID)object).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 }

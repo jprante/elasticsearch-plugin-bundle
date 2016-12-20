@@ -63,27 +63,35 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
         // set the strength flag, otherwise it will be the default.
         String strength = settings.get("strength");
         if (strength != null) {
-            if (strength.equalsIgnoreCase("primary")) {
-                collator.setStrength(Collator.PRIMARY);
-            } else if (strength.equalsIgnoreCase("secondary")) {
-                collator.setStrength(Collator.SECONDARY);
-            } else if (strength.equalsIgnoreCase("tertiary")) {
-                collator.setStrength(Collator.TERTIARY);
-            } else if (strength.equalsIgnoreCase("quaternary")) {
-                collator.setStrength(Collator.QUATERNARY);
-            } else if (strength.equalsIgnoreCase("identical")) {
-                collator.setStrength(Collator.IDENTICAL);
-            } else {
-                throw new ElasticsearchException("Invalid strength: " + strength);
+            int i;
+            switch (strength.toLowerCase()) {
+                case "primary":
+                    i = Collator.PRIMARY;
+                    break;
+                case "secondary":
+                    i = Collator.SECONDARY;
+                    break;
+                case "tertiary":
+                    i = Collator.TERTIARY;
+                    break;
+                case "quaternary":
+                    i = Collator.QUATERNARY;
+                    break;
+                case "identical":
+                    i = Collator.IDENTICAL;
+                    break;
+                default:
+                    throw new ElasticsearchException("Invalid strength: " + strength);
             }
+            collator.setStrength(i);
         }
 
         // set the decomposition flag, otherwise it will be the default.
         String decomposition = settings.get("decomposition");
         if (decomposition != null) {
-            if (decomposition.equalsIgnoreCase("no")) {
+            if ("no".equalsIgnoreCase(decomposition)) {
                 collator.setDecomposition(Collator.NO_DECOMPOSITION);
-            } else if (decomposition.equalsIgnoreCase("canonical")) {
+            } else if ("canonical".equalsIgnoreCase(decomposition)) {
                 collator.setDecomposition(Collator.CANONICAL_DECOMPOSITION);
             } else {
                 throw new ElasticsearchException("Invalid decomposition: " + decomposition);
@@ -94,9 +102,9 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
         RuleBasedCollator rbc = (RuleBasedCollator) collator;
         String alternate = settings.get("alternate");
         if (alternate != null) {
-            if (alternate.equalsIgnoreCase("shifted")) {
+            if ("shifted".equalsIgnoreCase(alternate)) {
                 rbc.setAlternateHandlingShifted(true);
-            } else if (alternate.equalsIgnoreCase("non-ignorable")) {
+            } else if ("non-ignorable".equalsIgnoreCase(alternate)) {
                 rbc.setAlternateHandlingShifted(false);
             } else {
                 throw new ElasticsearchException("Invalid alternate: " + alternate);
@@ -110,9 +118,9 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
 
         String caseFirst = settings.get("caseFirst");
         if (caseFirst != null) {
-            if (caseFirst.equalsIgnoreCase("lower")) {
+            if ("lower".equalsIgnoreCase(caseFirst)) {
                 rbc.setLowerCaseFirst(true);
-            } else if (caseFirst.equalsIgnoreCase("upper")) {
+            } else if ("upper".equalsIgnoreCase(caseFirst)) {
                 rbc.setUpperCaseFirst(true);
             } else {
                 throw new ElasticsearchException("invalid caseFirst: " + caseFirst);

@@ -52,4 +52,15 @@ public final class IcuMeasureFormatTokenFilter extends TokenFilter {
             return true;
         }
     }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof IcuMeasureFormatTokenFilter &&
+                measureFormat.equals(((IcuMeasureFormatTokenFilter)object).measureFormat);
+    }
+
+    @Override
+    public int hashCode() {
+        return measureFormat.hashCode();
+    }
 }

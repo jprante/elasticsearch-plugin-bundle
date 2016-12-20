@@ -1,6 +1,5 @@
 package org.xbib.elasticsearch.rest.action.isbnformat;
 
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.node.NodeClient;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;

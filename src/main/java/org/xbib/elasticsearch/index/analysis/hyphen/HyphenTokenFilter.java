@@ -8,7 +8,9 @@ import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.util.AttributeSource;
 
 import java.io.IOException;
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Deque;
 import java.util.regex.Pattern;
 
 /**
@@ -43,14 +45,14 @@ import java.util.regex.Pattern;
  */
 public class HyphenTokenFilter extends TokenFilter {
 
-    final static char[] HYPHEN = new char[]{'-'};
+    static final char[] HYPHEN = {'-'};
     // TODO use TypeAttribute, LETTER_COMP or something
-    private final static Pattern letter = Pattern.compile("\\p{L}+", Pattern.UNICODE_CHARACTER_CLASS);
+    private static final Pattern letter = Pattern.compile("\\p{L}+", Pattern.UNICODE_CHARACTER_CLASS);
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
     private final KeywordAttribute keywordAtt = addAttribute(KeywordAttribute.class);
     private final PositionIncrementAttribute posIncrAtt = addAttribute(PositionIncrementAttribute.class);
 
-    private final Stack<String> stack;
+    private final Deque<String> stack;
 
     private final char[] hyphenchars;
 
@@ -62,7 +64,7 @@ public class HyphenTokenFilter extends TokenFilter {
 
     protected HyphenTokenFilter(TokenStream input, char[] hyphenchars, boolean subwords, boolean respectKeywords) {
         super(input);
-        this.stack = new Stack<>();
+        this.stack = new ArrayDeque<>();
         this.hyphenchars = hyphenchars;
         this.subwords = subwords;
         this.respectKeywords = respectKeywords;
@@ -97,15 +99,15 @@ public class HyphenTokenFilter extends TokenFilter {
                 continue;
             }
             if (subwords) {
-                String head = "";
+                StringBuilder head = new StringBuilder();
                 String tail;
                 while (pos > 0) {
-                    head = head + s.substring(0, pos);
+                    head.append(s.substring(0, pos));
                     tail = s.substring(pos + 1);
                     // only words, no numbers
                     if (letter.matcher(head).matches()) {
                         if (head.length() > 1) {
-                            stack.push(head);
+                            stack.push(head.toString());
                         }
                         stack.push(tail);
                         stack.push(head + tail);
@@ -120,4 +122,16 @@ public class HyphenTokenFilter extends TokenFilter {
         return !stack.isEmpty();
     }
 
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof HyphenTokenFilter &&
+                Arrays.equals(hyphenchars, ((HyphenTokenFilter)object).hyphenchars) &&
+                Boolean.compare(subwords, ((HyphenTokenFilter)object).subwords) == 0 &&
+                Boolean.compare(respectKeywords, ((HyphenTokenFilter)object).respectKeywords) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(hyphenchars) ^ Boolean.hashCode(subwords) ^ Boolean.hashCode(respectKeywords);
+    }
 }

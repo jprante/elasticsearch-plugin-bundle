@@ -124,7 +124,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
         BytesRef b2 = bytesFromTokenStream(tsWithSpace);
         assertTrue(compare(b1.bytes, b2.bytes) == 0);
 
-        // now assert that punctuation still matters: foo-bar < foo bar
+        // now check that punctuation still matters: foo-bar < foo bar
         TokenStream tsWithPunctuation = analyzer.tokenStream(null, "foo-bar");
         BytesRef b3 = bytesFromTokenStream(tsWithPunctuation);
         assertTrue(compare(b3.bytes, b1.bytes) < 0);
@@ -180,7 +180,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
         BytesRef b4 = bytesFromTokenStream(tsWithoutAccentsUpperCase);
         assertTrue(compare(b3.bytes, b4.bytes) == 0);
 
-        // now assert that case still matters: resume < Resume
+        // now check that case still matters: resume < Resume
         TokenStream tsLower = analyzer.tokenStream(null, withoutAccents);
         BytesRef b5 = bytesFromTokenStream(tsLower);
         TokenStream tsUpper = analyzer.tokenStream(null, withoutAccentsUpperCase);

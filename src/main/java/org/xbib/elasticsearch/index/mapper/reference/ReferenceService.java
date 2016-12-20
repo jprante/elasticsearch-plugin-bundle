@@ -28,9 +28,11 @@ public class ReferenceService extends AbstractLifecycleComponent {
 
     @Override
     protected void doStop() {
+        // nothing to stop
     }
 
     @Override
     protected void doClose() {
+        // nothing to close
     }
 }

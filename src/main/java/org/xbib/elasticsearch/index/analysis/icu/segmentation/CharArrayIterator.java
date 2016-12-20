@@ -7,7 +7,7 @@ import java.text.CharacterIterator;
  */
 final class CharArrayIterator implements CharacterIterator {
 
-    private char array[];
+    private char[] array;
 
     private int start;
 
@@ -36,7 +36,7 @@ final class CharArrayIterator implements CharacterIterator {
      * @param start  offset into buffer
      * @param length maximum length to examine
      */
-    void setText(final char array[], int start, int length) {
+    void setText(final char[] array, int start, int length) {
         this.array = array;
         this.start = start;
         this.index = start;

@@ -8,9 +8,9 @@ import java.util.List;
  */
 class Node {
 
-    public String content;
+    private String content;
 
-    public int pos;
+    private int pos;
 
     private List<String> classes;
 
@@ -26,6 +26,22 @@ class Node {
         this.content = content;
         this.classes = new ArrayList<>();
         this.children = new ArrayList<>();
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setPos(int pos) {
+        this.pos = pos;
+    }
+
+    public int getPos() {
+        return pos;
     }
 
     public Node classes(List<String> classes) {

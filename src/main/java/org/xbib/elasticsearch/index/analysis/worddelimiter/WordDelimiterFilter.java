@@ -90,7 +90,7 @@ public final class WordDelimiterFilter extends TokenFilter implements WordDelimi
     // used for accumulating position increment gaps
     private int accumPosInc = 0;
 
-    private char savedBuffer[] = new char[1024];
+    private char[] savedBuffer = new char[1024];
     private int savedStartOffset;
     private int savedEndOffset;
     private String savedType;
@@ -117,8 +117,7 @@ public final class WordDelimiterFilter extends TokenFilter implements WordDelimi
         super(in);
         this.flags = configurationFlags;
         this.protWords = protWords;
-        this.iterator = new WordDelimiterIterator(
-                charTypeTable, has(SPLIT_ON_CASE_CHANGE), has(SPLIT_ON_NUMERICS), has(STEM_ENGLISH_POSSESSIVE));
+        this.iterator = new WordDelimiterIterator(charTypeTable, has(SPLIT_ON_CASE_CHANGE), has(SPLIT_ON_NUMERICS), has(STEM_ENGLISH_POSSESSIVE));
     }
 
     /**
@@ -222,10 +221,8 @@ public final class WordDelimiterFilter extends TokenFilter implements WordDelimi
 
             // at the end of the string, output any concatenations
             if (iterator.end == WordDelimiterIterator.DONE) {
-                if (!concat.isEmpty()) {
-                    if (flushConcatenation(concat)) {
-                        return true;
-                    }
+                if (!concat.isEmpty() && flushConcatenation(concat)) {
+                    return true;
                 }
 
                 if (!concatAll.isEmpty()) {
@@ -304,7 +301,7 @@ public final class WordDelimiterFilter extends TokenFilter implements WordDelimi
         savedStartOffset = offsetAttribute.startOffset();
         savedEndOffset = offsetAttribute.endOffset();
         // if length by start + end offsets doesn't match the term text then assume this is a synonym and don't adjust the offsets.
-        hasIllegalOffsets = (savedEndOffset - savedStartOffset != termAttribute.length());
+        hasIllegalOffsets = savedEndOffset - savedStartOffset != termAttribute.length();
         savedType = typeAttribute.type();
 
         if (savedBuffer.length < termAttribute.length()) {
@@ -429,6 +426,17 @@ public final class WordDelimiterFilter extends TokenFilter implements WordDelimi
         return (flags & flag) != 0;
     }
 
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof WordDelimiterFilter &&
+                iterator.equals(((WordDelimiterFilter)object).iterator);
+    }
+
+    @Override
+    public int hashCode() {
+        return iterator.hashCode();
+    }
+
     /**
      * A WDF concatenated 'run'
      */
@@ -446,7 +454,7 @@ public final class WordDelimiterFilter extends TokenFilter implements WordDelimi
          * @param offset Offset in the concetenation to add the text
          * @param length Length of the text to append
          */
-        void append(char text[], int offset, int length) {
+        void append(char[] text, int offset, int length) {
             buffer.append(text, offset, length);
             subwordCount++;
         }
@@ -459,8 +467,7 @@ public final class WordDelimiterFilter extends TokenFilter implements WordDelimi
             if (termAttribute.length() < buffer.length()) {
                 termAttribute.resizeBuffer(buffer.length());
             }
-            char termbuffer[] = termAttribute.buffer();
-
+            char[] termbuffer = termAttribute.buffer();
             buffer.getChars(0, buffer.length(), termbuffer, 0);
             termAttribute.setLength(buffer.length());
 

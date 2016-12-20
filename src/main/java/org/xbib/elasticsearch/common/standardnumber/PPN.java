@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  */
 public class PPN extends AbstractStandardNumber implements Comparable<PPN>, StandardNumber {
 
-    private final static Pattern PATTERN = Pattern.compile("[\\p{Digit}]{3,10}\\p{Pd}{0,1}[\\p{Digit}xX]{1}\\b");
+    private static final Pattern PATTERN = Pattern.compile("[\\p{Digit}]{3,10}\\p{Pd}{0,1}[\\p{Digit}xX]{1}\\b");
 
     private String value;
 
@@ -61,7 +61,7 @@ public class PPN extends AbstractStandardNumber implements Comparable<PPN>, Stan
     }
 
     @Override
-    public PPN verify() throws NumberFormatException {
+    public PPN verify() {
         if (value == null || value.isEmpty()) {
             throw new NumberFormatException("invalid");
         }
@@ -113,5 +113,15 @@ public class PPN extends AbstractStandardNumber implements Comparable<PPN>, Stan
             i = sb.indexOf("-");
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof PPN && value.equals(((PPN)object).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 }

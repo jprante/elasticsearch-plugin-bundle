@@ -123,11 +123,7 @@ public abstract class FSA implements Iterable<ByteBuffer> {
         if (node == 0) {
             return Collections.<ByteBuffer>emptyList();
         }
-        return new Iterable<ByteBuffer>() {
-            public Iterator<ByteBuffer> iterator() {
-                return new FSAFinalStatesIterator(FSA.this, node);
-            }
-        };
+        return () -> new FSAFinalStatesIterator(FSA.this, node);
     }
 
     /**
@@ -152,6 +148,7 @@ public abstract class FSA implements Iterable<ByteBuffer> {
      *
      * @return iterator
      */
+    @Override
     public final Iterator<ByteBuffer> iterator() {
         return getSequences().iterator();
     }
@@ -206,10 +203,8 @@ public abstract class FSA implements Iterable<ByteBuffer> {
         }
         visited.set(node);
         for (int arc = getFirstArc(node); arc != 0; arc = getNextArc(arc)) {
-            if (!isArcTerminal(arc)) {
-                if (!visitInPostOrder(v, getEndNode(arc), visited)) {
-                    return false;
-                }
+            if (!isArcTerminal(arc) && !visitInPostOrder(v, getEndNode(arc), visited)) {
+                return false;
             }
         }
         return v.accept(node);

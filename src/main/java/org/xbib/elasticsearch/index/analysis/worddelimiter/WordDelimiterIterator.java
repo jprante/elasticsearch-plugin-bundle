@@ -20,7 +20,7 @@ public final class WordDelimiterIterator {
      */
     public static final int DONE = -1;
 
-    public static final byte[] DEFAULT_WORD_DELIM_TABLE;
+    protected static final byte[] DEFAULT_WORD_DELIM_TABLE;
 
     // TODO(jprante) should there be a WORD_DELIM category for chars that only separate words
     // (no catenation of subwords will be done if separated by these chars?) "," would be an obvious candidate...
@@ -60,7 +60,7 @@ public final class WordDelimiterIterator {
      */
     final boolean stemEnglishPossessive;
     private final byte[] charTypeTable;
-    char text[];
+    char[] text;
     int length;
     /**
      * start position of text, excluding leading delimiters
@@ -114,7 +114,6 @@ public final class WordDelimiterIterator {
                 return UPPER;
             case Character.LOWERCASE_LETTER:
                 return LOWER;
-
             case Character.TITLECASE_LETTER:
             case Character.MODIFIER_LETTER:
             case Character.OTHER_LETTER:
@@ -122,34 +121,12 @@ public final class WordDelimiterIterator {
             case Character.ENCLOSING_MARK:  // depends what it encloses?
             case Character.COMBINING_SPACING_MARK:
                 return ALPHA;
-
             case Character.DECIMAL_DIGIT_NUMBER:
             case Character.LETTER_NUMBER:
             case Character.OTHER_NUMBER:
                 return DIGIT;
-
-            // case Character.SPACE_SEPARATOR:
-            // case Character.LINE_SEPARATOR:
-            // case Character.PARAGRAPH_SEPARATOR:
-            // case Character.CONTROL:
-            // case Character.FORMAT:
-            // case Character.PRIVATE_USE:
-
             case Character.SURROGATE:  // prevent splitting
                 return ALPHA | DIGIT;
-
-            // case Character.DASH_PUNCTUATION:
-            // case Character.START_PUNCTUATION:
-            // case Character.END_PUNCTUATION:
-            // case Character.CONNECTOR_PUNCTUATION:
-            // case Character.OTHER_PUNCTUATION:
-            // case Character.MATH_SYMBOL:
-            // case Character.CURRENCY_SYMBOL:
-            // case Character.MODIFIER_SYMBOL:
-            // case Character.OTHER_SYMBOL:
-            // case Character.INITIAL_QUOTE_PUNCTUATION:
-            // case Character.FINAL_QUOTE_PUNCTUATION:
-
             default:
                 return SUBWORD_DELIM;
         }
@@ -224,7 +201,7 @@ public final class WordDelimiterIterator {
      * @param text   New text
      * @param length length of the text
      */
-    void setText(char text[], int length) {
+    void setText(char[] text, int length) {
         this.text = text;
         this.length = this.endBounds = length;
         current = startBounds = end = 0;
@@ -240,22 +217,15 @@ public final class WordDelimiterIterator {
      * @return {@code true} if the transition indicates a break, {@code false} otherwise
      */
     private boolean isBreak(int lastType, int type) {
-        if ((type & lastType) != 0) {
-            return false;
+        boolean isBreak = true;
+        if (((type & lastType) != 0) ||
+                (!splitOnCaseChange && isAlpha(lastType) && isAlpha(type)) ||
+                (isUpper(lastType) && isAlpha(type)) ||
+                (!splitOnNumerics && ((isAlpha(lastType) && isDigit(type)) ||
+                        (isDigit(lastType) && isAlpha(type))))) {
+            isBreak = false;
         }
-
-        if (!splitOnCaseChange && isAlpha(lastType) && isAlpha(type)) {
-            // ALPHA->ALPHA: always ignore if case isn't considered.
-            return false;
-        } else if (isUpper(lastType) && isAlpha(type)) {
-            // UPPER->letter: Don't split
-            return false;
-        } else if (!splitOnNumerics && ((isAlpha(lastType) && isDigit(type)) || (isDigit(lastType) && isAlpha(type)))) {
-            // ALPHA->NUMERIC, NUMERIC->ALPHA :Don't split
-            return false;
-        }
-
-        return true;
+        return isBreak;
     }
 
     /**
@@ -297,12 +267,12 @@ public final class WordDelimiterIterator {
      * @return {@code true} if the text at the position indicates an English posessive, {@code false} otherwise
      */
     private boolean endsWithPossessive(int pos) {
-        return (stemEnglishPossessive &&
+        return stemEnglishPossessive &&
                 pos > 2 &&
                 text[pos - 2] == '\'' &&
                 (text[pos - 1] == 's' || text[pos - 1] == 'S') &&
                 isAlpha(charType(text[pos - 3])) &&
-                (pos == endBounds || isSubwordDelim(charType(text[pos]))));
+                (pos == endBounds || isSubwordDelim(charType(text[pos])));
     }
 
     /**

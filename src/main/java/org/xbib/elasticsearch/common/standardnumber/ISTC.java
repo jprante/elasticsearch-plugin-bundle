@@ -70,12 +70,12 @@ public class ISTC extends AbstractStandardNumber implements Comparable<ISTC>, St
     }
 
     @Override
-    public ISTC verify() throws NumberFormatException {
+    public ISTC verify() {
         if (value == null || value.isEmpty()) {
             throw new NumberFormatException("invalid");
         }
         if (!check()) {
-            throw new NumberFormatException("bad createChecksum");
+            throw new NumberFormatException("bad checksum");
         }
         return this;
     }
@@ -152,5 +152,15 @@ public class ISTC extends AbstractStandardNumber implements Comparable<ISTC>, St
                     + sb.substring(15);
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof ISTC && value.equals(((ISTC)object).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 }

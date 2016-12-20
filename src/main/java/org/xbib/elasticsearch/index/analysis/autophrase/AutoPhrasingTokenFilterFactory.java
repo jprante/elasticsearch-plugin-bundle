@@ -57,7 +57,7 @@ public class AutoPhrasingTokenFilterFactory extends AbstractTokenFilterFactory i
                                             String wordFiles, boolean ignoreCase) throws IOException {
         List<String> files = splitFileNames(wordFiles);
         CharArraySet words = null;
-        if (files.size() > 0) {
+        if (!files.isEmpty()) {
             words = new CharArraySet(files.size() * 10, ignoreCase);
             for (String file : files) {
                 List<String> wlist = getLines(loader, file.trim());

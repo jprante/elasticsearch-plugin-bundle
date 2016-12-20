@@ -16,9 +16,6 @@ public class ISBNFormatRequest extends ActionRequest {
 
     private String value;
 
-    public ISBNFormatRequest() {
-    }
-
     @Override
     public ActionRequestValidationException validate() {
         ActionRequestValidationException validationException = null;

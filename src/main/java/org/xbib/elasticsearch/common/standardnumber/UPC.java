@@ -65,7 +65,7 @@ public class UPC extends AbstractStandardNumber implements Comparable<UPC>, Stan
     }
 
     @Override
-    public UPC verify() throws NumberFormatException {
+    public UPC verify() {
         if (value == null || value.isEmpty()) {
             throw new NumberFormatException("invalid");
         }
@@ -108,5 +108,15 @@ public class UPC extends AbstractStandardNumber implements Comparable<UPC>, Stan
             value = value.substring(0, l) + ch;
         }
         return chk == (value.charAt(l) - '0');
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof UPC && value.equals(((UPC)object).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 }

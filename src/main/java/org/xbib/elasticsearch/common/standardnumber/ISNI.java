@@ -17,10 +17,14 @@ import java.util.regex.Pattern;
  */
 public class ISNI extends AbstractStandardNumber implements Comparable<ISNI>, StandardNumber {
 
-    private final static Pattern PATTERN = Pattern.compile("[\\p{Digit}xX\\p{Pd}\\s]{16,24}");
-    private final static MOD112 check = new MOD112();
-    private String value;
+    private static final Pattern PATTERN = Pattern.compile("[\\p{Digit}xX\\p{Pd}\\s]{16,24}");
+
+    private static final MOD112 check = new MOD112();
+
+    protected String value;
+
     private String formatted;
+
     private boolean createWithChecksum;
 
     @Override
@@ -56,9 +60,9 @@ public class ISNI extends AbstractStandardNumber implements Comparable<ISNI>, St
     }
 
     @Override
-    public ISNI verify() throws NumberFormatException {
+    public ISNI verify() {
         if (!check()) {
-            throw new NumberFormatException("bad createChecksum");
+            throw new NumberFormatException("bad checksum");
         }
         return this;
     }
@@ -123,5 +127,15 @@ public class ISNI extends AbstractStandardNumber implements Comparable<ISNI>, St
             i = sb.indexOf(" ");
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof ISNI && value.equals(((ISNI)object).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 }

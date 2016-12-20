@@ -68,12 +68,12 @@ public class ISMN extends AbstractStandardNumber implements Comparable<ISMN>, St
     }
 
     @Override
-    public ISMN verify() throws NumberFormatException {
+    public ISMN verify() {
         if (value == null || value.isEmpty()) {
             throw new NumberFormatException("invalid");
         }
         if (!check()) {
-            throw new NumberFormatException("invalid createChecksum");
+            throw new NumberFormatException("invalid checksum");
         }
         return this;
     }
@@ -95,7 +95,7 @@ public class ISMN extends AbstractStandardNumber implements Comparable<ISMN>, St
         return this;
     }
 
-    public GTIN toGTIN() throws NumberFormatException {
+    public GTIN toGTIN() {
         return new GTIN().set(value).normalize().verify();
     }
 
@@ -125,5 +125,15 @@ public class ISMN extends AbstractStandardNumber implements Comparable<ISMN>, St
             i = sb.indexOf("-");
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof ISMN && value.equals(((ISMN)object).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 }

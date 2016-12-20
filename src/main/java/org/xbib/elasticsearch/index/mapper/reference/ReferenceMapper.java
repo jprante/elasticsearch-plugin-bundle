@@ -42,7 +42,7 @@ public class ReferenceMapper extends FieldMapper {
 
     private static final Logger logger = LogManager.getLogger(ReferenceMapper.class.getName());
 
-    public static final String CONTENT_TYPE = "ref";
+    public static final String MAPPER_TYPE = "ref";
 
     private static final CopyTo COPYTO_EMPTY = new CopyTo.Builder().build();
 
@@ -56,6 +56,7 @@ public class ReferenceMapper extends FieldMapper {
 
     private FieldMapper contentMapper;
 
+    // override copyTo in FieldMapper
     private CopyTo copyTo;
 
     public ReferenceMapper(String simpleName,
@@ -79,11 +80,11 @@ public class ReferenceMapper extends FieldMapper {
     }
 
     /**
-     * Creates instances of the fields that the current field should be copied to
+     * Creates instances of the fields that the current field should be copied to.
      */
-    private static void parseCopyFields(ParseContext context, List<String> copyToFields) throws IOException {
-        if (!context.isWithinCopyTo() && !copyToFields.isEmpty()) {
-            context = context.createCopyToContext();
+    private static void parseCopyFields(ParseContext originalContext, List<String> copyToFields) throws IOException {
+        if (!originalContext.isWithinCopyTo() && !copyToFields.isEmpty()) {
+            ParseContext context = originalContext.createCopyToContext();
             for (String field : copyToFields) {
                 // In case of a hierarchy of nested documents, we need to figure out
                 // which document the field should go to
@@ -94,7 +95,9 @@ public class ReferenceMapper extends FieldMapper {
                         break;
                     }
                 }
-                assert targetDoc != null;
+                if (targetDoc == null) {
+                    throw new IllegalArgumentException("target doc is null");
+                }
                 final ParseContext copyToContext;
                 if (targetDoc == context.doc()) {
                     copyToContext = context;
@@ -113,8 +116,9 @@ public class ReferenceMapper extends FieldMapper {
     }
 
     @Override
-    public Mapper parse(ParseContext context) throws IOException {
+    public Mapper parse(ParseContext originalContext) throws IOException {
         String content = null;
+        ParseContext context = originalContext;
         XContentParser parser = context.parser();
         XContentParser.Token token = parser.currentToken();
         if (token == XContentParser.Token.VALUE_STRING) {
@@ -138,20 +142,16 @@ public class ReferenceMapper extends FieldMapper {
                                 fields = new LinkedList<>();
                                 fields.add(parser.text());
                                 break;
+                            default:
+                                break;
                         }
                     }
-                } else if (token == XContentParser.Token.START_ARRAY) {
-                    if (currentFieldName != null) {
-                        switch (currentFieldName) {
-                            case "ref_fields": {
-                                fields = new LinkedList<>();
-                                while (parser.nextToken() != XContentParser.Token.END_ARRAY) {
-                                    if (parser.text() != null) {
-                                        fields.add(parser.text());
-                                    }
-                                }
-                                break;
-                            }
+                } else if (token == XContentParser.Token.START_ARRAY &&
+                        "ref_fields".equals(currentFieldName)) {
+                    fields = new LinkedList<>();
+                    while (parser.nextToken() != XContentParser.Token.END_ARRAY) {
+                        if (parser.text() != null) {
+                            fields.add(parser.text());
                         }
                     }
                 }
@@ -184,7 +184,7 @@ public class ReferenceMapper extends FieldMapper {
                     logger.warn("ref doc does not exist: {}/{}/{}", index, type, content);
                 }
             } catch (Exception e) {
-                logger.error("error while getting ref doc {}/{}/{}: {}", index, type, content, e.getMessage());
+                logger.error("error while getting ref doc " + index + "/" + type + "/"+ content + ": " + e.getMessage(), e);
             }
         }
         return null;
@@ -198,7 +198,7 @@ public class ReferenceMapper extends FieldMapper {
     @Override
     protected void doXContentBody(XContentBuilder builder, boolean includeDefaults, Params params) throws IOException {
         super.doXContentBody(builder, includeDefaults, params);
-        builder.field("type", CONTENT_TYPE);
+        builder.field("type", MAPPER_TYPE);
         if (index != null) {
             builder.field("ref_index", index);
         }
@@ -215,7 +215,7 @@ public class ReferenceMapper extends FieldMapper {
 
     @Override
     protected String contentType() {
-        return CONTENT_TYPE;
+        return MAPPER_TYPE;
     }
 
     public static final class Defaults {
@@ -226,22 +226,24 @@ public class ReferenceMapper extends FieldMapper {
         }
     }
 
-    public static final class ReferenceFieldType extends MappedFieldType {
+    public static final class ReferenceFieldType extends MappedFieldType implements Cloneable {
 
         public ReferenceFieldType() {
+            // nothing to instantiate
         }
 
         protected ReferenceFieldType(ReferenceMapper.ReferenceFieldType ref) {
             super(ref);
         }
 
+        @Override
         public ReferenceMapper.ReferenceFieldType clone() {
             return new ReferenceMapper.ReferenceFieldType(this);
         }
 
         @Override
         public String typeName() {
-            return CONTENT_TYPE;
+            return MAPPER_TYPE;
         }
 
         public String value(Object value) {
@@ -264,7 +266,7 @@ public class ReferenceMapper extends FieldMapper {
         public Query termQuery(Object value, QueryShardContext context) {
             failIfNotIndexed();
             TermQuery query = new TermQuery(new Term(name(), indexedValueForSearch(value)));
-            if (boost() == 1f ||
+            if ((Float.compare(boost(), 1f) == 0) ||
                     (context != null && context.indexVersionCreated().before(Version.V_5_0_0_alpha1))) {
                 return query;
             }
@@ -330,7 +332,7 @@ public class ReferenceMapper extends FieldMapper {
             if (this.fieldType.indexOptions() != IndexOptions.NONE && !this.fieldType.tokenized()) {
                 defaultFieldType.setOmitNorms(true);
                 defaultFieldType.setIndexOptions(IndexOptions.DOCS);
-                if (!this.omitNormsSet && this.fieldType.boost() == 1.0F) {
+                if (!this.omitNormsSet && Float.compare(this.fieldType.boost(), 1f) == 0) {
                     this.fieldType.setOmitNorms(true);
                 }
                 if (!this.indexOptionsSet) {
@@ -389,6 +391,8 @@ public class ReferenceMapper extends FieldMapper {
                     case "ref_fields":
                         builder.refFields(entry.getValue());
                         iterator.remove();
+                        break;
+                    default:
                         break;
                 }
             }

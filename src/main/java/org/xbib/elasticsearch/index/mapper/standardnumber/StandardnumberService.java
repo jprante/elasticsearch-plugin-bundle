@@ -1,6 +1,5 @@
 package org.xbib.elasticsearch.index.mapper.standardnumber;
 
-import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.common.component.AbstractLifecycleComponent;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
@@ -80,6 +79,8 @@ public class StandardnumberService extends AbstractLifecycleComponent {
                 return new UPC();
             case "zdb":
                 return new ZDB();
+            default:
+                break;
         }
         return null;
     }
@@ -115,15 +116,18 @@ public class StandardnumberService extends AbstractLifecycleComponent {
     }
 
     @Override
-    protected void doStart() throws ElasticsearchException {
+    protected void doStart() {
+        // nothing to do
     }
 
     @Override
-    protected void doStop() throws ElasticsearchException {
+    protected void doStop() {
+        // nothing to do
     }
 
     @Override
-    protected void doClose() throws ElasticsearchException {
+    protected void doClose() {
+        // nothing to do
     }
 
     protected Collection<StandardNumber> getStdNums(Settings settings) {
@@ -170,7 +174,7 @@ public class StandardnumberService extends AbstractLifecycleComponent {
         return variants;
     }
 
-    private void handleISBN(ISBN stdnum, CharSequence content, Collection<CharSequence> variants) throws NumberFormatException {
+    private void handleISBN(ISBN stdnum, CharSequence content, Collection<CharSequence> variants) {
         ISBN isbn = stdnum.set(content).normalize();
         if (isbn.isValid()) {
             if (!isbn.isEAN()) {

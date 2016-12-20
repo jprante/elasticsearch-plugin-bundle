@@ -42,7 +42,9 @@ public class BaseformTokenFilter extends TokenFilter {
     @Override
     public final boolean incrementToken() throws IOException {
         if (!tokens.isEmpty()) {
-            assert current != null;
+            if (current == null) {
+                throw new IllegalArgumentException("current is null");
+            }
             PackedTokenAttributeImpl token = tokens.removeFirst();
             restoreState(current);
             termAtt.setEmpty().append(token);
@@ -78,4 +80,18 @@ public class BaseformTokenFilter extends TokenFilter {
         tokens.clear();
         current = null;
     }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof BaseformTokenFilter &&
+                tokens.equals(((BaseformTokenFilter)object).tokens) &&
+                dictionary.equals(((BaseformTokenFilter)object).dictionary) &&
+                respectKeywords == ((BaseformTokenFilter)object).respectKeywords;
+    }
+
+    @Override
+    public int hashCode() {
+        return tokens.hashCode() ^ dictionary.hashCode() ^ Boolean.hashCode(respectKeywords);
+    }
+
 }

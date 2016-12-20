@@ -18,7 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +38,7 @@ public class IcuTokenizerFactory extends AbstractTokenizerFactory {
         if (scriptAndResourcePaths != null) {
             for (String scriptAndResourcePath : scriptAndResourcePaths) {
                 // "rulefiles" : "Latn:my.Latin.rules.rbbi,Cyrl:my.Cyrillic.rules.rbbi"
-                int colonPos = scriptAndResourcePath.indexOf(":");
+                int colonPos = scriptAndResourcePath.indexOf(':');
                 String scriptCode = scriptAndResourcePath.substring(0, colonPos).trim();
                 String resourcePath = scriptAndResourcePath.substring(colonPos + 1).trim();
                 tailored.put(UCharacter.getPropertyValueEnum(UProperty.SCRIPT, scriptCode), resourcePath);
@@ -47,7 +47,7 @@ public class IcuTokenizerFactory extends AbstractTokenizerFactory {
         if (tailored.isEmpty()) {
             this.config = new DefaultIcuTokenizerConfig(cjkAsWords, myanmarAsWords);
         } else {
-            final BreakIterator breakers[] = new BreakIterator[UCharacter.getIntPropertyMaxValue(UProperty.SCRIPT)];
+            final BreakIterator[] breakers = new BreakIterator[UCharacter.getIntPropertyMaxValue(UProperty.SCRIPT)];
             for (Map.Entry<Integer, String> entry : tailored.entrySet()) {
                 int code = entry.getKey();
                 String resourcePath = entry.getValue();
@@ -58,7 +58,7 @@ public class IcuTokenizerFactory extends AbstractTokenizerFactory {
                     if (rulesStream == null) {
                         throw new ElasticsearchException("rules stream not found: " + resourcePath);
                     }
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(rulesStream, Charset.forName("UTF-8")));
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(rulesStream, StandardCharsets.UTF_8));
                     while ((line = reader.readLine()) != null) {
                         if (!line.startsWith("#")) {
                             rules.append(line);

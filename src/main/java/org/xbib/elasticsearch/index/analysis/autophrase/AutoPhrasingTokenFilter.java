@@ -70,7 +70,7 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
 
     @Override
     public final boolean incrementToken() throws IOException {
-        if (!emitSingleTokens && unusedTokens.size() > 0) {
+        if (!emitSingleTokens && !unusedTokens.isEmpty()) {
             Token aToken = unusedTokens.remove(0);
             emit(aToken);
             return true;
@@ -87,7 +87,7 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
                 lastValid = null;
                 return true;
             }
-            if (emitSingleTokens && currentSetToCheck != null && currentSetToCheck.size() > 0) {
+            if (emitSingleTokens && currentSetToCheck != null && !currentSetToCheck.isEmpty()) {
                 char[] phrase = getFirst(currentSetToCheck);
                 char[] lastTok = getCurrentBuffer(new char[0]);
                 if (phrase != null && endsWith(lastTok, phrase)) {
@@ -95,12 +95,12 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
                     emit(phrase);
                     return true;
                 }
-            } else if (!emitSingleTokens && currentSetToCheck != null && currentSetToCheck.size() > 0) {
+            } else if (!emitSingleTokens && currentSetToCheck != null && !currentSetToCheck.isEmpty()) {
                 char[] currBuff = getCurrentBuffer(new char[0]);
-                if (lastEmitted != null && !equals(fixWhitespace(lastEmitted), currBuff)) {
+                if (lastEmitted != null && !isEqualTo(fixWhitespace(lastEmitted), currBuff)) {
                     discardCharTokens(currentPhrase, unusedTokens);
                     currentSetToCheck = null;
-                    if (unusedTokens.size() > 0) {
+                    if (!unusedTokens.isEmpty()) {
                         Token aToken = unusedTokens.remove(0);
                         if (!endsWith(lastEmitted, currBuff)) {
                             emit(aToken);
@@ -119,7 +119,7 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
                     discardCharTokens(currentPhrase, unusedTokens);
                     currentSetToCheck = null;
                     currentPhrase.setLength(0);
-                    if (unusedTokens.size() > 0) {
+                    if (!unusedTokens.isEmpty()) {
                         Token aToken = unusedTokens.remove(0);
                         emit(aToken);
                         return true;
@@ -131,7 +131,7 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
         if (emitSingleTokens) {
             lastToken = nextToken;
         }
-        if (currentSetToCheck == null || currentSetToCheck.size() == 0) {
+        if (currentSetToCheck == null || currentSetToCheck.isEmpty()) {
             if (phraseMap.keySet().contains(nextToken, 0, nextToken.length)) {
                 currentSetToCheck = phraseMap.get(nextToken, 0, nextToken.length);
                 if (currentPhrase == null) {
@@ -150,7 +150,7 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
             char[] currentBuffer = getCurrentBuffer(nextToken);
             if (currentSetToCheck.contains(currentBuffer, 0, currentBuffer.length)) {
                 currentSetToCheck = remove(currentBuffer);
-                if (currentSetToCheck.size() == 0) {
+                if (currentSetToCheck.isEmpty()) {
                     emit(currentBuffer);
                     lastValid = null;
                     --positionIncr;
@@ -195,7 +195,7 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
                 currentPhrase.setLength(0);
                 currentSetToCheck = null;
 
-                if (unusedTokens.size() > 0) {
+                if (!unusedTokens.isEmpty()) {
                     Token aToken = unusedTokens.remove(0);
                     emit(aToken);
                     return true;
@@ -231,7 +231,7 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
         return true;
     }
 
-    private boolean equals(char[] buffer, char[] phrase) {
+    private boolean isEqualTo(char[] buffer, char[] phrase) {
         if (phrase.length != buffer.length) {
             return false;
         }
@@ -282,14 +282,16 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
         return (char[]) phraseIt.next();
     }
 
-    private void emit(char[] token) {
+    private void emit(char[] tokenChars) {
+        char[] token = tokenChars;
         if (replaceWhitespaceWith != null) {
             token = replaceWhiteSpace(token);
         }
         CharTermAttribute termAttr = getTermAttribute();
-        assert termAttr != null;
-        termAttr.setEmpty();
-        termAttr.append(new StringBuilder().append(token));
+        if (termAttr != null) {
+            termAttr.setEmpty();
+            termAttr.append(new StringBuilder().append(token));
+        }
         OffsetAttribute offAttr = getOffsetAttribute();
         if (offAttr != null && offAttr.endOffset() >= token.length) {
             int start = offAttr.endOffset() - token.length;
@@ -305,8 +307,7 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
     private void emit(Token token) {
         emit(token.tok);
         OffsetAttribute offAttr = getOffsetAttribute();
-        if (token.endPos > token.startPos && token.startPos >= 0) {
-            assert offAttr != null;
+        if (offAttr != null && token.endPos > token.startPos && token.startPos >= 0) {
             offAttr.setOffset(token.startPos, token.endPos);
         }
     }
@@ -389,23 +390,25 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
 
     private void discardCharTokens(StringBuilder phrase, List<Token> tokenList) {
         OffsetAttribute offAttr = getOffsetAttribute();
-        assert offAttr != null;
-        int endPos = offAttr.endOffset();
-        int startPos = endPos - phrase.length();
         int lastSp = 0;
-        for (int i = 0; i < phrase.length(); i++) {
-            char chAt = phrase.charAt(i);
-            if (isSpaceChar(chAt) && i > lastSp) {
-                char[] tok = new char[i - lastSp];
-                phrase.getChars(lastSp, i, tok, 0);
-                if (lastEmitted == null || !endsWith(lastEmitted, tok)) {
-                    Token token = new Token();
-                    token.tok = tok;
-                    token.startPos = startPos + lastSp;
-                    token.endPos = token.startPos + tok.length;
-                    tokenList.add(token);
+        int endPos = 0;
+        if (offAttr != null) {
+            endPos = offAttr.endOffset();
+            int startPos = endPos - phrase.length();
+            for (int i = 0; i < phrase.length(); i++) {
+                char chAt = phrase.charAt(i);
+                if (isSpaceChar(chAt) && i > lastSp) {
+                    char[] tok = new char[i - lastSp];
+                    phrase.getChars(lastSp, i, tok, 0);
+                    if (lastEmitted == null || !endsWith(lastEmitted, tok)) {
+                        Token token = new Token();
+                        token.tok = tok;
+                        token.startPos = startPos + lastSp;
+                        token.endPos = token.startPos + tok.length;
+                        tokenList.add(token);
+                    }
+                    lastSp = i + 1;
                 }
-                lastSp = i + 1;
             }
         }
         char[] tok = new char[phrase.length() - lastSp];
@@ -421,7 +424,7 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
         CharArraySet newSet = new CharArraySet(5, false);
         for (Object aCurrentSetToCheck : currentSetToCheck) {
             char[] phrase = (char[]) aCurrentSetToCheck;
-            if (!equals(phrase, charArray) && startsWith(phrase, charArray) || endsWith(charArray, phrase)) {
+            if (!isEqualTo(phrase, charArray) && startsWith(phrase, charArray) || endsWith(charArray, phrase)) {
                 newSet.add(phrase);
             }
         }
@@ -441,6 +444,18 @@ public class AutoPhrasingTokenFilter extends TokenFilter {
             }
         }
         return fixed;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof AutoPhrasingTokenFilter &&
+                phraseMap.equals(((AutoPhrasingTokenFilter)object).phraseMap) &&
+                emitSingleTokens == ((AutoPhrasingTokenFilter)object).emitSingleTokens;
+    }
+
+    @Override
+    public int hashCode() {
+        return phraseMap.hashCode() ^ Boolean.hashCode(emitSingleTokens);
     }
 
     private class Token {

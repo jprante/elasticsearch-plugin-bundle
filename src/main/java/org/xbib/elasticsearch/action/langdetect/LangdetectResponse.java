@@ -22,9 +22,6 @@ public class LangdetectResponse extends ActionResponse implements StatusToXConte
 
     private List<Language> languages = new ArrayList<>();
 
-    public LangdetectResponse() {
-    }
-
     public String getProfile() {
         return profile;
     }

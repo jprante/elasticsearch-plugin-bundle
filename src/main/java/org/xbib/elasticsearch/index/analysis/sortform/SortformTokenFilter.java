@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  */
 public class SortformTokenFilter extends TokenFilter {
 
-    private final static Pattern[] patterns = {
+    private static final Pattern[] patterns = {
             Pattern.compile("\\s*<<.*?>>\\s*"),
             Pattern.compile("\\s*<.*?>\\s*"),
             Pattern.compile("\\s*\u0098.*?\u009C\\s*"),
@@ -37,5 +37,15 @@ public class SortformTokenFilter extends TokenFilter {
             termAtt.setEmpty().append(s);
             return true;
         }
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof SortformTokenFilter;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
     }
 }

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Like CustomAnalyzerProvider, but with IcuCollationTokenizerFactory as tokenizer.
+ * Like CustomAnalyzerProvider, but with IcuCollationTokenizerFactory as default tokenizer.
  */
 public class SortformAnalyzerProvider extends CustomAnalyzerProvider {
 

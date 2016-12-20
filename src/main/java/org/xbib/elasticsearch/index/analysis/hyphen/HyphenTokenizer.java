@@ -22,7 +22,7 @@ public final class HyphenTokenizer extends Tokenizer {
     /**
      * String token types that correspond to token type int constants
      */
-    public static final String[] TOKEN_TYPES = new String[]{
+    protected static final String[] TOKEN_TYPES = new String[]{
             "<ALPHANUM>",
             "<ALPHANUM_COMP>",
             "<NUM>",
@@ -32,7 +32,7 @@ public final class HyphenTokenizer extends Tokenizer {
     private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
     private final PositionIncrementAttribute posIncrAtt = addAttribute(PositionIncrementAttribute.class);
     private final TypeAttribute typeAtt = addAttribute(TypeAttribute.class);
-    private HyphenTokenizerImpl scanner;
+    private org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenizerImpl scanner;
     private int skippedPositions;
     private int maxTokenLength = StandardAnalyzer.DEFAULT_MAX_TOKEN_LENGTH;
 
@@ -77,7 +77,7 @@ public final class HyphenTokenizer extends Tokenizer {
     }
 
     private void init() {
-        this.scanner = new HyphenTokenizerImpl(input);
+        this.scanner = new org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenizerImpl(input);
     }
 
     @Override
@@ -86,7 +86,7 @@ public final class HyphenTokenizer extends Tokenizer {
         skippedPositions = 0;
         while (true) {
             int tokenType = scanner.getNextToken();
-            if (tokenType == HyphenTokenizerImpl.YYEOF) {
+            if (tokenType == org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenizerImpl.YYEOF) {
                 return false;
             }
             if (scanner.yylength() <= maxTokenLength) {
@@ -121,5 +121,15 @@ public final class HyphenTokenizer extends Tokenizer {
         super.reset();
         scanner.yyreset(input);
         skippedPositions = 0;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof HyphenTokenizer;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
     }
 }

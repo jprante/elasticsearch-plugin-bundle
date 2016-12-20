@@ -8,16 +8,17 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.InputStream;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
-import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * ISO 2108 International Standard Book Number (ISBN)
+ * ISO 2108 International Standard Book Number (ISBN).
  *
- * Z39.50 BIB-1 Use Attribute 7
+ * Also used as Z39.50 BIB-1 Use Attribute 7.
  *
  * The International Standard Book Number is a 13-digit number
  * that uniquely identifies books and book-like products published
@@ -96,12 +97,12 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
      * @return true if valid, false otherwise
      */
     @Override
-    public boolean isValid() throws NumberFormatException {
+    public boolean isValid() {
         return value != null && !value.isEmpty() && check() && (eanPreferred ? eanvalue != null : value != null);
     }
 
     @Override
-    public ISBN verify() throws NumberFormatException {
+    public ISBN verify() {
         if (value == null || value.isEmpty()) {
             throw new NumberFormatException("must not be null");
         }
@@ -185,7 +186,9 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
         return code.substring(0, pos1 + pos2 + 5);
     }
 
-    private String hyphenate(String prefix, String isbn) {
+    private String hyphenate(String pref, String s) {
+        String prefix = pref;
+        String isbn = s;
         StringBuilder sb = new StringBuilder(prefix.substring(0, 4)); // '978-', '979-'
         prefix = prefix.substring(4);
         isbn = isbn.substring(3); // 978, 979
@@ -211,8 +214,8 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
     private boolean check() {
         this.eanvalue = null;
         this.isEAN = false;
-        int i;
         int val;
+        int i;
         if (value.length() < 9) {
             return false;
         }
@@ -220,7 +223,8 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
             // ISBN-10
             int checksum = 0;
             int weight = 10;
-            for (i = 0; weight > 0; i++) {
+            i = 0;
+            while (weight > 0) {
                 val = value.charAt(i) == 'X' || value.charAt(i) == 'x' ? 10
                         : value.charAt(i) - '0';
                 if (val >= 0) {
@@ -232,6 +236,7 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
                 } else {
                     return false;
                 }
+                i++;
             }
             String s = value.substring(0, 9);
             if (checksum % 11 != 0) {
@@ -316,9 +321,8 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
      *
      * @param value the value
      * @return check digit
-     * @throws NumberFormatException
      */
-    private char createCheckDigit10(String value) throws NumberFormatException {
+    private char createCheckDigit10(String value) {
         int checksum = 0;
         int val;
         int l = value.length();
@@ -338,9 +342,8 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
      *
      * @param value the value
      * @return check digit
-     * @throws NumberFormatException
      */
-    private char createCheckDigit13(String value) throws NumberFormatException {
+    private char createCheckDigit13(String value) {
         int checksum = 0;
         int weight;
         int val;
@@ -405,9 +408,9 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
         return sb.toString();
     }
 
-    private final static class ISBNRangeMessageConfigurator {
+    private static final class ISBNRangeMessageConfigurator {
 
-        private final Stack<StringBuilder> content;
+        private final Deque<StringBuilder> content;
 
         private final List<String> ranges;
 
@@ -422,8 +425,8 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
         private boolean valid;
 
         public ISBNRangeMessageConfigurator() {
-            content = new Stack<StringBuilder>();
-            ranges = new ArrayList<String>();
+            content = new ArrayDeque<>();
+            ranges = new ArrayList<>();
             length = 0;
             try {
                 InputStream in = getClass().getResourceAsStream("/standardnumber/RangeMessage.xml");
@@ -434,13 +437,13 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
                     xmlReader.nextEvent();
                 }
             } catch (XMLStreamException e) {
-                throw new RuntimeException(e.getMessage());
+                throw new IllegalArgumentException(e.getMessage(), e);
             }
         }
 
         private void processEvent(XMLEvent e) {
             switch (e.getEventType()) {
-                case XMLEvent.START_ELEMENT: {
+                case XMLEvent.START_ELEMENT:
                     StartElement element = e.asStartElement();
                     String name = element.getName().getLocalPart();
                     if ("RegistrationGroups".equals(name)) {
@@ -448,49 +451,54 @@ public class ISBN extends AbstractStandardNumber implements Comparable<ISBN>, St
                     }
                     content.push(new StringBuilder());
                     break;
-                }
-                case XMLEvent.END_ELEMENT: {
-                    EndElement element = e.asEndElement();
-                    String name = element.getName().getLocalPart();
+                case XMLEvent.END_ELEMENT:
+                    EndElement endElement = e.asEndElement();
+                    String endName = endElement.getName().getLocalPart();
                     String v = content.pop().toString();
-                    if ("Prefix".equals(name)) {
+                    if ("Prefix".equals(endName)) {
                         prefix = v;
                     }
-                    if ("Range".equals(name)) {
+                    if ("Range".equals(endName)) {
                         int pos = v.indexOf('-');
                         if (pos > 0) {
                             rangeBegin = v.substring(0, pos);
                             rangeEnd = v.substring(pos + 1);
                         }
                     }
-                    if ("Length".equals(name)) {
+                    if ("Length".equals(endName)) {
                         length = Integer.parseInt(v);
                     }
-                    if ("Rule".equals(name)) {
-                        if (valid && rangeBegin != null && rangeEnd != null) {
-                            if (length > 0) {
-                                ranges.add(prefix + "-" + rangeBegin.substring(0, length));
-                                ranges.add(prefix + "-" + rangeEnd.substring(0, length));
-                            }
-                        }
+                    if ("Rule".equals(endName) && valid && rangeBegin != null && rangeEnd != null && length > 0) {
+                        ranges.add(prefix + "-" + rangeBegin.substring(0, length));
+                        ranges.add(prefix + "-" + rangeEnd.substring(0, length));
                     }
                     break;
-                }
-                case XMLEvent.CHARACTERS: {
+                case XMLEvent.CHARACTERS:
                     Characters c = (Characters) e;
                     if (!c.isIgnorableWhiteSpace()) {
                         String text = c.getData().trim();
-                        if (text.length() > 0 && !content.empty()) {
+                        if (text.length() > 0 && !content.isEmpty()) {
                             content.peek().append(text);
                         }
                     }
                     break;
-                }
+                default:
+                    break;
             }
         }
 
         List<String> getRanges() {
             return ranges;
         }
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof ISBN && value.equals(((ISBN)object).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value != null ? value.hashCode() : 0;
     }
 }

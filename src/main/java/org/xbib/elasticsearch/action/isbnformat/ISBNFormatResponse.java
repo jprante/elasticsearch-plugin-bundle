@@ -24,9 +24,6 @@ public class ISBNFormatResponse extends ActionResponse implements StatusToXConte
 
     private String invalid;
 
-    public ISBNFormatResponse() {
-    }
-
     public ISBNFormatResponse setIsbn10(String value) {
         this.isbn10 = value;
         return this;

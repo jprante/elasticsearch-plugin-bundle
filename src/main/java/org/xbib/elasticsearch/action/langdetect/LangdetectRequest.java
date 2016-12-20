@@ -18,9 +18,6 @@ public class LangdetectRequest extends ActionRequest {
 
     private String text;
 
-    public LangdetectRequest() {
-    }
-
     @Override
     public ActionRequestValidationException validate() {
         ActionRequestValidationException validationException = null;

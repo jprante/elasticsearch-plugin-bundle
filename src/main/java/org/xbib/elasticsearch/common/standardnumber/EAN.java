@@ -55,12 +55,12 @@ public class EAN extends AbstractStandardNumber implements Comparable<EAN>, Stan
     }
 
     @Override
-    public EAN verify() throws NumberFormatException {
+    public EAN verify() {
         if (value == null || value.isEmpty()) {
-            throw new NumberFormatException("invalid");
+            throw new NumberFormatException("invalid value");
         }
         if (!check()) {
-            throw new NumberFormatException("bad checkum");
+            throw new NumberFormatException("bad checksum");
         }
         return this;
     }
@@ -75,6 +75,7 @@ public class EAN extends AbstractStandardNumber implements Comparable<EAN>, Stan
         return value;
     }
 
+    @Override
     public EAN reset() {
         this.value = null;
         this.createWithChecksum = false;
@@ -107,5 +108,15 @@ public class EAN extends AbstractStandardNumber implements Comparable<EAN>, Stan
             i = sb.indexOf(" ");
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof EAN && value.equals(((EAN)object).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 }

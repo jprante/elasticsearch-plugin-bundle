@@ -94,7 +94,7 @@ final class CompositeBreakIterator {
      * @param start  offset into buffer
      * @param length maximum length to examine
      */
-    void setText(final char text[], int start, int length) {
+    void setText(final char[] text, int start, int length) {
         this.text = text;
         scriptIterator.setText(text, start, length);
         if (scriptIterator.next()) {

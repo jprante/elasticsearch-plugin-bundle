@@ -75,6 +75,7 @@ public class WordDelimiterFilter2Factory extends AbstractTokenFilterFactory impl
         protectedWords = protoWords == null ? null : new HashSet<>(protoWords);
     }
 
+    @Override
     public WordDelimiterFilter2 create(TokenStream input) {
         return new WordDelimiterFilter2(input, typeTable, flags, protectedWords);
     }
@@ -117,20 +118,21 @@ public class WordDelimiterFilter2Factory extends AbstractTokenFilterFactory impl
     }
 
     private Byte parseType(String s) {
-        if (s.equals("LOWER")) {
-            return LOWER;
-        } else if (s.equals("UPPER")) {
-            return UPPER;
-        } else if (s.equals("ALPHA")) {
-            return ALPHA;
-        } else if (s.equals("DIGIT")) {
-            return DIGIT;
-        } else if (s.equals("ALPHANUM")) {
-            return ALPHANUM;
-        } else if (s.equals("SUBWORD_DELIM")) {
-            return SUBWORD_DELIM;
-        } else {
-            return null;
+        switch (s) {
+            case "LOWER":
+                return LOWER;
+            case "UPPER":
+                return UPPER;
+            case "ALPHA":
+                return ALPHA;
+            case "DIGIT":
+                return DIGIT;
+            case "ALPHANUM":
+                return ALPHANUM;
+            case "SUBWORD_DELIM":
+                return SUBWORD_DELIM;
+            default:
+                return null;
         }
     }
 
@@ -170,6 +172,8 @@ public class WordDelimiterFilter2Factory extends AbstractTokenFilterFactory impl
                         }
                         c = (char) Integer.parseInt(s.substring(readPos, readPos + 4), 16);
                         readPos += 4;
+                        break;
+                    default:
                         break;
                 }
             }

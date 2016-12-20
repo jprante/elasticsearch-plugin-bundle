@@ -1,5 +1,7 @@
 package org.xbib.elasticsearch.index.mapper.crypt;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.SortedSetDocValuesField;
 import org.apache.lucene.index.IndexOptions;
@@ -10,7 +12,6 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
-import org.elasticsearch.index.mapper.MapperParsingException;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.mapper.StringFieldMapper;
 import org.elasticsearch.index.mapper.TextFieldMapper;
@@ -31,7 +32,9 @@ import static org.elasticsearch.index.mapper.TypeParsers.parseMultiField;
  */
 public class CryptMapper extends TextFieldMapper {
 
-    public static final String CONTENT_TYPE = "crypt";
+    private static final Logger logger = LogManager.getLogger(CryptMapper.class.getName());
+
+    public static final String MAPPER_TYPE = "crypt";
 
     private static final  char[] hexDigit = new char[]{
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
@@ -87,7 +90,8 @@ public class CryptMapper extends TextFieldMapper {
             digest = MessageDigest.getInstance(algo);
             digest.update(plainText.getBytes(Charset.forName("UTF-8")));
             return '{' + algo + '}' + bytesToHex(digest.digest());
-        } catch (NoSuchAlgorithmException ex) {
+        } catch (NoSuchAlgorithmException e) {
+            logger.error(e.getMessage(), e);
         }
         return null;
     }
@@ -102,7 +106,7 @@ public class CryptMapper extends TextFieldMapper {
 
     @Override
     protected String contentType() {
-        return CONTENT_TYPE;
+        return MAPPER_TYPE;
     }
 
     @Override
@@ -148,7 +152,7 @@ public class CryptMapper extends TextFieldMapper {
             if (fieldType.indexOptions() != IndexOptions.NONE && !fieldType.tokenized()) {
                 defaultFieldType.setOmitNorms(true);
                 defaultFieldType.setIndexOptions(IndexOptions.DOCS);
-                if (!omitNormsSet && fieldType.boost() == 1.0f) {
+                if (!omitNormsSet && Float.compare(fieldType.boost(), 1.0f) == 0) {
                     fieldType.setOmitNorms(true);
                 }
                 if (!indexOptionsSet) {
@@ -166,8 +170,7 @@ public class CryptMapper extends TextFieldMapper {
 
         @SuppressWarnings({"unchecked", "rawtypes"})
         @Override
-        public Mapper.Builder parse(String name, Map<String, Object> node, Mapper.TypeParser.ParserContext parserContext)
-                throws MapperParsingException {
+        public Mapper.Builder parse(String name, Map<String, Object> node, Mapper.TypeParser.ParserContext parserContext) {
             Builder builder = new Builder(name);
             parseField(builder, name, node, parserContext);
             Iterator<Map.Entry<String, Object>> iterator = node.entrySet().iterator();

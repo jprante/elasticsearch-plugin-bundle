@@ -37,7 +37,9 @@ public class SymbolnameTokenFilter extends TokenFilter {
     @Override
     public final boolean incrementToken() throws IOException {
         if (!tokens.isEmpty()) {
-            assert current != null;
+            if (current == null) {
+                throw new IllegalArgumentException("current is null");
+            }
             PackedTokenAttributeImpl token = tokens.removeFirst();
             restoreState(current);
             termAtt.setEmpty().append(token);
@@ -88,10 +90,20 @@ public class SymbolnameTokenFilter extends TokenFilter {
         String variant = sb.toString().trim();
         if (!variant.equals(term)) {
             variants.add(variant);
-            if (variant.indexOf(' ') > 0) {
+            if (variant.indexOf(' ') >= 0) {
                 Collections.addAll(variants, variant.split("\\s"));
             }
         }
         return variants;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof SymbolnameTokenFilter;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
     }
 }

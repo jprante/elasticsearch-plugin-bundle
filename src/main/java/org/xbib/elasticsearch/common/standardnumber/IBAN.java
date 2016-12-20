@@ -23,7 +23,7 @@ public class IBAN extends AbstractStandardNumber implements Comparable<IBAN>, St
      * Norway = 15, Malta = 31 + "IBAN "
      */
     private static final Pattern PATTERN = Pattern.compile("[\\p{Alnum}\\p{Pd}\\s]{15,36}");
-    private final static MOD9710 check = new MOD9710();
+    private static final MOD9710 check = new MOD9710();
     /**
      * Known country codes, this list must be sorted to allow binary search.
      */
@@ -99,7 +99,7 @@ public class IBAN extends AbstractStandardNumber implements Comparable<IBAN>, St
     }
 
     @Override
-    public IBAN verify() throws NumberFormatException {
+    public IBAN verify(){
         if (value == null || value.isEmpty()) {
             throw new NumberFormatException("invalid");
         }
@@ -177,5 +177,15 @@ public class IBAN extends AbstractStandardNumber implements Comparable<IBAN>, St
             return COUNTRY_IBAN_LENGTHS[index];
         }
         return -1;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof IBAN && value.equals(((IBAN)object).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 }

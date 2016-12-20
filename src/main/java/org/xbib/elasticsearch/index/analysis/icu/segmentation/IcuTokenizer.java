@@ -24,7 +24,7 @@ public final class IcuTokenizer extends Tokenizer {
 
     private static final int IOBUFFER = 4096;
 
-    private final char buffer[] = new char[IOBUFFER];
+    private final char[] buffer = new char[IOBUFFER];
     private final CompositeBreakIterator breaker; /* tokenizes a char[] of text */
     private final IcuTokenizerConfig config;
     private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
@@ -84,7 +84,9 @@ public final class IcuTokenizer extends Tokenizer {
      * commons-io's readFully, but without bugs if offset != 0
      */
     private static int read(Reader input, char[] buffer, int offset, int length) throws IOException {
-        assert length >= 0 : "length must not be negative: " + length;
+        if (length < 0) {
+            throw new IllegalArgumentException("length must not be negative: " + length);
+        }
         int remaining = length;
         while (remaining > 0) {
             int location = length - remaining;
@@ -105,8 +107,7 @@ public final class IcuTokenizer extends Tokenizer {
         }
         while (!incrementTokenBuffer()) {
             refill();
-            if (length <= 0) // no more bytes to read;
-            {
+            if (length <= 0) {
                 return false;
             }
         }
@@ -205,5 +206,17 @@ public final class IcuTokenizer extends Tokenizer {
         typeAtt.setType(config.getType(breaker.getScriptCode(), breaker.getRuleStatus()));
         scriptAtt.setCode(breaker.getScriptCode());
         return true;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof IcuTokenizer &&
+                breaker.equals(((IcuTokenizer)object).breaker) &&
+                config.equals(((IcuTokenizer)object).config);
+    }
+
+    @Override
+    public int hashCode() {
+        return breaker.hashCode() ^ config.hashCode();
     }
 }

@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+/**
+ *
+ */
 public class Decompounder {
 
     private CompactPatriciaTrie kompvvTree;
@@ -13,7 +16,7 @@ public class Decompounder {
     private CompactPatriciaTrie grfTree;
 
     public Decompounder(InputStream kompvv, InputStream kompvh, InputStream gfred, double threshold)
-            throws IOException, ClassNotFoundException {
+            throws IOException {
         kompvvTree = new CompactPatriciaTrie();
         kompvvTree.load(kompvv);
         kompvvTree.setIgnoreCase(true);
@@ -28,23 +31,25 @@ public class Decompounder {
         grfTree.setThreshold(threshold); // previous value = 0.46
     }
 
-    public Decompounder(CompactPatriciaTrie kompvv, CompactPatriciaTrie kompvh, CompactPatriciaTrie gfred) {
+    public Decompounder(CompactPatriciaTrie kompvv, CompactPatriciaTrie kompvh, CompactPatriciaTrie gfred, double threshold) {
         kompvvTree = kompvv;
         kompvhTree = kompvh;
         grfTree = gfred;
+        grfTree.setThreshold(threshold); // previous value = 0.46
     }
 
     private String reverse(String torev) {
-        String ret = "";
+        StringBuilder ret = new StringBuilder();
         for (int i = torev.length(); i > 0; i--) {
-            ret += torev.substring(i - 1, i);
+            ret.append(torev.substring(i - 1, i));
         }
-        return ret;
+        return ret.toString();
     }
 
-    public List<String> decompound(String word) {
+    public List<String> decompound(String string) {
+        String word = string;
         word = reduceToBaseForm(word);
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         String classvv = kompvvTree.classify(word + "<");
         String classvh = kompvhTree.classify(reverse(word) + "<");
         StringBuilder numStrvv = new StringBuilder();
@@ -59,10 +64,10 @@ public class Decompounder {
         int numvh = 0;
         boolean vhOk = true;
         boolean vvOk = true;
-        if (classvv.equals("undecided")) {
+        if ("undecided".equals(classvv)) {
             vvOk = false;
         }
-        if (classvh.equals("undecided")) {
+        if ("undecided".equals(classvh)) {
             vhOk = false;
         }
         if (vvOk) {
@@ -93,16 +98,12 @@ public class Decompounder {
             numvh = Integer.parseInt(numStrvh.toString());
         }
 
-        if (vvOk) {
-            if (numvv >= word.length()) {
-                vvOk = false;
-            }
+        if (vvOk && numvv >= word.length()) {
+            vvOk = false;
         }
 
-        if (vhOk) {
-            if (numvh >= word.length()) {
-                vhOk = false;
-            }
+        if (vhOk && numvh >= word.length()) {
+            vhOk = false;
         }
 
         if (vvOk) {
@@ -136,17 +137,9 @@ public class Decompounder {
             if (vhpart1.length() <= 3) {
                 vhOk = false;
             }
-
         }
         if (vvOk && vhOk) {
-            if (vvpart1.equals(vhpart1)) {
-                list.add(vvpart1);
-                if (vhpart2.length() < vvpart2.length()) {
-                    list.add(vhpart2);
-                } else if (vhpart2.length() > vvpart2.length()) {
-                    list.add(vvpart2);
-                }
-            } else if ((vhpart1.length() - vvpart1.length()) < 3) {
+            if ((vvpart1.equals(vhpart1)) || ((vhpart1.length() - vvpart1.length()) < 3)) {
                 list.add(vvpart1);
                 if (vhpart2.length() < vvpart2.length()) {
                     list.add(vhpart2);
@@ -171,7 +164,7 @@ public class Decompounder {
         } else {
             list.add(word);
         }
-        List<String> retvec2 = new ArrayList<String>();
+        List<String> retvec2 = new ArrayList<>();
         List<String> l;
         if (list.size() > 1) {
             for (String s : list) {
@@ -187,7 +180,7 @@ public class Decompounder {
     public String reduceToBaseForm(String word) {
         String result = word;
         String baseForm = grfTree.classify(reverse(word));
-        if (!baseForm.equals("undecided")) {
+        if (!"undecided".equals(baseForm)) {
             StringTokenizer st = new StringTokenizer(baseForm, ",");
             baseForm = st.nextToken();
             StringBuilder numStr = new StringBuilder();

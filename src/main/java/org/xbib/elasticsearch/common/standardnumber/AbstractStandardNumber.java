@@ -8,6 +8,7 @@ import java.util.Collection;
  */
 public abstract class AbstractStandardNumber implements StandardNumber {
 
+    @Override
     public Collection<String> getTypedVariants() {
         return Arrays.asList(
                 type().toUpperCase() + " " + format(),

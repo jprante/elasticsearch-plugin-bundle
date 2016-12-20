@@ -39,7 +39,7 @@ public class IcuNormalizerCharFilterFactory extends AbstractCharFilterFactory im
 
     @Override
     public Reader create(Reader reader) {
-        return new ICUNormalizer2CharFilter(reader, normalizer);
+        return new IcuNormalizer2CharFilter(reader, normalizer);
     }
 
     @Override

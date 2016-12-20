@@ -33,6 +33,7 @@ public class TransportISBNFormatAction extends TransportAction<ISBNFormatRequest
             response.setIsbn13(isbn.ean(true).normalizedValue());
             response.setIsbn13Formatted(isbn.ean(true).format());
         } catch (IllegalArgumentException e) {
+            logger.debug(e.getMessage(), e);
             response.setInvalid(request.getValue());
         }
         listener.onResponse(response);

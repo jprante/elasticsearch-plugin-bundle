@@ -8,7 +8,6 @@ import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
-import org.elasticsearch.index.mapper.MapperParsingException;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.mapper.StringFieldType;
 import org.elasticsearch.index.mapper.TextFieldMapper;
@@ -25,7 +24,7 @@ import java.util.Map;
  */
 public class StandardnumberMapper extends FieldMapper {
 
-    public static final String CONTENT_TYPE = "standardnumber";
+    public static final String MAPPER_TYPE = "standardnumber";
 
     private final StandardnumberService service;
 
@@ -49,8 +48,9 @@ public class StandardnumberMapper extends FieldMapper {
     }
 
     @Override
-    public Mapper parse(ParseContext context) throws IOException {
+    public Mapper parse(ParseContext originalContext) throws IOException {
         String content = null;
+        ParseContext context = originalContext;
         XContentParser parser = context.parser();
         XContentParser.Token token = parser.currentToken();
         if (token == XContentParser.Token.VALUE_STRING) {
@@ -81,7 +81,7 @@ public class StandardnumberMapper extends FieldMapper {
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject(simpleName());
-        builder.field("type", CONTENT_TYPE);
+        builder.field("type", MAPPER_TYPE);
         builder.startObject("fields");
         contentMapper.toXContent(builder, params);
         stdnumMapper.toXContent(builder, params);
@@ -92,7 +92,7 @@ public class StandardnumberMapper extends FieldMapper {
 
     @Override
     protected String contentType() {
-        return CONTENT_TYPE;
+        return MAPPER_TYPE;
     }
 
     public static final class Defaults {
@@ -135,7 +135,7 @@ public class StandardnumberMapper extends FieldMapper {
             if (this.fieldType.indexOptions() != IndexOptions.NONE && !this.fieldType.tokenized()) {
                 defaultFieldType.setOmitNorms(true);
                 defaultFieldType.setIndexOptions(IndexOptions.DOCS);
-                if (!this.omitNormsSet && this.fieldType.boost() == 1.0F) {
+                if (!this.omitNormsSet && Float.compare(this.fieldType.boost(), 1f) == 0) {
                     this.fieldType.setOmitNorms(true);
                 }
                 if (!this.indexOptionsSet) {
@@ -171,15 +171,14 @@ public class StandardnumberMapper extends FieldMapper {
 
         @SuppressWarnings({"unchecked", "rawtypes"})
         @Override
-        public Mapper.Builder parse(String name, Map<String, Object> mapping, ParserContext parserContext)
-                throws MapperParsingException {
+        public Mapper.Builder parse(String name, Map<String, Object> mapping, ParserContext parserContext) {
             StandardnumberMapper.Builder builder = new Builder(name, service);
             Iterator<Map.Entry<String, Object>> iterator = mapping.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<String, Object> entry = iterator.next();
                 String fieldName = entry.getKey();
                 Object fieldNode = entry.getValue();
-                if (fieldName.equals("fields")) {
+                if ("fields".equals(fieldName)) {
                     Map<String, Object> fieldsNode = (Map<String, Object>) fieldNode;
                     for (Map.Entry<String, Object> fieldsEntry : fieldsNode.entrySet()) {
                         String propName = fieldsEntry.getKey();
@@ -199,7 +198,7 @@ public class StandardnumberMapper extends FieldMapper {
         }
     }
 
-    public static class StandardnumberFieldType extends StringFieldType {
+    public static class StandardnumberFieldType extends StringFieldType implements Cloneable {
 
         public StandardnumberFieldType() {
             super();

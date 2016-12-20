@@ -39,4 +39,15 @@ public final class IcuNumberFormatTokenFilter extends TokenFilter {
             return true;
         }
     }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof IcuNumberFormatTokenFilter &&
+                numberFormat.equals(((IcuNumberFormatTokenFilter)object).numberFormat);
+    }
+
+    @Override
+    public int hashCode() {
+        return numberFormat.hashCode();
+    }
 }

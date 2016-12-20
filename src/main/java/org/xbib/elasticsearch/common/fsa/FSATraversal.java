@@ -34,8 +34,12 @@ public final class FSATraversal {
      * The type of mismatch is a constant defined in {@link MatchResult}.
      */
     public int perfectHash(byte[] sequence, int start, int length, int node) {
-        assert fsa.getFlags().contains(FSAFlags.NUMBERS) : "FSA not built with NUMBERS option.";
-        assert length > 0 : "must be a non-empty sequence";
+        if (!fsa.getFlags().contains(FSAFlags.NUMBERS)) {
+            throw new IllegalArgumentException("FSA not built with NUMBERS option.");
+        }
+        if (length == 0) {
+            throw new IllegalArgumentException("must be a non-empty sequence");
+        }
         int hash = 0;
         final int end = start + length - 1;
         int seqIndex = start;
@@ -48,20 +52,16 @@ public final class FSATraversal {
                     if (seqIndex == end) {
                         return hash;
                     }
-
                     hash++;
                 }
-
                 if (fsa.isArcTerminal(arc)) {
                     /* The automaton contains a prefix of the input sequence. */
                     return MatchResult.AUTOMATON_HAS_PREFIX;
                 }
-
                 // The sequence is a prefix of one of the sequences stored in the automaton.
                 if (seqIndex == end) {
                     return MatchResult.SEQUENCE_IS_A_PREFIX;
                 }
-
                 // Make a transition along the arc, go the target node's first arc.
                 arc = fsa.getFirstArc(fsa.getEndNode(arc));
                 label = sequence[++seqIndex];
@@ -74,7 +74,6 @@ public final class FSATraversal {
                     hash += fsa.getRightLanguageCount(fsa.getEndNode(arc));
                 }
             }
-
             arc = fsa.getNextArc(arc);
         }
 
@@ -92,17 +91,17 @@ public final class FSATraversal {
      * @param sequence sequence
      * @param start    start
      * @param length   length
-     * @param node     node
+     * @param n     node
      * @return The same object as <code>result</code>, but with reset internal
      * type and other fields.
      */
     public MatchResult match(MatchResult result,
-                             byte[] sequence, int start, int length, int node) {
+                             byte[] sequence, int start, int length, int n) {
+        int node = n;
         if (node == 0) {
             result.reset(MatchResult.NO_MATCH, start, node);
             return result;
         }
-        final FSA fsa = this.fsa;
         final int end = start + length;
         for (int i = start; i < end; i++) {
             final int arc = fsa.getArc(node, sequence[i]);

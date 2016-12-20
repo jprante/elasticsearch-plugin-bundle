@@ -6,6 +6,8 @@ package org.xbib.elasticsearch.common.fsa;
  * @see FSA#visitInPostOrder(StateVisitor)
  * @see FSA#visitInPreOrder(StateVisitor)
  */
+
+@FunctionalInterface
 public interface StateVisitor {
 
     public boolean accept(int state);

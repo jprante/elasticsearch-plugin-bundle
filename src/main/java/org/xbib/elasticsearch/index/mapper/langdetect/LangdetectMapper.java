@@ -1,5 +1,7 @@
 package org.xbib.elasticsearch.index.mapper.langdetect;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexOptions;
 import org.elasticsearch.common.lucene.Lucene;
@@ -19,7 +21,7 @@ import org.xbib.elasticsearch.common.langdetect.Language;
 import org.xbib.elasticsearch.common.langdetect.LanguageDetectionException;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +33,9 @@ import static org.elasticsearch.index.mapper.TypeParsers.parseStore;
  */
 public class LangdetectMapper extends TextFieldMapper {
 
-    public static final String CONTENT_TYPE = "langdetect";
+    private static final Logger logger = LogManager.getLogger(LangdetectMapper.class.getName());
+
+    public static final String MAPPER_TYPE = "langdetect";
 
     private final LangdetectService langdetectService;
 
@@ -53,7 +57,7 @@ public class LangdetectMapper extends TextFieldMapper {
 
     @Override
     protected String contentType() {
-        return CONTENT_TYPE;
+        return MAPPER_TYPE;
     }
 
     @Override
@@ -85,10 +89,10 @@ public class LangdetectMapper extends TextFieldMapper {
             try {
                 byte[] b = parser.binaryValue();
                 if (b != null && b.length > 0) {
-                    value = new String(b, Charset.forName("UTF-8"));
+                    value = new String(b, StandardCharsets.UTF_8);
                 }
             } catch (Exception e) {
-                // ignore
+                logger.error(e.getMessage(), e);
             }
         }
         try {
@@ -98,6 +102,7 @@ public class LangdetectMapper extends TextFieldMapper {
                 fields.add(field);
             }
         } catch (LanguageDetectionException e) {
+            logger.trace(e.getMessage(), e);
             context.createExternalValueContext("unknown");
         }
     }
@@ -122,8 +127,8 @@ public class LangdetectMapper extends TextFieldMapper {
             }
         }
         Map<String, Object> map = langdetectService.getSettings().getAsStructuredMap();
-        for (String key : map.keySet()) {
-            builder.field(key, map.get(key));
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            builder.field(entry.getKey(), entry.getValue());
         }
     }
 
@@ -136,7 +141,7 @@ public class LangdetectMapper extends TextFieldMapper {
             LANG_FIELD_TYPE.setOmitNorms(true);
             LANG_FIELD_TYPE.setIndexAnalyzer(Lucene.KEYWORD_ANALYZER);
             LANG_FIELD_TYPE.setSearchAnalyzer(Lucene.KEYWORD_ANALYZER);
-            LANG_FIELD_TYPE.setName(CONTENT_TYPE);
+            LANG_FIELD_TYPE.setName(MAPPER_TYPE);
             LANG_FIELD_TYPE.freeze();
         }
     }
@@ -219,8 +224,8 @@ public class LangdetectMapper extends TextFieldMapper {
         }
 
         public Builder map(Map<String, Object> map) {
-            for (String key : map.keySet()) {
-                settingsBuilder.put("map." + key, map.get(key));
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+                settingsBuilder.put("map." + entry.getKey(), entry.getValue());
             }
             return this;
         }
@@ -245,7 +250,7 @@ public class LangdetectMapper extends TextFieldMapper {
             if (fieldType.indexOptions() != IndexOptions.NONE && !fieldType.tokenized()) {
                 defaultFieldType.setOmitNorms(true);
                 defaultFieldType.setIndexOptions(IndexOptions.DOCS);
-                if (!omitNormsSet && fieldType.boost() == 1.0f) {
+                if (!omitNormsSet && Float.compare(fieldType.boost(), 1.0f) == 0) {
                     fieldType.setOmitNorms(true);
                 }
                 if (!indexOptionsSet) {
@@ -268,8 +273,7 @@ public class LangdetectMapper extends TextFieldMapper {
     public static class TypeParser implements Mapper.TypeParser {
 
         @Override
-        public Mapper.Builder<?, ?> parse(String name, Map<String, Object> mapping, ParserContext parserContext)
-                throws MapperParsingException {
+        public Mapper.Builder<?, ?> parse(String name, Map<String, Object> mapping, ParserContext parserContext) {
             Builder builder = new Builder(name);
             Iterator<Map.Entry<String, Object>> iterator = mapping.entrySet().iterator();
             while (iterator.hasNext()) {
@@ -277,15 +281,11 @@ public class LangdetectMapper extends TextFieldMapper {
                 String fieldName = entry.getKey();
                 Object fieldNode = entry.getValue();
                 switch (fieldName) {
-                    case "analyzer": {
+                    case "analyzer":
+                    case "include_in_all":
                         iterator.remove();
                         break;
-                    }
-                    case "include_in_all": {
-                        iterator.remove();
-                        break;
-                    }
-                    case "search_quote_analyzer": {
+                    case "search_quote_analyzer":
                         NamedAnalyzer analyzer = parserContext.getIndexAnalyzers().get(fieldNode.toString());
                         if (analyzer == null) {
                             throw new MapperParsingException("Analyzer [" + fieldNode.toString() + "] not found for field [" + name + "]");
@@ -293,8 +293,7 @@ public class LangdetectMapper extends TextFieldMapper {
                         builder.searchQuotedAnalyzer(analyzer);
                         iterator.remove();
                         break;
-                    }
-                    case "position_increment_gap": {
+                    case "position_increment_gap":
                         int newPositionIncrementGap = XContentMapValues.nodeIntegerValue(fieldNode, -1);
                         if (newPositionIncrementGap < 0) {
                             throw new MapperParsingException("position_increment_gap less than 0 aren't allowed.");
@@ -311,78 +310,65 @@ public class LangdetectMapper extends TextFieldMapper {
                         }
                         iterator.remove();
                         break;
-                    }
-                    case "store": {
+                    case "store":
                         builder.store(parseStore(fieldName, fieldNode.toString(), parserContext));
                         iterator.remove();
                         break;
-                    }
-                    case "number_of_trials": {
+                    case "number_of_trials":
                         builder.ntrials(XContentMapValues.nodeIntegerValue(fieldNode));
                         iterator.remove();
                         break;
-                    }
-                    case "alpha": {
+                    case "alpha":
                         builder.alpha(XContentMapValues.nodeDoubleValue(fieldNode));
                         iterator.remove();
                         break;
-                    }
-                    case "alpha_width": {
+                    case "alpha_width":
                         builder.alphaWidth(XContentMapValues.nodeDoubleValue(fieldNode));
                         iterator.remove();
                         break;
-                    }
-                    case "iteration_limit": {
+                    case "iteration_limit":
                         builder.iterationLimit(XContentMapValues.nodeIntegerValue(fieldNode));
                         iterator.remove();
                         break;
-                    }
-                    case "prob_threshold": {
+                    case "prob_threshold":
                         builder.probThreshold(XContentMapValues.nodeDoubleValue(fieldNode));
                         iterator.remove();
                         break;
-                    }
-                    case "conv_threshold": {
+                    case "conv_threshold":
                         builder.convThreshold(XContentMapValues.nodeDoubleValue(fieldNode));
                         iterator.remove();
                         break;
-                    }
-                    case "base_freq": {
+                    case "base_freq":
                         builder.baseFreq(XContentMapValues.nodeIntegerValue(fieldNode));
                         iterator.remove();
                         break;
-                    }
-                    case "pattern": {
+                    case "pattern":
                         builder.pattern(XContentMapValues.nodeStringValue(fieldNode, null));
                         iterator.remove();
                         break;
-                    }
-                    case "max": {
+                    case "max":
                         builder.max(XContentMapValues.nodeIntegerValue(fieldNode));
                         iterator.remove();
                         break;
-                    }
-                    case "binary": {
+                    case "binary":
                         boolean b = XContentMapValues.nodeBooleanValue(fieldNode);
                         builder.binary(b);
                         iterator.remove();
                         break;
-                    }
-                    case "map": {
+                    case "map":
                         builder.map(XContentMapValues.nodeMapValue(fieldNode, "map"));
                         iterator.remove();
                         break;
-                    }
-                    case "languages": {
+                    case "languages":
                         builder.languages(XContentMapValues.nodeStringArrayValue(fieldNode));
                         iterator.remove();
                         break;
-                    }
-                    case "profile": {
+                    case "profile":
                         builder.profile(XContentMapValues.nodeStringValue(fieldNode, null));
                         iterator.remove();
                         break;
-                    }
+                    default:
+                        break;
                 }
             }
             return builder;
