@@ -2,32 +2,35 @@ package org.xbib.elasticsearch.index.analysis.icu;
 
 import com.ibm.icu.text.Collator;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.core.KeywordTokenizer;
-import org.apache.lucene.collation.ICUCollationAttributeFactory;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenizerFactory;
+import org.xbib.elasticsearch.index.analysis.icu.segmentation.DefaultIcuTokenizerConfig;
+import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizer;
+import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizerConfig;
+import org.xbib.elasticsearch.index.analysis.icu.tokenattributes.IcuCollationAttributeFactory;
 
 /**
  *
  */
 public class IcuCollationTokenizerFactory extends AbstractTokenizerFactory {
 
-    private final ICUCollationAttributeFactory factory;
+    private final IcuCollationAttributeFactory factory;
 
-    private final int bufferSize;
+    private final IcuTokenizerConfig config;
+
 
     public IcuCollationTokenizerFactory(IndexSettings indexSettings, Environment environment, String name,
                                         Settings settings) {
         super(indexSettings, name, settings);
         Collator collator = IcuCollationKeyAnalyzerProvider.createCollator(settings);
-        this.factory = new ICUCollationAttributeFactory(collator);
-        this.bufferSize = settings.getAsInt("buffer_size", KeywordTokenizer.DEFAULT_BUFFER_SIZE);
+        this.factory = new IcuCollationAttributeFactory(collator);
+        this.config = new DefaultIcuTokenizerConfig(true, true);
     }
 
     @Override
     public Tokenizer create() {
-        return new KeywordTokenizer(factory, bufferSize);
+        return new IcuTokenizer(factory, config);
     }
 }

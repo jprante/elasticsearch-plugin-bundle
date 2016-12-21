@@ -8,16 +8,16 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
+import org.elasticsearch.index.analysis.MultiTermAwareComponent;
 
 import java.io.InputStream;
 
 /**
- * Uses the {@link org.apache.lucene.analysis.icu.ICUFoldingFilter}.
  * Applies foldings from UTR#30 Character Foldings.
  * Can be filtered to handle certain characters in a specified way (see http://icu-project.org/apiref/icu4j/com/ibm/icu/text/UnicodeSet.html)
  * E.g national chars that should be retained, like unicodeSetFilter : "[^åäöÅÄÖ]".
  */
-public class IcuFoldingTokenFilterFactory extends AbstractTokenFilterFactory {
+public class IcuFoldingTokenFilterFactory extends AbstractTokenFilterFactory implements MultiTermAwareComponent {
 
     private final Normalizer2 normalizer;
 
@@ -45,17 +45,17 @@ public class IcuFoldingTokenFilterFactory extends AbstractTokenFilterFactory {
         }
         Normalizer2 base = Normalizer2.getInstance(inputStream, normalizationName, normalizationMode);
         String unicodeSetFilter = settings.get("unicodeSetFilter");
-        if (unicodeSetFilter != null) {
-            UnicodeSet unicodeSet = new UnicodeSet(unicodeSetFilter);
-            unicodeSet.freeze();
-            this.normalizer = new FilteredNormalizer2(base, unicodeSet);
-        } else {
-            this.normalizer = base;
-        }
+        this.normalizer = unicodeSetFilter != null ?
+                new FilteredNormalizer2(base, new UnicodeSet(unicodeSetFilter).freeze()) : base;
     }
 
     @Override
     public TokenStream create(TokenStream tokenStream) {
         return new IcuNormalizer2Filter(tokenStream, normalizer);
+    }
+
+    @Override
+    public Object getMultiTermComponent() {
+        return this;
     }
 }

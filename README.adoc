@@ -45,6 +45,9 @@ The plugin code in each plugin is equivalent to the code in this combined bundle
 
 ## Char filters
 
+- the `icu_normalizer` normalizies strings by Unicode normalization rules
+- the `icu_folding` folds characters in string according to Unicode folding rules
+
 ## Field mappers
 
 ## REST actions
@@ -73,11 +76,11 @@ The plugin code in each plugin is equivalent to the code in this combined bundle
 - reference: 
 
 
-.Table Compatibility matrix
+.Compatibility matrix
 [frame="all"]
 |===
 | Plugin version | Elasticsearch version | Release date
-| 5.1.1.0  | 5.1.1     | Dec 19 2016
+| 5.1.1.0  | 5.1.1     | Dec 31 2016
 | 2.3.4.0  | 2.3.4     | Jul 30, 2016
 | 2.3.3.0  | 2.3.3     | May 23, 2016
 | 2.3.2.0  | 2.3.2     | May 11, 2016
@@ -108,19 +111,38 @@ The plugin code in each plugin is equivalent to the code in this combined bundle
 
 ### Elasticsearch 5.x
 
-### Elasticsearch 2.x
-
-    ./bin/plugin install 'http://search.maven.org/remotecontent?filepath=org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/2.3.3.0/elasticsearch-plugin-bundle-2.3.3.0-plugin.zip'
+[source]
+----
+./bin/elasticsearch-plugin install http://search.maven.org/remotecontent?filepath=org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/5.1.1.0/elasticsearch-plugin-bundle-5.1.1.0-plugin.zip
+----
 
 or
 
-    ./bin/plugin install 'http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/2.3.4.0/elasticsearch-plugin-bundle-2.3.4.0-plugin.zip'
+[source]
+----
+./bin/elasticsearch-plugin install http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/5.1.1.0/elasticsearch-plugin-bundle-5.1.1.0-plugin.zip
+----
+Do not forget to restart the node after installing.
 
+### Elasticsearch 2.x
+
+[source]
+----
+./bin/plugin install 'http://search.maven.org/remotecontent?filepath=org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/2.3.3.0/elasticsearch-plugin-bundle-2.3.3.0-plugin.zip'
+----
+or
+[source]
+----
+./bin/plugin install 'http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/2.3.4.0/elasticsearch-plugin-bundle-2.3.4.0-plugin.zip'
+----
+Do not forget to restart the node after installing.
 
 ### Elasticsearch 1.x
 
-    ./bin/plugin -install bundle -url http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/1.6.0.0/elasticsearch-plugin-bundle-1.6.0.0-plugin.zip
-
+[source]
+----
+./bin/plugin -install bundle -url http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/1.6.0.0/elasticsearch-plugin-bundle-1.6.0.0-plugin.zip
+----
 Do not forget to restart the node after installing.
 
 ## Project docs

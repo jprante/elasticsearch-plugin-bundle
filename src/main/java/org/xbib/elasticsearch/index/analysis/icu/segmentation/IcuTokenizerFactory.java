@@ -1,4 +1,4 @@
-package org.xbib.elasticsearch.index.analysis.icu;
+package org.xbib.elasticsearch.index.analysis.icu.segmentation;
 
 import com.ibm.icu.lang.UCharacter;
 import com.ibm.icu.lang.UProperty;
@@ -10,9 +10,6 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenizerFactory;
-import org.xbib.elasticsearch.index.analysis.icu.segmentation.DefaultIcuTokenizerConfig;
-import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizer;
-import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizerConfig;
 
 import java.io.BufferedReader;
 import java.io.IOException;

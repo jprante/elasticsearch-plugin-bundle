@@ -1,34 +1,38 @@
 package org.xbib.elasticsearch.index.analysis.sortform;
 
+import com.ibm.icu.text.Collator;
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.core.KeywordTokenizer;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
+import org.elasticsearch.index.analysis.AbstractTokenizerFactory;
 import org.elasticsearch.index.analysis.CharFilterFactory;
 import org.elasticsearch.index.analysis.CustomAnalyzer;
 import org.elasticsearch.index.analysis.CustomAnalyzerProvider;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.index.analysis.TokenizerFactory;
-import org.xbib.elasticsearch.index.analysis.icu.IcuCollationTokenizerFactory;
+import org.xbib.elasticsearch.index.analysis.icu.IcuCollationKeyAnalyzerProvider;
+import org.xbib.elasticsearch.index.analysis.icu.tokenattributes.IcuCollationAttributeFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Like CustomAnalyzerProvider, but with IcuCollationTokenizerFactory as default tokenizer.
  */
 public class SortformAnalyzerProvider extends CustomAnalyzerProvider {
 
     private final Settings analyzerSettings;
 
-    private final IcuCollationTokenizerFactory tokenizerFactory;
+    private final TokenizerFactory tokenizerFactory;
 
     private CustomAnalyzer customAnalyzer;
 
     public SortformAnalyzerProvider(IndexSettings indexSettings, Environment environment, String name,
                                     Settings settings) {
         super(indexSettings, name, settings);
-        this.tokenizerFactory = new IcuCollationTokenizerFactory(indexSettings, environment, name, settings);
+        this.tokenizerFactory = new SortformTokenizerFactory(indexSettings, name, settings);
         this.analyzerSettings = settings;
     }
 
@@ -67,5 +71,24 @@ public class SortformAnalyzerProvider extends CustomAnalyzerProvider {
     @Override
     public CustomAnalyzer get() {
         return this.customAnalyzer;
+    }
+
+    class SortformTokenizerFactory extends AbstractTokenizerFactory {
+
+        IcuCollationAttributeFactory factory;
+
+        int bufferSize;
+
+        SortformTokenizerFactory(IndexSettings indexSettings, String name, Settings settings) {
+            super(indexSettings, name, settings);
+            Collator collator = IcuCollationKeyAnalyzerProvider.createCollator(settings);
+            factory = new IcuCollationAttributeFactory(collator);
+            bufferSize = settings.getAsInt("bufferSize", 256);
+        }
+
+        @Override
+        public Tokenizer create() {
+            return new KeywordTokenizer(factory, bufferSize);
+        }
     }
 }

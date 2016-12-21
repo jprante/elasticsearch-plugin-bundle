@@ -7,15 +7,17 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
+import org.elasticsearch.index.analysis.MultiTermAwareComponent;
 
 /**
  *
  */
-public class IcuMeasureFormatTokenFilterFactory extends AbstractTokenFilterFactory {
+public class IcuMeasureFormatTokenFilterFactory extends AbstractTokenFilterFactory implements MultiTermAwareComponent {
 
     private final MeasureFormat measureFormat;
 
-    public IcuMeasureFormatTokenFilterFactory(IndexSettings indexSettings, Environment environment, String name, Settings settings) {
+    public IcuMeasureFormatTokenFilterFactory(IndexSettings indexSettings, Environment environment, String name,
+                                              Settings settings) {
         super(indexSettings, name, settings);
         ULocale locale = settings.get("locale") != null ?
                 new ULocale(settings.get("locale")) : ULocale.getDefault();
@@ -47,5 +49,10 @@ public class IcuMeasureFormatTokenFilterFactory extends AbstractTokenFilterFacto
     @Override
     public TokenStream create(TokenStream tokenStream) {
         return new IcuMeasureFormatTokenFilter(tokenStream, measureFormat);
+    }
+
+    @Override
+    public Object getMultiTermComponent() {
+        return this;
     }
 }

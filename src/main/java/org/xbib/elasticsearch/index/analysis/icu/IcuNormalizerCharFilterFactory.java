@@ -1,6 +1,8 @@
 package org.xbib.elasticsearch.index.analysis.icu;
 
+import com.ibm.icu.text.FilteredNormalizer2;
 import com.ibm.icu.text.Normalizer2;
+import com.ibm.icu.text.UnicodeSet;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
@@ -34,7 +36,10 @@ public class IcuNormalizerCharFilterFactory extends AbstractCharFilterFactory im
                 normalizationMode = Normalizer2.Mode.COMPOSE;
                 break;
         }
-        this.normalizer = Normalizer2.getInstance(null, normalizationName, normalizationMode);
+        Normalizer2 base = Normalizer2.getInstance(null, normalizationName, normalizationMode);
+        String unicodeSetFilter = settings.get("unicodeSetFilter");
+        this.normalizer = unicodeSetFilter != null ?
+                new FilteredNormalizer2(base, new UnicodeSet(unicodeSetFilter).freeze()) : base;
     }
 
     @Override

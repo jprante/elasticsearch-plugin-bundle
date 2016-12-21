@@ -5,6 +5,7 @@ import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -18,10 +19,13 @@ import static org.xbib.elasticsearch.MapperTestUtils.tokenizerFactory;
  */
 public class IcuMeasureFormatTests extends Assert {
 
-    //  java.lang.UnsupportedOperationException
-    // at com.ibm.icu.text.MeasureFormat.parseObject(MeasureFormat.java:346)
-
+    @Ignore
+    @Test
     public void testByteMeasureFormat() throws IOException {
+        // Sad, doesn't work.
+        //  java.lang.UnsupportedOperationException
+        // at com.ibm.icu.text.MeasureFormat.parseObject(MeasureFormat.java:346)
+        //  at org.xbib.elasticsearch.index.analysis.icu.IcuMeasureFormatTokenFilter.incrementToken(IcuMeasureFormatTokenFilter.java:35)
 
         String source = "123.45kb";
 

@@ -4,10 +4,10 @@ import com.ibm.icu.text.Collator;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordTokenizer;
 import org.apache.lucene.collation.CollationKeyAnalyzer;
-import org.apache.lucene.collation.ICUCollationAttributeFactory;
+import org.xbib.elasticsearch.index.analysis.icu.tokenattributes.IcuCollationAttributeFactory;
 
 /**
- * Configures {@link KeywordTokenizer} with {@link ICUCollationAttributeFactory}.
+ * Configures {@link KeywordTokenizer} with {@link IcuCollationAttributeFactory}.
  * <p>
  * Converts the token into its {@link com.ibm.icu.text.CollationKey}, and
  * then encodes the CollationKey directly.
@@ -46,10 +46,10 @@ import org.apache.lucene.collation.ICUCollationAttributeFactory;
  */
 public final class IcuCollationKeyAnalyzer extends Analyzer {
 
-    private final ICUCollationAttributeFactory factory;
+    private final IcuCollationAttributeFactory factory;
 
     public IcuCollationKeyAnalyzer(Collator collator) {
-        this.factory = new ICUCollationAttributeFactory(collator);
+        this.factory = new IcuCollationAttributeFactory(collator);
     }
 
     @Override

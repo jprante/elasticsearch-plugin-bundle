@@ -48,17 +48,14 @@ public final class IcuNormalizer2CharFilter extends BaseCharFilter {
         if (len <= 0) {
             throw new IllegalArgumentException("len <= 0");
         }
-
         while (!inputFinished || inputBuffer.length() > 0 || resultBuffer.length() > 0) {
             int retLen;
-
             if (resultBuffer.length() > 0) {
                 retLen = outputFromResultBuffer(cbuf, off, len);
                 if (retLen > 0) {
                     return retLen;
                 }
             }
-
             int resLen = readAndNormalizeFromInput();
             if (resLen > 0) {
                 retLen = outputFromResultBuffer(cbuf, off, len);
@@ -66,10 +63,8 @@ public final class IcuNormalizer2CharFilter extends BaseCharFilter {
                     return retLen;
                 }
             }
-
             readInputToBuffer();
         }
-
         return -1;
     }
 

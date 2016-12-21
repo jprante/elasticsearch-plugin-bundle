@@ -56,7 +56,7 @@ public class NodeTestUtils {
             this.client = node.client();
             findNodeAddress();
             ClusterHealthResponse healthResponse = client.execute(ClusterHealthAction.INSTANCE,
-                    new ClusterHealthRequest().waitForStatus(ClusterHealthStatus.GREEN)
+                    new ClusterHealthRequest().waitForStatus(ClusterHealthStatus.YELLOW)
                             .timeout(TimeValue.timeValueSeconds(30))).actionGet();
             if (healthResponse != null && healthResponse.isTimedOut()) {
                 throw new IOException("cluster state is " + healthResponse.getStatus().name()

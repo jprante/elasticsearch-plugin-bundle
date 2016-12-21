@@ -3,11 +3,11 @@ package org.xbib.elasticsearch.index.analysis.icu.segmentation;
 import com.ibm.icu.lang.UCharacter;
 import com.ibm.icu.text.BreakIterator;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.icu.tokenattributes.ScriptAttribute;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.util.AttributeFactory;
+import org.xbib.elasticsearch.index.analysis.icu.tokenattributes.ScriptAttribute;
 
 import java.io.IOException;
 import java.io.Reader;

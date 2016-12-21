@@ -165,7 +165,7 @@ public abstract class CollationTestBase extends LuceneTestCase {
                             ts.reset();
                             ts.incrementToken();
                             if (expected != bytes) {
-                                throw new IOException("unexpected bytes");
+                                throw new IOException("unexpected: bytes=" + bytes.utf8ToString() + " expected=" + expected.utf8ToString());
                             }
                             ts.incrementToken();
                             ts.end();

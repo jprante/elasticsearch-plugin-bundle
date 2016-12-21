@@ -146,7 +146,6 @@ public class MapperTestUtils {
         Map<String, TokenFilterFactory> tokenFilterFactoryMap = analysisRegistry.buildTokenFilterFactories(indexSettings);
         Map<String, TokenizerFactory> tokenizerFactoryMap = analysisRegistry.buildTokenizerFactories(indexSettings);
         Map<String, AnalyzerProvider<?>> analyzerProviderMap = analysisRegistry.buildAnalyzerFactories(indexSettings);
-        logger.info("{} {} {} {}", charFilterFactoryMap, tokenFilterFactoryMap, tokenizerFactoryMap, analyzerProviderMap);
         IndexAnalyzers indexAnalyzers = analysisRegistry.build(indexSettings, analyzerProviderMap,
                 tokenizerFactoryMap, charFilterFactoryMap, tokenFilterFactoryMap);
         Analyzer analyzer = indexAnalyzers.get(name) != null ? indexAnalyzers.get(name) : analysisRegistry.getAnalyzer(name);

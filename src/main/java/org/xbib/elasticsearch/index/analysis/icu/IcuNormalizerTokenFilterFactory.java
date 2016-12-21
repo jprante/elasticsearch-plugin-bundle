@@ -1,11 +1,14 @@
 package org.xbib.elasticsearch.index.analysis.icu;
 
+import com.ibm.icu.text.FilteredNormalizer2;
 import com.ibm.icu.text.Normalizer2;
+import com.ibm.icu.text.UnicodeSet;
 import org.apache.lucene.analysis.TokenStream;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
+import org.elasticsearch.index.analysis.MultiTermAwareComponent;
 
 /**
  * Uses the {@link IcuNormalizer2Filter} to normalize tokens.
@@ -13,7 +16,7 @@ import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
  * The <code>name</code> can be used to provide the type of normalization to perform,
  * the <code>mode</code> can be used to provide the mode of normalization.
  */
-public class IcuNormalizerTokenFilterFactory extends AbstractTokenFilterFactory {
+public class IcuNormalizerTokenFilterFactory extends AbstractTokenFilterFactory implements MultiTermAwareComponent {
 
     private final Normalizer2 normalizer;
 
@@ -35,11 +38,19 @@ public class IcuNormalizerTokenFilterFactory extends AbstractTokenFilterFactory 
                 normalizationMode = Normalizer2.Mode.COMPOSE;
                 break;
         }
-        this.normalizer = Normalizer2.getInstance(null, normalizationName, normalizationMode);
+        Normalizer2 base = Normalizer2.getInstance(null, normalizationName, normalizationMode);
+        String unicodeSetFilter = settings.get("unicodeSetFilter");
+        this.normalizer = unicodeSetFilter != null ?
+                new FilteredNormalizer2(base, new UnicodeSet(unicodeSetFilter).freeze()) : base;
     }
 
     @Override
     public TokenStream create(TokenStream tokenStream) {
         return new IcuNormalizer2Filter(tokenStream, normalizer);
+    }
+
+    @Override
+    public Object getMultiTermComponent() {
+        return this;
     }
 }

@@ -1,0 +1,73 @@
+{
+  "index":{
+    "analysis":{
+      "filter" : {
+        "my_icu_transformer_ch" : {
+          "type" : "icu_transform",
+          "id" : "Traditional-Simplified"
+        },
+        "my_icu_transformer_han" : {
+          "type" : "icu_transform",
+          "id" : "Han-Latin"
+        },
+        "my_icu_transformer_katakana" : {
+          "type" : "icu_transform",
+          "id" : "Katakana-Hiragana"
+        },
+        "my_icu_transformer_cyr" : {
+          "type" : "icu_transform",
+          "id" : "Cyrillic-Latin"
+        },
+        "my_icu_transformer_cyr_reverse" : {
+          "type" : "icu_transform",
+          "id" : "Cyrillic-Latin",
+          "dir" : "reverse"
+        },
+        "my_icu_transformer_any_latin" : {
+          "type" : "icu_transform",
+          "id" : "Any-Latin"
+        },
+        "my_icu_transformer_nfd" : {
+          "type" : "icu_transform",
+          "id" : "NFD; [:Nonspacing Mark:] Remove"
+        },
+        "my_icu_transformer_rules" : {
+          "type" : "icu_transform",
+          "id" : "test",
+          "dir" : "forward",
+          "rules" : "a > b; b > c;"
+        }
+      },
+      "tokenizer" : {
+        "my_icu_tokenizer_ch" : {
+          "type" : "icu_tokenizer",
+          "filter" : [ "my_icu_transformer_ch" ]
+        },
+        "my_icu_tokenizer_han" : {
+          "type" : "icu_tokenizer",
+          "filter" : [ "my_icu_transformer_han" ]
+        },
+        "my_icu_tokenizer_katakana" : {
+          "type" : "icu_tokenizer",
+          "filter" : [ "my_icu_transformer_katakana" ]
+        },
+        "my_icu_tokenizer_cyr" : {
+          "type" : "icu_tokenizer",
+          "filter" : [ "my_icu_transformer_cyr" ]
+        },
+        "my_icu_tokenizer_any_latin" : {
+          "type" : "icu_tokenizer",
+          "filter" : [ "my_icu_transformer_any_latin" ]
+        },
+        "my_icu_tokenizer_nfd" : {
+          "type" : "icu_tokenizer",
+          "filter" : [ "my_icu_transformer_nfd" ]
+        },
+        "my_icu_tokenizer_rules" : {
+          "type" : "icu_tokenizer",
+          "filter" : [ "my_icu_transformer_rules" ]
+        }
+      }
+    }
+  }
+}

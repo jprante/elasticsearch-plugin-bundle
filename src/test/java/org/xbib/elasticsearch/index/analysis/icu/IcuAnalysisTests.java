@@ -6,6 +6,7 @@ import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.index.analysis.TokenizerFactory;
 import org.junit.Test;
 import org.xbib.elasticsearch.MapperTestUtils;
+import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizerFactory;
 
 import java.io.IOException;
 

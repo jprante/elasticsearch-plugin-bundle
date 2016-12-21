@@ -12,9 +12,10 @@ import java.io.InputStream;
 import java.io.Reader;
 
 /**
- * Uses the {@link org.apache.lucene.analysis.icu.ICUFoldingFilter}.
  * Applies foldings from UTR#30 Character Foldings.
- * Can be filtered to handle certain characters in a specified way (see http://icu-project.org/apiref/icu4j/com/ibm/icu/text/UnicodeSet.html)
+ *
+ * Can be filtered to handle certain characters in a specified way.
+ * See http://icu-project.org/apiref/icu4j/com/ibm/icu/text/UnicodeSet.html
  * E.g national chars that should be retained (filter : "[^åäöÅÄÖ]").
  */
 public class IcuFoldingCharFilterFactory extends AbstractCharFilterFactory {
@@ -45,13 +46,8 @@ public class IcuFoldingCharFilterFactory extends AbstractCharFilterFactory {
         }
         Normalizer2 base = Normalizer2.getInstance(inputStream, normalizationName, normalizationMode);
         String unicodeSetFilter = settings.get("unicodeSetFilter");
-        if (unicodeSetFilter != null) {
-            UnicodeSet unicodeSet = new UnicodeSet(unicodeSetFilter);
-            unicodeSet.freeze();
-            this.normalizer = new FilteredNormalizer2(base, unicodeSet);
-        } else {
-            this.normalizer = base;
-        }
+        this.normalizer = unicodeSetFilter != null ?
+            new FilteredNormalizer2(base, new UnicodeSet(unicodeSetFilter).freeze()) : base;
     }
 
     @Override
