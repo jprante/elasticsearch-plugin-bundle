@@ -45,12 +45,11 @@ public class IcuMeasureFormatTests extends Assert {
         assertNotNull(termAttr);
         int i = 0;
         while (stream.incrementToken()) {
-            System.err.println(termAttr.toString());
-            //assertTrue(i < expected.length);
-            //assertEquals(expected[i], termAttr.toString());
+            assertTrue(i < expected.length);
+            assertEquals(expected[i], termAttr.toString());
             i++;
         }
-        //assertEquals(i, expected.length);
+        assertEquals(i, expected.length);
         stream.close();
     }
 
