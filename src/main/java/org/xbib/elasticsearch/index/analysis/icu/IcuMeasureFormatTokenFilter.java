@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.text.ParsePosition;
 
 /**
- *
+ * Experimental.
  */
 public final class IcuMeasureFormatTokenFilter extends TokenFilter {
 
@@ -32,8 +32,11 @@ public final class IcuMeasureFormatTokenFilter extends TokenFilter {
         } else {
             String s = termAtt.toString();
             ParsePosition parsePosition = new ParsePosition(0);
+            // UnsupportedOperationException
+            // TODO(jprante) instead of token filter make a field type mapper?
             Measure measure = measureFormat.parseObject(s, parsePosition);
             if (parsePosition.getIndex() > 0) {
+                // idea here is to reformat numbers with a measure unit to a base number
                 Number number = measure.getNumber();
                 MeasureUnit unit = measure.getUnit();
                 if (unit == MeasureUnit.KILOBYTE) {
@@ -45,6 +48,7 @@ public final class IcuMeasureFormatTokenFilter extends TokenFilter {
                 } else if (unit == MeasureUnit.TERABYTE) {
                     number = number.doubleValue() * 1024 * 1024 * 1024 * 1024;
                 }
+                // index the byte value
                 termAtt.setEmpty().append(Long.toString(number.longValue()));
             } else {
                 termAtt.setEmpty().append(s);

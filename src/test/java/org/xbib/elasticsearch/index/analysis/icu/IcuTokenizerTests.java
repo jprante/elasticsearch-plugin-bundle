@@ -63,7 +63,7 @@ public class IcuTokenizerTests {
         String resource = "org/xbib/elasticsearch/index/analysis/icu/icu_tokenizer.json";
         Tokenizer tokenizer = tokenizerFactory(resource,"my_hyphen_icu_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
-        // THIS FAILS BUT WHY? boundary ?
+        // THIS FAILS BUT WHY? only single digit ?
         //  expected:<3[-428-84350-9]> but was:<3[]
         assertSimpleTSOutput(tokenizer, expected);
     }
@@ -77,7 +77,6 @@ public class IcuTokenizerTests {
         tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenizer, expected);
     }
-
 
     private void assertSimpleTSOutput(TokenStream stream, String[] expected) throws IOException {
         stream.reset();

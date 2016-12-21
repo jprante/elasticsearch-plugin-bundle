@@ -51,7 +51,7 @@ public class IcuFoldingTokenFilterFactory extends AbstractTokenFilterFactory imp
 
     @Override
     public TokenStream create(TokenStream tokenStream) {
-        return new IcuNormalizer2Filter(tokenStream, normalizer);
+        return new IcuNormalizerFilter(tokenStream, normalizer);
     }
 
     @Override

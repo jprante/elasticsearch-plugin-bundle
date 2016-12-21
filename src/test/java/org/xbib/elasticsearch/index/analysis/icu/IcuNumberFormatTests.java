@@ -4,7 +4,6 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;

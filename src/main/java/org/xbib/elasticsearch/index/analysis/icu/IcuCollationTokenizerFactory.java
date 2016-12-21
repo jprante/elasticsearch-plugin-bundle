@@ -12,14 +12,13 @@ import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizerConfig
 import org.xbib.elasticsearch.index.analysis.icu.tokenattributes.IcuCollationAttributeFactory;
 
 /**
- *
+ * This {@link IcuTokenizer} uses an ICU @{@link Collator} as a char attribute factory.
  */
 public class IcuCollationTokenizerFactory extends AbstractTokenizerFactory {
 
     private final IcuCollationAttributeFactory factory;
 
     private final IcuTokenizerConfig config;
-
 
     public IcuCollationTokenizerFactory(IndexSettings indexSettings, Environment environment, String name,
                                         Settings settings) {

@@ -9,7 +9,7 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import java.io.IOException;
 
 /**
- * Normalize token text with ICU's {@link com.ibm.icu.text.Normalizer2}
+ * Normalize token text with ICU {@link com.ibm.icu.text.Normalizer2}.
  * <p>
  * With this filter, you can normalize text in the following ways:
  * <ul>
@@ -34,7 +34,7 @@ import java.io.IOException;
  * @see com.ibm.icu.text.Normalizer2
  * @see com.ibm.icu.text.FilteredNormalizer2
  */
-public class IcuNormalizer2Filter extends TokenFilter {
+public class IcuNormalizerFilter extends TokenFilter {
 
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
 
@@ -48,7 +48,7 @@ public class IcuNormalizer2Filter extends TokenFilter {
      * @param input      stream
      * @param normalizer normalizer to use
      */
-    public IcuNormalizer2Filter(TokenStream input, Normalizer2 normalizer) {
+    public IcuNormalizerFilter(TokenStream input, Normalizer2 normalizer) {
         super(input);
         this.normalizer = normalizer;
     }
@@ -69,7 +69,7 @@ public class IcuNormalizer2Filter extends TokenFilter {
 
     @Override
     public boolean equals(Object object) {
-        return object instanceof IcuNormalizer2Filter;
+        return object instanceof IcuNormalizerFilter;
     }
 
     @Override

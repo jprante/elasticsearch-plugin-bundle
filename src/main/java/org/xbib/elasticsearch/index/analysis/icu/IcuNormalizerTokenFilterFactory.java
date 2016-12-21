@@ -11,7 +11,7 @@ import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.analysis.MultiTermAwareComponent;
 
 /**
- * Uses the {@link IcuNormalizer2Filter} to normalize tokens.
+ * Uses the {@link IcuNormalizerFilter} to normalize tokens.
  *
  * The <code>name</code> can be used to provide the type of normalization to perform,
  * the <code>mode</code> can be used to provide the mode of normalization.
@@ -46,7 +46,7 @@ public class IcuNormalizerTokenFilterFactory extends AbstractTokenFilterFactory 
 
     @Override
     public TokenStream create(TokenStream tokenStream) {
-        return new IcuNormalizer2Filter(tokenStream, normalizer);
+        return new IcuNormalizerFilter(tokenStream, normalizer);
     }
 
     @Override

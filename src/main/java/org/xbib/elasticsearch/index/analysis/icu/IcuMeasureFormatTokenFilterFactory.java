@@ -10,7 +10,7 @@ import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.analysis.MultiTermAwareComponent;
 
 /**
- *
+ * Experimental.
  */
 public class IcuMeasureFormatTokenFilterFactory extends AbstractTokenFilterFactory implements MultiTermAwareComponent {
 

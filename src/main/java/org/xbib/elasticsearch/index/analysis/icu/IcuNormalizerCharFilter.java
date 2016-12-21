@@ -8,9 +8,9 @@ import java.io.Reader;
 import java.util.Objects;
 
 /**
- * Normalize token text with ICU's {@link Normalizer2}.
+ * Normalize token text with ICU {@link Normalizer2}.
  */
-public final class IcuNormalizer2CharFilter extends BaseCharFilter {
+public final class IcuNormalizerCharFilter extends BaseCharFilter {
 
     private final Normalizer2 normalizer;
     private final StringBuilder inputBuffer = new StringBuilder();
@@ -27,11 +27,11 @@ public final class IcuNormalizer2CharFilter extends BaseCharFilter {
      * @param in         text
      * @param normalizer normalizer to use
      */
-    public IcuNormalizer2CharFilter(Reader in, Normalizer2 normalizer) {
+    public IcuNormalizerCharFilter(Reader in, Normalizer2 normalizer) {
         this(in, normalizer, 128);
     }
 
-    private IcuNormalizer2CharFilter(Reader in, Normalizer2 normalizer, int bufferSize) {
+    private IcuNormalizerCharFilter(Reader in, Normalizer2 normalizer, int bufferSize) {
         super(in);
         this.normalizer = Objects.requireNonNull(normalizer);
         this.tmpBuffer = new char[bufferSize];
@@ -186,7 +186,7 @@ public final class IcuNormalizer2CharFilter extends BaseCharFilter {
 
     @Override
     public boolean equals(Object object) {
-        return object instanceof IcuNormalizer2CharFilter;
+        return object instanceof IcuNormalizerCharFilter;
     }
 
     @Override

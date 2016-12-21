@@ -52,7 +52,7 @@ public class IcuFoldingCharFilterFactory extends AbstractCharFilterFactory {
 
     @Override
     public Reader create(Reader reader) {
-        return new IcuNormalizer2CharFilter(reader, normalizer);
+        return new IcuNormalizerCharFilter(reader, normalizer);
     }
 
 }
