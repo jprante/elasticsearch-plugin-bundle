@@ -145,57 +145,85 @@ Do not forget to restart the node after installing.
 ----
 Do not forget to restart the node after installing.
 
-## Project docs
-
-The Maven project site is available at [Github](http://jprante.github.io/elasticsearch-plugin-bundle)
-
-## Issues
-
-All feedback is welcome! If you find issues, please post them at [Github](https://github.com/jprante/elasticsearch-plugin-bundle/issues)
-
 # Examples
 
 ## German normalizer
 
-    {
-        "index":{
-            "analysis":{
-                "filter":{
-                    "umlaut":{
-                        "type":"german_normalize"
-                    }
-                },
-                "tokenizer" : {
-                    "umlaut" : {
-                       "type":"standard",
-                       "filter" : "umlaut"
-                    }
-                }
+[source]
+----
+PUT /test
+{
+   "settings": {
+      "index": {
+         "analysis": {
+            "filter": {
+               "umlaut": {
+                  "type": "german_normalize"
+               }
+            },
+            "analyzer": {
+               "umlaut": {
+                  "type": "custom",
+                  "tokenizer": "standard",
+                  "filter": [
+                     "umlaut",
+                     "lowercase"
+                  ]
+               }
             }
+         }
+      }
+   },
+   "mappings": {
+      "docs": {
+         "properties": {
+            "text": {
+               "type": "text",
+               "analyzer": "umlaut"
+            }
+         }
+      }
+   }
+}
+
+GET /test/docs/_mapping
+
+PUT /test/docs/1
+{
+    "text" : "Jörg Prante"
+}
+
+POST /test/docs/_search?explain
+{
+    "query": {
+        "match": {
+           "text": "Jörg"
         }
     }
+}
 
-## WordDelimiterFilter2
-
-    {
-        "index":{
-            "analysis":{
-                "filter" : {
-                    "wd" : {
-                       "type" : "worddelimiter2",
-                       "generate_word_parts" : true,
-                       "generate_number_parts" : true,
-                       "catenate_all" : true,
-                       "split_on_case_change" : true,
-                       "split_on_numerics" : true,
-                       "stem_english_possessive" : true
-                    }
-                }
-            }
+POST /test/docs/_search?explain
+{
+    "query": {
+        "match": {
+           "text": "joerg"
         }
     }
+}
 
-## ICU
+POST /test/docs/_search?explain
+{
+    "query": {
+        "match": {
+           "text": "jorg"
+        }
+    }
+}
+----
+
+
+## International components for Unicode
+
 
     {
         "index":{
@@ -264,6 +292,27 @@ All feedback is welcome! If you find issues, please post them at [Github](https:
     }
 
 
+
+
+## WordDelimiterFilter2
+
+    {
+        "index":{
+            "analysis":{
+                "filter" : {
+                    "wd" : {
+                       "type" : "worddelimiter2",
+                       "generate_word_parts" : true,
+                       "generate_number_parts" : true,
+                       "catenate_all" : true,
+                       "split_on_case_change" : true,
+                       "split_on_numerics" : true,
+                       "stem_english_possessive" : true
+                    }
+                }
+            }
+        }
+    }
 
 # Example
 
@@ -364,26 +413,6 @@ Sometimes only the decomposed subwords should be indexed. For this, you can use 
             }
          }
       }
-
-# References
-
-
-The decompunder is a derived work of ASV toolbox http://asv.informatik.uni-leipzig.de/asv/methoden
-
-Copyright (C) 2005 Abteilung Automatische Sprachverarbeitung, Institut für Informatik, Universität Leipzig
-
-The Compact Patricia Trie data structure can be found in 
-
-*Morrison, D.: Patricia - practical algorithm to retrieve information coded in alphanumeric. Journal of ACM, 1968, 15(4):514–534*
-
-The compound splitter used for generating features for document classification is described in
-
-*Witschel, F., Biemann, C.: Rigorous dimensionality reduction through linguistically motivated feature selection for text categorization. Proceedings of NODALIDA 2005, Joensuu, Finland*
-
-The base form reduction step (for Norwegian) is described in
-
-*Eiken, U.C., Liseth, A.T., Richter, M., Witschel, F. and Biemann, C.: Ord i Dag: Mining Norwegian Daily Newswire. Proceedings of FinTAL, Turku, 2006, Finland*
-
 
 
 ## Langdetect
@@ -528,6 +557,30 @@ The base form reduction step (for Norwegian) is described in
             }
         }
     }
+
+## Issues
+
+All feedback is welcome! If you find issues, please post them at [Github](https://github.com/jprante/elasticsearch-plugin-bundle/issues)
+
+# References
+
+The decompunder is a derived work of ASV toolbox http://asv.informatik.uni-leipzig.de/asv/methoden
+
+Copyright (C) 2005 Abteilung Automatische Sprachverarbeitung, Institut für Informatik, Universität Leipzig
+
+The Compact Patricia Trie data structure can be found in
+
+*Morrison, D.: Patricia - practical algorithm to retrieve information coded in alphanumeric. Journal of ACM, 1968, 15(4):514–534*
+
+The compound splitter used for generating features for document classification is described in
+
+*Witschel, F., Biemann, C.: Rigorous dimensionality reduction through linguistically motivated feature selection for text categorization. Proceedings of NODALIDA 2005, Joensuu, Finland*
+
+The base form reduction step (for Norwegian) is described in
+
+*Eiken, U.C., Liseth, A.T., Richter, M., Witschel, F. and Biemann, C.: Ord i Dag: Mining Norwegian Daily Newswire. Proceedings of FinTAL, Turku, 2006, Finland*
+
+
 
 # License
 

@@ -34,7 +34,7 @@ task sonatypeUpload(type: Upload) {
                     name project.name
                     description pluginDescription
                     packaging 'jar'
-                    inceptionYear '2016'
+                    inceptionYear '2012'
                     url scmUrl
                     organization {
                         name 'xbib'
@@ -55,8 +55,8 @@ task sonatypeUpload(type: Upload) {
                     }
                     licenses {
                         license {
-                            name 'The Apache License, Version 2.0'
-                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            name 'Affero GNU Public License Version 3'
+                            url 'http://www.gnu.org/licenses/agpl-3.0.html'
                         }
                     }
                 }

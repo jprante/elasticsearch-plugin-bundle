@@ -21,7 +21,7 @@ printf "Host: %s\nOS: %s %s %s\nJVM: %s %s %s %s\nGroovy: %s\nGradle: %s\n" +
 ext {
     pluginName = 'bundle'
     pluginClassname  = 'org.xbib.elasticsearch.plugin.bundle.BundlePlugin'
-    projectDescription = 'A bundle of plugins for Elasticsearch'
+    pluginDescription = 'A bundle of plugins for Elasticsearch'
     user = 'jprante'
     name = 'elasticsearch-plugin-bundle'
     scmUrl = 'https://github.com/' + user + '/' + name
@@ -29,7 +29,6 @@ ext {
     scmDeveloperConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
     versions = [
         'elasticsearch' : '5.1.1',
-        'jackson': '2.8.1', // must match jackson version of elasticsearch
         'icu4j' : '58.2',
         'log4j': '2.7'
     ]
@@ -66,7 +65,6 @@ configurations {
 dependencies {
     compile "org.elasticsearch:elasticsearch:${versions.elasticsearch}"
     compile "com.ibm.icu:icu4j:${versions.icu4j}"
-    //compile "com.fasterxml.jackson.core:jackson-databind:${versions.jackson}"
     compileOnly "org.apache.logging.log4j:log4j-core:${versions.log4j}"
     testCompile "junit:junit:4.12"
     testCompile "org.apache.logging.log4j:log4j-core:${versions.log4j}"
