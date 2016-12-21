@@ -1,25 +1,3 @@
-/*
- * Copyright (C) 2014 Jörg Prante
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses
- * or write to the Free Software Foundation, Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * The interactive user interfaces in modified source and object code
- * versions of this program must display Appropriate Legal Notices,
- * as required under Section 5 of the GNU Affero General Public License.
- *
- */
 package org.xbib.elasticsearch.index.mapper.standardnumber;
 
 import org.apache.lucene.document.Field;
@@ -30,9 +8,9 @@ import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
-import org.elasticsearch.index.mapper.MapperParsingException;
 import org.elasticsearch.index.mapper.ParseContext;
-import org.elasticsearch.index.mapper.core.StringFieldMapper;
+import org.elasticsearch.index.mapper.StringFieldType;
+import org.elasticsearch.index.mapper.TextFieldMapper;
 import org.xbib.elasticsearch.common.standardnumber.StandardNumber;
 
 import java.io.IOException;
@@ -41,13 +19,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static org.elasticsearch.index.mapper.MapperBuilders.stringField;
-
+/**
+ *
+ */
 public class StandardnumberMapper extends FieldMapper {
 
-    public static final String CONTENT_TYPE = "standardnumber";
+    public static final String MAPPER_TYPE = "standardnumber";
+
     private final StandardnumberService service;
+
     private final FieldMapper contentMapper;
+
     private final FieldMapper stdnumMapper;
 
     public StandardnumberMapper(String simpleName,
@@ -66,8 +48,9 @@ public class StandardnumberMapper extends FieldMapper {
     }
 
     @Override
-    public Mapper parse(ParseContext context) throws IOException {
+    public Mapper parse(ParseContext originalContext) throws IOException {
         String content = null;
+        ParseContext context = originalContext;
         XContentParser parser = context.parser();
         XContentParser.Token token = parser.currentToken();
         if (token == XContentParser.Token.VALUE_STRING) {
@@ -98,7 +81,7 @@ public class StandardnumberMapper extends FieldMapper {
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject(simpleName());
-        builder.field("type", CONTENT_TYPE);
+        builder.field("type", MAPPER_TYPE);
         builder.startObject("fields");
         contentMapper.toXContent(builder, params);
         stdnumMapper.toXContent(builder, params);
@@ -109,7 +92,7 @@ public class StandardnumberMapper extends FieldMapper {
 
     @Override
     protected String contentType() {
-        return CONTENT_TYPE;
+        return MAPPER_TYPE;
     }
 
     public static final class Defaults {
@@ -120,51 +103,28 @@ public class StandardnumberMapper extends FieldMapper {
         }
     }
 
-    static final class StandardnumberFieldType extends MappedFieldType {
-
-        protected StandardnumberFieldType() {
-            super();
-        }
-
-        protected StandardnumberFieldType(StandardnumberMapper.StandardnumberFieldType ref) {
-            super(ref);
-        }
-
-        public StandardnumberMapper.StandardnumberFieldType clone() {
-            return new StandardnumberMapper.StandardnumberFieldType(this);
-        }
-
-        @Override
-        public String typeName() {
-            return "standardnumber";
-        }
-
-        public String value(Object value) {
-            return value == null ? null : value.toString();
-        }
-    }
-
     public static class Builder extends FieldMapper.Builder<Builder, StandardnumberMapper> {
 
-        private StringFieldMapper.Builder contentBuilder;
+        private TextFieldMapper.Builder contentBuilder;
 
-        private StringFieldMapper.Builder stdnumBuilder = stringField("standardnumber");
+        private TextFieldMapper.Builder stdnumBuilder;
 
         private StandardnumberService service;
 
         public Builder(String name, StandardnumberService service) {
             super(name, Defaults.FIELD_TYPE, Defaults.FIELD_TYPE);
             this.service = service;
-            this.contentBuilder = stringField(name);
+            this.stdnumBuilder = new TextFieldMapper.Builder("standardnumber");
+            this.contentBuilder = new TextFieldMapper.Builder(name);
             this.builder = this;
         }
 
-        public Builder content(StringFieldMapper.Builder content) {
+        public Builder content(TextFieldMapper.Builder content) {
             this.contentBuilder = content;
             return this;
         }
 
-        public Builder stdnum(StringFieldMapper.Builder stdnum) {
+        public Builder stdnum(TextFieldMapper.Builder stdnum) {
             this.stdnumBuilder = stdnum;
             return this;
         }
@@ -175,7 +135,7 @@ public class StandardnumberMapper extends FieldMapper {
             if (this.fieldType.indexOptions() != IndexOptions.NONE && !this.fieldType.tokenized()) {
                 defaultFieldType.setOmitNorms(true);
                 defaultFieldType.setIndexOptions(IndexOptions.DOCS);
-                if (!this.omitNormsSet && this.fieldType.boost() == 1.0F) {
+                if (!this.omitNormsSet && Float.compare(this.fieldType.boost(), 1f) == 0) {
                     this.fieldType.setOmitNorms(true);
                 }
                 if (!this.indexOptionsSet) {
@@ -186,8 +146,8 @@ public class StandardnumberMapper extends FieldMapper {
             this.setupFieldType(context);
 
             context.path().add(name);
-            StringFieldMapper contentMapper = contentBuilder.build(context);
-            StringFieldMapper stdnumMapper = stdnumBuilder.build(context);
+            TextFieldMapper contentMapper = contentBuilder.build(context);
+            TextFieldMapper stdnumMapper = stdnumBuilder.build(context);
             context.path().remove();
             return new StandardnumberMapper(name,
                     this.fieldType,
@@ -211,32 +171,57 @@ public class StandardnumberMapper extends FieldMapper {
 
         @SuppressWarnings({"unchecked", "rawtypes"})
         @Override
-        public Mapper.Builder parse(String name, Map<String, Object> mapping, ParserContext parserContext)
-                throws MapperParsingException {
+        public Mapper.Builder parse(String name, Map<String, Object> mapping, ParserContext parserContext) {
             StandardnumberMapper.Builder builder = new Builder(name, service);
             Iterator<Map.Entry<String, Object>> iterator = mapping.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<String, Object> entry = iterator.next();
                 String fieldName = entry.getKey();
                 Object fieldNode = entry.getValue();
-                if (fieldName.equals("fields")) {
+                if ("fields".equals(fieldName)) {
                     Map<String, Object> fieldsNode = (Map<String, Object>) fieldNode;
                     for (Map.Entry<String, Object> fieldsEntry : fieldsNode.entrySet()) {
                         String propName = fieldsEntry.getKey();
                         Object propNode = fieldsEntry.getValue();
                         if (name.equals(propName)) {
-                            builder.content((StringFieldMapper.Builder) parserContext.typeParser("string").parse(name,
+                            builder.content((TextFieldMapper.Builder) parserContext.typeParser("text").parse(name,
                                     (Map<String, Object>) propNode, parserContext));
                         } else if ("standardnumber".equals(propName)) {
-                            builder.stdnum((StringFieldMapper.Builder) parserContext.typeParser("string").parse(propName,
+                            builder.stdnum((TextFieldMapper.Builder) parserContext.typeParser("text").parse(propName,
                                     (Map<String, Object>) propNode, parserContext));
                         }
                     }
                     iterator.remove();
                 }
             }
-
             return builder;
         }
     }
+
+    public static class StandardnumberFieldType extends StringFieldType implements Cloneable {
+
+        public StandardnumberFieldType() {
+            super();
+        }
+
+        public StandardnumberFieldType(StandardnumberMapper.StandardnumberFieldType ref) {
+            super(ref);
+        }
+
+        @Override
+        public StandardnumberMapper.StandardnumberFieldType clone() {
+            return new StandardnumberMapper.StandardnumberFieldType(this);
+        }
+
+        @Override
+        public String typeName() {
+            return "standardnumber";
+        }
+
+        public String value(Object value) {
+            return value == null ? null : value.toString();
+        }
+
+    }
+
 }

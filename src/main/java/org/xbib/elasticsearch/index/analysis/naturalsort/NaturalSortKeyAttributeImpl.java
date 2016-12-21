@@ -1,25 +1,3 @@
-/*
- * Copyright (C) 2016 Jörg Prante
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses
- * or write to the Free Software Foundation, Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * The interactive user interfaces in modified source and object code
- * versions of this program must display Appropriate Legal Notices,
- * as required under Section 5 of the GNU Affero General Public License.
- *
- */
 package org.xbib.elasticsearch.index.analysis.naturalsort;
 
 import org.apache.lucene.analysis.tokenattributes.CharTermAttributeImpl;
@@ -29,9 +7,12 @@ import java.text.Collator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ *
+ */
 public class NaturalSortKeyAttributeImpl extends CharTermAttributeImpl {
 
-    private final static Pattern numberPattern = Pattern.compile("(\\+|\\-)?([0-9]+)");
+    private static final Pattern numberPattern = Pattern.compile("(\\+|\\-)?([0-9]+)");
 
     private final Collator collator;
 
@@ -61,7 +42,8 @@ public class NaturalSortKeyAttributeImpl extends CharTermAttributeImpl {
         int foundTokens = 0;
         while (m.find()) {
             int len = m.group(2).length();
-            String repl = String.format("%0" + digits + "d", len) + m.group();
+            String fmt = "%0" + digits + "d";
+            String repl = String.format(fmt, len) + m.group();
             m.appendReplacement(sb, repl);
             foundTokens++;
             if (foundTokens >= maxTokens) {
@@ -70,5 +52,18 @@ public class NaturalSortKeyAttributeImpl extends CharTermAttributeImpl {
         }
         m.appendTail(sb);
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof NaturalSortKeyAttributeImpl &&
+                collator.equals(((NaturalSortKeyAttributeImpl)object).collator) &&
+                Integer.compare(digits, ((NaturalSortKeyAttributeImpl)object).digits) == 0 &&
+                Integer.compare(maxTokens, ((NaturalSortKeyAttributeImpl)object).maxTokens) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return collator.hashCode() ^ Integer.hashCode(digits) ^ Integer.hashCode(maxTokens);
     }
 }

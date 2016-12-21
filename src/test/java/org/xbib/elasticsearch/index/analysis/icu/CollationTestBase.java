@@ -34,11 +34,11 @@ import java.util.Random;
  */
 public abstract class CollationTestBase extends LuceneTestCase {
 
-    protected String firstRangeBeginningOriginal = "\u062F";
-    protected String firstRangeEndOriginal = "\u0698";
+    String firstRangeBeginningOriginal = "\u062F";
+    String firstRangeEndOriginal = "\u0698";
 
-    protected String secondRangeBeginningOriginal = "\u0633";
-    protected String secondRangeEndOriginal = "\u0638";
+    String secondRangeBeginningOriginal = "\u0633";
+    String secondRangeEndOriginal = "\u0638";
 
     public void testFarsiRangeFilterCollating(Analyzer analyzer, BytesRef firstBeg,
                                               BytesRef firstEnd, BytesRef secondBeg,
@@ -154,28 +154,27 @@ public abstract class CollationTestBase extends LuceneTestCase {
 
         Thread threads[] = new Thread[numThreads];
         for (int i = 0; i < numThreads; i++) {
-            threads[i] = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        for (Map.Entry<String, BytesRef> mapping : map.entrySet()) {
-                            String term = mapping.getKey();
-                            BytesRef expected = mapping.getValue();
-                            try (TokenStream ts = analyzer.tokenStream("fake", term)) {
-                                TermToBytesRefAttribute termAtt = ts.addAttribute(TermToBytesRefAttribute.class);
-                                BytesRef bytes = termAtt.getBytesRef();
-                                ts.reset();
-                                assertTrue(ts.incrementToken());
-                                assertEquals(expected, bytes);
-                                assertFalse(ts.incrementToken());
-                                ts.end();
+            threads[i] = new Thread(() -> {
+                try {
+                    for (Map.Entry<String, BytesRef> mapping : map.entrySet()) {
+                        String term = mapping.getKey();
+                        BytesRef expected = mapping.getValue();
+                        try (TokenStream ts = analyzer.tokenStream("fake", term)) {
+                            TermToBytesRefAttribute termAtt = ts.addAttribute(TermToBytesRefAttribute.class);
+                            BytesRef bytes = termAtt.getBytesRef();
+                            ts.reset();
+                            ts.incrementToken();
+                            if (expected != bytes) {
+                                throw new IOException("unexpected: bytes=" + bytes.utf8ToString() + " expected=" + expected.utf8ToString());
                             }
+                            ts.incrementToken();
+                            ts.end();
                         }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
                     }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-            };
+            });
         }
         for (int i = 0; i < numThreads; i++) {
             threads[i].start();

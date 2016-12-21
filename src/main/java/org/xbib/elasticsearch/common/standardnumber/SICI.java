@@ -1,25 +1,3 @@
-/*
- * Copyright (C) 2014 Jörg Prante
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses
- * or write to the Free Software Foundation, Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * The interactive user interfaces in modified source and object code
- * versions of this program must display Appropriate Legal Notices,
- * as required under Section 5 of the GNU Affero General Public License.
- *
- */
 package org.xbib.elasticsearch.common.standardnumber;
 
 import java.util.regex.Matcher;
@@ -54,10 +32,15 @@ import java.util.regex.Pattern;
 public class SICI extends AbstractStandardNumber implements Comparable<SICI>, StandardNumber {
 
     private static final Pattern PATTERN = Pattern.compile("[\\p{Graph}\\p{Punct}]{12,64}");
-    private final static String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ#";
-    private final static int modulus = ALPHABET.length();
+
+    private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ#";
+
+    private static final int modulus = ALPHABET.length();
+
     private String value;
+
     private String formatted;
+
     private boolean createWithChecksum;
 
     @Override
@@ -97,7 +80,7 @@ public class SICI extends AbstractStandardNumber implements Comparable<SICI>, St
     }
 
     @Override
-    public SICI verify() throws NumberFormatException {
+    public SICI verify() {
         if (value == null) {
             throw new NumberFormatException("invalid");
         }
@@ -154,5 +137,15 @@ public class SICI extends AbstractStandardNumber implements Comparable<SICI>, St
         }
         this.formatted = "SICI " + sb;
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof SICI && value.equals(((SICI)object).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 }

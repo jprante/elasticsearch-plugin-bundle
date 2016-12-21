@@ -1,4 +1,3 @@
-
 package org.xbib.standardnumber;
 
 import org.junit.Test;
@@ -6,6 +5,9 @@ import org.xbib.elasticsearch.common.standardnumber.ISBN;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ *
+ */
 public class ISBNTests {
 
     @Test

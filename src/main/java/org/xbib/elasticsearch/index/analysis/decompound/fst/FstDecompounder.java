@@ -12,6 +12,7 @@ import org.apache.lucene.util.fst.NoOutputs;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +20,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ *
+ */
 public class FstDecompounder {
 
     /**
@@ -123,22 +127,20 @@ public class FstDecompounder {
             }
             this.utf32 = UTF16ToUTF32(builder, utf32Builder).get();
             builder.setLength(0);
-            this.listener = new DecompositionListener() {
-                public void decomposition(IntsRef utf32, ArrayDeque<Chunk> chunks) {
-                    if (builder.length() > 0) {
-                        builder.append(",");
-                    }
-                    boolean first = true;
-                    Iterator<Chunk> i = chunks.descendingIterator();
-                    while (i.hasNext()) {
-                        Chunk chunk = i.next();
-                        if (chunk.type == ChunkType.WORD) {
-                            if (!first) {
-                                builder.append('.');
-                            }
-                            first = false;
-                            builder.append(chunk.toString());
+            this.listener = (utf32, chunks) -> {
+                if (builder.length() > 0) {
+                    builder.append(",");
+                }
+                boolean first = true;
+                Iterator<Chunk> i = chunks.descendingIterator();
+                while (i.hasNext()) {
+                    Chunk chunk = i.next();
+                    if (chunk.type == ChunkType.WORD) {
+                        if (!first) {
+                            builder.append('.');
                         }
+                        first = false;
+                        builder.append(chunk.toString());
                     }
                 }
             };
@@ -148,7 +150,7 @@ public class FstDecompounder {
             matchWord(utf32, utf32.offset);
             return builder.length() == 0 ? null : builder;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -222,6 +224,7 @@ public class FstDecompounder {
     /**
      * A decomposition listener accepts potential decompositions of a word.
      */
+    @FunctionalInterface
     interface DecompositionListener {
         /**
          * @param utf32  Full unicode points of the input sequence.

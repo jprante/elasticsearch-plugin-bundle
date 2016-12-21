@@ -4,6 +4,9 @@ import org.xbib.elasticsearch.common.standardnumber.check.Digit;
 
 import java.math.BigDecimal;
 
+/**
+ *
+ */
 public class MOD9710 implements Digit {
 
     private static final BigDecimal CONSTANT_97 = new BigDecimal(97);

@@ -1,60 +1,54 @@
-/*
- * Copyright (C) 2014 Jörg Prante
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses
- * or write to the Free Software Foundation, Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * The interactive user interfaces in modified source and object code
- * versions of this program must display Appropriate Legal Notices,
- * as required under Section 5 of the GNU Affero General Public License.
- *
- */
 package org.xbib.elasticsearch.plugin.bundle;
 
-import org.elasticsearch.action.ActionModule;
+import org.apache.lucene.analysis.Analyzer;
+import org.elasticsearch.action.ActionRequest;
+import org.elasticsearch.action.ActionResponse;
 import org.elasticsearch.common.component.LifecycleComponent;
-import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.Module;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.analysis.AnalysisModule;
-import org.elasticsearch.indices.IndicesModule;
+import org.elasticsearch.index.analysis.AnalyzerProvider;
+import org.elasticsearch.index.analysis.CharFilterFactory;
+import org.elasticsearch.index.analysis.TokenFilterFactory;
+import org.elasticsearch.index.analysis.TokenizerFactory;
+import org.elasticsearch.index.mapper.Mapper;
+import org.elasticsearch.indices.analysis.AnalysisModule;
+import org.elasticsearch.plugins.ActionPlugin;
+import org.elasticsearch.plugins.AnalysisPlugin;
+import org.elasticsearch.plugins.MapperPlugin;
 import org.elasticsearch.plugins.Plugin;
-import org.elasticsearch.rest.RestModule;
+import org.elasticsearch.rest.RestHandler;
 import org.xbib.elasticsearch.action.isbnformat.ISBNFormatAction;
 import org.xbib.elasticsearch.action.isbnformat.TransportISBNFormatAction;
 import org.xbib.elasticsearch.action.langdetect.LangdetectAction;
 import org.xbib.elasticsearch.action.langdetect.TransportLangdetectAction;
-import org.xbib.elasticsearch.index.analysis.autophrase.AutoPhrasingAnalysisBinderProcessor;
-import org.xbib.elasticsearch.index.analysis.baseform.BaseformAnalysisBinderProcessor;
-import org.xbib.elasticsearch.index.analysis.concat.ConcatAnalysisBinderProcessor;
-import org.xbib.elasticsearch.index.analysis.decompound.DecompoundAnalysisBinderProcessor;
-import org.xbib.elasticsearch.index.analysis.decompound.fst.FstDecompoundAnalysisBinderProcessor;
-import org.xbib.elasticsearch.index.analysis.german.GermanAnalysisBinderProcessor;
-import org.xbib.elasticsearch.index.analysis.hyphen.HyphenAnalysisBinderProcessor;
-import org.xbib.elasticsearch.index.analysis.icu.IcuAnalysisBinderProcessor;
-import org.xbib.elasticsearch.index.analysis.naturalsort.NaturalSortAnalysisBinderProcessor;
-import org.xbib.elasticsearch.index.analysis.sortform.SortformAnalysisBinderProcessor;
-import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberAnalysisBinderProcessor;
-import org.xbib.elasticsearch.index.analysis.symbolname.SymbolnameAnalysisBinderProcessor;
-import org.xbib.elasticsearch.index.analysis.worddelimiter.WorddelimiterAnalysisBinderProcessor;
-import org.xbib.elasticsearch.index.analysis.year.GregorianYearAnalysisBinderProcessor;
+import org.xbib.elasticsearch.index.analysis.autophrase.AutoPhrasingTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.baseform.BaseformTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.concat.ConcatTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.concat.PairTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.decompound.DecompoundTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.decompound.fst.FstDecompoundTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.german.GermanNormalizationFilterFactory;
+import org.xbib.elasticsearch.index.analysis.hyphen.HyphenAnalyzerProvider;
+import org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenizerFactory;
+import org.xbib.elasticsearch.index.analysis.icu.*;
+import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizerFactory;
+import org.xbib.elasticsearch.index.analysis.naturalsort.NaturalSortKeyAnalyzerProvider;
+import org.xbib.elasticsearch.index.analysis.naturalsort.NaturalSortKeyTokenizerFactory;
+import org.xbib.elasticsearch.index.analysis.sortform.SortformAnalyzerProvider;
+import org.xbib.elasticsearch.index.analysis.sortform.SortformTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberAnalyzerProvider;
+import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.symbolname.SymbolnameTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2Factory;
+import org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilterFactory;
+import org.xbib.elasticsearch.index.analysis.year.GregorianYearTokenFilterFactory;
 import org.xbib.elasticsearch.index.mapper.crypt.CryptMapper;
 import org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper;
 import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapper;
 import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapperModule;
-import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapperService;
 import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapperTypeParser;
+import org.xbib.elasticsearch.index.mapper.reference.ReferenceService;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapper;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapperModule;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapperTypeParser;
@@ -64,143 +58,130 @@ import org.xbib.elasticsearch.rest.action.langdetect.RestLangdetectAction;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-public class BundlePlugin extends Plugin {
+/**
+ *
+ */
+public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin, ActionPlugin {
+
+    private static final StandardnumberMapperTypeParser standardNumberTypeParser =
+            new StandardnumberMapperTypeParser();
+
+    private static final ReferenceMapperTypeParser referenceMapperTypeParser =
+            new ReferenceMapperTypeParser();
 
     private final Settings settings;
 
-    private final ReferenceMapperTypeParser refMapperTypeParser;
-
-    private final StandardnumberMapperTypeParser standardnumberMapperTypeParser;
-
-    private final LangdetectMapper.TypeParser langdetectMapperTypeParser;
-
-    private final CryptMapper.TypeParser cryptmapperTypeParser;
-
-    @Inject
     public BundlePlugin(Settings settings) {
         this.settings = settings;
-        this.refMapperTypeParser = new ReferenceMapperTypeParser();
-        this.standardnumberMapperTypeParser = new StandardnumberMapperTypeParser();
-        this.langdetectMapperTypeParser = new LangdetectMapper.TypeParser();
-        this.cryptmapperTypeParser = new CryptMapper.TypeParser();
     }
 
     @Override
-    public String name() {
-        return "bundle";
+    public Map<String, AnalysisModule.AnalysisProvider<CharFilterFactory>> getCharFilters() {
+        Map<String, AnalysisModule.AnalysisProvider<CharFilterFactory>> extra = new LinkedHashMap<>();
+        if (settings.getAsBoolean("plugins.xbib.icu.enabled", true)) {
+            extra.put("icu_normalizer", IcuNormalizerCharFilterFactory::new);
+            extra.put("icu_folding", IcuFoldingCharFilterFactory::new);
+        }
+        return extra;
     }
 
     @Override
-    public String description() {
-        return "A bundle of plugins for Elasticsearch";
+    public Map<String, AnalysisModule.AnalysisProvider<TokenFilterFactory>> getTokenFilters() {
+        Map<String, AnalysisModule.AnalysisProvider<TokenFilterFactory>> extra = new LinkedHashMap<>();
+        if (settings.getAsBoolean("plugins.xbib.icu.enabled", true)) {
+            extra.put("icu_normalizer", IcuNormalizerTokenFilterFactory::new);
+            extra.put("icu_folding", IcuFoldingTokenFilterFactory::new);
+            extra.put("icu_transform", IcuTransformTokenFilterFactory::new);
+            extra.put("icu_numberformat", IcuNumberFormatTokenFilterFactory::new);
+            extra.put("icu_measureformat", IcuMeasureFormatTokenFilterFactory::new);
+        }
+        extra.put("auto_phrase", AutoPhrasingTokenFilterFactory::new);
+        extra.put("baseform", BaseformTokenFilterFactory::new);
+        extra.put("concat", ConcatTokenFilterFactory::new);
+        extra.put("pair", PairTokenFilterFactory::new);
+        extra.put("decompound", DecompoundTokenFilterFactory::new);
+        extra.put("german_normalize", GermanNormalizationFilterFactory::new);
+        extra.put("hyphen", HyphenTokenFilterFactory::new);
+        extra.put("sortform", SortformTokenFilterFactory::new);
+        extra.put("standardnumber", (indexSettings, environment, name, factorySettings) ->
+                new StandardnumberTokenFilterFactory(indexSettings, environment, name, factorySettings, standardNumberTypeParser));
+        extra.put("fst_decompound", FstDecompoundTokenFilterFactory::new);
+        extra.put("worddelimiter", WordDelimiterFilterFactory::new);
+        extra.put("worddelimiter2", WordDelimiterFilter2Factory::new);
+        extra.put("symbolname", SymbolnameTokenFilterFactory::new);
+        extra.put("year", GregorianYearTokenFilterFactory::new);
+        return extra;
     }
-
 
     @Override
-    public Collection<Module> nodeModules() {
-        Collection<Module> modules = new ArrayList<>();
-        if (settings.getAsBoolean("plugins.reference.enabled", true)) {
-            modules.add(new ReferenceMapperModule(refMapperTypeParser));
+    public Map<String, AnalysisModule.AnalysisProvider<TokenizerFactory>> getTokenizers() {
+        Map<String, AnalysisModule.AnalysisProvider<TokenizerFactory>> extra = new LinkedHashMap<>();
+        if (settings.getAsBoolean("plugins.xbib.icu.enabled", true)) {
+            extra.put("icu_collation_tokenizer", IcuCollationTokenizerFactory::new);
+            extra.put("icu_tokenizer", IcuTokenizerFactory::new);
         }
-        if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
-            modules.add(new StandardnumberMapperModule(standardnumberMapperTypeParser));
-        }
-        return modules;
+        extra.put("hyphen", HyphenTokenizerFactory::new);
+        extra.put("naturalsort", NaturalSortKeyTokenizerFactory::new);
+        return extra;
     }
 
     @Override
-    public Collection<Class<? extends LifecycleComponent>> nodeServices() {
-        Collection<Class<? extends LifecycleComponent>> services = new ArrayList<>();
-        if (settings.getAsBoolean("plugins.reference.enabled", true)) {
-            services.add(ReferenceMapperService.class);
+    public Map<String, AnalysisModule.AnalysisProvider<AnalyzerProvider<? extends Analyzer>>> getAnalyzers() {
+        Map<String, AnalysisModule.AnalysisProvider<AnalyzerProvider<? extends Analyzer>>> extra = new LinkedHashMap<>();
+        if (settings.getAsBoolean("plugins.xbib.icu.enabled", true)) {
+            extra.put("icu_collation", IcuCollationKeyAnalyzerProvider::new);
         }
-        if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
-            services.add(StandardnumberService.class);
-        }
-        return services;
+        extra.put("hyphen", HyphenAnalyzerProvider::new);
+        extra.put("naturalsort", NaturalSortKeyAnalyzerProvider::new);
+        extra.put("sortform", SortformAnalyzerProvider::new);
+        extra.put("standardnumber", (indexSettings, environment, name, factorySettings) ->
+                new StandardnumberAnalyzerProvider(indexSettings, environment, name, factorySettings, standardNumberTypeParser));
+        return extra;
     }
 
-    /**
-     * Automatically called with the analysis module.
-     *
-     * @param module the analysis module
-     */
-    public void onModule(AnalysisModule module) {
-        if (settings.getAsBoolean("plugins.baseform.enabled", true)) {
-            module.addProcessor(new BaseformAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.concat.enabled", true)) {
-            module.addProcessor(new ConcatAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.decompound.enabled", true)) {
-            module.addProcessor(new DecompoundAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.decompound.fst.enabled", true)) {
-            module.addProcessor(new FstDecompoundAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.german.enabled", true)) {
-            module.addProcessor(new GermanAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.hyphen.enabled", true)) {
-            module.addProcessor(new HyphenAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.icu.enabled", true)) {
-            module.addProcessor(new IcuAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.sortform.enabled", true)) {
-            module.addProcessor(new SortformAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
-            module.addProcessor(new StandardnumberAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.worddelimiter.enabled", true)) {
-            module.addProcessor(new WorddelimiterAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.year.enabled", true)) {
-            module.addProcessor(new GregorianYearAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.symbolname.enabled", true)) {
-            module.addProcessor(new SymbolnameAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.naturalsort.enabled", true)) {
-            module.addProcessor(new NaturalSortAnalysisBinderProcessor());
-        }
-        if (settings.getAsBoolean("plugins.autophrase.enabled", true)) {
-            module.addProcessor(new AutoPhrasingAnalysisBinderProcessor());
-        }
+    @Override
+    public Map<String, Mapper.TypeParser> getMappers() {
+        Map<String, Mapper.TypeParser> extra = new LinkedHashMap<>();
+        extra.put(StandardnumberMapper.MAPPER_TYPE, standardNumberTypeParser);
+        extra.put(ReferenceMapper.MAPPER_TYPE, referenceMapperTypeParser);
+        extra.put(CryptMapper.MAPPER_TYPE, new CryptMapper.TypeParser());
+        extra.put(LangdetectMapper.MAPPER_TYPE, new LangdetectMapper.TypeParser());
+        return extra;
     }
 
-    public void onModule(IndicesModule indicesModule) {
-        if (settings.getAsBoolean("plugins.reference.enabled", true)) {
-            indicesModule.registerMapper(ReferenceMapper.CONTENT_TYPE, refMapperTypeParser);
-        }
-        if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
-            indicesModule.registerMapper(StandardnumberMapper.CONTENT_TYPE, standardnumberMapperTypeParser);
-        }
-        if (settings.getAsBoolean("plugins.langdetect.enabled", true)) {
-            indicesModule.registerMapper(LangdetectMapper.CONTENT_TYPE, langdetectMapperTypeParser);
-        }
-        if (settings.getAsBoolean("plugins.crypt.enabled", true)) {
-            indicesModule.registerMapper(CryptMapper.CONTENT_TYPE, cryptmapperTypeParser);
-        }
+    @Override
+    public List<ActionHandler<? extends ActionRequest, ? extends ActionResponse>> getActions() {
+        List<ActionHandler<? extends ActionRequest, ? extends ActionResponse>> extra = new ArrayList<>();
+        extra.add(new ActionHandler<>(ISBNFormatAction.INSTANCE, TransportISBNFormatAction.class));
+        extra.add(new ActionHandler<>(LangdetectAction.INSTANCE, TransportLangdetectAction.class));
+        return extra;
     }
 
-    public void onModule(ActionModule module) {
-        if (settings.getAsBoolean("plugins.langdetect.enabled", true)) {
-            module.registerAction(LangdetectAction.INSTANCE, TransportLangdetectAction.class);
-        }
-        if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
-            module.registerAction(ISBNFormatAction.INSTANCE, TransportISBNFormatAction.class);
-        }
+    @Override
+    public List<Class<? extends RestHandler>> getRestHandlers() {
+        List<Class<? extends RestHandler>> extra = new ArrayList<>();
+        extra.add(RestISBNFormatterAction.class);
+        extra.add(RestLangdetectAction.class);
+        return extra;
     }
 
-    public void onModule(RestModule module) {
-        if (settings.getAsBoolean("plugins.langdetect.enabled", true)) {
-            module.addRestAction(RestLangdetectAction.class);
-        }
-        if (settings.getAsBoolean("plugins.standardnumber.enabled", true)) {
-            module.addRestAction(RestISBNFormatterAction.class);
-        }
+    @Override
+    public Collection<Module> createGuiceModules() {
+        Collection<Module> extra = new ArrayList<>();
+        extra.add(new ReferenceMapperModule(referenceMapperTypeParser));
+        extra.add(new StandardnumberMapperModule(standardNumberTypeParser));
+        return extra;
+    }
+
+    @Override
+    public Collection<Class<? extends LifecycleComponent>> getGuiceServiceClasses() {
+        Collection<Class<? extends LifecycleComponent>> extra = new ArrayList<>();
+        extra.add(ReferenceService.class);
+        extra.add(StandardnumberService.class);
+        return extra;
     }
 }

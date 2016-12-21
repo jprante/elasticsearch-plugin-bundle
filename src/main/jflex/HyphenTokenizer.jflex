@@ -19,7 +19,7 @@ public static final int ALPHANUM_COMP     = HyphenTokenizer.ALPHANUM_COMP;
 public static final int NUM               = HyphenTokenizer.NUM;
 public static final int CJ                = HyphenTokenizer.CJ;
 
-public static final String [] TOKEN_TYPES = HyphenTokenizer.TOKEN_TYPES;
+protected static final String[] TOKEN_TYPES = HyphenTokenizer.TOKEN_TYPES;
 
 public final int yychar() {
     return yychar;

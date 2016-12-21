@@ -1,37 +1,13 @@
-/*
- * Copyright (C) 2014 Jörg Prante
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses
- * or write to the Free Software Foundation, Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * The interactive user interfaces in modified source and object code
- * versions of this program must display Appropriate Legal Notices,
- * as required under Section 5 of the GNU Affero General Public License.
- *
- */
 package org.xbib.elasticsearch.index.analysis.icu;
 
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
 import com.ibm.icu.util.ULocale;
 import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.Index;
+import org.elasticsearch.env.Environment;
+import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractIndexAnalyzerProvider;
-import org.elasticsearch.index.settings.IndexSettingsService;
 
 /**
  * An ICU collation analyzer provider.
@@ -49,12 +25,8 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
 
     private final Collator collator;
 
-    @Inject
-    public IcuCollationKeyAnalyzerProvider(Index index,
-                                           IndexSettingsService indexSettingsService,
-                                           @Assisted String name,
-                                           @Assisted Settings settings) {
-        super(index, indexSettingsService.indexSettings(), name, settings);
+    public IcuCollationKeyAnalyzerProvider(IndexSettings indexSettings, Environment environment, String name, Settings settings) {
+        super(indexSettings, name, settings);
         this.collator = createCollator(settings);
     }
 
@@ -91,27 +63,35 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
         // set the strength flag, otherwise it will be the default.
         String strength = settings.get("strength");
         if (strength != null) {
-            if (strength.equalsIgnoreCase("primary")) {
-                collator.setStrength(Collator.PRIMARY);
-            } else if (strength.equalsIgnoreCase("secondary")) {
-                collator.setStrength(Collator.SECONDARY);
-            } else if (strength.equalsIgnoreCase("tertiary")) {
-                collator.setStrength(Collator.TERTIARY);
-            } else if (strength.equalsIgnoreCase("quaternary")) {
-                collator.setStrength(Collator.QUATERNARY);
-            } else if (strength.equalsIgnoreCase("identical")) {
-                collator.setStrength(Collator.IDENTICAL);
-            } else {
-                throw new ElasticsearchException("Invalid strength: " + strength);
+            int i;
+            switch (strength.toLowerCase()) {
+                case "primary":
+                    i = Collator.PRIMARY;
+                    break;
+                case "secondary":
+                    i = Collator.SECONDARY;
+                    break;
+                case "tertiary":
+                    i = Collator.TERTIARY;
+                    break;
+                case "quaternary":
+                    i = Collator.QUATERNARY;
+                    break;
+                case "identical":
+                    i = Collator.IDENTICAL;
+                    break;
+                default:
+                    throw new ElasticsearchException("Invalid strength: " + strength);
             }
+            collator.setStrength(i);
         }
 
         // set the decomposition flag, otherwise it will be the default.
         String decomposition = settings.get("decomposition");
         if (decomposition != null) {
-            if (decomposition.equalsIgnoreCase("no")) {
+            if ("no".equalsIgnoreCase(decomposition)) {
                 collator.setDecomposition(Collator.NO_DECOMPOSITION);
-            } else if (decomposition.equalsIgnoreCase("canonical")) {
+            } else if ("canonical".equalsIgnoreCase(decomposition)) {
                 collator.setDecomposition(Collator.CANONICAL_DECOMPOSITION);
             } else {
                 throw new ElasticsearchException("Invalid decomposition: " + decomposition);
@@ -122,9 +102,9 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
         RuleBasedCollator rbc = (RuleBasedCollator) collator;
         String alternate = settings.get("alternate");
         if (alternate != null) {
-            if (alternate.equalsIgnoreCase("shifted")) {
+            if ("shifted".equalsIgnoreCase(alternate)) {
                 rbc.setAlternateHandlingShifted(true);
-            } else if (alternate.equalsIgnoreCase("non-ignorable")) {
+            } else if ("non-ignorable".equalsIgnoreCase(alternate)) {
                 rbc.setAlternateHandlingShifted(false);
             } else {
                 throw new ElasticsearchException("Invalid alternate: " + alternate);
@@ -138,9 +118,9 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
 
         String caseFirst = settings.get("caseFirst");
         if (caseFirst != null) {
-            if (caseFirst.equalsIgnoreCase("lower")) {
+            if ("lower".equalsIgnoreCase(caseFirst)) {
                 rbc.setLowerCaseFirst(true);
-            } else if (caseFirst.equalsIgnoreCase("upper")) {
+            } else if ("upper".equalsIgnoreCase(caseFirst)) {
                 rbc.setUpperCaseFirst(true);
             } else {
                 throw new ElasticsearchException("invalid caseFirst: " + caseFirst);

@@ -41,17 +41,17 @@ public final class MatchResult {
      * @see #AUTOMATON_HAS_PREFIX
      * @see #SEQUENCE_IS_A_PREFIX
      */
-    public int kind;
+    private int kind;
 
     /**
      * Input sequence's index, interpretation depends on {@link #kind}.
      */
-    public int index;
+    private int index;
 
     /**
      * Automaton node, interpretation depends on the {@link #kind}.
      */
-    public int node;
+    private int node;
 
     /*
      *
@@ -67,5 +67,17 @@ public final class MatchResult {
         this.kind = kind;
         this.index = index;
         this.node = node;
+    }
+
+    public int getKind() {
+        return kind;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public int getNode() {
+        return node;
     }
 }

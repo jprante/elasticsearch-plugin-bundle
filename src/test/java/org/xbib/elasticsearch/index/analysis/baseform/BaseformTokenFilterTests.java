@@ -4,16 +4,20 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
-import org.elasticsearch.index.analysis.AnalysisService;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.xbib.elasticsearch.MapperTestUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
 
+import static org.xbib.elasticsearch.MapperTestUtils.tokenFilterFactory;
+import static org.xbib.elasticsearch.MapperTestUtils.tokenizerFactory;
+
+/**
+ *
+ */
 public class BaseformTokenFilterTests extends Assert {
 
     @Test
@@ -45,9 +49,8 @@ public class BaseformTokenFilterTests extends Assert {
             "gekostet",
             "kosten"
         };
-        AnalysisService analysisService = MapperTestUtils.analysisService();
-        TokenFilterFactory tokenFilter = analysisService.tokenFilter("baseform");
-        Tokenizer tokenizer = analysisService.tokenizer("standard").create();
+        TokenFilterFactory tokenFilter = tokenFilterFactory("baseform");
+        Tokenizer tokenizer = tokenizerFactory("standard").create();
         tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
@@ -71,9 +74,8 @@ public class BaseformTokenFilterTests extends Assert {
                 "transportieren",
                 "transportieren"
         };
-        AnalysisService analysisService = MapperTestUtils.analysisService();
-        TokenFilterFactory tokenFilter = analysisService.tokenFilter("baseform");
-        Tokenizer tokenizer = analysisService.tokenizer("standard").create();
+        TokenFilterFactory tokenFilter = tokenFilterFactory("baseform");
+        Tokenizer tokenizer = tokenizerFactory("standard").create();
         tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
@@ -94,9 +96,8 @@ public class BaseformTokenFilterTests extends Assert {
                 "gemacht",
                 "machen"
         };
-        AnalysisService analysisService = MapperTestUtils.analysisService();
-        TokenFilterFactory tokenFilter = analysisService.tokenFilter("baseform");
-        Tokenizer tokenizer = analysisService.tokenizer("standard").create();
+        TokenFilterFactory tokenFilter = tokenFilterFactory("baseform");
+        Tokenizer tokenizer = tokenizerFactory("standard").create();
         tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }

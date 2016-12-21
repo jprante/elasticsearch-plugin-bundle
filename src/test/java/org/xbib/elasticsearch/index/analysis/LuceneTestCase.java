@@ -12,10 +12,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+/**
+ *
+ */
 public class LuceneTestCase extends Assert {
 
     public static int randomIntBetween(Random r, int min, int max) {
-        assert max >= min : "max must be >= min: " + min + ", " + max;
+        if (min > max) {
+            throw new IllegalArgumentException( "max must be >= min: " + min + ", " + max);
+        }
         long range = (long) max - (long) min;
         if (range < Integer.MAX_VALUE) {
             return min + r.nextInt(1 + (int) range);

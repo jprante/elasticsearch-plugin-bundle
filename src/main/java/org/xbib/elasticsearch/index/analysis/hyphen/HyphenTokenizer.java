@@ -1,25 +1,3 @@
-/*
- * Copyright (C) 2014 Jörg Prante
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses
- * or write to the Free Software Foundation, Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * The interactive user interfaces in modified source and object code
- * versions of this program must display Appropriate Legal Notices,
- * as required under Section 5 of the GNU Affero General Public License.
- *
- */
 package org.xbib.elasticsearch.index.analysis.hyphen;
 
 import org.apache.lucene.analysis.Tokenizer;
@@ -32,6 +10,9 @@ import org.apache.lucene.util.AttributeFactory;
 
 import java.io.IOException;
 
+/**
+ *
+ */
 public final class HyphenTokenizer extends Tokenizer {
 
     public static final int ALPHANUM = 0;
@@ -41,7 +22,7 @@ public final class HyphenTokenizer extends Tokenizer {
     /**
      * String token types that correspond to token type int constants
      */
-    public static final String[] TOKEN_TYPES = new String[]{
+    protected static final String[] TOKEN_TYPES = new String[]{
             "<ALPHANUM>",
             "<ALPHANUM_COMP>",
             "<NUM>",
@@ -51,7 +32,7 @@ public final class HyphenTokenizer extends Tokenizer {
     private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
     private final PositionIncrementAttribute posIncrAtt = addAttribute(PositionIncrementAttribute.class);
     private final TypeAttribute typeAtt = addAttribute(TypeAttribute.class);
-    private HyphenTokenizerImpl scanner;
+    private org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenizerImpl scanner;
     private int skippedPositions;
     private int maxTokenLength = StandardAnalyzer.DEFAULT_MAX_TOKEN_LENGTH;
 
@@ -96,7 +77,7 @@ public final class HyphenTokenizer extends Tokenizer {
     }
 
     private void init() {
-        this.scanner = new HyphenTokenizerImpl(input);
+        this.scanner = new org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenizerImpl(input);
     }
 
     @Override
@@ -105,7 +86,7 @@ public final class HyphenTokenizer extends Tokenizer {
         skippedPositions = 0;
         while (true) {
             int tokenType = scanner.getNextToken();
-            if (tokenType == HyphenTokenizerImpl.YYEOF) {
+            if (tokenType == org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenizerImpl.YYEOF) {
                 return false;
             }
             if (scanner.yylength() <= maxTokenLength) {
@@ -140,5 +121,15 @@ public final class HyphenTokenizer extends Tokenizer {
         super.reset();
         scanner.yyreset(input);
         skippedPositions = 0;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof HyphenTokenizer;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
     }
 }

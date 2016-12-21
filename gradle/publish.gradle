@@ -1,5 +1,5 @@
 
-task xbibUpload(type: Upload, dependsOn: build) {
+task xbibUpload(type: Upload) {
     configuration = configurations.archives
     uploadDescriptor = true
     repositories {
@@ -14,7 +14,7 @@ task xbibUpload(type: Upload, dependsOn: build) {
     }
 }
 
-task sonatypeUpload(type: Upload, dependsOn: build) {
+task sonatypeUpload(type: Upload) {
     configuration = configurations.archives
     uploadDescriptor = true
     repositories {
@@ -32,7 +32,7 @@ task sonatypeUpload(type: Upload, dependsOn: build) {
                     artifactId project.name
                     version project.version
                     name project.name
-                    description projectDescription
+                    description pluginDescription
                     packaging 'jar'
                     inceptionYear '2016'
                     url scmUrl

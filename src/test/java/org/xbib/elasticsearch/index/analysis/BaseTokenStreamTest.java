@@ -10,12 +10,16 @@ import org.apache.lucene.analysis.tokenattributes.PositionLengthAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.util.Attribute;
 import org.apache.lucene.util.AttributeImpl;
+import org.apache.lucene.util.AttributeReflector;
 import org.junit.Assert;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *
+ */
 public abstract class BaseTokenStreamTest extends Assert {
 
     /**
@@ -48,11 +52,14 @@ public abstract class BaseTokenStreamTest extends Assert {
         }
 
         @Override
+        public void reflectWith(AttributeReflector reflector) {
+
+        }
+
+        @Override
         public boolean equals(Object other) {
-            return (
-                    other instanceof CheckClearAttributesAttributeImpl &&
-                            ((CheckClearAttributesAttributeImpl) other).clearCalled == this.clearCalled
-            );
+            return other instanceof CheckClearAttributesAttributeImpl &&
+                            ((CheckClearAttributesAttributeImpl) other).clearCalled == this.clearCalled;
         }
 
         @Override
@@ -352,7 +359,15 @@ public abstract class BaseTokenStreamTest extends Assert {
         assertAnalyzesTo(a, input, output, startOffsets, endOffsets, null, posIncrements, null);
     }
 
-    static void checkResetException(Analyzer a, String input) throws IOException {
+    private static void checkResetException(Analyzer a, String input) throws IOException {
+        if (a == null) {
+            fail("no analyzer");
+            return;
+        }
+        if (input == null) {
+            fail("no input");
+            return;
+        }
         TokenStream ts = a.tokenStream("bogus", input);
         try {
             if (ts.incrementToken()) {

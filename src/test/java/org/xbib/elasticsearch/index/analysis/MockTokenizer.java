@@ -11,6 +11,8 @@ import org.apache.lucene.util.AttributeFactory;
 import org.apache.lucene.util.automaton.CharacterRunAutomaton;
 import org.apache.lucene.util.automaton.RegExp;
 
+import static org.junit.Assert.fail;
+
 /**
  * Tokenizer for testing.
  * <p>
@@ -18,8 +20,7 @@ import org.apache.lucene.util.automaton.RegExp;
  * tokenizers. If you are writing a component such as a TokenFilter, its a great idea to test
  * it wrapping this tokenizer instead for extra checks. This tokenizer has the following behavior:
  * <ul>
- *   <li>An internal state-machine is used for checking consumer consistency. These checks can
- *       be disabled with {@link #setEnableChecks(boolean)}.
+ *   <li>An internal state-machine is used for checking consumer consistency.
  *   <li>For convenience, optionally lowercases terms that it outputs.
  * </ul>
  */
@@ -28,22 +29,20 @@ public class MockTokenizer extends Tokenizer {
     public static final CharacterRunAutomaton WHITESPACE =
             new CharacterRunAutomaton(new RegExp("[^ \t\r\n]+").toAutomaton());
     /** Acts Similar to KeywordTokenizer.
-     * TODO: Keyword returns an "empty" token for an empty reader...
      */
     public static final CharacterRunAutomaton KEYWORD =
             new CharacterRunAutomaton(new RegExp(".*").toAutomaton());
 
     public static final int DEFAULT_MAX_TOKEN_LENGTH = Integer.MAX_VALUE;
 
-    /** Acts like LetterTokenizer. */
-    // the ugly regex below is incomplete Unicode 5.2 [:Letter:]
-    //public static final CharacterRunAutomaton SIMPLE =
-   //         new CharacterRunAutomaton(new RegExp("[A-Za-zªµºÀ-ÖØ-öø-ˁ一-鿌]+").toAutomaton());
-
     private final CharacterRunAutomaton runAutomaton;
+
     private final boolean lowerCase;
+
     private final int maxTokenLength;
+
     private final CharTermAttribute termAtt;
+
     private final OffsetAttribute offsetAtt;
 
     private int state;
@@ -55,7 +54,6 @@ public class MockTokenizer extends Tokenizer {
     int bufferedCodePoint = -1; // -1 indicates empty buffer
     int bufferedOff = -1;
 
-    // TODO: "register" with LuceneTestCase to ensure all streams are closed() ?
     // currently, we can only check that the lifecycle is correct if someone is reusing,
     // but not for "one-offs".
     private enum State {
@@ -69,7 +67,6 @@ public class MockTokenizer extends Tokenizer {
 
     private State streamState = State.CLOSE;
     private int lastOffset = 0; // only for asserting
-    private boolean enableChecks = true;
 
     private final Random random = new Random();
 
@@ -97,7 +94,7 @@ public class MockTokenizer extends Tokenizer {
         super(factory);
         this.runAutomaton = runAutomaton;
         this.lowerCase = lowerCase;
-        this.state = runAutomaton.getInitialState();
+        this.state = 0;
         this.maxTokenLength = maxTokenLength;
         termAtt = addAttribute(CharTermAttribute.class);
         offsetAtt = addAttribute(OffsetAttribute.class);
@@ -105,8 +102,9 @@ public class MockTokenizer extends Tokenizer {
 
     @Override
     public final boolean incrementToken() throws IOException {
-        assert !enableChecks || (streamState == State.RESET || streamState == State.INCREMENT)
-                : "incrementToken() called while in wrong state: " + streamState;
+        if (streamState != State.RESET && streamState != State.INCREMENT) {
+            fail("incrementToken() called while in wrong state: " + streamState);
+        }
         clearAttributes();
         for (;;) {
             int startOffset;
@@ -125,8 +123,9 @@ public class MockTokenizer extends Tokenizer {
                 int endOffset;
                 do {
                     char chars[] = Character.toChars(normalize(cp));
-                    for (int i = 0; i < chars.length; i++)
+                    for (int i = 0; i < chars.length; i++) {
                         termAtt.append(chars[i]);
+                    }
                     endOffset = off;
                     if (termAtt.length() >= maxTokenLength) {
                         break;
@@ -144,11 +143,19 @@ public class MockTokenizer extends Tokenizer {
                 }
                 int correctedStartOffset = correctOffset(startOffset);
                 int correctedEndOffset = correctOffset(endOffset);
-                assert correctedStartOffset >= 0;
-                assert correctedEndOffset >= 0;
-                assert correctedStartOffset >= lastOffset;
+                if (correctedStartOffset < 0) {
+                    fail("invalid start offset: " + correctedStartOffset + ", before correction: " + startOffset);
+                }
+                if (correctedEndOffset < 0) {
+                    fail("invalid end offset: " + correctedEndOffset + ", before correction: " + endOffset);
+                }
+                if (correctedStartOffset < lastOffset) {
+                    fail("start offset went backwards: " + correctedStartOffset + ", before correction: " + startOffset + ", lastOffset: " + lastOffset);
+                }
                 lastOffset = correctedStartOffset;
-                assert correctedEndOffset >= correctedStartOffset;
+                if (correctedEndOffset < correctedStartOffset) {
+                    fail("end offset: " + correctedEndOffset + " is before start offset: " + correctedStartOffset);
+                }
                 offsetAtt.setOffset(correctedStartOffset, correctedEndOffset);
                 if (state == -1 || runAutomaton.isAccept(state)) {
                     // either we hit a reject state (longest match), or end-of-text, but in an accept state
@@ -166,16 +173,20 @@ public class MockTokenizer extends Tokenizer {
         if (ch < 0) {
             return ch;
         } else {
-            assert !Character.isLowSurrogate((char) ch) : "unpaired low surrogate: " + Integer.toHexString(ch);
+            if (Character.isLowSurrogate((char) ch)) {
+                fail("unpaired low surrogate: " + Integer.toHexString(ch));
+            }
             off++;
             if (Character.isHighSurrogate((char) ch)) {
                 int ch2 = readChar();
                 if (ch2 >= 0) {
                     off++;
-                    assert Character.isLowSurrogate((char) ch2) : "unpaired high surrogate: " + Integer.toHexString(ch) + ", followed by: " + Integer.toHexString(ch2);
+                    if (!Character.isLowSurrogate((char) ch2)) {
+                        fail("unpaired high surrogate: " + Integer.toHexString(ch) + ", followed by: " + Integer.toHexString(ch2));
+                    }
                     return Character.toCodePoint((char) ch, (char) ch2);
                 } else {
-                    assert false : "stream ends with unpaired high surrogate: " + Integer.toHexString(ch);
+                    fail("stream ends with unpaired high surrogate: " + Integer.toHexString(ch));
                 }
             }
             return ch;
@@ -207,7 +218,7 @@ public class MockTokenizer extends Tokenizer {
 
     protected boolean isTokenChar(int c) {
         if (state < 0) {
-            state = runAutomaton.getInitialState();
+            state = 0;
         }
         state = runAutomaton.step(state, c);
         return state >= 0;
@@ -219,12 +230,14 @@ public class MockTokenizer extends Tokenizer {
 
     @Override
     public void reset() throws IOException {
-        super.reset();
-        state = runAutomaton.getInitialState();
-        lastOffset = off = 0;
-        bufferedCodePoint = -1;
-        assert !enableChecks || streamState != State.RESET : "double reset()";
-        streamState = State.RESET;
+        try {
+            super.reset();
+            state = 0;
+            lastOffset = off = 0;
+            bufferedCodePoint = -1;
+        } finally {
+            streamState = State.RESET;
+        }
     }
 
     @Override
@@ -233,8 +246,9 @@ public class MockTokenizer extends Tokenizer {
             super.close();
             // in some exceptional cases (e.g. TestIndexWriterExceptions) a test can prematurely close()
             // these tests should disable this check, by default we check the normal workflow.
-            // TODO: investigate the CachingTokenFilter "double-close"... for now we ignore this
-            assert !enableChecks || streamState == State.END || streamState == State.CLOSE : "close() called in wrong state: " + streamState;
+            if (!(streamState == State.END || streamState == State.CLOSE)) {
+                fail("close() called in wrong state: " + streamState);
+            }
         } finally {
             streamState = State.CLOSE;
         }
@@ -248,13 +262,11 @@ public class MockTokenizer extends Tokenizer {
         // some tokenizers, such as limiting tokenizers, call end() before incrementToken() returns false.
         // these tests should disable this check (in general you should consume the entire stream)
         try {
-            assert !enableChecks || streamState == State.INCREMENT_FALSE : "end() called before incrementToken() returned false!";
+            if (streamState != State.INCREMENT_FALSE) {
+                fail("end() called before incrementToken() returned false!");
+            }
         } finally {
             streamState = State.END;
         }
-    }
-
-    public void setEnableChecks(boolean enableChecks) {
-        this.enableChecks = enableChecks;
     }
 }

@@ -9,7 +9,6 @@ import org.apache.lucene.analysis.tokenattributes.TermToBytesRefAttribute;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.BytesRefBuilder;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.analysis.AnalysisService;
 import org.junit.Test;
 import org.xbib.elasticsearch.MapperTestUtils;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
@@ -20,6 +19,9 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ *
+ */
 public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
 
     /*
@@ -30,14 +32,13 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testBasicUsage() throws Exception {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "tr")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
                 .put("index.analysis.analyzer.myAnalyzer.decomposition", "canonical")
                 .build();
-        AnalysisService analysisService = MapperTestUtils.analysisService(settings);
-        Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
+        Analyzer analyzer = MapperTestUtils.analyzer(settings, "myAnalyzer");
         TokenStream tsUpper = analyzer.tokenStream(null, "I WİLL USE TURKİSH CASING");
         BytesRef b1 = bytesFromTokenStream(tsUpper);
         TokenStream tsLower = analyzer.tokenStream(null, "ı will use turkish casıng");
@@ -50,14 +51,13 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testNormalization() throws IOException {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "tr")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
                 .put("index.analysis.analyzer.myAnalyzer.decomposition", "canonical")
                 .build();
-        AnalysisService analysisService = MapperTestUtils.analysisService(settings);
-        Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
+        Analyzer analyzer = MapperTestUtils.analyzer(settings, "myAnalyzer");
         TokenStream tsUpper = analyzer.tokenStream(null, "I W\u0049\u0307LL USE TURKİSH CASING");
         BytesRef b1 = bytesFromTokenStream(tsUpper);
         TokenStream tsLower = analyzer.tokenStream(null, "ı will use turkish casıng");
@@ -70,14 +70,13 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testSecondaryStrength() throws IOException {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "en")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "secondary")
                 .put("index.analysis.analyzer.myAnalyzer.decomposition", "no")
                 .build();
-        AnalysisService analysisService = MapperTestUtils.analysisService(settings);
-        Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
+        Analyzer analyzer = MapperTestUtils.analyzer(settings, "myAnalyzer");
         TokenStream tsUpper = analyzer.tokenStream("content", "TESTING");
         BytesRef b1 = bytesFromTokenStream(tsUpper);
         TokenStream tsLower = analyzer.tokenStream("content", "testing");
@@ -91,14 +90,13 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testIgnorePunctuation() throws IOException {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "en")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
                 .put("index.analysis.analyzer.myAnalyzer.alternate", "shifted")
                 .build();
-        AnalysisService analysisService = MapperTestUtils.analysisService(settings);
-        Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
+        Analyzer analyzer = MapperTestUtils.analyzer(settings, "myAnalyzer");
         TokenStream tsPunctuation = analyzer.tokenStream("content", "foo-bar");
         BytesRef b1 = bytesFromTokenStream(tsPunctuation);
         TokenStream tsWithoutPunctuation = analyzer.tokenStream("content", "foo bar");
@@ -112,22 +110,21 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testIgnoreWhitespace() throws IOException {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "en")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
                 .put("index.analysis.analyzer.myAnalyzer.alternate", "shifted")
                 .put("index.analysis.analyzer.myAnalyzer.variableTop", 4096) // SPACE
                 .build();
-        AnalysisService analysisService = MapperTestUtils.analysisService(settings);
-        Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
+        Analyzer analyzer = MapperTestUtils.analyzer(settings ,"myAnalyzer");
         TokenStream tsWithoutSpace = analyzer.tokenStream(null, "foobar");
         BytesRef b1 = bytesFromTokenStream(tsWithoutSpace);
         TokenStream tsWithSpace = analyzer.tokenStream(null, "foo bar");
         BytesRef b2 = bytesFromTokenStream(tsWithSpace);
         assertTrue(compare(b1.bytes, b2.bytes) == 0);
 
-        // now assert that punctuation still matters: foo-bar < foo bar
+        // now check that punctuation still matters: foo-bar < foo bar
         TokenStream tsWithPunctuation = analyzer.tokenStream(null, "foo-bar");
         BytesRef b3 = bytesFromTokenStream(tsWithPunctuation);
         assertTrue(compare(b3.bytes, b1.bytes) < 0);
@@ -139,13 +136,12 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testNumerics() throws IOException {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "en")
                 .put("index.analysis.analyzer.myAnalyzer.numeric", true)
                 .build();
-        AnalysisService analysisService = MapperTestUtils.analysisService(settings);
-        Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
+        Analyzer analyzer = MapperTestUtils.analyzer(settings, "myAnalyzer");
         TokenStream tsNine = analyzer.tokenStream(null, "foobar-9");
         BytesRef b1 = bytesFromTokenStream(tsNine);
         TokenStream tsTen = analyzer.tokenStream(null, "foobar-10");
@@ -159,14 +155,13 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testIgnoreAccentsButNotCase() throws IOException {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "en")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
                 .put("index.analysis.analyzer.myAnalyzer.caseLevel", "true")
                 .build();
-        AnalysisService analysisService = MapperTestUtils.analysisService(settings);
-        Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
+        Analyzer analyzer = MapperTestUtils.analyzer(settings, "myAnalyzer");
 
         String withAccents = "résumé";
         String withoutAccents = "resume";
@@ -185,7 +180,7 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
         BytesRef b4 = bytesFromTokenStream(tsWithoutAccentsUpperCase);
         assertTrue(compare(b3.bytes, b4.bytes) == 0);
 
-        // now assert that case still matters: resume < Resume
+        // now check that case still matters: resume < Resume
         TokenStream tsLower = analyzer.tokenStream(null, withoutAccents);
         BytesRef b5 = bytesFromTokenStream(tsLower);
         TokenStream tsUpper = analyzer.tokenStream(null, withoutAccentsUpperCase);
@@ -199,15 +194,13 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
     */
     @Test
     public void testUpperCaseFirst() throws IOException {
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.language", "en")
                 .put("index.analysis.analyzer.myAnalyzer.strength", "tertiary")
                 .put("index.analysis.analyzer.myAnalyzer.caseFirst", "upper")
                 .build();
-        AnalysisService analysisService =
-                MapperTestUtils.analysisService(settings);
-        Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
+        Analyzer analyzer = MapperTestUtils.analyzer(settings,"myAnalyzer");
         String lower = "resume";
         String upper = "Resume";
         TokenStream tsLower = analyzer.tokenStream(null, lower);
@@ -233,14 +226,12 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
         RuleBasedCollator tailoredCollator = new RuleBasedCollator(baseCollator.getRules() + DIN5007_2_tailorings);
         String tailoredRules = tailoredCollator.getRules();
 
-        Settings settings = Settings.settingsBuilder()
+        Settings settings = Settings.builder()
                 .put("index.analysis.analyzer.myAnalyzer.type", "icu_collation")
                 .put("index.analysis.analyzer.myAnalyzer.rules", tailoredRules)
                 .put("index.analysis.analyzer.myAnalyzer.strength", "primary")
                 .build();
-        AnalysisService analysisService =
-                MapperTestUtils.analysisService(settings);
-        Analyzer analyzer = analysisService.analyzer("myAnalyzer").analyzer();
+        Analyzer analyzer = MapperTestUtils.analyzer(settings, "myAnalyzer");
 
         String germanUmlaut = "Töne";
         TokenStream tsUmlaut = analyzer.tokenStream(null, germanUmlaut);
@@ -255,8 +246,8 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
 
     @Test
     public void testPrimaryStrengthFromJson() throws Exception {
-        AnalysisService analysisService = MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/icu/icu_collation.json");
-        Analyzer analyzer = analysisService.analyzer("icu_german_collate").analyzer();
+        String resource = "org/xbib/elasticsearch/index/analysis/icu/icu_collation.json";
+        Analyzer analyzer = MapperTestUtils.analyzer(resource, "icu_german_collate");
 
         String[] words = new String[]{
                 "Göbel",
@@ -279,8 +270,8 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
 
     @Test
     public void testQuaternaryStrengthFromJson() throws Exception {
-        AnalysisService analysisService = MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/icu/icu_collation.json");
-        Analyzer analyzer = analysisService.analyzer("icu_german_collate_without_punct").analyzer();
+        String resource = "org/xbib/elasticsearch/index/analysis/icu/icu_collation.json";
+        Analyzer analyzer = MapperTestUtils.analyzer(resource, "icu_german_collate_without_punct");
 
         String[] words = new String[]{
                 "Göbel",
@@ -301,7 +292,6 @@ public class IcuCollationAnalyzerTests extends BaseTokenStreamTest {
         assertEquals("[Götz]",it.next().toString());
         assertEquals("[Gold*mann]",it.next().toString());
     }
-
 
     private BytesRef bytesFromTokenStream(TokenStream stream) throws IOException {
         TermToBytesRefAttribute termAttr = stream.getAttribute(TermToBytesRefAttribute.class);

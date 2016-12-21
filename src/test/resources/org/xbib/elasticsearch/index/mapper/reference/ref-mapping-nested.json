@@ -4,7 +4,7 @@
       "person": {
         "properties": {
           "authorName": {
-            "type": "string"
+            "type": "text"
           },
           "authorID": {
             "type": "ref",
@@ -23,14 +23,14 @@
       "dc": {
         "properties": {
           "creator": {
-            "type": "string"
+            "type": "text"
           }
         }
       },
       "bib": {
         "properties": {
           "contributor": {
-            "type": "string"
+            "type": "text"
           }
         }
       }

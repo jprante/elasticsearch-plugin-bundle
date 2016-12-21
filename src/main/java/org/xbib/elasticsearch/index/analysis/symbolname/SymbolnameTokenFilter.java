@@ -1,25 +1,3 @@
-/*
- * Copyright (C) 2015 Jörg Prante
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses
- * or write to the Free Software Foundation, Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * The interactive user interfaces in modified source and object code
- * versions of this program must display Appropriate Legal Notices,
- * as required under Section 5 of the GNU Affero General Public License.
- *
- */
 package org.xbib.elasticsearch.index.analysis.symbolname;
 
 import org.apache.lucene.analysis.TokenFilter;
@@ -36,23 +14,32 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ *
+ */
 public class SymbolnameTokenFilter extends TokenFilter {
 
-    private final static Pattern pattern = Pattern.compile("\\P{L}", Pattern.UNICODE_CHARACTER_CLASS);
+    private static final Pattern pattern = Pattern.compile("\\P{L}", Pattern.UNICODE_CHARACTER_CLASS);
+
     private final LinkedList<PackedTokenAttributeImpl> tokens;
+
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
+
     private final PositionIncrementAttribute posIncAtt = addAttribute(PositionIncrementAttribute.class);
+
     private State current;
 
     protected SymbolnameTokenFilter(TokenStream input) {
         super(input);
-        this.tokens = new LinkedList<PackedTokenAttributeImpl>();
+        this.tokens = new LinkedList<>();
     }
 
     @Override
     public final boolean incrementToken() throws IOException {
         if (!tokens.isEmpty()) {
-            assert current != null;
+            if (current == null) {
+                throw new IllegalArgumentException("current is null");
+            }
             PackedTokenAttributeImpl token = tokens.removeFirst();
             restoreState(current);
             termAtt.setEmpty().append(token);
@@ -103,11 +90,20 @@ public class SymbolnameTokenFilter extends TokenFilter {
         String variant = sb.toString().trim();
         if (!variant.equals(term)) {
             variants.add(variant);
-            if (variant.indexOf(' ') > 0) {
+            if (variant.indexOf(' ') >= 0) {
                 Collections.addAll(variants, variant.split("\\s"));
             }
         }
         return variants;
     }
 
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof SymbolnameTokenFilter;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
 }

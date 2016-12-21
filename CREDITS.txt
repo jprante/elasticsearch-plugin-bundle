@@ -1,3 +1,29 @@
+The plugin bundle wouldn't be possible without the hard work of many authors
+who generously published their work under an open source license.
+
+This file should contain all the credits to them. If you miss a credit, please
+notify me about it and it will be added as soon as possible.
+
+The ICU analysis is heavily based on Apache Lucene ICU
+
+https://github.com/apache/lucene-solr/tree/master/lucene/analysis/icu
+
+The AutoPhraseTokenFilter is derived from
+
+https://github.com/lucidworks/auto-phrase-tokenfilter
+
 The ConcatTokenFilter is authored by Sujit Pal and was taken from
 
 http://sujitpal.blogspot.de/2011/07/lucene-token-concatenating-tokenfilter_30.html
+
+The Decompound token filter is a reworked implementation of the
+link:http://wortschatz.uni-leipzig.de/~cbiemann/software/toolbox/Baseforms%20Tool.htm[Baseforms Tool]
+found in the http://wortschatz.uni-leipzig.de/~cbiemann/software/toolbox/index.htm[ASV toolbox]
+of http://asv.informatik.uni-leipzig.de/staff/Chris_Biemann[Chris Biemann],
+Automatische Sprachverarbeitung of Leipzig University.
+
+The FSA in package org.xbib.elastixsearch.common.fsa which provides the dictionary structure for
+the baseform tokenizer is a derived version of
+
+https://github.com/morfologik/morfologik-stemming/tree/master/morfologik-fsa/src/main/java/morfologik/fsa
+

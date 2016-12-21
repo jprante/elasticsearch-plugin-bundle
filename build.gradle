@@ -1,5 +1,22 @@
-group = 'org.xbib.elasticsearch.plugin'
-version = '2.4.1.0'
+
+plugins {
+    id "org.sonarqube" version "2.2"
+    id "org.xbib.gradle.plugin.jbake" version "1.2.1"
+    id "org.xbib.gradle.plugin.jflex" version "1.1.0"
+}
+
+printf "Host: %s\nOS: %s %s %s\nJVM: %s %s %s %s\nGroovy: %s\nGradle: %s\n" +
+        "Build: group: ${project.group} name: ${project.name} version: ${project.version}\n",
+        InetAddress.getLocalHost(),
+        System.getProperty("os.name"),
+        System.getProperty("os.arch"),
+        System.getProperty("os.version"),
+        System.getProperty("java.version"),
+        System.getProperty("java.vm.version"),
+        System.getProperty("java.vm.vendor"),
+        System.getProperty("java.vm.name"),
+        GroovySystem.getVersion(),
+        gradle.gradleVersion
 
 ext {
     pluginName = 'bundle'
@@ -11,46 +28,29 @@ ext {
     scmConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
     scmDeveloperConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
     versions = [
-        'elasticsearch' : '2.4.1',
-        'lucene' : '5.5.2',
-        'jackson': '2.8.1',
-        'log4j': '2.5',
-        'junit' : '4.12'
+        'elasticsearch' : '5.1.1',
+        'jackson': '2.8.1', // must match jackson version of elasticsearch
+        'icu4j' : '58.2',
+        'log4j': '2.7'
     ]
-}
-
-buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        jcenter()
-        maven {
-            url "http://xbib.org/repository"
-        }
-    }
-    dependencies {
-        classpath 'org.xbib.gradle.plugin:gradle-plugin-jflex:1.1.0'
-        classpath 'co.riiid:gradle-github-plugin:0.4.2'
-    }
 }
 
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'findbugs'
+apply plugin: 'pmd'
+apply plugin: 'checkstyle'
+apply plugin: "jacoco"
 apply plugin: 'org.xbib.gradle.plugin.jflex'
 
 repositories {
     mavenCentral()
-    mavenLocal()
-    jcenter()
-    maven {
-        url "http://xbib.org/repository"
-    }
 }
 
 configurations {
     wagon
-    releaseJars {
+    distJars {
         extendsFrom runtime
         exclude group: 'org.elasticsearch'
         exclude module: 'lucene-core'
@@ -65,26 +65,24 @@ configurations {
 
 dependencies {
     compile "org.elasticsearch:elasticsearch:${versions.elasticsearch}"
-    // override Lucene's old ICU 53
-    compile "com.ibm.icu:icu4j:57.1"
-    compile "org.apache.lucene:lucene-analyzers-icu:${versions.lucene}"
-    compile "com.fasterxml.jackson.core:jackson-databind:${versions.jackson}"
-    testCompile "junit:junit:${versions.junit}"
-    testCompile "org.apache.logging.log4j:log4j-slf4j-impl:${versions.log4j}"
+    compile "com.ibm.icu:icu4j:${versions.icu4j}"
+    //compile "com.fasterxml.jackson.core:jackson-databind:${versions.jackson}"
+    compileOnly "org.apache.logging.log4j:log4j-core:${versions.log4j}"
+    testCompile "junit:junit:4.12"
     testCompile "org.apache.logging.log4j:log4j-core:${versions.log4j}"
-    releaseJars "${project.group}:${project.name}:${project.version}"
+    distJars "${project.group}:${project.name}:${project.version}"
     wagon 'org.apache.maven.wagon:wagon-ssh-external:2.10'
 }
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 tasks.withType(JavaCompile) {
-    options.compilerArgs << "-Xlint:unchecked,deprecation"
+    options.compilerArgs << "-Xlint:all" << "-profile" << "compact2"
 }
 
 test {
-    //include '**/CustomTokenizerTest*'
     systemProperties['path.home'] = System.getProperty("user.dir")
     testLogging {
         showStandardStreams = false
@@ -99,10 +97,7 @@ task makePluginDescriptor(type: Copy) {
             'descriptor': [
                 'name': pluginName,
                 'classname': pluginClassname,
-                'description': projectDescription,
-                'jvm': true,
-                'site': false,
-                'isolated': true,
+                'description': pluginDescription,
                 'version': project.property('version'),
                 'javaVersion': project.property('targetCompatibility'),
                 'elasticsearchVersion' : versions.elasticsearch
@@ -111,14 +106,15 @@ task makePluginDescriptor(type: Copy) {
 }
 
 task buildPluginZip(type: Zip, dependsOn: [':jar', ':makePluginDescriptor']) {
-    from configurations.releaseJars
+    from configurations.distJars
     from 'build/tmp/plugin'
+    into 'elasticsearch'
     classifier = 'plugin'
 }
 
 task unpackPlugin(type: Copy, dependsOn: [':buildPluginZip']) {
     delete "plugins"
-    from configurations.releaseJars
+    from configurations.distJars
     from 'build/tmp/plugin'
     into "plugins/${pluginName}"
 }
@@ -152,3 +148,4 @@ if (project.hasProperty('signing.keyId')) {
 }
 
 apply from: 'gradle/publish.gradle'
+apply from: 'gradle/sonarqube.gradle'

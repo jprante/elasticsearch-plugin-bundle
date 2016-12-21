@@ -1,57 +1,35 @@
-/*
- * Copyright (C) 2014 Jörg Prante
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses
- * or write to the Free Software Foundation, Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * The interactive user interfaces in modified source and object code
- * versions of this program must display Appropriate Legal Notices,
- * as required under Section 5 of the GNU Affero General Public License.
- *
- */
 package org.xbib.elasticsearch.index.analysis.icu;
 
 import com.ibm.icu.text.Collator;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.core.KeywordTokenizer;
-import org.apache.lucene.collation.ICUCollationAttributeFactory;
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.Index;
+import org.elasticsearch.env.Environment;
+import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenizerFactory;
-import org.elasticsearch.index.settings.IndexSettingsService;
+import org.xbib.elasticsearch.index.analysis.icu.segmentation.DefaultIcuTokenizerConfig;
+import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizer;
+import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizerConfig;
+import org.xbib.elasticsearch.index.analysis.icu.tokenattributes.IcuCollationAttributeFactory;
 
+/**
+ * This {@link IcuTokenizer} uses an ICU @{@link Collator} as a char attribute factory.
+ */
 public class IcuCollationTokenizerFactory extends AbstractTokenizerFactory {
 
-    private final ICUCollationAttributeFactory factory;
+    private final IcuCollationAttributeFactory factory;
 
-    private final int bufferSize;
+    private final IcuTokenizerConfig config;
 
-    @Inject
-    public IcuCollationTokenizerFactory(Index index,
-                                        IndexSettingsService indexSettingsService,
-                                        @Assisted String name,
-                                        @Assisted Settings settings) {
-        super(index, indexSettingsService.indexSettings(), name, settings);
+    public IcuCollationTokenizerFactory(IndexSettings indexSettings, Environment environment, String name,
+                                        Settings settings) {
+        super(indexSettings, name, settings);
         Collator collator = IcuCollationKeyAnalyzerProvider.createCollator(settings);
-        this.factory = new ICUCollationAttributeFactory(collator);
-        this.bufferSize = settings.getAsInt("buffer_size", KeywordTokenizer.DEFAULT_BUFFER_SIZE);
+        this.factory = new IcuCollationAttributeFactory(collator);
+        this.config = new DefaultIcuTokenizerConfig(true, true);
     }
 
     @Override
     public Tokenizer create() {
-        return new KeywordTokenizer(factory, bufferSize);
+        return new IcuTokenizer(factory, config);
     }
 }

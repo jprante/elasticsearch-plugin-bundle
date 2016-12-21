@@ -24,23 +24,19 @@ public final class FSABuilder {
      * Comparator comparing full byte arrays consistently with
      * {@link #compare(byte[], int, int, byte[], int, int)}.
      */
-    public static final Comparator<byte[]> LEXICAL_ORDERING = new Comparator<byte[]>() {
-        public int compare(byte[] o1, byte[] o2) {
-            return FSABuilder.compare(o1, 0, o1.length, o2, 0, o2.length);
-        }
-    };
+    public static final Comparator<byte[]> LEXICAL_ORDERING = (o1, o2) -> compare(o1, 0, o1.length, o2, 0, o2.length);
     /**
      * A megabyte.
      */
-    private final static int MB = 1024 * 1024;
+    private static final int MB = 1024 * 1024;
     /**
      * Internal serialized FSA buffer expand ratio.
      */
-    private final static int BUFFER_GROWTH_SIZE = 5 * MB;
+    private static final int BUFFER_GROWTH_SIZE = 5 * MB;
     /**
      * Maximum number of labels from a single state.
      */
-    private final static int MAX_LABELS = 256;
+    private static final int MAX_LABELS = 256;
     /**
      * Internal serialized FSA buffer expand ratio.
      */
@@ -88,7 +84,7 @@ public final class FSABuilder {
      */
     private int hashSize = 0;
     /**
-     * Previous sequence added to the automaton in {@link #add(byte[], int, int)}. Used in assertions only.
+     * Previous sequence added to the automaton in {@link #add(byte[], int, int)}.
      */
     private byte[] previous;
     /**
@@ -96,7 +92,7 @@ public final class FSABuilder {
      */
     private Map<InfoEntry, Object> info;
     /**
-     * {@link #previous} sequence's length, used in assertions only.
+     * {@link #previous} sequence's length
      */
     private int previousLength;
     /**
@@ -165,9 +161,11 @@ public final class FSABuilder {
     public static int compare(byte[] s1, int start1, int lens1,
                               byte[] s2, int start2, int lens2) {
         final int max = Math.min(lens1, lens2);
+        int k1 = start1;
+        int k2 = start2;
         for (int i = 0; i < max; i++) {
-            final byte c1 = s1[start1++];
-            final byte c2 = s2[start2++];
+            final byte c1 = s1[k1++];
+            final byte c2 = s2[k2++];
             if (c1 != c2) {
                 return (c1 & 0xff) - (c2 & 0xff);
             }
@@ -184,12 +182,15 @@ public final class FSABuilder {
      * @param len      len
      */
     public void add(byte[] sequence, int start, int len) {
-        assert serialized != null : "Automaton already built.";
-        assert previous == null || len == 0 || compare(previous, 0, previousLength, sequence, start, len) <= 0 :
-                "Input must be sorted: "
-                        + Arrays.toString(previous) + " >= "
-                        + Arrays.toString(sequence);
-        assert setPrevious(sequence, start, len);
+        if (serialized == null) {
+            throw new IllegalArgumentException("automaton not built");
+        }
+        if (!(previous == null || len == 0 || compare(previous, 0, previousLength, sequence, start, len) <= 0)) {
+            throw new IllegalArgumentException("Input must be sorted: "
+                    + Arrays.toString(previous) + " >= "
+                    + Arrays.toString(sequence));
+        }
+        setPrevious(sequence, start, len);
         // Determine common prefix length.
         final int commonPrefix = commonPrefix(sequence, start, len);
         // Make room for extra states on active path, if needed.
@@ -227,7 +228,7 @@ public final class FSABuilder {
             root = freezeState(0);
             setArcTarget(epsilon, root);
         }
-        info = new TreeMap<InfoEntry, Object>();
+        info = new TreeMap<>();
         info.put(InfoEntry.SERIALIZATION_BUFFER_SIZE, serialized.length);
         info.put(InfoEntry.SERIALIZATION_BUFFER_REALLOCATIONS, serializationBufferReallocations);
         info.put(InfoEntry.CONSTANT_ARC_AUTOMATON_SIZE, size);
@@ -272,8 +273,11 @@ public final class FSABuilder {
 
     /**
      * Fills the target state address of an arc.
+     * @param a arc
      */
-    private void setArcTarget(int arc, int state) {
+    private void setArcTarget(int a, int st) {
+        int state = st;
+        int arc = a;
         arc += ADDRESS_OFFSET + TARGET_ADDRESS_SIZE;
         for (int i = 0; i < TARGET_ADDRESS_SIZE; i++) {
             serialized[--arc] = (byte) state;
@@ -284,7 +288,8 @@ public final class FSABuilder {
     /**
      * Returns the address of an arc.
      */
-    private int getArcTarget(int arc) {
+    private int getArcTarget(int a) {
+        int arc = a;
         arc += ADDRESS_OFFSET;
         return (serialized[arc]) << 24 |
                 (serialized[arc + 1] & 0xff) << 16 |
@@ -297,12 +302,12 @@ public final class FSABuilder {
      * sequence.
      */
     private int commonPrefix(byte[] sequence, int start, int len) {
-        // Empty root state case.
+        int k = start;
         final int max = Math.min(len, activePathLen);
         int i;
         for (i = 0; i < max; i++) {
             final int lastArc = nextArcOffset[i] - ARC_SIZE;
-            if (sequence[start++] != getArcLabel(lastArc)) {
+            if (sequence[k++] != getArcLabel(lastArc)) {
                 break;
             }
         }
@@ -321,9 +326,9 @@ public final class FSABuilder {
         // Set the last arc flag on the current active path's state.
         serialized[end - ARC_SIZE + FLAGS_OFFSET] |= BIT_ARC_LAST;
         // Try to locate a state with an identical content in the hash set.
-        final int bucketMask = (hashSet.length - 1);
+        final int bucketMask = hashSet.length - 1;
         int slot = hash(start, len) & bucketMask;
-        for (int i = 0; ; ) {
+        for (int i = 0; ; ++i) {
             int state = hashSet[slot];
             if (state == 0) {
                 state = hashSet[slot] = serialize(activePathIndex);
@@ -335,21 +340,22 @@ public final class FSABuilder {
                 return state;
             }
 
-            slot = (slot + (++i)) & bucketMask;
+            slot = (slot + i) & bucketMask;
         }
     }
 
     /**
      * Reallocate and rehash the hash set.
+     *
      */
     private void expandAndRehash() {
         final int[] newHashSet = new int[hashSet.length * 2];
-        final int bucketMask = (newHashSet.length - 1);
-        for (int j = 0; j < hashSet.length; j++) {
-            final int state = hashSet[j];
+        final int bucketMask = newHashSet.length - 1;
+        for (final int state : hashSet) {
             if (state > 0) {
                 int slot = hash(state, stateLength(state)) & bucketMask;
-                for (int i = 0; newHashSet[slot] > 0; ) {
+                int i = 0;
+                while (newHashSet[slot] > 0) {
                     slot = (slot + (++i)) & bucketMask;
                 }
                 newHashSet[slot] = state;
@@ -372,12 +378,15 @@ public final class FSABuilder {
     /**
      * Return <code>true</code> if two regions in {@link #serialized} are identical.
      */
-    private boolean equivalent(int start1, int start2, int len) {
-        if (start1 + len > size || start2 + len > size) {
+    private boolean equivalent(int start1, int start2, int l) {
+        int k1 = start1;
+        int k2 = start2;
+        int len = l;
+        if (k1 + len > size || k2 + len > size) {
             return false;
         }
         while (len-- > 0) {
-            if (serialized[start1++] != serialized[start2++]) {
+            if (serialized[k1++] != serialized[k2++]) {
                 return false;
             }
         }
@@ -400,15 +409,20 @@ public final class FSABuilder {
     /**
      * Hash code of a fragment of {@link #serialized} array.
      */
-    private int hash(int start, int byteCount) {
-        assert byteCount % ARC_SIZE == 0 : "not an arc multiply?";
+    private int hash(int st, int byteCount) {
+        int start = st;
+        if (byteCount % ARC_SIZE != 0) {
+            throw new IllegalArgumentException("not an arc multiply?");
+        }
         int h = 0;
-        for (int arcs = byteCount / ARC_SIZE; --arcs >= 0; start += ARC_SIZE) {
+        int arcs = byteCount / ARC_SIZE;
+        while (--arcs >= 0) {
             h = 17 * h + getArcLabel(start);
             h = 17 * h + getArcTarget(start);
             if (isArcFinal(start)) {
                 h += 17;
             }
+            start += ARC_SIZE;
         }
         return h;
     }

@@ -4,7 +4,7 @@
       "author": {
         "properties": {
           "authorName": {
-            "type": "string"
+            "type": "text"
           },
           "authorID": {
             "type": "ref",
@@ -22,7 +22,7 @@
       "dc": {
         "properties": {
           "creator": {
-            "type": "string"
+            "type": "text"
           }
         }
       }

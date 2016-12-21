@@ -1,47 +1,25 @@
-/*
- * Copyright (C) 2014 Jörg Prante
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses
- * or write to the Free Software Foundation, Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * The interactive user interfaces in modified source and object code
- * versions of this program must display Appropriate Legal Notices,
- * as required under Section 5 of the GNU Affero General Public License.
- *
- */
 package org.xbib.elasticsearch.index.analysis.icu;
 
+import com.ibm.icu.text.FilteredNormalizer2;
 import com.ibm.icu.text.Normalizer2;
-import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.inject.assistedinject.Assisted;
+import com.ibm.icu.text.UnicodeSet;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.Index;
+import org.elasticsearch.env.Environment;
+import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractCharFilterFactory;
-import org.elasticsearch.index.settings.IndexSettingsService;
+import org.elasticsearch.index.analysis.MultiTermAwareComponent;
 
 import java.io.Reader;
 
-public class IcuNormalizerCharFilterFactory extends AbstractCharFilterFactory {
+/**
+ *
+ */
+public class IcuNormalizerCharFilterFactory extends AbstractCharFilterFactory implements MultiTermAwareComponent {
 
     private final Normalizer2 normalizer;
 
-    @Inject
-    public IcuNormalizerCharFilterFactory(Index index,
-                                          IndexSettingsService indexSettingsService,
-                                          @Assisted String name,
-                                          @Assisted Settings settings) {
-        super(index, indexSettingsService.indexSettings(), name);
+    public IcuNormalizerCharFilterFactory(IndexSettings indexSettings, Environment environment, String name, Settings settings) {
+        super(indexSettings, name);
         String normalizationName = settings.get("name", "nfkc_cf");
         Normalizer2.Mode normalizationMode;
         switch (settings.get("mode", "compose")) {
@@ -58,11 +36,19 @@ public class IcuNormalizerCharFilterFactory extends AbstractCharFilterFactory {
                 normalizationMode = Normalizer2.Mode.COMPOSE;
                 break;
         }
-        this.normalizer = Normalizer2.getInstance(null, normalizationName, normalizationMode);
+        Normalizer2 base = Normalizer2.getInstance(null, normalizationName, normalizationMode);
+        String unicodeSetFilter = settings.get("unicodeSetFilter");
+        this.normalizer = unicodeSetFilter != null ?
+                new FilteredNormalizer2(base, new UnicodeSet(unicodeSetFilter).freeze()) : base;
     }
 
     @Override
     public Reader create(Reader reader) {
-        return new ICUNormalizer2CharFilter(reader, normalizer);
+        return new IcuNormalizerCharFilter(reader, normalizer);
+    }
+
+    @Override
+    public Object getMultiTermComponent() {
+        return this;
     }
 }

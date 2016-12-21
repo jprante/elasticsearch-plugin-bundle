@@ -7,14 +7,23 @@ import org.apache.lucene.util.automaton.CharacterRunAutomaton;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *
+ */
 public final class MockAnalyzer extends Analyzer {
+
     private final CharacterRunAutomaton runAutomaton;
+
     private final boolean lowerCase;
+
     private final CharacterRunAutomaton filter;
+
     private int positionIncrementGap;
+
     private Integer offsetGap;
+
     private Map<String, Integer> previousMappings = new HashMap<>();
-    private boolean enableChecks = true;
+
     private int maxTokenLength = MockTokenizer.DEFAULT_MAX_TOKEN_LENGTH;
 
     public MockAnalyzer(CharacterRunAutomaton runAutomaton, boolean lowerCase) {
@@ -31,7 +40,6 @@ public final class MockAnalyzer extends Analyzer {
     @Override
     public TokenStreamComponents createComponents(String fieldName) {
         MockTokenizer tokenizer = new MockTokenizer(runAutomaton, lowerCase, maxTokenLength);
-        tokenizer.setEnableChecks(enableChecks);
         MockTokenFilter filt = new MockTokenFilter(tokenizer, filter);
         return new TokenStreamComponents(tokenizer, maybePayload(filt, fieldName));
     }
@@ -71,14 +79,6 @@ public final class MockAnalyzer extends Analyzer {
     @Override
     public int getOffsetGap(String fieldName) {
         return offsetGap == null ? super.getOffsetGap(fieldName) : offsetGap;
-    }
-
-    /**
-     * Toggle consumer workflow checking: if your test consumes tokenstreams normally you
-     * should leave this enabled.
-     */
-    public void setEnableChecks(boolean enableChecks) {
-        this.enableChecks = enableChecks;
     }
 
     /**

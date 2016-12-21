@@ -7,32 +7,33 @@ import java.io.Reader;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+/**
+ *
+ */
 public class Dictionary {
-
-    private final Charset UTF8 = Charset.forName("UTF-8");
 
     private FSA fsa;
 
     private FSATraversal matcher;
 
     public Dictionary load(String language) throws IOException {
-        return load(new InputStreamReader(this.getClass().getResourceAsStream(language + "-lemma-utf8.txt"), UTF8));
+        return load(new InputStreamReader(this.getClass()
+                .getResourceAsStream(language + "-lemma-utf8.txt"), StandardCharsets.UTF_8));
     }
 
     public Dictionary load(Reader in) throws IOException {
         BufferedReader reader = new BufferedReader(in);
-        List<byte[]> lines = new ArrayList<byte[]>();
+        List<byte[]> lines = new ArrayList<>();
         String line;
         while ((line = reader.readLine()) != null) {
-            lines.add(line.replace('\t', '+').getBytes(UTF8));
+            lines.add(line.replace('\t', '+').getBytes(StandardCharsets.UTF_8));
         }
         reader.close();
-        Collections.sort(lines, FSABuilder.LEXICAL_ORDERING);
+        lines.sort(FSABuilder.LEXICAL_ORDERING);
         FSABuilder builder = new FSABuilder();
         for (byte[] b : lines) {
             builder.add(b, 0, b.length);
@@ -46,7 +47,7 @@ public class Dictionary {
         if (prefix == null || prefix.length() == 0) {
             return prefix;
         }
-        return lookup(UTF8.newEncoder().encode(CharBuffer.wrap(prefix)), prefix.toString());
+        return lookup(StandardCharsets.UTF_8.newEncoder().encode(CharBuffer.wrap(prefix)), prefix.toString());
     }
 
     public CharSequence lookup(ByteBuffer buf, String request) {
@@ -58,28 +59,24 @@ public class Dictionary {
             return request;
         }
         MatchResult match = matcher.match(buf.array(), buf.position(), buf.remaining(), fsa.getRootNode());
-        switch (match.kind) {
-            case MatchResult.SEQUENCE_IS_A_PREFIX: {
-                final int arc = fsa.getArc(match.node, (byte) '+');
+        switch (match.getKind()) {
+            case MatchResult.SEQUENCE_IS_A_PREFIX:
+                final int arc = fsa.getArc(match.getNode(), (byte) '+');
                 if (arc != 0 && !fsa.isArcFinal(arc)) {
                     FSAFinalStatesIterator finalStatesIterator = new FSAFinalStatesIterator(fsa, fsa.getRootNode());
                     finalStatesIterator.restartFrom(fsa.getEndNode(arc));
                     if (finalStatesIterator.hasNext()) {
-                        buf = finalStatesIterator.next();
-                        String s = new String(buf.array(), buf.position(), buf.remaining(), UTF8);
-                        return s.isEmpty() || s.equals(request) ? s : lookup(buf, s, level + 1);
+                        ByteBuffer buffer = finalStatesIterator.next();
+                        String s = new String(buffer.array(), buffer.position(), buffer.remaining(), StandardCharsets.UTF_8);
+                        return s.isEmpty() || s.equals(request) ? s : lookup(buffer, s, level + 1);
                     }
                 }
                 break;
-            }
-            case MatchResult.EXACT_MATCH: {
+            case MatchResult.EXACT_MATCH:
+            case MatchResult.NO_MATCH:
+            default:
                 break;
-            }
-            case MatchResult.NO_MATCH: {
-                break;
-            }
         }
         return request;
     }
-
 }

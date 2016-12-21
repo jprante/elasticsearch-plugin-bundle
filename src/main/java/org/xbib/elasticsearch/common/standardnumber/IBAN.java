@@ -1,25 +1,3 @@
-/*
- * Copyright (C) 2014 Jörg Prante
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses
- * or write to the Free Software Foundation, Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * The interactive user interfaces in modified source and object code
- * versions of this program must display Appropriate Legal Notices,
- * as required under Section 5 of the GNU Affero General Public License.
- *
- */
 package org.xbib.elasticsearch.common.standardnumber;
 
 import org.xbib.elasticsearch.common.standardnumber.check.iso7064.MOD9710;
@@ -45,7 +23,7 @@ public class IBAN extends AbstractStandardNumber implements Comparable<IBAN>, St
      * Norway = 15, Malta = 31 + "IBAN "
      */
     private static final Pattern PATTERN = Pattern.compile("[\\p{Alnum}\\p{Pd}\\s]{15,36}");
-    private final static MOD9710 check = new MOD9710();
+    private static final MOD9710 check = new MOD9710();
     /**
      * Known country codes, this list must be sorted to allow binary search.
      */
@@ -121,7 +99,7 @@ public class IBAN extends AbstractStandardNumber implements Comparable<IBAN>, St
     }
 
     @Override
-    public IBAN verify() throws NumberFormatException {
+    public IBAN verify(){
         if (value == null || value.isEmpty()) {
             throw new NumberFormatException("invalid");
         }
@@ -201,4 +179,13 @@ public class IBAN extends AbstractStandardNumber implements Comparable<IBAN>, St
         return -1;
     }
 
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof IBAN && value.equals(((IBAN)object).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
+    }
 }

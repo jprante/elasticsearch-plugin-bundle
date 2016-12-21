@@ -5,15 +5,21 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Stack;
 
+/**
+ *
+ */
 public final class PairTokenFilter extends TokenFilter {
 
     private final CharTermAttribute termAttr;
+
     private final Map<String, String> pairs;
+
     private final Queue<String> queue;
 
     protected PairTokenFilter(TokenStream input, Map<String, String> pairs) {
@@ -32,7 +38,7 @@ public final class PairTokenFilter extends TokenFilter {
         if (!input.incrementToken()) {
             return false;
         }
-        Stack<String> stack = new Stack<>();
+        Deque<String> stack = new ArrayDeque<>();
         while (pairs.containsKey(termAttr.toString())) {
             String term = termAttr.toString();
             stack.push(term);
@@ -55,5 +61,16 @@ public final class PairTokenFilter extends TokenFilter {
             termAttr.setEmpty().append(queue.poll());
         }
         return true;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof PairTokenFilter &&
+                pairs.equals( ((PairTokenFilter)object).pairs);
+    }
+
+    @Override
+    public int hashCode() {
+        return pairs.hashCode();
     }
 }

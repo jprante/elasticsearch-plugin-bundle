@@ -3,13 +3,15 @@ package org.xbib.elasticsearch.index.analysis.concat;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.elasticsearch.index.analysis.AnalysisService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.xbib.elasticsearch.MapperTestUtils;
 
 import java.io.IOException;
 
+/**
+ *
+ */
 public class ConcatTokenFilterTests extends Assert {
 
     @Test
@@ -18,8 +20,8 @@ public class ConcatTokenFilterTests extends Assert {
         String[] expected = {
                 "Das ist ein Schlüsselwort ein Bindestrichwort"
         };
-        AnalysisService analysisService = MapperTestUtils.analysisService("org/xbib/elasticsearch/index/analysis/concat/concat_analysis.json");
-        Analyzer analyzer = analysisService.analyzer("concat");
+        String resource = "org/xbib/elasticsearch/index/analysis/concat/concat_analysis.json";
+        Analyzer analyzer = MapperTestUtils.analyzer(resource, "concat");
         assertNotNull(analyzer);
         assertSimpleTSOutput(analyzer.tokenStream("test-field", source), expected);
     }

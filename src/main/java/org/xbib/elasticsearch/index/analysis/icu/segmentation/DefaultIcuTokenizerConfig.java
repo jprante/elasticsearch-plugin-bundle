@@ -8,6 +8,7 @@ import org.apache.lucene.analysis.standard.StandardTokenizer;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 
 /**
  * Default {@link IcuTokenizerConfig} that is generally applicable
@@ -17,11 +18,10 @@ import java.io.InputStream;
  * but with the following tailorings:
  * <ul>
  * <li>Thai, Lao, and CJK text is broken into words with a dictionary.
- * <li>Myanmar, and Khmer text is broken into syllables
- * based on custom BreakIterator rules.
+ * <li>Myanmar, and Khmer text is broken into syllables based on custom BreakIterator rules.
  * </ul>
  */
-public class DefaultIcuTokenizerConfig extends IcuTokenizerConfig {
+public class DefaultIcuTokenizerConfig implements IcuTokenizerConfig {
     /**
      * Token type for words containing ideographic characters
      */
@@ -56,33 +56,34 @@ public class DefaultIcuTokenizerConfig extends IcuTokenizerConfig {
     private static final BreakIterator cjkBreakIterator = BreakIterator.getWordInstance(ULocale.ROOT);
     // the same as ROOT, except no dictionary segmentation for cjk
     private static final BreakIterator defaultBreakIterator =
-            readBreakIterator("Default.brk");
-    private static final BreakIterator khmerBreakIterator =
-            readBreakIterator("Khmer.brk");
+            readBreakIterator(DefaultIcuTokenizerConfig.class.getClassLoader(), "icu/Default.brk");
+    private static final BreakIterator myanmarSyllableIterator =
+            readBreakIterator(DefaultIcuTokenizerConfig.class.getClassLoader(), "icu/MyanmarSyllable.brk");
 
     private final boolean cjkAsWords;
+    private final boolean myanmarAsWords;
 
     /**
-     * Creates a new config. This object is lightweight, but the first
+     * Creates a new config. The first
      * time the class is referenced, breakiterators will be initialized.
      *
      * @param cjkAsWords true if cjk text should undergo dictionary-based segmentation,
      *                   otherwise text will be segmented according to UAX#29 defaults.
      *                   If this is true, all Han+Hiragana+Katakana words will be tagged as
      *                   IDEOGRAPHIC.
+     * @param myanmarAsWords true if Myanmar text should undergo dictionary-based segmentation,
+     *                       otherwise it will be tokenized as syllables.
      */
-    public DefaultIcuTokenizerConfig(boolean cjkAsWords) {
+    public DefaultIcuTokenizerConfig(boolean cjkAsWords, boolean myanmarAsWords) {
         this.cjkAsWords = cjkAsWords;
+        this.myanmarAsWords = myanmarAsWords;
     }
 
-    private static RuleBasedBreakIterator readBreakIterator(String filename) {
-        InputStream is = DefaultIcuTokenizerConfig.class.getResourceAsStream("/org/apache/lucene/analysis/icu/segmentation/" + filename);
-        try {
-            RuleBasedBreakIterator bi = RuleBasedBreakIterator.getInstanceFromCompiledRules(is);
-            is.close();
-            return bi;
+    private static RuleBasedBreakIterator readBreakIterator(ClassLoader classLoader, String resourceName) {
+        try (InputStream inputStream = classLoader.getResource(resourceName).openStream()) {
+            return RuleBasedBreakIterator.getInstanceFromCompiledRules(inputStream);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException("unable to load resource " + resourceName + " " + e.getMessage(), e);
         }
     }
 
@@ -94,8 +95,12 @@ public class DefaultIcuTokenizerConfig extends IcuTokenizerConfig {
     @Override
     public BreakIterator getBreakIterator(int script) {
         switch (script) {
-            case UScript.KHMER:
-                return (BreakIterator) khmerBreakIterator.clone();
+            case UScript.MYANMAR:
+                if (myanmarAsWords) {
+                    return (BreakIterator)defaultBreakIterator.clone();
+                } else {
+                    return (BreakIterator)myanmarSyllableIterator.clone();
+                }
             case UScript.JAPANESE:
                 return (BreakIterator) cjkBreakIterator.clone();
             default:

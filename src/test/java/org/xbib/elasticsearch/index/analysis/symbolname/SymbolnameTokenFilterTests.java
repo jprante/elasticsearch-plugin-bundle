@@ -3,15 +3,19 @@ package org.xbib.elasticsearch.index.analysis.symbolname;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.elasticsearch.index.analysis.AnalysisService;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xbib.elasticsearch.MapperTestUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
 
+import static org.xbib.elasticsearch.MapperTestUtils.tokenFilterFactory;
+import static org.xbib.elasticsearch.MapperTestUtils.tokenizerFactory;
+
+/**
+ *
+ */
 public class SymbolnameTokenFilterTests extends Assert {
 
     @Test
@@ -28,9 +32,8 @@ public class SymbolnameTokenFilterTests extends Assert {
                 "__PLUSSIGN__",
                 "__PLUSSIGN__"
         };
-        AnalysisService analysisService = MapperTestUtils.analysisService();
-        TokenFilterFactory tokenFilter = analysisService.tokenFilter("symbolname");
-        Tokenizer tokenizer = analysisService.tokenizer("whitespace").create();
+        TokenFilterFactory tokenFilter = tokenFilterFactory("symbolname");
+        Tokenizer tokenizer = tokenizerFactory("whitespace").create();
         tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
@@ -56,9 +59,8 @@ public class SymbolnameTokenFilterTests extends Assert {
                 "__FULLSTOP__",
                 "__DIGITZERO__"
         };
-        AnalysisService analysisService = MapperTestUtils.analysisService();
-        TokenFilterFactory tokenFilter = analysisService.tokenFilter("symbolname");
-        Tokenizer tokenizer = analysisService.tokenizer("whitespace").create();
+        TokenFilterFactory tokenFilter = tokenFilterFactory("symbolname");
+        Tokenizer tokenizer = tokenizerFactory("whitespace").create();
         tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
@@ -86,9 +88,8 @@ public class SymbolnameTokenFilterTests extends Assert {
                 "oder",
                 "__QUESTIONMARK__"
         };
-        AnalysisService analysisService = MapperTestUtils.analysisService();
-        TokenFilterFactory tokenFilter = analysisService.tokenFilter("symbolname");
-        Tokenizer tokenizer = analysisService.tokenizer("whitespace").create();
+        TokenFilterFactory tokenFilter = tokenFilterFactory("symbolname");
+        Tokenizer tokenizer = tokenizerFactory("whitespace").create();
         tokenizer.setReader(new StringReader(source));
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }

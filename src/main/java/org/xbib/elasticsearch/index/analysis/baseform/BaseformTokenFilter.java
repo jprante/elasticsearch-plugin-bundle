@@ -1,25 +1,3 @@
-/*
- * Copyright (C) 2014 Jörg Prante
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses
- * or write to the Free Software Foundation, Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * The interactive user interfaces in modified source and object code
- * versions of this program must display Appropriate Legal Notices,
- * as required under Section 5 of the GNU Affero General Public License.
- *
- */
 package org.xbib.elasticsearch.index.analysis.baseform;
 
 import org.apache.lucene.analysis.TokenFilter;
@@ -35,6 +13,9 @@ import java.io.IOException;
 import java.nio.charset.CharacterCodingException;
 import java.util.LinkedList;
 
+/**
+ *
+ */
 public class BaseformTokenFilter extends TokenFilter {
 
     private final LinkedList<PackedTokenAttributeImpl> tokens;
@@ -44,7 +25,9 @@ public class BaseformTokenFilter extends TokenFilter {
     private final boolean respectKeywords;
 
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
+
     private final KeywordAttribute keywordAtt = addAttribute(KeywordAttribute.class);
+
     private final PositionIncrementAttribute posIncAtt = addAttribute(PositionIncrementAttribute.class);
 
     private AttributeSource.State current;
@@ -59,7 +42,9 @@ public class BaseformTokenFilter extends TokenFilter {
     @Override
     public final boolean incrementToken() throws IOException {
         if (!tokens.isEmpty()) {
-            assert current != null;
+            if (current == null) {
+                throw new IllegalArgumentException("current is null");
+            }
             PackedTokenAttributeImpl token = tokens.removeFirst();
             restoreState(current);
             termAtt.setEmpty().append(token);
@@ -94,6 +79,19 @@ public class BaseformTokenFilter extends TokenFilter {
         super.reset();
         tokens.clear();
         current = null;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof BaseformTokenFilter &&
+                tokens.equals(((BaseformTokenFilter)object).tokens) &&
+                dictionary.equals(((BaseformTokenFilter)object).dictionary) &&
+                respectKeywords == ((BaseformTokenFilter)object).respectKeywords;
+    }
+
+    @Override
+    public int hashCode() {
+        return tokens.hashCode() ^ dictionary.hashCode() ^ Boolean.hashCode(respectKeywords);
     }
 
 }

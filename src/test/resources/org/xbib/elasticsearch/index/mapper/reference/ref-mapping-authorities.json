@@ -14,14 +14,14 @@
             "dc" : {
                 "properties" : {
                     "creator" : {
-                        "type" : "string"
+                        "type" : "text"
                     }
                 }
             },
             "bib" : {
                 "properties" : {
                     "contributor" : {
-                        "type" : "string"
+                        "type" : "text"
                     }
                 }
             }
