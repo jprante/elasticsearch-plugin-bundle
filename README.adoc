@@ -31,46 +31,6 @@ It's the combination of the following plugins:
 
 The plugin code in each plugin is equivalent to the code in this combined bundle plugin.
 
-
-- the `hyphen` analyzer applies shingling and combining hyphenated words (german: Bindestrichwörter) on a field
-- the `naturalsort` analyzer applies natural sorting on a field (mixed numerical and strings in a value)
-
-## Tokenizers
-
-## Token filter
-
-## Char filters
-
-- the `icu_normalizer` normalizies strings by Unicode normalization rules
-
-## Field mappers
-
-## REST actions
-
-
-- German normalizer: taken from Lucene
-
-- WordDelimiterFilter2: taken from Lucene
-
-- ICU: improved with ICU collation analyzer compatible to Lucene 5.x and rbbi ICU rule file support in ICU tokenizer
-
-- baseform: index also base forms of words (german, english)
-
-- decompound: decompose words if possible (german) 
-
-- langdetect: find language code of detected languages
-
-- standardnumber: standard number entity recognition
-
-- hyphen: token filter for shingling and combining hyphenated words (german: Bindestrichwörter), the opposite of the decompound token filter
-
-- sortform: process string forms for bibliographical sorting, taking non-sort areas into account
-
-- year: token filter for 4-digit sequences
-
-- reference: 
-
-
 .Compatibility matrix
 [frame="all"]
 |===
@@ -143,6 +103,9 @@ Do not forget to restart the node after installing.
 # Examples
 
 ## German normalizer
+
+The `german_normalizer` is equivalent to Elasticsearch `german_normalization`. It performs umlaut treatment
+with vocal expansion which is typical for german language.
 
 [source]
 ----
@@ -785,6 +748,25 @@ Sometimes only the decomposed subwords should be indexed. For this, you can use 
           }
        }
     }
+
+
+- WordDelimiterFilter2: taken from Lucene
+
+- baseform: index also base forms of words (german, english)
+
+- decompound: decompose words if possible (german)
+
+- langdetect: find language code of detected languages
+
+- standardnumber: standard number entity recognition
+
+- hyphen: token filter for shingling and combining hyphenated words (german: Bindestrichwörter), the opposite of the decompound token filter
+
+- sortform: process string forms for bibliographical sorting, taking non-sort areas into account
+
+- year: token filter for 4-digit sequences
+
+- reference:
 
 
 ## Crypt mapper
