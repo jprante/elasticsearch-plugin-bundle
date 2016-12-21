@@ -31,11 +31,7 @@ It's the combination of the following plugins:
 
 The plugin code in each plugin is equivalent to the code in this combined bundle plugin.
 
-# Overview
 
-## Analyzers
-
-- the `icu_collation` analyzer can apply rbbi ICU rule files on a field
 - the `hyphen` analyzer applies shingling and combining hyphenated words (german: Bindestrichwörter) on a field
 - the `naturalsort` analyzer applies natural sorting on a field (mixed numerical and strings in a value)
 
@@ -46,7 +42,6 @@ The plugin code in each plugin is equivalent to the code in this combined bundle
 ## Char filters
 
 - the `icu_normalizer` normalizies strings by Unicode normalization rules
-- the `icu_folding` folds characters in string according to Unicode folding rules
 
 ## Field mappers
 
@@ -221,53 +216,341 @@ POST /test/docs/_search?explain
 }
 ----
 
-
 ## International components for Unicode
 
+The plugin contains an extended version of the Lucene ICU functionality with a dependancy on ICU 58.2
 
-    {
-        "index":{
-            "analysis":{
-                "analyzer" : {
-                    "icu_german_collate" : {
-                       "type" : "icu_collation",
-                       "language" : "de",
-                       "country" : "DE",
-                       "strength" : "primary",
-                       "rules" : "& ae , a\u0308 & AE , A\u0308& oe , o\u0308 & OE , O\u0308& ue , u\u0308 & UE , u\u0308"
-                    }
+Available are `icu_collation`, `icu_folding`, `icu_tokenizer`, `icu_numberformat`, `icu_transform`
+
+### icu_collation
+
+The `icu_collation` analyzer can apply rbbi ICU rule files on a field.
+
+[source]
+----
+PUT /test
+{
+   "settings": {
+      "index": {
+         "analysis": {
+            "analyzer": {
+               "icu_german_collate": {
+                  "type": "icu_collation",
+                  "language": "de",
+                  "country": "DE",
+                  "strength": "primary",
+                  "rules": "& ae , ä & AE , Ä& oe , ö & OE , Ö& ue , ü & UE , ü"
+               },
+               "icu_german_collate_without_punct": {
+                  "type": "icu_collation",
+                  "language": "de",
+                  "country": "DE",
+                  "strength": "quaternary",
+                  "alternate": "shifted",
+                  "rules": "& ae , ä & AE , Ä& oe , ö & OE , Ö& ue , ü & UE , ü"
+               }
+            }
+         }
+      }
+   },
+   "mappings": {
+      "docs": {
+         "properties": {
+            "text": {
+               "type": "text",
+               "fielddata" : true,
+               "analyzer": "icu_german_collate"
+            },
+            "catalog_text" : {
+               "type": "text",
+               "fielddata" : true,
+               "analyzer": "icu_german_collate_without_punct"
+            }
+         }
+      }
+   }
+}
+
+GET /test/docs/_mapping
+
+PUT /test/docs/1
+{
+    "text" : "Göbel",
+    "catalog_text" : "Göbel"
+}
+
+PUT /test/docs/2
+{
+    "text" : "Goethe",
+    "catalog_text" : "G-oethe"
+}
+
+PUT /test/docs/3
+{
+    "text" : "Goldmann",
+    "catalog_text" : "Gold*mann"
+}
+
+PUT /test/docs/4
+{
+    "text" : "Göthe",
+    "catalog_text" : "Göthe"
+}
+
+PUT /test/docs/5
+{
+    "text" : "Götz",
+    "catalog_text" : "Götz"
+}
+
+
+POST /test/docs/_search
+{
+    "query": {
+        "match_all": {
+        }
+    },
+    "sort" : {
+        "text" : { "order" : "asc" }
+    }
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "match_all": {
+        }
+    },
+    "sort" : {
+        "catalog_text" : { "order" : "asc" }
+    }
+}
+----
+
+### icu_folding
+
+The `icu_folding` character filter folds characters in strings according to Unicode folding rules.
+UTR#30 is retracted, but still used here.
+
+[source]
+----
+
+PUT /test
+{
+   "settings": {
+          "index":{
+        "analysis":{
+            "char_filter" : {
+                "my_icu_folder" : {
+                   "type" : "icu_folding"
+                }
+            },
+            "tokenizer" : {
+                "my_icu_tokenizer" : {
+                    "type" : "icu_tokenizer"
+                }
+            },
+            "filter" : {
+                "my_icu_folder_filter" : {
+                    "type" : "icu_folding"
+                },
+                "my_icu_folder_filter_with_exceptions" : {
+                    "type" : "icu_folding",
+                    "name" : "utr30",
+                    "unicodeSetFilter" : "[^åäöÅÄÖ]"
+                }
+            },
+            "analyzer" : {
+                "my_icu_analyzer" : {
+                    "type" : "custom",
+                    "tokenizer" : "my_icu_tokenizer",
+                    "filter" : [ "my_icu_folder_filter" ]
+                },
+                "my_icu_analyzer_with_exceptions" : {
+                    "type" : "custom",
+                    "tokenizer" : "my_icu_tokenizer",
+                    "filter" : [ "my_icu_folder_filter_with_exceptions" ]
                 }
             }
         }
     }
-
-    {
-        "index":{
-            "analysis":{
-                "char_filter" : {
-                    "my_icu_folder" : {
-                       "type" : "icu_folding"
-                    }
-                }
+   },
+   "mappings": {
+      "docs": {
+         "properties": {
+            "text": {
+               "type": "text",
+               "fielddata" : true,
+               "analyzer": "my_icu_analyzer"
+            },
+            "text2" : {
+               "type": "text",
+               "fielddata" : true,
+               "analyzer": "my_icu_analyzer_with_exceptions"
             }
+         }
+      }
+   }
+}
+
+GET /test/docs/_mapping
+
+PUT /test/docs/1
+{
+    "text" : "Jörg Prante",
+    "text2" : "Jörg Prante"
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "match": {
+            "text" : "jörg"
         }
     }
+}
 
-    {
-        "index":{
-            "analysis":{
-                "tokenizer" : {
-                    "my_icu_tokenizer" : {
-                       "type" : "icu_tokenizer"
-                    },
-                    "my_hyphen_icu_tokenizer" : {
-                       "type" : "icu_tokenizer",
-                       "rulefiles" : "Latn:icu/Latin-dont-break-on-hyphens.rbbi"
-                    }
-                }
-            }
+POST /test/docs/_search
+{
+    "query": {
+        "match": {
+            "text" : "jorg"
         }
     }
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "match": {
+            "text2" : "jörg"
+        }
+    }
+}
+
+// no hit
+
+POST /test/docs/_search
+{
+    "query": {
+        "match": {
+            "text2" : "jorg"
+        }
+    }
+}
+----
+
+### icu_tokenizer
+
+The `icu_tokenizer` can use rules from file. Here, we set up rules to prevent tokenization of words with hyphen.
+
+[source]
+----
+PUT /test
+{
+   "settings": {
+      "index": {
+         "analysis": {
+            "tokenizer": {
+               "my_hyphen_icu_tokenizer": {
+                  "type": "icu_tokenizer",
+                  "rulefiles": "Latn:icu/Latin-dont-break-on-hyphens.rbbi"
+               }
+            },
+            "analyzer" : {
+               "my_icu_analyzer" : {
+                   "type" : "custom",
+                   "tokenizer" : "my_hyphen_icu_tokenizer"
+               }
+            }
+         }
+      }
+   },
+   "mappings": {
+      "docs": {
+         "properties": {
+            "text": {
+               "type": "text",
+               "analyzer": "my_icu_analyzer"
+            }
+         }
+      }
+   }
+}
+
+GET /test/docs/_mapping
+
+PUT /test/docs/1
+{
+    "text" : "we do-not-break on hyphens"
+}
+
+POST /test/docs/_search?explain
+{
+    "query": {
+        "term": {
+            "text" : "do-not-break"
+        }
+    }
+}
+----
+
+### icu_numberformat
+
+With the `icu_numberformat` filter, you can index numbers as they are spelled out in a language.
+
+[source]
+----
+PUT /test
+{
+   "settings": {
+       "index":{
+        "analysis":{
+            "filter" : {
+                "spellout_de" : {
+                  "type" : "icu_numberformat",
+                  "locale" : "de",
+                  "format" : "spellout"
+                }
+            },
+            "analyzer" : {
+               "my_icu_analyzer" : {
+                   "type" : "custom",
+                   "tokenizer" : "standard",
+                   "filter" : [ "spellout_de" ]
+               }
+            }
+         }
+      }
+   },
+   "mappings": {
+      "docs": {
+         "properties": {
+            "text": {
+               "type": "text",
+               "analyzer": "my_icu_analyzer"
+            }
+         }
+      }
+   }
+}
+
+GET /test/docs/_mapping
+
+PUT /test/docs/1
+{
+    "text" : "Das sind 1000 Bücher"
+}
+
+POST /test/docs/_search?explain
+{
+    "query": {
+        "match": {
+            "text" : "eintausend"
+        }
+    }
+}
+----
 
 
 ## Baseform
@@ -501,47 +784,6 @@ Sometimes only the decomposed subwords should be indexed. For this, you can use 
               }
           }
        }
-    }
-
-## Hyphen
-
-    {
-        "index":{
-            "analysis":{
-                "tokenizer" : {
-                    "my_icu_tokenizer" : {
-                       "type" : "icu_tokenizer",
-                       "rulefiles" : "Latn:icu/Latin-dont-break-on-hyphens.rbbi"
-                    },
-                    "my_hyphen_tokenizer" : {
-                        "type" : "hyphen"
-                    }
-                }
-            }
-        }
-    }
-
-
-## Sortform
-
-    {
-        "index":{
-            "analysis": {
-                "analyzer" : {
-                    "german_phonebook_with_sortform" : {
-                       "type" : "sortform",
-                       "language" : "de",
-                       "country" : "DE",
-                       "strength" : "quaternary",
-                       "alternate" : "shifted",
-                       "rules" : "& ae , a\u0308 & AE , A\u0308 & oe , o\u0308 & OE , O\u0308 & ue , u\u0308 & UE , u\u0308 & ss , \u00df",
-                       "filter" : [
-                           "sortform"
-                       ]
-                    }
-                }
-            }
-        }
     }
 
 
