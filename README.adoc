@@ -1,8 +1,8 @@
 # A plugin bundle for Elastisearch
 
 image:https://api.travis-ci.org/jprante/elasticsearch-plugin-bundle.svg[title="Build status", link="https://travis-ci.org/jprante/elasticsearch-plugin-bundle/"]
-image:https://img.shields.io/sonar/http/nemo.sonarqube.com/org.xbib.elasticsaerch.plugin%3Aelasticsearch-plugin-bundle/coverage.svg?style=flat-square[title="Coverage", link="https://sonarqube.com/dashboard/index?id=org.xbib.elasticsearch.plugin%3Aelasticsearch-plugin-bundle"]
-image:https://maven-badges.herokuapp.com/maven-central/org.jprante/elasticsearch-plugin-bundle/badge.svg[title="Maven Central", link="http://search.maven.org/#search%7Cga%7C1%7Cxbib%20elasticsearch-plugin-bundle"]
+image:https://img.shields.io/sonar/http/nemo.sonarqube.com/org.xbib.elasticsearch.plugin%3Aelasticsearch-plugin-bundle/coverage.svg?style=flat-square[title="Coverage", link="https://sonarqube.com/dashboard/index?id=org.xbib.elasticsearch.plugin%3Aelasticsearch-plugin-bundle"]
+image:https://maven-badges.herokuapp.com/maven-central/org.xbib.elasticsearch.plugin/elasticsearch-plugin-bundle/badge.svg[title="Maven Central", link="http://search.maven.org/#search%7Cga%7C1%7Cxbib%20elasticsearch-plugin-bundle"]
 image:https://img.shields.io/badge/License-Apache%202.0-blue.svg[title="Apache License 2.0", link="https://opensource.org/licenses/Apache-2.0"]
 image:https://img.shields.io/twitter/url/https/twitter.com/xbib.svg?style=social&label=Follow%20%40xbib[title="Twitter", link="https://twitter.com/xbib"]
 image:https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif[title="PayPal", link="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GVHFQYZ9WZ8HG"]

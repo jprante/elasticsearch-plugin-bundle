@@ -24,7 +24,7 @@ import java.util.Map;
  */
 public class IcuTokenizerFactory extends AbstractTokenizerFactory {
 
-    private final IcuTokenizerConfig config;
+    protected final IcuTokenizerConfig config;
 
     public IcuTokenizerFactory(IndexSettings indexSettings, Environment environment, String name, Settings settings) {
         super(indexSettings, name, settings);

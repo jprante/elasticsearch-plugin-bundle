@@ -1,7 +1,6 @@
 package org.xbib.elasticsearch.index.analysis.hyphen;
 
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
@@ -34,15 +33,17 @@ public final class HyphenTokenizer extends Tokenizer {
     private final TypeAttribute typeAtt = addAttribute(TypeAttribute.class);
     private org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenizerImpl scanner;
     private int skippedPositions;
-    private int maxTokenLength = StandardAnalyzer.DEFAULT_MAX_TOKEN_LENGTH;
+    private int maxTokenLength;
 
     /**
      * Creates a new instance of the {@link HyphenTokenizer}.  Attaches
      * the <code>input</code> to the newly created JFlex scanner.
      */
-    public HyphenTokenizer() {
+    public HyphenTokenizer(int maxTokenLength) {
         super();
-        init();
+        this.maxTokenLength = maxTokenLength;
+        this.scanner = new org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenizerImpl(input);
+
     }
 
     /**
@@ -50,33 +51,9 @@ public final class HyphenTokenizer extends Tokenizer {
      *
      * @param factory factory
      */
-    public HyphenTokenizer(AttributeFactory factory) {
+    public HyphenTokenizer(AttributeFactory factory, int maxTokenLength) {
         super(factory);
-        init();
-    }
-
-    /**
-     * @return max token length
-     * @see #setMaxTokenLength
-     */
-    public int getMaxTokenLength() {
-        return maxTokenLength;
-    }
-
-    /**
-     * Set the max allowed token length.  Any token longer
-     * than this is skipped.
-     *
-     * @param length length
-     */
-    public void setMaxTokenLength(int length) {
-        if (length < 1) {
-            throw new IllegalArgumentException("maxTokenLength must be greater than zero");
-        }
-        this.maxTokenLength = length;
-    }
-
-    private void init() {
+        this.maxTokenLength = maxTokenLength;
         this.scanner = new org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenizerImpl(input);
     }
 

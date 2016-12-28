@@ -14,33 +14,32 @@ import java.io.Reader;
 
 /**
  * Breaks text into words according to UAX #29: Unicode Text Segmentation
- * (http://www.unicode.org/reports/tr29/)
+ * http://www.unicode.org/reports/tr29/.
  * Words are broken across script boundaries, then segmented according to
- * the BreakIterator and typing provided by the {@link IcuTokenizerConfig}
+ * the BreakIterator and typing provided by the {@link IcuTokenizerConfig}.
  *
- * @see IcuTokenizerConfig
  */
 public final class IcuTokenizer extends Tokenizer {
 
     private static final int IOBUFFER = 4096;
 
     private final char[] buffer = new char[IOBUFFER];
-    private final CompositeBreakIterator breaker; /* tokenizes a char[] of text */
+    private final CompositeBreakIterator breaker;
     private final IcuTokenizerConfig config;
     private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
     private final TypeAttribute typeAtt = addAttribute(TypeAttribute.class);
     private final ScriptAttribute scriptAtt = addAttribute(ScriptAttribute.class);
     /**
-     * true length of text in the buffer
+     * True length of text in the buffer.
      */
     private int length = 0;
     /**
-     * length in buffer that can be evaluated safely, up to a safe end point
+     * Length in buffer that can be evaluated safely, up to a safe end point.
      */
     private int usableLength = 0;
     /**
-     * accumulated offset of previous buffers for this reader, for offsetAtt
+     * Accumulated offset of previous buffers for this reader, for offsetAtt.
      */
     private int offset = 0;
 
@@ -80,9 +79,6 @@ public final class IcuTokenizer extends Tokenizer {
         breaker = new CompositeBreakIterator(config);
     }
 
-    /**
-     * commons-io's readFully, but without bugs if offset != 0
-     */
     private static int read(Reader input, char[] buffer, int offset, int length) throws IOException {
         if (length < 0) {
             throw new IllegalArgumentException("length must not be negative: " + length);
@@ -91,7 +87,7 @@ public final class IcuTokenizer extends Tokenizer {
         while (remaining > 0) {
             int location = length - remaining;
             int count = input.read(buffer, offset + location, remaining);
-            if (-1 == count) { // EOF
+            if (-1 == count) {
                 break;
             }
             remaining -= count;
@@ -124,12 +120,10 @@ public final class IcuTokenizer extends Tokenizer {
   /*
    * This tokenizes text based upon the longest matching rule, and because of 
    * this, isn't friendly to a Reader.
-   * 
    * Text is read from the input stream in 4kB chunks. Within a 4kB chunk of
    * text, the last unambiguous break point is found (in this implementation:
    * white space character) Any remaining characters represent possible partial
    * words, so are appended to the front of the next chunk.
-   * 
    * There is the possibility that there are no unambiguous break points within
    * an entire 4kB chunk of text (binary data). So there is a maximum word limit
    * of 4kB since it will not try to grow the buffer in this case.
@@ -158,7 +152,7 @@ public final class IcuTokenizer extends Tokenizer {
 
     /**
      * Refill the buffer, accumulating the offset and setting usableLength to the
-     * last unambiguous break position
+     * last unambiguous break position.
      *
      * @throws IOException If there is a low-level I/O error.
      */
@@ -184,13 +178,13 @@ public final class IcuTokenizer extends Tokenizer {
     }
 
     /*
-     * return true if there is a token from the buffer, or null if it is
+     * Return true if there is a token from the buffer, or null if it is
      * exhausted.
      */
     private boolean incrementTokenBuffer() {
         int start = breaker.current();
         if (start == BreakIterator.DONE) {
-            return false; // BreakIterator exhausted
+            return false;
         }
         // find the next set of boundaries, skipping over non-tokens (rule status 0)
         int end = breaker.next();
@@ -199,7 +193,7 @@ public final class IcuTokenizer extends Tokenizer {
             end = breaker.next();
         }
         if (start == BreakIterator.DONE) {
-            return false; // BreakIterator exhausted
+            return false;
         }
         termAtt.copyBuffer(buffer, start, end - start);
         offsetAtt.setOffset(correctOffset(offset + start), correctOffset(offset + end));
@@ -211,8 +205,8 @@ public final class IcuTokenizer extends Tokenizer {
     @Override
     public boolean equals(Object object) {
         return object instanceof IcuTokenizer &&
-                breaker.equals(((IcuTokenizer)object).breaker) &&
-                config.equals(((IcuTokenizer)object).config);
+                breaker.equals(((IcuTokenizer) object).breaker) &&
+                config.equals(((IcuTokenizer) object).config);
     }
 
     @Override

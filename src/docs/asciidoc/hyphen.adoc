@@ -1,0 +1,429 @@
+= Hyphen analysis for Elasticsearch
+Jörg Prante
+Version 1.0
+:sectnums:
+:toc: preamble
+:toclevels: 4
+:!toc-title: Content
+:experimental:
+:description: Hyphen analysis for Elasticsearch
+:keywords: Elasticsearch, Plugin, Hyphen analysis
+:icons: font
+
+== What is hyphen analysis?
+
+Usually, you index only words into Elasticsearch, and the indexing does not care about other symbols like
+delimiters, punctuation, hyphens, apostrophs, or other caracters which can be found within words or at word boundaries.
+
+But that does not always work out right. Entity names (like organization names, person names, or
+book titles) may carry symbols as part of the identifying function that makes the entity name unique, but
+are often ignored or handled sloppily when search terms are being entered for that names.
+
+Or in german language, there are many _Bindestrichwörter_ which consist of word parts that are connected by a hyphen
+symbol. In many cases, sloppy searchers are not using in-word hyphens correctly and will therefore not get correct
+search results.
+
+For examples in german, see https://de.wikipedia.org/wiki/Viertelgeviertstrich
+
+For example, indexing entity names like
+_U.S.A._, _O'Grady_, _Corinna's Cause_ or _Programming with C+\+_
+are a challenge when being searched for.
+Often it is preferable to have successful searches for related terms like `usa`, `ogrady`, `corinnas cause`.
+On the other hand, you want to avoid false hits, when searching for `Programming with C`.
+So, `C++` must not be indexed as `C`.
+
+To achieve that, we use `hyphen` tokenizing together with a special character-based hyphen symbol detection that
+allows for indexing multiples forms of the same word in the token chain.
+`Corinna's` will be indexed as `Corinna`, `Corinnas`, and `Corinna's` to generate hits when searching for that forms.
+
+Entity names like "C++" or "AT&T" can be protected by the `keyword_marker` filter available in Elasticsearch.
+That means, they are preserved throughout the process.
+
+== Lucene standard tokenization follows Unicode tokenization rules
+
+Lucene 4+ is using a new tokenzation by default and switched from a grammar-based tokenzation
+(now called the classic tokenization)
+to Unicode-based tokenization (also known as http://unicode.org/reports/tr29/[UAX#29]).
+
+Lucene default tokenization before Lucene 4 was focusing on european languages only. The "classic" tokenizer
+does not work well with asian languages for example.
+
+The challenge is now, while Lucene is now adhering to international standards, which is a good thing,
+it does no longer treat hyphens as word part delimiters and ignores them:
+
+> _The correct interpretation of hyphens in the context of word boundaries is challenging. It is quite common
+for separate words to be connected with a hyphen: “out-of-the-box,” “under-the-table,” “Italian-American,” and so on.
+A significant number are hyphenated names, such as “Smith-Hawkins.” When doing a Whole Word Search or query,
+users expect to find the word within those hyphens. While there are some cases where they are separate words
+(usually to resolve some ambiguity such as “re-sort” as opposed to “resort”), it is better overall to keep the
+hyphen out of the default definition._ (http://unicode.org/reports/tr29/)
+
+The solution this plugin offers is an improved implementation of the old classic tokenizer by a rewritten JFlex grammar
+that takes more composed word fragments together. A tricky aspect is to detect superfluous adjunct characters
+but keep them in acronyms like "U.S.A." so the character will be dropped correctly before indexing.
+
+The hyphen tokenizer uses the Unicode "Pd" (Punctuation Dash Category) to detect punctuation in words.
+
+The price this solution pays is that it does not conform to Unicode tokenization rules. So it is
+recommended to use hyphen tokenization on european language fields only.
+
+== Hyphen tokenizer example for Elasticsearch 5.x
+
+In this example, it is demonstrated how the token "E-Book" is indexed. It generates tokens so that "E-Book", "EBook",
+and "Book" will match.
+
+While the hyphen tokenizer cares about the comma and suppresses the character,
+the hyphen token filter cares about creating "EBook" and "Book" tokens.
+
+[source]
+----
+
+PUT /test
+{
+   "settings": {
+      "index": {
+         "analysis": {
+            "analyzer": {
+               "my_analyzer": {
+                  "type": "custom",
+                  "tokenizer": "hyphen",
+                  "filter" : [ "hyphen", "lowercase" ]
+               }
+            }
+         }
+      }
+   },
+   "mappings": {
+      "docs": {
+         "properties": {
+            "text": {
+               "type": "text",
+               "analyzer": "my_analyzer"
+            }
+         }
+      }
+   }
+}
+GET /test/_settings
+GET /test/_mapping
+
+PUT /test/docs/1
+{
+    "text" : "Read this E-Book, or you will miss the best"
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "simple_query_string": {
+            "query" : "E-Book",
+            "fields" : [ "text" ],
+            "default_operator": "and"
+        }
+    }
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "simple_query_string": {
+            "query" : "EBook",
+            "fields" : [ "text" ],
+            "default_operator": "and"
+        }
+    }
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "simple_query_string": {
+            "query" : "ebook",
+            "fields" : [ "text" ],
+            "default_operator": "and"
+        }
+    }
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "simple_query_string": {
+            "query" : "book",
+            "fields" : [ "text" ],
+            "default_operator": "and"
+        }
+    }
+}
+----
+
+== The hyphen token filter
+
+The hyphen token filter can be used in conjunction with any tokenizer. It focuses on a single word and examines
+them for generating one or more tokens. Connected word fragments are detected by using the
+Unicode "L" (Letter Category). The token filter does not use the improved JFlex grammar technique.
+
+Here is an example to demonstrate the hyphen analyzer at work. The `whitespace` tokenizer is used here but
+it does not guarantee to remove adjunct punctuation. Therefore, in realw rold data, you should always use the
+hyphen tokenizer accompanying the hyphen token filter.
+
+=== Hyphen token filter example for Elasticsearch 5.x
+
+[source]
+----
+PUT /test
+{
+   "settings": {
+      "index": {
+         "analysis": {
+            "filter": {
+               "hyphen": {
+                  "type": "hyphen",
+                  "hyphens": "+-'",
+                  "respect_keywords": true
+               },
+               "marker": {
+                  "type": "keyword_marker",
+                  "keywords": [
+                     "C++",
+                     "AT&T"
+                  ]
+               }
+            },
+            "analyzer": {
+               "my_analyzer": {
+                  "type": "custom",
+                  "tokenizer": "whitespace",
+                  "filter": [
+                     "marker",
+                     "hyphen"
+                  ]
+               }
+            }
+         }
+      }
+   },
+   "mappings": {
+      "docs": {
+         "properties": {
+            "text": {
+               "type": "text",
+               "analyzer": "my_analyzer"
+            }
+         }
+      }
+   }
+}
+GET /test/_settings
+GET /test/_mapping
+
+PUT /test/docs/1
+{
+    "text" : "Corinna's Cause"
+}
+
+PUT /test/docs/2
+{
+    "text" : "U+002B"
+}
+
+PUT /test/docs/3
+{
+    "text" : "Programming C++"
+}
+
+PUT /test/docs/4
+{
+    "text" : "Build a career with AT&T"
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "simple_query_string": {
+            "query" : "Corinna Cause",
+            "fields" : [ "text" ],
+            "default_operator": "and"
+        }
+    }
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "simple_query_string": {
+            "query" : "Corinnas Cause",
+            "fields" : [ "text" ],
+            "default_operator": "and"
+        }
+    }
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "simple_query_string": {
+            "query" : "Corinna's Cause",
+            "fields" : [ "text" ],
+            "default_operator": "and"
+        }
+    }
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "simple_query_string": {
+            "query" : "002B",
+            "fields" : [ "text" ],
+            "default_operator": "and"
+        }
+    }
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "simple_query_string": {
+            "query" : "U\\+002B",
+            "fields" : [ "text" ],
+            "default_operator": "and"
+        }
+    }
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "simple_query_string": {
+            "query" : "Programming C\\+\\+",
+            "fields" : [ "text" ],
+            "default_operator": "and"
+        }
+    }
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "simple_query_string": {
+            "query" : "Programming C",
+            "fields" : [ "text" ],
+            "default_operator": "and"
+        }
+    }
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "simple_query_string": {
+            "query" : "Build a career with AT&T",
+            "fields" : [ "text" ],
+            "default_operator": "and"
+        }
+    }
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "simple_query_string": {
+            "query" : "Build a career with ATT",
+            "fields" : [ "text" ],
+            "default_operator": "and"
+        }
+    }
+}
+----
+
+== The Hyphen Analyzer
+
+For convenience, this plugin provides a hyphen analyzer which is a custom analyzer with a hyphen tokenizer.
+
+[source]
+----
+PUT /test
+{
+   "settings": {
+      "index": {
+         "analysis": {
+            "analyzer": {
+               "my_analyzer": {
+                  "type": "hyphen"
+               }
+            }
+         }
+      }
+   },
+   "mappings": {
+      "docs": {
+         "properties": {
+            "text": {
+               "type": "text",
+               "analyzer": "my_analyzer"
+            }
+         }
+      }
+   }
+}
+GET /test/_settings
+GET /test/_mapping
+
+PUT /test/docs/1
+{
+    "text" : "Read this E-Book, or you will miss the best"
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "simple_query_string": {
+            "query" : "E-Book",
+            "fields" : [ "text" ],
+            "default_operator": "and"
+        }
+    }
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "simple_query_string": {
+            "query" : "EBook",
+            "fields" : [ "text" ],
+            "default_operator": "and"
+        }
+    }
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "simple_query_string": {
+            "query" : "Book",
+            "fields" : [ "text" ],
+            "default_operator": "and"
+        }
+    }
+}
+----
+
+== Options
+
+These options can be used for the hyphen tokenizer.
+
+[horizontal]
+max_token_length:: maximum length of a single token that will be indexed. Default is 255 (StandardAnalyzer.DEFAULT_MAX_TOKEN_LENGTH)
+
+These options can be used for the hyphen token filter.
+
+[horizontal]
+hyphens:: a string containing characters that should be used for detection. Default is `-`
+subwords:: if subwords should be generated as tokens. Default is `true`
+respect_keywords:: if `true`, do not process words protected by the `keyword_marker` filter. Default is `false`
+
+
+== Gradle test report
+
+The current test report is link:test[here]

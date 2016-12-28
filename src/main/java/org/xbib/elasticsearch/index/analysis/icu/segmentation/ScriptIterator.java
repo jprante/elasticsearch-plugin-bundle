@@ -7,11 +7,9 @@ import com.ibm.icu.text.UTF16;
 
 /**
  * An iterator that locates ISO 15924 script boundaries in text.
- * <p/>
  * This is not the same as simply looking at the Unicode block, or even the
  * Script property. Some characters are 'common' across multiple scripts, and
  * some 'inherit' the script value of text surrounding them.
- * <p/>
  * This is similar to ICU (internal-only) UScriptRun, with the following
  * differences:
  * <ul>
@@ -24,7 +22,7 @@ import com.ibm.icu.text.UTF16;
 final class ScriptIterator {
 
     /**
-     * linear fast-path for basic latin case
+     * linear fast-path for basic latin case.
      */
     private static final int[] basicLatin = new int[128];
 
@@ -44,7 +42,7 @@ final class ScriptIterator {
     private int scriptCode;
 
     /**
-     * @param combineCJ if true: Han,Hiragana,Katakana will all return as {@link UScript#JAPANESE}
+     * @param combineCJ if true: Han,Hiragana,Katakana will all return as {@link UScript#JAPANESE}.
      */
     ScriptIterator(boolean combineCJ) {
         this.combineCJ = combineCJ;
@@ -59,7 +57,7 @@ final class ScriptIterator {
     }
 
     /**
-     * Get the start of this script run
+     * Get the start of this script run.
      *
      * @return start position of script run
      */
@@ -68,7 +66,7 @@ final class ScriptIterator {
     }
 
     /**
-     * Get the index of the first character after the end of this script run
+     * Get the index of the first character after the end of this script run.
      *
      * @return position of the first character after this script run
      */
@@ -77,7 +75,7 @@ final class ScriptIterator {
     }
 
     /**
-     * Get the UScript script code for this script run
+     * Get the UScript script code for this script run.
      *
      * @return code for the script of the current run
      */
@@ -99,19 +97,19 @@ final class ScriptIterator {
         while (index < limit) {
             final int ch = UTF16.charAt(text, start, limit, index - start);
             final int sc = getScript(ch);
-      /*
-       * From UTR #24: Implementations that determine the boundaries between
-       * characters of given scripts should never break between a non-spacing
-       * mark and its base character. Thus for boundary determinations and
-       * similar sorts of processing, a non-spacing mark — whatever its script
-       * value — should inherit the script value of its base character.
-       */
+            /*
+             * From UTR #24: Implementations that determine the boundaries between
+             * characters of given scripts should never break between a non-spacing
+             * mark and its base character. Thus for boundary determinations and
+             * similar sorts of processing, a non-spacing mark — whatever its script
+             * value — should inherit the script value of its base character.
+             */
             if (isSameScript(scriptCode, sc)
                     || UCharacter.getType(ch) == ECharacterCategory.NON_SPACING_MARK) {
                 index += UTF16.getCharCount(ch);
-        /*
-         * Inherited or Common becomes the script code of the surrounding text.
-         */
+                /*
+                 * Inherited or Common becomes the script code of the surrounding text.
+                 */
                 if (scriptCode <= UScript.INHERITED && sc > UScript.INHERITED) {
                     scriptCode = sc;
                 }
@@ -124,7 +122,7 @@ final class ScriptIterator {
     }
 
     /**
-     * Set a new region of text to be examined by this iterator
+     * Set a new region of text to be examined by this iterator.
      *
      * @param text   text buffer to examine
      * @param start  offset into buffer

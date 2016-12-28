@@ -3,7 +3,7 @@ package org.xbib.elasticsearch.index.analysis.icu.segmentation;
 import java.text.CharacterIterator;
 
 /**
- * Wraps a char[] as CharacterIterator for processing with a BreakIterator
+ * Wraps a char[] as CharacterIterator for processing with a BreakIterator.
  */
 final class CharArrayIterator implements CharacterIterator {
 
@@ -30,7 +30,7 @@ final class CharArrayIterator implements CharacterIterator {
     }
 
     /**
-     * Set a new region of text to be examined by this iterator
+     * Set a new region of text to be examined by this iterator.
      *
      * @param array  text buffer to examine
      * @param start  offset into buffer

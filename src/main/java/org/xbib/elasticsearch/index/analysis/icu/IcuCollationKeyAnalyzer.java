@@ -7,7 +7,7 @@ import org.apache.lucene.collation.CollationKeyAnalyzer;
 import org.xbib.elasticsearch.index.analysis.icu.tokenattributes.IcuCollationAttributeFactory;
 
 /**
- * Configures {@link KeywordTokenizer} with {@link IcuCollationAttributeFactory}.
+ * Configures a {@link KeywordTokenizer} with an {@link IcuCollationAttributeFactory}.
  * <p>
  * Converts the token into its {@link com.ibm.icu.text.CollationKey}, and
  * then encodes the CollationKey directly.

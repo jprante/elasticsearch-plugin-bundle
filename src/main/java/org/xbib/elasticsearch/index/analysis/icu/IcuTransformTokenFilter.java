@@ -3,9 +3,9 @@ package org.xbib.elasticsearch.index.analysis.icu;
 import com.ibm.icu.text.Replaceable;
 import com.ibm.icu.text.Transliterator;
 import com.ibm.icu.text.UTF16;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 import java.io.IOException;
 
@@ -149,7 +149,7 @@ public final class IcuTransformTokenFilter extends TokenFilter {
     @Override
     public boolean equals(Object object) {
         return object instanceof IcuTransformTokenFilter &&
-                transform.equals(((IcuTransformTokenFilter)object).transform);
+                transform.equals(((IcuTransformTokenFilter) object).transform);
     }
 
     @Override

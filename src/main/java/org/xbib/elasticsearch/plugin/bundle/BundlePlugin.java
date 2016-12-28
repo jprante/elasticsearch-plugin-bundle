@@ -31,7 +31,14 @@ import org.xbib.elasticsearch.index.analysis.german.GermanNormalizationFilterFac
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenAnalyzerProvider;
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenizerFactory;
-import org.xbib.elasticsearch.index.analysis.icu.*;
+import org.xbib.elasticsearch.index.analysis.icu.IcuCollationKeyAnalyzerProvider;
+import org.xbib.elasticsearch.index.analysis.icu.IcuCollationTokenizerFactory;
+import org.xbib.elasticsearch.index.analysis.icu.IcuFoldingCharFilterFactory;
+import org.xbib.elasticsearch.index.analysis.icu.IcuFoldingTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.icu.IcuNormalizerCharFilterFactory;
+import org.xbib.elasticsearch.index.analysis.icu.IcuNormalizerTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.icu.IcuNumberFormatTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.icu.IcuTransformTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizerFactory;
 import org.xbib.elasticsearch.index.analysis.naturalsort.NaturalSortKeyAnalyzerProvider;
 import org.xbib.elasticsearch.index.analysis.naturalsort.NaturalSortKeyTokenizerFactory;
@@ -97,7 +104,6 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
             extra.put("icu_folding", IcuFoldingTokenFilterFactory::new);
             extra.put("icu_transform", IcuTransformTokenFilterFactory::new);
             extra.put("icu_numberformat", IcuNumberFormatTokenFilterFactory::new);
-            extra.put("icu_measureformat", IcuMeasureFormatTokenFilterFactory::new);
         }
         extra.put("auto_phrase", AutoPhrasingTokenFilterFactory::new);
         extra.put("baseform", BaseformTokenFilterFactory::new);

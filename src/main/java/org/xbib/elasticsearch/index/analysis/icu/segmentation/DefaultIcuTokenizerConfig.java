@@ -23,36 +23,36 @@ import java.io.UncheckedIOException;
  */
 public class DefaultIcuTokenizerConfig implements IcuTokenizerConfig {
     /**
-     * Token type for words containing ideographic characters
+     * Token type for words containing ideographic characters.
      */
     public static final String WORD_IDEO = StandardTokenizer.TOKEN_TYPES[StandardTokenizer.IDEOGRAPHIC];
     /**
-     * Token type for words containing Japanese hiragana
+     * Token type for words containing Japanese hiragana.
      */
     public static final String WORD_HIRAGANA = StandardTokenizer.TOKEN_TYPES[StandardTokenizer.HIRAGANA];
     /**
-     * Token type for words containing Japanese katakana
+     * Token type for words containing Japanese katakana.
      */
     public static final String WORD_KATAKANA = StandardTokenizer.TOKEN_TYPES[StandardTokenizer.KATAKANA];
     /**
-     * Token type for words containing Korean hangul
+     * Token type for words containing Korean hangul.
      */
     public static final String WORD_HANGUL = StandardTokenizer.TOKEN_TYPES[StandardTokenizer.HANGUL];
     /**
-     * Token type for words that contain letters
+     * Token type for words that contain letters.
      */
     public static final String WORD_LETTER = StandardTokenizer.TOKEN_TYPES[StandardTokenizer.ALPHANUM];
     /**
-     * Token type for words that appear to be numbers
+     * Token type for words that appear to be numbers.
      */
     public static final String WORD_NUMBER = StandardTokenizer.TOKEN_TYPES[StandardTokenizer.NUM];
 
     /*
-     * the default breakiterators in use. these can be expensive to
-     * instantiate, cheap to clone.
-     */
-    // we keep the cjk breaking separate, thats because it cannot be customized (because dictionary
-    // is only triggered when kind = WORD, but kind = LINE by default and we have no non-evil way to change it)
+     * The default breakiterators in use. These can be expensive to instantiate, cheap to clone.
+     *
+     * we keep the cjk breaking separate, thats because it cannot be customized (because dictionary
+     * is only triggered when kind = WORD, but kind = LINE by default and we have no non-evil way to change it)
+     * */
     private static final BreakIterator cjkBreakIterator = BreakIterator.getWordInstance(ULocale.ROOT);
     // the same as ROOT, except no dictionary segmentation for cjk
     private static final BreakIterator defaultBreakIterator =
@@ -97,9 +97,9 @@ public class DefaultIcuTokenizerConfig implements IcuTokenizerConfig {
         switch (script) {
             case UScript.MYANMAR:
                 if (myanmarAsWords) {
-                    return (BreakIterator)defaultBreakIterator.clone();
+                    return (BreakIterator) defaultBreakIterator.clone();
                 } else {
-                    return (BreakIterator)myanmarSyllableIterator.clone();
+                    return (BreakIterator) myanmarSyllableIterator.clone();
                 }
             case UScript.JAPANESE:
                 return (BreakIterator) cjkBreakIterator.clone();

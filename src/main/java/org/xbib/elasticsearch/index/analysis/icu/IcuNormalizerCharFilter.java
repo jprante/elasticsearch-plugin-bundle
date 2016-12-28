@@ -22,7 +22,7 @@ public final class IcuNormalizerCharFilter extends BaseCharFilter {
     private int charCount;
 
     /**
-     * Create a new Normalizer2CharFilter with the specified Normalizer2
+     * Create a new Normalizer2CharFilter with the specified Normalizer2.
      *
      * @param in         text
      * @param normalizer normalizer to use

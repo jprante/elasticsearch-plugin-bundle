@@ -1,0 +1,11 @@
+{
+    "index":{
+        "analysis":{
+            "analyzer" : {
+                "my_hyphen_analyzer" : {
+                    "type" : "hyphen"
+                }
+            }
+        }
+    }
+}

@@ -1,8 +1,9 @@
 
 plugins {
     id "org.sonarqube" version "2.2"
-    id "org.xbib.gradle.plugin.jbake" version "1.2.1"
+    id "org.xbib.gradle.plugin.asciidoctor" version "1.5.4.1.0"
     id "org.xbib.gradle.plugin.jflex" version "1.1.0"
+
 }
 
 printf "Host: %s\nOS: %s %s %s\nJVM: %s %s %s %s\nGroovy: %s\nGradle: %s\n" +
@@ -42,6 +43,7 @@ apply plugin: 'pmd'
 apply plugin: 'checkstyle'
 apply plugin: "jacoco"
 apply plugin: 'org.xbib.gradle.plugin.jflex'
+apply plugin: 'org.xbib.gradle.plugin.asciidoctor'
 
 repositories {
     mavenCentral()
@@ -121,6 +123,17 @@ clean {
     delete "plugins"
     delete "data"
     delete "logs"
+}
+
+asciidoctor {
+    backends 'html5'
+    outputDir = file('docs')
+    separateOutputDirs = false
+    attributes 'source-highlighter': 'coderay',
+            toc                 : '',
+            idprefix            : '',
+            idseparator         : '-',
+            stylesheet: "${projectDir}/src/docs/asciidoc/css/bootstrap_cerulean.min.css"
 }
 
 task javadocJar(type: Jar, dependsOn: classes) {

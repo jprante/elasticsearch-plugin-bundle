@@ -1,0 +1,34 @@
+{
+  "index":{
+    "analysis":{
+      "char_filter" : {
+        "my_icu_normalizer" : {
+          "type" : "icu_normalizer",
+          "name" : "utr30"
+        },
+        "my_icu_normalizer_with_exceptions" : {
+          "type" : "icu_normalizer",
+          "name" : "utr30",
+          "unicodeSetFilter" : "[^åäöÅÄÖ]"
+        }
+      },
+      "tokenizer" : {
+        "my_icu_tokenizer" : {
+          "type" : "icu_tokenizer"
+        }
+      },
+      "analyzer" : {
+        "my_icu_analyzer" : {
+          "type" : "custom",
+          "tokenizer" : "my_icu_tokenizer",
+          "char_filter" : "my_icu_normalizer"
+        },
+        "my_icu_analyzer_with_exceptions" : {
+          "type" : "custom",
+          "tokenizer" : "my_icu_tokenizer",
+          "char_filter" : [ "my_icu_normalizer_with_exceptions" ]
+        }
+      }
+    }
+  }
+}

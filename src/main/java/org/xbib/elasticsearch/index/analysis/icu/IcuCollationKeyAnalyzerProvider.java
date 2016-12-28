@@ -25,7 +25,8 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
 
     private final Collator collator;
 
-    public IcuCollationKeyAnalyzerProvider(IndexSettings indexSettings, Environment environment, String name, Settings settings) {
+    public IcuCollationKeyAnalyzerProvider(IndexSettings indexSettings, Environment environment, String name,
+                                           Settings settings) {
         super(indexSettings, name, settings);
         this.collator = createCollator(settings);
     }
@@ -40,26 +41,30 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
                 throw new ElasticsearchException("Failed to parse collation rules", e);
             }
         } else {
-            String language = settings.get("language");
-            if (language != null) {
-                ULocale locale;
-                String country = settings.get("country");
-                if (country != null) {
-                    String variant = settings.get("variant");
-                    if (variant != null) {
-                        locale = new ULocale(language, country, variant);
-                    } else {
-                        locale = new ULocale(language, country);
-                    }
-                } else {
-                    locale = new ULocale(language);
-                }
-                collator = Collator.getInstance(locale);
+            String localeStr = settings.get("locale");
+            if (localeStr != null) {
+                collator = Collator.getInstance(new ULocale(localeStr));
             } else {
-                collator = Collator.getInstance();
+                String language = settings.get("language");
+                if (language != null) {
+                    ULocale locale;
+                    String country = settings.get("country");
+                    if (country != null) {
+                        String variant = settings.get("variant");
+                        if (variant != null) {
+                            locale = new ULocale(language, country, variant);
+                        } else {
+                            locale = new ULocale(language, country);
+                        }
+                    } else {
+                        locale = new ULocale(language);
+                    }
+                    collator = Collator.getInstance(locale);
+                } else {
+                    collator = Collator.getInstance();
+                }
             }
         }
-
         // set the strength flag, otherwise it will be the default.
         String strength = settings.get("strength");
         if (strength != null) {
@@ -85,7 +90,6 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
             }
             collator.setStrength(i);
         }
-
         // set the decomposition flag, otherwise it will be the default.
         String decomposition = settings.get("decomposition");
         if (decomposition != null) {
@@ -97,7 +101,6 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
                 throw new ElasticsearchException("Invalid decomposition: " + decomposition);
             }
         }
-
         // expert options: concrete subclasses are always a RuleBasedCollator
         RuleBasedCollator rbc = (RuleBasedCollator) collator;
         String alternate = settings.get("alternate");
@@ -110,12 +113,10 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
                 throw new ElasticsearchException("Invalid alternate: " + alternate);
             }
         }
-
         Boolean caseLevel = settings.getAsBoolean("caseLevel", null);
         if (caseLevel != null) {
             rbc.setCaseLevel(caseLevel);
         }
-
         String caseFirst = settings.get("caseFirst");
         if (caseFirst != null) {
             if ("lower".equalsIgnoreCase(caseFirst)) {
@@ -126,12 +127,10 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
                 throw new ElasticsearchException("invalid caseFirst: " + caseFirst);
             }
         }
-
         Boolean numeric = settings.getAsBoolean("numeric", null);
         if (numeric != null) {
             rbc.setNumericCollation(numeric);
         }
-
         int maxVariable = settings.getAsInt("variableTop", Collator.ReorderCodes.DEFAULT);
         rbc.setMaxVariable(maxVariable);
         return collator;
@@ -141,5 +140,4 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
     public IcuCollationKeyAnalyzer get() {
         return new IcuCollationKeyAnalyzer(collator);
     }
-
 }

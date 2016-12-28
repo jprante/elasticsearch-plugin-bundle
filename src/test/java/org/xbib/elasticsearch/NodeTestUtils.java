@@ -9,7 +9,6 @@ import org.elasticsearch.action.admin.cluster.node.info.NodesInfoAction;
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoRequestBuilder;
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.support.AbstractClient;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -174,9 +173,7 @@ public class NodeTestUtils {
                 .put(getNodeSettings())
                 .build();
         logger.info("settings={}", nodeSettings.getAsMap());
-        Node node = new MockNode(nodeSettings, Collections.emptyList());
-        AbstractClient client = (AbstractClient) node.client();
-        return node;
+        return new MockNode(nodeSettings, Collections.emptyList());
     }
 
     public Node buildNode() throws IOException {
@@ -184,9 +181,7 @@ public class NodeTestUtils {
                 .put(getNodeSettings())
                 .build();
         logger.info("settings={}", nodeSettings.getAsMap());
-        Node node = new MockNode(nodeSettings, Collections.singletonList(BundlePlugin.class));
-        AbstractClient client = (AbstractClient) node.client();
-        return node;
+        return new MockNode(nodeSettings, Collections.singletonList(BundlePlugin.class));
     }
 
 

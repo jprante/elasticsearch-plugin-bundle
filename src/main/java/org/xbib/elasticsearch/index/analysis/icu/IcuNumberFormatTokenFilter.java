@@ -43,7 +43,7 @@ public final class IcuNumberFormatTokenFilter extends TokenFilter {
     @Override
     public boolean equals(Object object) {
         return object instanceof IcuNumberFormatTokenFilter &&
-                numberFormat.equals(((IcuNumberFormatTokenFilter)object).numberFormat);
+                numberFormat.equals(((IcuNumberFormatTokenFilter) object).numberFormat);
     }
 
     @Override

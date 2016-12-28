@@ -1,5 +1,6 @@
 package org.xbib.elasticsearch.index.analysis.hyphen;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -10,6 +11,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.StringReader;
 
+import static org.xbib.elasticsearch.MapperTestUtils.analyzer;
 import static org.xbib.elasticsearch.MapperTestUtils.tokenFilterFactory;
 import static org.xbib.elasticsearch.MapperTestUtils.tokenizerFactory;
 
@@ -236,6 +238,32 @@ public class HyphenTokenizerTests extends Assert {
         assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
     }
 
+    @Test
+    public void testTen() throws IOException {
+
+        String source = "Das ist ein Punkt. Und noch ein Punkt für U.S.A. Oder? Nicht doch.";
+
+        String[] expected = {
+                "Das",
+                "ist",
+                "ein",
+                "Punkt",
+                "Und",
+                "noch",
+                "ein",
+                "Punkt",
+                "für",
+                "U.S.A",
+                "Oder",
+                "Nicht",
+                "doch"
+
+        };
+        String resource = "org/xbib/elasticsearch/index/analysis/hyphen/hyphen_analyzer.json";
+        Analyzer analyzer = analyzer(resource, "my_hyphen_analyzer");
+        assertSimpleTSOutput(analyzer.tokenStream("text", new StringReader(source)), expected);
+    }
+
     private void assertSimpleTSOutput(TokenStream stream, String[] expected) throws IOException {
         stream.reset();
         CharTermAttribute termAttr = stream.getAttribute(CharTermAttribute.class);
@@ -246,7 +274,7 @@ public class HyphenTokenizerTests extends Assert {
             assertEquals(expected[i], termAttr.toString());
             i++;
         }
-        assertEquals(i, expected.length);
+        assertEquals(expected.length, i);
         stream.close();
     }
 }
