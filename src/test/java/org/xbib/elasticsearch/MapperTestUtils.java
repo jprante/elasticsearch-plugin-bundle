@@ -230,6 +230,24 @@ public class MapperTestUtils {
                 analysisRegistry.getTokenFilterProvider(name).get(environment, name);
     }
 
+    public static CharFilterFactory charFilterFactory(String name) throws IOException {
+        Settings settings = Settings.builder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
+                .put("path.home", System.getProperty("path.home", "/tmp"))
+                .build();
+        Environment environment = new Environment(settings);
+        AnalysisRegistry analysisRegistry = analysisService(settings);
+        IndexMetaData indexMetaData = IndexMetaData.builder("test")
+                .settings(settings)
+                .numberOfShards(1)
+                .numberOfReplicas(1)
+                .build();
+        IndexSettings indexSettings = new IndexSettings(indexMetaData, settings);
+        Map<String, CharFilterFactory> map = analysisRegistry.buildCharFilterFactories(indexSettings);
+        return map.containsKey(name) ? map.get(name) :
+                analysisRegistry.getCharFilterProvider(name).get(environment, name);
+    }
+
     public static CharFilterFactory charFilterFactory(String resource, String name) throws IOException {
         Settings settings = Settings.builder()
                 .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)

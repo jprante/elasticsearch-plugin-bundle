@@ -37,7 +37,7 @@ import java.io.IOException;
  */
 public final class IcuTransformTokenFilter extends TokenFilter {
 
-    private final Transliterator transform;
+    private final Transliterator transliterator;
 
     private final Transliterator.Position position = new Transliterator.Position();
 
@@ -49,11 +49,11 @@ public final class IcuTransformTokenFilter extends TokenFilter {
      * Create a new IcuTransformFilter that transforms text on the given stream.
      *
      * @param input {@link TokenStream} to filter.
-     * @param transform Transliterator to transform the text.
+     * @param transliterator Transliterator to transform the text.
      */
-    public IcuTransformTokenFilter(TokenStream input, Transliterator transform) {
+    public IcuTransformTokenFilter(TokenStream input, Transliterator transliterator) {
         super(input);
-        this.transform = transform;
+        this.transliterator = transliterator;
     }
 
     @Override
@@ -65,7 +65,7 @@ public final class IcuTransformTokenFilter extends TokenFilter {
             position.limit = length;
             position.contextStart = 0;
             position.contextLimit = length;
-            transform.filteredTransliterate(replaceableAttribute, position, false);
+            transliterator.filteredTransliterate(replaceableAttribute, position, false);
             return true;
         } else {
             return false;
@@ -149,11 +149,11 @@ public final class IcuTransformTokenFilter extends TokenFilter {
     @Override
     public boolean equals(Object object) {
         return object instanceof IcuTransformTokenFilter &&
-                transform.equals(((IcuTransformTokenFilter) object).transform);
+                transliterator.equals(((IcuTransformTokenFilter) object).transliterator);
     }
 
     @Override
     public int hashCode() {
-        return transform.hashCode();
+        return transliterator.hashCode();
     }
 }

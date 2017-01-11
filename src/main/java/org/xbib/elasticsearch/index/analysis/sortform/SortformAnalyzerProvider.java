@@ -13,7 +13,7 @@ import org.elasticsearch.index.analysis.CustomAnalyzerProvider;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.index.analysis.TokenizerFactory;
 import org.xbib.elasticsearch.index.analysis.icu.IcuCollationKeyAnalyzerProvider;
-import org.xbib.elasticsearch.index.analysis.icu.tokenattributes.IcuCollationAttributeFactory;
+import org.xbib.elasticsearch.index.analysis.icu.IcuCollationAttributeFactory;
 
 import java.util.ArrayList;
 import java.util.List;

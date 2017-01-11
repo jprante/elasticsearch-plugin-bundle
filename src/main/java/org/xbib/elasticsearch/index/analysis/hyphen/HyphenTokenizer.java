@@ -6,6 +6,7 @@ import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.util.AttributeFactory;
+import org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenizerImpl;
 
 import java.io.IOException;
 
@@ -31,18 +32,19 @@ public final class HyphenTokenizer extends Tokenizer {
     private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
     private final PositionIncrementAttribute posIncrAtt = addAttribute(PositionIncrementAttribute.class);
     private final TypeAttribute typeAtt = addAttribute(TypeAttribute.class);
-    private org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenizerImpl scanner;
+    private HyphenTokenizerImpl scanner;
     private int skippedPositions;
     private int maxTokenLength;
 
     /**
      * Creates a new instance of the {@link HyphenTokenizer}.  Attaches
      * the <code>input</code> to the newly created JFlex scanner.
+     * @param maxTokenLength maximum token length
      */
     public HyphenTokenizer(int maxTokenLength) {
         super();
         this.maxTokenLength = maxTokenLength;
-        this.scanner = new org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenizerImpl(input);
+        this.scanner = new HyphenTokenizerImpl(input);
 
     }
 
@@ -50,11 +52,12 @@ public final class HyphenTokenizer extends Tokenizer {
      * Creates a new {@link HyphenTokenizer} with a given {@link org.apache.lucene.util.AttributeFactory}
      *
      * @param factory factory
+     * @param maxTokenLength maximum token length
      */
     public HyphenTokenizer(AttributeFactory factory, int maxTokenLength) {
         super(factory);
         this.maxTokenLength = maxTokenLength;
-        this.scanner = new org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenizerImpl(input);
+        this.scanner = new HyphenTokenizerImpl(input);
     }
 
     @Override

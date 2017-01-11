@@ -1,12 +1,11 @@
 package org.xbib.elasticsearch.index.analysis.icu.segmentation;
 
+import com.ibm.icu.lang.UScript;
 import com.ibm.icu.text.Normalizer2;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
-
-import com.ibm.icu.lang.UScript;
 import org.apache.lucene.util.AttributeFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

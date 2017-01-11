@@ -9,10 +9,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.StringReader;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
+import static org.junit.Assert.*;
 import static org.xbib.elasticsearch.MapperTestUtils.tokenFilterFactory;
 import static org.xbib.elasticsearch.MapperTestUtils.tokenizerFactory;
 

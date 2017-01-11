@@ -21,6 +21,12 @@
           "type" : "icu_collation",
           "locale" : "de@collation=phonebook",
           "strength" : "primary"
+        },
+        "reorder" : {
+          "type" : "icu_collation",
+          "rules" : "& ae , a\u0308 & AE , A\u0308& oe , o\u0308 & OE , O\u0308& ue , u\u0308 & UE , u\u0308",
+          "strength" : "tertiary",
+          "reorder" : [ "Latn", "digit", "punctuation", "symbol", "currency", "others", "space"]
         }
       }
     }

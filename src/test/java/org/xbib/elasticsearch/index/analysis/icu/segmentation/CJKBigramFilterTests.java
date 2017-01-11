@@ -1,13 +1,7 @@
 package org.xbib.elasticsearch.index.analysis.icu.segmentation;
 
-import java.io.IOException;
-
 import com.ibm.icu.text.Normalizer2;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.CharArraySet;
-import org.apache.lucene.analysis.StopFilter;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.cjk.CJKBigramFilter;
 import org.apache.lucene.util.AttributeFactory;
 import org.apache.lucene.util.IOUtils;
@@ -16,6 +10,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
 import org.xbib.elasticsearch.index.analysis.icu.IcuNormalizerFilter;
+
+import java.io.IOException;
 
 /**
  *

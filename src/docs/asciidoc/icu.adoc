@@ -1,0 +1,1409 @@
+= ICU Analysis for Elasticsearch
+Jörg Prante
+Version 1.0
+:sectnums:
+:toc: preamble
+:toclevels: 4
+:!toc-title: Content
+:experimental:
+:description: ICU analysis for Elasticsearch
+:keywords: Elasticsearch, Plugin, ICU analysis
+:icons: font
+
+This International Components for Unicode (ICU) analysis plugin adds
+support for ICU 58.2 to Elasticsearch.
+
+ICU 58.2 supports Unicode 9.0 and CLDR 30.0.2.
+
+It is a drop-in replacement for the mainline Elasticsearch ICU plugin and extends
+it by new features and options. There is no dependency on Lucene ICU, the
+functionality is included in this plugin as well.
+
+ICU enables extensive support for Unicode. It provides text segmentation,
+normalization, character folding, collation, transliteration, and locale-aware number formatting.
+
+== Text segmentation
+
+Text segmentation for Unicode is specified in Unicode Standard Annex 29 (UAX#29) at
+http://unicode.org/reports/tr29/
+
+The specification determines default segmentation boundaries between certain significant text elements:
+grapheme clusters (“user-perceived characters”), words, and sentences.
+
+The default (non-ICU) tokenization of Elasticearch follows UAX#29.
+
+The ICU tokenzation, as implemented by `icu_tokenizer`, adds some
+features as described in http://userguide.icu-project.org/boundaryanalysis
+
+- implementation of line break detection UAX#14 http://www.unicode.org/reports/tr14/
+- dictionary support for word boundaries in Thai, Lao, Chinese, and Japanese
+- rule based break iterator (RBBI) for custom boundary detection
+- Myanmar and Khmer is broken into syllables based on custom rules
+- mapping of Han, Hiragana, and Katakana scripts to Japanese
+
+=== Example for CJK
+
+- simple chinese  "我购买了道具和服装。" is tokenized into  "我", "购买", "了", "道具", "和", "服装"
+- simple japanese "それはまだ実験段階にあります" is tokenized into  "それ", "は", "まだ", "実験", "段階", "に", "あり", "ます"
+- korean hangul "안녕하세요 한글입니다" is tokenized into "안녕하세요", "한글입니다"
+
+[source]
+----
+PUT /test
+{
+   "settings": {
+      "index": {
+         "analysis": {
+            "analyzer": {
+               "my_analyzer": {
+                  "type": "custom",
+                  "tokenizer" : "icu_tokenizer"
+               }
+            }
+         }
+      }
+   },
+   "mappings": {
+      "docs": {
+         "properties": {
+            "text": {
+               "type": "text",
+               "analyzer": "my_analyzer"
+            }
+         }
+      }
+   }
+}
+----
+
+Simple chinese analysis
+----
+POST /test/_analyze
+{
+    "analyzer" : "my_analyzer",
+    "text" : "我购买了道具和服装。"
+}
+----
+Result
+----
+{
+   "tokens": [
+      {
+         "token": "我",
+         "start_offset": 0,
+         "end_offset": 1,
+         "type": "<IDEOGRAPHIC>",
+         "position": 0
+      },
+      {
+         "token": "购买",
+         "start_offset": 1,
+         "end_offset": 3,
+         "type": "<IDEOGRAPHIC>",
+         "position": 1
+      },
+      {
+         "token": "了",
+         "start_offset": 3,
+         "end_offset": 4,
+         "type": "<IDEOGRAPHIC>",
+         "position": 2
+      },
+      {
+         "token": "道具",
+         "start_offset": 4,
+         "end_offset": 6,
+         "type": "<IDEOGRAPHIC>",
+         "position": 3
+      },
+      {
+         "token": "和",
+         "start_offset": 6,
+         "end_offset": 7,
+         "type": "<IDEOGRAPHIC>",
+         "position": 4
+      },
+      {
+         "token": "服装",
+         "start_offset": 7,
+         "end_offset": 9,
+         "type": "<IDEOGRAPHIC>",
+         "position": 5
+      }
+   ]
+}
+----
+Simple japanese analysis
+----
+POST /test/_analyze
+{
+    "analyzer" : "my_analyzer",
+    "text" : "それはまだ実験段階にあります"
+}
+----
+Result
+----
+{
+   "tokens": [
+      {
+         "token": "それ",
+         "start_offset": 0,
+         "end_offset": 2,
+         "type": "<IDEOGRAPHIC>",
+         "position": 0
+      },
+      {
+         "token": "は",
+         "start_offset": 2,
+         "end_offset": 3,
+         "type": "<IDEOGRAPHIC>",
+         "position": 1
+      },
+      {
+         "token": "まだ",
+         "start_offset": 3,
+         "end_offset": 5,
+         "type": "<IDEOGRAPHIC>",
+         "position": 2
+      },
+      {
+         "token": "実験",
+         "start_offset": 5,
+         "end_offset": 7,
+         "type": "<IDEOGRAPHIC>",
+         "position": 3
+      },
+      {
+         "token": "段階",
+         "start_offset": 7,
+         "end_offset": 9,
+         "type": "<IDEOGRAPHIC>",
+         "position": 4
+      },
+      {
+         "token": "に",
+         "start_offset": 9,
+         "end_offset": 10,
+         "type": "<IDEOGRAPHIC>",
+         "position": 5
+      },
+      {
+         "token": "あり",
+         "start_offset": 10,
+         "end_offset": 12,
+         "type": "<IDEOGRAPHIC>",
+         "position": 6
+      },
+      {
+         "token": "ます",
+         "start_offset": 12,
+         "end_offset": 14,
+         "type": "<IDEOGRAPHIC>",
+         "position": 7
+      }
+   ]
+}
+----
+
+Korean hangul analysis
+----
+POST /test/_analyze
+{
+    "analyzer" : "my_analyzer",
+    "text" : "안녕하세요 한글입니다"
+}
+----
+
+Result
+----
+{
+   "tokens": [
+      {
+         "token": "안녕하세요",
+         "start_offset": 0,
+         "end_offset": 5,
+         "type": "<HANGUL>",
+         "position": 0
+      },
+      {
+         "token": "한글입니다",
+         "start_offset": 6,
+         "end_offset": 11,
+         "type": "<HANGUL>",
+         "position": 1
+      }
+   ]
+}
+----
+
+=== Example for mixed script tokenization
+
+In this example, the `icu_tokenizer` shows how it is capable of tokenize mixed scripts of latin,
+cryllic, and thai. Cyrillic/Thai should be keyword-tokenized.
+
+[source]
+----
+PUT /test
+{
+   "settings": {
+      "index": {
+         "analysis": {
+            "tokenizer": {
+               "my_tokenizer": {
+                  "type": "icu_tokenizer",
+                  "rulefiles": "Cyrl:icu/KeywordTokenizer.rbbi,Thai:icu/KeywordTokenizer.rbbi"
+               }
+            },
+            "analyzer": {
+               "my_analyzer": {
+                  "type": "custom",
+                  "tokenizer": "my_tokenizer"
+               }
+            }
+         }
+      }
+   },
+   "mappings": {
+      "docs": {
+         "properties": {
+            "text": {
+               "type": "text",
+               "analyzer": "my_analyzer"
+            }
+         }
+      }
+   }
+}
+POST /test/_analyze
+{
+    "analyzer" : "my_analyzer",
+    "text" : "Some English.  Немного русский.  ข้อความภาษาไทยเล็ก ๆ น้อย ๆ  More English."
+}
+----
+
+Result
+----
+{
+   "tokens": [
+      {
+         "token": "Some",
+         "start_offset": 0,
+         "end_offset": 4,
+         "type": "<ALPHANUM>",
+         "position": 0
+      },
+      {
+         "token": "English",
+         "start_offset": 5,
+         "end_offset": 12,
+         "type": "<ALPHANUM>",
+         "position": 1
+      },
+      {
+         "token": "Немного русский.  ",
+         "start_offset": 15,
+         "end_offset": 33,
+         "type": "<ALPHANUM>",
+         "position": 2
+      },
+      {
+         "token": "ข้อความภาษาไทยเล็ก ๆ น้อย ๆ  ",
+         "start_offset": 33,
+         "end_offset": 62,
+         "type": "<ALPHANUM>",
+         "position": 3
+      },
+      {
+         "token": "More",
+         "start_offset": 62,
+         "end_offset": 66,
+         "type": "<ALPHANUM>",
+         "position": 4
+      },
+      {
+         "token": "English",
+         "start_offset": 67,
+         "end_offset": 74,
+         "type": "<ALPHANUM>",
+         "position": 5
+      }
+   ]
+}
+----
+
+=== Example for Myanmar
+
+This example shows how `icu_tokenizer` is able to tokenize myanmar script into syllables instead of words.
+
+"နည်" is tokenized into a single "နည်", it is one token.
+
+"သက်ဝင်လှုပ်ရှားစေပြီး" is tokenized into "သက်", "ဝင်", "လှုပ်", "ရှား", "စေ", "ပြီး".
+
+[source]
+----
+PUT /test
+{
+   "settings": {
+      "index": {
+         "analysis": {
+            "tokenizer": {
+               "my_tokenizer": {
+                  "type": "icu_tokenizer",
+                  "myanmar_as_words": false
+               }
+            },
+            "analyzer": {
+               "my_analyzer": {
+                  "type": "custom",
+                  "tokenizer": "my_tokenizer"
+               }
+            }
+         }
+      }
+   },
+   "mappings": {
+      "docs": {
+         "properties": {
+            "text": {
+               "type": "text",
+               "analyzer": "my_analyzer"
+            }
+         }
+      }
+   }
+}
+
+POST /test/_analyze
+{
+    "analyzer" : "my_analyzer",
+    "text" : "နည်"
+}
+
+POST /test/_analyze
+{
+    "analyzer" : "my_analyzer",
+    "text" : "သက်ဝင်လှုပ်ရှားစေပြီး"
+}
+----
+
+See also https://issues.apache.org/jira/browse/LUCENE-7393
+
+== Normalization
+
+Normalization allows for easier sorting and searching of text. Text can appear in different forms,
+and the question is how to canonicalize these forms so same texts can be recognized as being the same.
+
+Texts with same appearance and meaning are known as being _canonically_ equivalent.
+The other form of equivalence is _compatibility_, where texts look possibly different,
+but mean the same. Compatible sequences may be treated the same way in sorting and indexing.
+
+Normalization is the process to convert text to such a unique, equivalent form.
+The ICU normalizer char/token filter `icu_normalizer` can normalize equivalent strings
+to one particular sequence, such as normalizing composite character sequences into
+pre-composed characters.
+
+=== Example for normalization
+
+[source]
+----
+PUT /test
+{
+   "settings": {
+      "index": {
+         "analysis": {
+            "analyzer": {
+               "my_analyzer": {
+                  "type": "custom",
+                  "char_filter" : "icu_normalizer",
+                  "tokenizer" : "icu_tokenizer"
+               }
+            }
+         }
+      }
+   },
+   "mappings": {
+      "docs": {
+         "properties": {
+            "text": {
+               "type": "text",
+               "analyzer": "my_analyzer"
+            }
+         }
+      }
+   }
+}
+----
+
+This example shows normalization of U+0075 U+0308 to U+00fc (ü).
+
+----
+POST /test/_analyze
+{
+    "analyzer" : "my_analyzer",
+    "text" : "\u0075\u0308"
+}
+----
+----
+{
+   "tokens": [
+      {
+         "token": "ü",
+         "start_offset": 0,
+         "end_offset": 1,
+         "type": "<ALPHANUM>",
+         "position": 0
+      }
+   ]
+}
+----
+
+This example shows normalization of "Ruß" into "russ".
+
+----
+POST /test/_analyze
+{
+    "analyzer" : "my_analyzer",
+    "text" : "Ruß"
+}
+----
+----
+{
+   "tokens": [
+      {
+         "token": "russ",
+         "start_offset": 0,
+         "end_offset": 3,
+         "type": "<ALPHANUM>",
+         "position": 0
+      }
+   ]
+}
+----
+
+This example shows compatibility normalization of the ﬀ ligature character (U+FB00).
+----
+POST /test/_analyze
+{
+    "analyzer" : "my_analyzer",
+    "text" : "ﬀ"
+}
+----
+----
+{
+   "tokens": [
+      {
+         "token": "ff",
+         "start_offset": 0,
+         "end_offset": 1,
+         "type": "<ALPHANUM>",
+         "position": 0
+      }
+   ]
+}
+----
+
+== Character Folding
+
+Character folding operations are most often used to temporarily ignore certain distinctions between similar characters.
+For example, they are useful for "fuzzy" or "loose" searches.
+
+Repeatedly applying the same folding does not change the result, a property called idempotency.
+
+The Unicode draft report UTR-30 on character folding was withdrawn because of many edge cases where no good
+solution exist. See http://www.unicode.org/reports/tr30/tr30-4.html
+
+Normalization and character folding are defined as separate and independent operations,
+but case folding often occurs together with other foldings in search term folding.
+NFC or NFD are not in the primary focus of case folding operations.
+
+=== Implementation
+
+The implemented char/token filter applies the following foldings from the report to unicode text:
+
+- Accent removal
+- Case folding
+- Canonical duplicates folding
+- Dashes folding
+- Diacritic removal (including stroke, hook, descender)
+- Greek letterforms folding
+- Han Radical folding
+- Hebrew Alternates folding
+- Jamo folding
+- Letterforms folding
+- Math symbol folding
+- Multigraph Expansions (All)
+- Native digit folding
+- No-break folding
+- Overline folding
+- Positional forms folding
+- Small forms folding
+- Space folding
+- Spacing Accents folding
+- Subscript folding
+- Superscript folding
+- Suzhou Numeral folding
+- Symbol folding
+- Underline folding
+- Vertical forms folding
+- Width folding
+
+Additionally, Default Ignorables are removed, and text is normalized to NFKC.
+All foldings, case folding, and normalization mappings are applied recursively
+to ensure a fully folded and normalized result.
+
+ICU uses binary encoded files prepared by the program `gennorm2` to perform character foldings.
+The input to `gennorm2` is a list of `txt` files specifying the foldings.
+
+For the Elasticsearch ICU plugin, the files `nfc.txt`, `nfkc.txt`, and `nfkc_cf.txt`
+are downloaded from
+
+- http://source.icu-project.org/repos/icu/icu/tags/release-58-1/source/data/unidata/norm2/nfc.txt
+- http://source.icu-project.org/repos/icu/icu/tags/release-58-1/source/data/unidata/norm2/nfkc.txt
+- http://source.icu-project.org/repos/icu/icu/tags/release-58-1/source/data/unidata/norm2/nfkc_cf.txt
+
+There is a download tool which is not exposed  for API use,
+see `org.xbib.elasticsearch.index.analysis.icu.tools.UTR30DataFileGenerator`
+
+Together with the files `BasicFoldings.txt`, `DiacriticFolding.txt`, `DingbatFolding.txt`,
+`HanRadicalFolding.txt`, and `NativeDigitFolding.txt` they are used on Fedora Linux 25 as input for the program
+`gennorm2` as provided under http://download.icu-project.org/files/icu4c/58.2/icu4c-58_2-Fedora25-x64.tgz
+
+The output file is named `utr30.nrm` and included in this plugin, being configured as the default folding
+for the Elasticsearch char/token filter `icu_folding`.
+
+As to this time, there is only this one folding as specified by `utr30.nrm` configured in the plugin,
+but it is possible to add other foldings as well in future versions.
+
+=== Example for UTR#30 folding
+
+[source]
+----
+PUT /test
+{
+   "settings": {
+      "index": {
+         "analysis": {
+            "analyzer": {
+               "my_analyzer": {
+                  "type": "custom",
+                  "char_filter" : "icu_folding",
+                  "tokenizer" : "icu_tokenizer"
+               }
+            }
+         }
+      }
+   },
+   "mappings": {
+      "docs": {
+         "properties": {
+            "text": {
+               "type": "text",
+               "analyzer": "my_analyzer"
+            }
+         }
+      }
+   }
+}
+----
+----
+POST /test/_analyze
+{
+    "analyzer" : "my_analyzer",
+    "text" : "résumé"
+}
+----
+----
+{
+   "tokens": [
+      {
+         "token": "resume",
+         "start_offset": 0,
+         "end_offset": 6,
+         "type": "<ALPHANUM>",
+         "position": 0
+      }
+   ]
+}
+----
+----
+POST /test/_analyze
+{
+    "analyzer" : "my_analyzer",
+    "text" : "\u00fc"
+}
+----
+----
+{
+   "tokens": [
+      {
+         "token": "u",
+         "start_offset": 0,
+         "end_offset": 1,
+         "type": "<ALPHANUM>",
+         "position": 0
+      }
+   ]
+}
+----
+----
+POST /test/_analyze
+{
+    "analyzer" : "my_analyzer",
+    "text" : "\u0075\u0308"
+}
+----
+----
+{
+   "tokens": [
+      {
+         "token": "u",
+         "start_offset": 0,
+         "end_offset": 2,
+         "type": "<ALPHANUM>",
+         "position": 0
+      }
+   ]
+}
+----
+
+== Collation
+
+Collation stands for the process of determining the sorting order of strings that are represented by characters.
+The collation process is a key function in computer systems; whenever a list of entries is presented to users,
+they are likely to want it in a sorted order so that they can easily and reliably find entries.
+
+Unicode provides collation rules in the Unicode Collation Algorithm (UCA), see
+UTR#10 http://www.unicode.org/reports/tr10/ The standard collation order for Unicode is known as DUCET/CLDR.
+
+ICU Collation is provided by two main categories of APIs:
+
+- String comparison. Most commonly used, the result of comparing two strings (greater than, equal or less than).
+This is used as a comparator when sorting lists, building tree maps, etc.
+
+- Sort key generation. Used when a very large set of strings are compared/sorted repeatedly. A zero-terminated array
+of bytes per string known as a sort key is returned. The keys can be compared directly using
+`strcmp` or `memcmp` standard library functions, saving repeated lookup and computation of each string's
+collation properties. For example, database applications use index tables of sort keys to index strings quickly.
+Note, however, that this only improves performance for large numbers of strings because sorting
+via the comparison functions is very fast.
+
+=== Strength levels
+
+Following the Unicode Consortium's specifications for the Unicode Collation Algorithm (UCA), there are five
+different levels of strength used in comparisons.
+
+[horizontal]
+primary:: Typically, this is used to denote differences between base characters (for example, "a" < "b").
+It is the strongest difference. For example, dictionaries are divided into different sections by base character.
+secondary:: Accents in the characters are considered secondary differences (for example, "as" < "às" < "at").
+Other differences between letters can also be considered secondary differences, depending on the language.
+A secondary difference is ignored when there is a primary difference anywhere in the strings.
+tertiary:: Upper and lower case differences in characters are distinguished at tertiary strength
+(for example, "ao" < "Ao" < "aò"). In addition, a variant of a letter differs from the base form on the
+tertiary strength (such as "A" and "Ⓐ"). Another example is the difference between large and small Kana.
+A tertiary difference is ignored when there is a primary or secondary difference anywhere in the strings.
+quaternary:: When punctuation is ignored (see Ignoring Punctuations in the user guide) at primary to tertiary strength,
+an additional strength level can be used to distinguish words with and without punctuation
+(for example, "ab" < "a-b" < "aB"). This difference is ignored when there is a primary, secondary or tertiary
+difference. The quaternary strength should only be used if ignoring punctuation is required.
+identical:: When all other strengths are equal, the identical strength is used as a tiebreaker.
+The Unicode code point values of the NFD form of each string are compared, just in case there is no difference.
+For example, Hebrew cantellation marks are only distinguished at this strength.
+This strength should be used sparingly, as only code point value differences between two strings is an extremely
+rare occurrence. Using this strength substantially decreases the performance for both comparison and
+collation key generation APIs. This strength also increases the size of the collation key.
+
+=== Case Ordering
+
+The tertiary level is used to distinguish text by case.
+
+Some applications prefer to emphasize case differences so that words starting with the same case sort together.
+Some Japanese applications require the difference between small and large Kana be emphasized
+over other tertiary differences.
+
+The UCA does not provide means to separate out either case or Kana differences from the remaining tertiary differences.
+However, the ICU Collation Service has two options that help in customize case and/or Kana differences.
+Both options are turned off by default.
+
+==== CaseFirst
+
+The Case-first option makes case the most significant part of the tertiary level.
+Primary and secondary levels are unaffected. With this option, words starting with the same case sort together.
+The Case-first option can be set to make either lowercase sort before uppercase or uppercase sort before lowercase.
+
+Note: The case-first option does not constitute a separate level; it is simply a reordering of the tertiary level.
+
+ICU makes use of the following three case categories for sorting
+
+- uppercase: "ABC"
+- mixed case: "Abc", "aBc"
+- normal (lowercase or no case): "abc", "123"
+
+Mixed case is always sorted between uppercase and normal case when the "case-first" option is set.
+
+==== CaseLevel
+
+The Case Level option makes a separate level for case differences.
+This is an extra level positioned between secondary and tertiary.
+The case level is used in Japanese to make the difference between small and large Kana more important
+than the other tertiary differences. It also can be used to ignore other tertiary differences,
+or even secondary differences. This is especially useful in matching.
+For example, if the strength is set to primary only (level-1) and the case level is turned on,
+the comparison ignores accents and tertiary differences except for case.
+The contents of the case level are affected by the case-first option.
+
+The case level is independent from the strength of comparison.
+It is possible to have a collator set to primary strength with the case level turned on.
+This provides for comparison that takes into account the case differences,
+while at the same time ignoring accents and tertiary differences other than case.
+This may be used in searching.
+
+=== Script Reordering
+
+For ICU script codes, see http://icu-project.org/apiref/icu4j/com/ibm/icu/lang/UScript.html
+
+Script reordering allows scripts and some other groups of characters to be moved relative to each other.
+This reordering is done on top of the DUCET/CLDR standard collation order.
+Reordering can specify groups to be placed at the start and/or the end of the collation order.
+
+By default, reordering codes specified for the start of the order are placed in the order given after
+several special non-script blocks. These special groups of characters are `space`, `punctuation`, `symbol`,
+`currency`, and `digit`. Script groups can be intermingled with these special non-script groups
+if those special groups are explicitly specified in the reordering.
+
+The special code `others` stands for any script that is not explicitly mentioned in the list.
+Anything that is after others will go at the very end of the list in the order given.
+
+The special reorder code `default` will reset the reordering for this collator to the default
+for this collator. The default reordering may be the DUCET/CLDR order or may be a reordering
+that was specified when this collator was created from resource data or from rules.
+The `default` code must be the sole code supplied when it is used.
+If not, then an `IllegalArgumentException` will be thrown.
+
+The special reorder code `none` will remove any reordering for this collator.
+The result of setting no reordering will be to have the DUCET/CLDR ordering used.
+The `none` code must be the sole code supplied when it is used.
+
+=== Implementation
+
+Collation rules in Elasticsearch ICU are implemented by the analyzer `icu_collate`.
+
+The analyzer can be set up with
+
+- a system collator associated with a locale or a language ID
+- a tailored rule set (conforms to ISO 14651)
+
+The following options are available for creating a system collator:
+
+[horizontal]
+locale:: a RFC 3066 locale ID
+language:: an RFC 3066  language ID, if locale ID is not given
+country:: an RFC 3066 country ID, if language ID is not specific enough
+variant:: an RFC 3066 variant ID, if language and country ID is not specific enough
+strength:: `primary`, `secondary`, `tertiary`, `quaternary`, or `identical`
+decomposition:: `no`, or `canonical`.  If the canonical decomposition mode is set, the Collator handles
+un-normalized text properly, producing the same results as if the text were normalized in NFD.
+If canonical decomposition is turned off, it is the user's responsibility to ensure that all text is already
+in the appropriate form.
+
+The following options are available when creating a rule set based collator:
+
+[horizontal]
+rules:: the rules, or a list of names of UTF-8 text file containing rules
+supported by `com.ibm.icu.text.RuleBasedCollator` (mandatory)
+strength:: `primary`, `secondary`, `tertiary`, `quaternary`, or `identical` (optional)
+decomposition:: `no` or `canonical` (optional)
+
+Other, more advanced options are
+
+[horizontal]
+alternate:: `shifted` or `non-ignorable`. Can be used to ignore punctuation/whitespace.
+caseLevel:: `true` or `false`. Useful with primary strength to ignore accents but not case.
+caseFirst:: `lower` or `upper`. Useful to control which is sorted first when case is not ignored.
+numeric:: `true` or `false`. Digits are sorted according to numeric value, e.g. `foobar-9` sorts before `foobar-10`
+variableTop:: single character or contraction. Controls what the variable is for 'alternate'.
+Default is `Collator.ReorderCodes.DEFAULT` (-1)
+reorder:: a sequence of names of script codes as specified in
+http://icu-project.org/apiref/icu4j/com/ibm/icu/lang/UScript.html
+or
+special codes [`currency`, `default`, `digit`, `first`, `none`, `others`, `punctuation`, `space`, `symbol`]
+for non-script group reordering
+
+
+=== Example for german phone book collation ordering
+
+This example shows how the `icu_collation` can be used to sort german family names in
+the german phone book order.
+
+[source]
+----
+PUT /test
+{
+   "settings": {
+      "index": {
+         "analysis": {
+            "analyzer": {
+               "my_analyzer": {
+                  "type": "icu_collation",
+                  "locale": "de@collation=phonebook",
+                  "strength": "primary"
+               }
+            }
+         }
+      }
+   },
+   "mappings": {
+      "docs": {
+         "properties": {
+            "text": {
+               "type": "text",
+               "fielddata" : true,
+               "analyzer": "my_analyzer"
+            }
+         }
+      }
+   }
+}
+
+PUT /test/docs/1
+{
+    "text" : "Göbel"
+}
+
+PUT /test/docs/2
+{
+    "text" : "Goethe"
+}
+
+PUT /test/docs/3
+{
+    "text" : "Goldmann"
+}
+
+PUT /test/docs/4
+{
+    "text" :  "Göthe"
+}
+
+PUT /test/docs/5
+{
+    "text" :  "Götz"
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "match_all": {
+        }
+    },
+    "sort" : {
+        "text" : { "order" : "asc" }
+    }
+}
+----
+
+The sorted result is
+
+[source]
+----
+{
+   "took": 57,
+   "timed_out": false,
+   "_shards": {
+      "total": 5,
+      "successful": 5,
+      "failed": 0
+   },
+   "hits": {
+      "total": 5,
+      "max_score": null,
+      "hits": [
+         {
+            "_index": "test",
+            "_type": "docs",
+            "_id": "1",
+            "_score": null,
+            "_source": {
+               "text": "Göbel"
+            },
+            "sort": [
+               "5E1+1?\u0000"
+            ]
+         },
+         {
+            "_index": "test",
+            "_type": "docs",
+            "_id": "2",
+            "_score": null,
+            "_source": {
+               "text": "Goethe"
+            },
+            "sort": [
+               "5E1O71\u0000"
+            ]
+         },
+         {
+            "_index": "test",
+            "_type": "docs",
+            "_id": "4",
+            "_score": null,
+            "_source": {
+               "text": "Göthe"
+            },
+            "sort": [
+               "5E1O71\u0000"
+            ]
+         },
+         {
+            "_index": "test",
+            "_type": "docs",
+            "_id": "5",
+            "_score": null,
+            "_source": {
+               "text": "Götz"
+            },
+            "sort": [
+               "5E1O[\u0000"
+            ]
+         },
+         {
+            "_index": "test",
+            "_type": "docs",
+            "_id": "3",
+            "_score": null,
+            "_source": {
+               "text": "Goldmann"
+            },
+            "sort": [
+               "5E?/A)CC\u0000"
+            ]
+         }
+      ]
+   }
+}
+----
+
+== Transform
+
+Transliteration is part of the ICU transforms feature. Transforms are used to process Unicode text
+in many different ways. They include case mapping, normalization,
+transliteration and bidirectional text handling.
+
+Case mapping is used to handle mappings of upper- and lower-case characters from one language to another language,
+and writing systems that use letters of the same alphabet to handle title case mappings that are particular
+to some class. They provide for certain language-specific mappings as well.
+
+Normalization is used to convert text to a unique, equivalent form. Systems can normalize Unicode-encoded text
+to one particular sequence, such as a normalizing composite character sequences into precomposed characters.
+
+Transliteration provide a general-purpose package for processing Unicode text. They are a powerful and flexible
+mechanism for handling a variety of different tasks, including:
+
+- Uppercase, Lowercase, Titlecase, Full/Halfwidth conversions
+- Normalization
+- Hex and Character Name conversions
+- Script to Script conversion
+
+The Bidirectional Algorithm was developed to specify the direction of text in a text flow.
+
+The `icu_transform`  token filter can be configured as follows
+
+[source]
+----
+PUT /test
+{
+   "settings": {
+      "index": {
+         "analysis": {
+            "filter": {
+               "my_icu_transformer_ch": {
+                  "type": "icu_transform",
+                  "id": "Traditional-Simplified"
+               },
+               "my_icu_transformer_han": {
+                  "type": "icu_transform",
+                  "id": "Han-Latin"
+               },
+               "my_icu_transformer_katakana": {
+                  "type": "icu_transform",
+                  "id": "Katakana-Hiragana"
+               },
+               "my_icu_transformer_cyr": {
+                  "type": "icu_transform",
+                  "id": "Cyrillic-Latin"
+               },
+               "my_icu_transformer_any_latin": {
+                  "type": "icu_transform",
+                  "id": "Any-Latin"
+               },
+               "my_icu_transformer_nfd": {
+                  "type": "icu_transform",
+                  "id": "NFD; [:Nonspacing Mark:] Remove"
+               },
+               "my_icu_transformer_rules": {
+                  "type": "icu_transform",
+                  "id": "test",
+                  "dir": "forward",
+                  "rules": "a > b; b > c;"
+               }
+            },
+            "analyzer": {
+               "my_icu_ch": {
+                  "type": "custom",
+                  "tokenizer": "icu_tokenizer",
+                  "filter": [
+                     "my_icu_transformer_ch"
+                  ]
+               },
+               "my_icu_han": {
+                  "type": "custom",
+                  "tokenizer": "icu_tokenizer",
+                  "filter": [
+                     "my_icu_transformer_han"
+                  ]
+               },
+               "my_icu_katakana": {
+                  "type": "custom",
+                  "tokenizer": "icu_tokenizer",
+                  "filter": [
+                     "my_icu_transformer_katakana"
+                  ]
+               },
+               "my_icu_cyr": {
+                  "type": "custom",
+                  "tokenizer": "icu_tokenizer",
+                  "filter": [
+                     "my_icu_transformer_cyr"
+                  ]
+               },
+               "my_icu_any_latin": {
+                  "type": "custom",
+                  "tokenizer": "icu_tokenizer",
+                  "filter": [
+                     "my_icu_transformer_any_latin"
+                  ]
+               },
+               "my_icu_nfd": {
+                  "type": "custom",
+                  "tokenizer": "icu_tokenizer",
+                  "filter": [
+                     "my_icu_transformer_nfd"
+                  ]
+               },
+               "my_icu_rules": {
+                  "type": "custom",
+                  "tokenizer": "icu_tokenizer",
+                  "filter": [
+                     "my_icu_transformer_rules"
+                  ]
+               }
+            }
+         }
+      }
+   }
+}
+----
+
+The analyzer `my_icu_ch` can transform traditional to simplified chinese.
+
+----
+POST /test/_analyze
+{
+    "analyzer" : "my_icu_ch",
+    "text" : "簡化字"
+}
+----
+----
+{
+   "tokens": [
+      {
+         "token": "简化",
+         "start_offset": 0,
+         "end_offset": 2,
+         "type": "<IDEOGRAPHIC>",
+         "position": 0
+      },
+      {
+         "token": "字",
+         "start_offset": 2,
+         "end_offset": 3,
+         "type": "<IDEOGRAPHIC>",
+         "position": 1
+      }
+   ]
+}
+----
+
+The analyzer `my_icu_han` can transform Han to latin script.
+
+----
+POST /test/_analyze
+{
+    "analyzer" : "my_icu_han",
+    "text" : "中国"
+}
+----
+
+----
+{
+   "tokens": [
+      {
+         "token": "zhōng guó",
+         "start_offset": 0,
+         "end_offset": 2,
+         "type": "<IDEOGRAPHIC>",
+         "position": 0
+      }
+   ]
+}
+----
+
+
+The analyzer `my_icu_katakana` can transform katakana to hiragana script.
+
+----
+POST /test/_analyze
+{
+    "analyzer" : "my_icu_katakana",
+    "text" : "ヒラガナ"
+}
+----
+
+----
+{
+   "tokens": [
+      {
+         "token": "ひらがな",
+         "start_offset": 0,
+         "end_offset": 4,
+         "type": "<IDEOGRAPHIC>",
+         "position": 0
+      }
+   ]
+}
+----
+
+The analyzer `my_icu_cyr` can transform cyrillic to latin script.
+
+----
+POST /test/_analyze
+{
+    "analyzer" : "my_icu_cyr",
+    "text" : "Российская Федерация"
+}
+
+----
+
+----
+{
+   "tokens": [
+      {
+         "token": "Rossijskaâ",
+         "start_offset": 0,
+         "end_offset": 10,
+         "type": "<ALPHANUM>",
+         "position": 0
+      },
+      {
+         "token": "Federaciâ",
+         "start_offset": 11,
+         "end_offset": 20,
+         "type": "<ALPHANUM>",
+         "position": 1
+      }
+   ]
+}
+----
+
+The analyzer `my_icu_any_latin` can transform any script to latin script.
+
+----
+POST /test/_analyze
+{
+    "analyzer" : "my_icu_any_latin",
+    "text" : "Αλφαβητικός Κατάλογος"
+}
+----
+
+----
+{
+   "tokens": [
+      {
+         "token": "Alphabētikós",
+         "start_offset": 0,
+         "end_offset": 11,
+         "type": "<ALPHANUM>",
+         "position": 0
+      },
+      {
+         "token": "Katálogos",
+         "start_offset": 12,
+         "end_offset": 21,
+         "type": "<ALPHANUM>",
+         "position": 1
+      }
+   ]
+}
+----
+
+The analyzer `my_icu_nfd` can transform a script to canonical decomposed form.
+
+----
+POST /test/_analyze
+{
+    "analyzer" : "my_icu_nfd",
+    "text" : "Alphabētikós Katálogos"
+}
+----
+
+----
+{
+   "tokens": [
+      {
+         "token": "Alphabetikos",
+         "start_offset": 0,
+         "end_offset": 12,
+         "type": "<ALPHANUM>",
+         "position": 0
+      },
+      {
+         "token": "Katalogos",
+         "start_offset": 13,
+         "end_offset": 22,
+         "type": "<ALPHANUM>",
+         "position": 1
+      }
+   ]
+}
+----
+
+The analyzer `my_icu_rules` can transform Unicode text by rules.
+
+----
+POST /test/_analyze
+{
+    "analyzer" : "my_icu_tokenizer_rules",
+    "text" : "abacadaba"
+}
+----
+
+----
+{
+   "tokens": [
+      {
+         "token": "bcbcbdbcb",
+         "start_offset": 0,
+         "end_offset": 9,
+         "type": "<ALPHANUM>",
+         "position": 0
+      }
+   ]
+}
+----
+
+== Number formatting
+
+Number formatting is part of message formatting. Messages are user-visible strings,
+often with variable elements like names, numbers and dates.
+
+Number formatting is useful for indexing the textual information of numbers.
+It allows synonym search on numbers when it is not ensured that numbers are encoded
+as digits or text. Example: "A dollar is 100 cents" and "A dollar is onehundred cents".
+
+The setting `lenient` determines the effort the parser should undertake. If true, the parser can recognize
+more numbers, but is extremely slow.
+
+Here is an example of the `spellout` number format feature. Both queries will match both documents.
+
+[source]
+----
+PUT /test
+{
+   "settings": {
+      "index": {
+         "analysis": {
+            "filter": {
+               "spellout_en": {
+                  "type": "icu_numberformat",
+                  "locale": "en_US",
+                  "format": "spellout",
+                  "lenient": true
+               }
+            },
+            "analyzer": {
+               "my_analyzer": {
+                  "type": "custom",
+                  "tokenizer": "icu_tokenizer",
+                  "filter": "spellout_en"
+               }
+            }
+         }
+      }
+   },
+   "mappings": {
+      "docs": {
+         "properties": {
+            "text": {
+               "type": "text",
+               "fielddata": true,
+               "analyzer": "my_analyzer"
+            }
+         }
+      }
+   }
+}
+
+PUT /test/docs/1
+{
+    "text" : "A dollar is 100 cents"
+}
+
+PUT /test/docs/2
+{
+    "text" : "A dollar is onehundred cents"
+}
+
+POST /test/docs/_search
+{
+    "query": {
+        "match": {
+            "text" : "100"
+        }
+    }
+}
+POST /test/docs/_search
+{
+    "query": {
+        "match": {
+            "text" : "onehundred"
+        }
+    }
+}
+----
+
+== Javadoc
+
+The Javadoc can be found link:javadoc[here].
+
+== Gradle test report
+
+The Gradle test report can be found link:test[here].
+
+== Credits
+
+Many parts of this documentation are taken from
+
+http://userguide.icu-project.org/
+Copyright (c) 2000 - 2009 IBM and Others.
+
+http://icu-project.org/apiref/icu4j/
+Copyright (c) 2016 IBM Corporation and others.
+
+Many examples are taken from
+
+- Elasticsearch ICU plugin
+https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu.html
+Copyright (c) 2016 Elastic
+
+- Lucene ICU analysis module https://github.com/apache/lucene-solr/tree/master/lucene/analysis/icu
+Copyight (c) Apache Software Foundation

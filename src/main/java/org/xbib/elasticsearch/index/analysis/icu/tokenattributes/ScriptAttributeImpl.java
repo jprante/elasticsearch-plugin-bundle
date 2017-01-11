@@ -1,7 +1,6 @@
 package org.xbib.elasticsearch.index.analysis.icu.tokenattributes;
 
 import com.ibm.icu.lang.UScript;
-
 import org.apache.lucene.util.AttributeImpl;
 import org.apache.lucene.util.AttributeReflector;
 
@@ -52,7 +51,7 @@ public class ScriptAttributeImpl extends AttributeImpl implements ScriptAttribut
 
     @Override
     public ScriptAttributeImpl clone() {
-        ScriptAttributeImpl attribute = (ScriptAttributeImpl)super.clone();
+        ScriptAttributeImpl attribute = (ScriptAttributeImpl) super.clone();
         attribute.code = this.code;
         return attribute;
     }

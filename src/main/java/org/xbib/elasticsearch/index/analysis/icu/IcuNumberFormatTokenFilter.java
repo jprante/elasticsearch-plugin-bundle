@@ -4,6 +4,7 @@ import com.ibm.icu.text.NumberFormat;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 
 import java.io.IOException;
 import java.text.ParsePosition;
@@ -16,6 +17,7 @@ public final class IcuNumberFormatTokenFilter extends TokenFilter {
     private final NumberFormat numberFormat;
 
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
+    private final TypeAttribute typeAtt = addAttribute(TypeAttribute.class);
 
     public IcuNumberFormatTokenFilter(TokenStream input, NumberFormat numberFormat) {
         super(input);
@@ -36,6 +38,7 @@ public final class IcuNumberFormatTokenFilter extends TokenFilter {
                 s = numberFormat.format(result).replaceAll("[\u00AD\u0020]", "");
             }
             termAtt.setEmpty().append(s);
+            typeAtt.setType("<ALPHANUM>");
             return true;
         }
     }

@@ -1,8 +1,5 @@
 package org.xbib.elasticsearch.index.analysis.icu.segmentation;
 
-import java.io.Reader;
-import java.io.StringReader;
-
 import org.apache.lucene.analysis.Tokenizer;
 import org.elasticsearch.Version;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
@@ -10,6 +7,9 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.IndexSettings;
 import org.junit.Test;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
+
+import java.io.Reader;
+import java.io.StringReader;
 
 /**
  *

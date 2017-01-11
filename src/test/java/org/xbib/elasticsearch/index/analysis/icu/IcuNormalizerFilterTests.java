@@ -1,17 +1,16 @@
 package org.xbib.elasticsearch.index.analysis.icu;
 
-import java.io.IOException;
-
+import com.ibm.icu.text.Normalizer2;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.KeywordTokenizer;
-
-import com.ibm.icu.text.Normalizer2;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
 import org.xbib.elasticsearch.index.analysis.MockTokenizer;
+
+import java.io.IOException;
 
 /**
  *

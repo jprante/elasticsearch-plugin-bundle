@@ -88,6 +88,7 @@ test {
         showStandardStreams = false
         exceptionFormat = 'full'
     }
+    reports.html.destination = "docs/test"
 }
 
 task makePluginDescriptor(type: Copy) {
@@ -133,7 +134,7 @@ asciidoctor {
             toc                 : '',
             idprefix            : '',
             idseparator         : '-',
-            stylesheet: "${projectDir}/src/docs/asciidoc/css/bootstrap_cerulean.min.css"
+            stylesheet: "${projectDir}/src/docs/asciidoc/css/foundation.css"
 }
 
 task javadocJar(type: Jar, dependsOn: classes) {

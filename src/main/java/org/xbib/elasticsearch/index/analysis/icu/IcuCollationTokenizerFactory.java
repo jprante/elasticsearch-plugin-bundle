@@ -7,7 +7,6 @@ import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
 import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizer;
 import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizerFactory;
-import org.xbib.elasticsearch.index.analysis.icu.tokenattributes.IcuCollationAttributeFactory;
 
 /**
  * This {@link IcuTokenizer} uses an ICU @{@link Collator} as a char attribute factory.

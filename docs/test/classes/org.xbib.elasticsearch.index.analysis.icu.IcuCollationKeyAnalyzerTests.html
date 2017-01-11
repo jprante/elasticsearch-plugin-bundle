@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - Class org.xbib.elasticsearch.index.analysis.icu.IcuCollationKeyAnalyzerTests</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>Class org.xbib.elasticsearch.index.analysis.icu.IcuCollationKeyAnalyzerTests</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/org.xbib.elasticsearch.index.analysis.icu.html">org.xbib.elasticsearch.index.analysis.icu</a> &gt; IcuCollationKeyAnalyzerTests</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">4</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.114s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs">
+<ul class="tabLinks">
+<li>
+<a href="#tab0">Tests</a>
+</li>
+<li>
+<a href="#tab1">Standard error</a>
+</li>
+</ul>
+<div id="tab0" class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">testFarsiRangeFilterCollating</td>
+<td>0.019s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testFarsiRangeQueryCollating</td>
+<td>0.005s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testFarsiTermRangeQuery</td>
+<td>0.041s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testThreadSafe</td>
+<td>0.049s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div id="tab1" class="tab">
+<h2>Standard error</h2>
+<span class="code">
+<pre>Exception in thread &quot;Thread-5&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-7&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-6&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-8&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-10&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-9&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-14&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-13&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-11&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-12&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-16&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-18&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-15&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-17&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-20&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-19&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-21&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-22&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-23&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-24&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-25&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-27&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-26&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-29&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-31&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-28&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-30&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-34&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-33&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-32&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-35&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-38&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-37&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-36&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-40&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-39&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-41&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-42&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-44&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-43&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-46&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-45&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-48&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-47&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-49&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-51&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-52&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-50&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-53&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-55&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-57&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-58&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-56&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-54&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-60&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-61&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-59&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-62&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-64&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-65&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-63&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-66&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-70&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-69&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-68&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-67&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-71&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-74&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-72&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-73&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-76&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-75&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-78&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+Exception in thread &quot;Thread-77&quot; java.lang.RuntimeException: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:165)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.io.IOException: unexpected: bytes=????? expected=?????
+	at org.xbib.elasticsearch.index.analysis.icu.CollationTestBase.lambda$assertThreadSafe$0(CollationTestBase.java:158)
+	... 1 more
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="http://www.gradle.org">Gradle 3.2.1</a> at 03.01.2017 09:26:11</p>
+</div>
+</div>
+</body>
+</html>

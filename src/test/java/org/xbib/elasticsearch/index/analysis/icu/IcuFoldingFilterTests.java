@@ -9,9 +9,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.xbib.elasticsearch.MapperTestUtils.analyzer;
 import static org.xbib.elasticsearch.MapperTestUtils.charFilterFactory;
 
