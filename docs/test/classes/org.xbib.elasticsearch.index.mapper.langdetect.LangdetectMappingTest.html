@@ -23,7 +23,7 @@
 <tr>
 <td>
 <div class="infoBox" id="tests">
-<div class="counter">5</div>
+<div class="counter">6</div>
 <p>tests</p>
 </div>
 </td>
@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">10.913s</div>
+<div class="counter">7.655s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,27 +79,32 @@
 </thead>
 <tr>
 <td class="success">testBinary</td>
-<td>2.073s</td>
+<td>1.273s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">testBinary2</td>
-<td>2.076s</td>
+<td>1.291s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">testCustomMappings</td>
-<td>1.059s</td>
+<td>0.630s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">testShortTextProfile</td>
-<td>3.650s</td>
+<td>1.904s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">testSimpleMappings</td>
-<td>2.055s</td>
+<td>1.289s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testToFields</td>
+<td>1.268s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -107,19 +112,25 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>[09:23:16,653][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
-[09:23:17,211][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
-[09:23:17,214][ERROR][org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper][Test worker] Illegal character '&quot;' (code 0x22) in base64 content
- at [Source: org.elasticsearch.common.bytes.BytesReference$MarkSupportingStreamInputWrapper@54fb0584; line: 1, column: 73]
+<pre>[22:11:46,808][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
+[22:11:46,810][WARN ][org.elasticsearch.deprecation.index.mapper.StringFieldMapper$TypeParser][Test worker] The [string] field is deprecated, please use [text] or [keyword] instead on [german_field]
+[22:11:46,810][WARN ][org.elasticsearch.deprecation.index.mapper.StringFieldMapper$TypeParser][Test worker] The [string] field is deprecated, please use [text] or [keyword] instead on [english_field]
+[22:11:46,982][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
+[22:11:47,448][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
+[22:11:47,632][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
+[22:11:48,083][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
+[22:11:48,260][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
+[22:11:48,262][ERROR][org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper][Test worker] Illegal character '&quot;' (code 0x22) in base64 content
+ at [Source: org.elasticsearch.common.bytes.BytesReference$MarkSupportingStreamInputWrapper@5dd13306; line: 1, column: 73]
 com.fasterxml.jackson.core.JsonParseException: Illegal character '&quot;' (code 0x22) in base64 content
- at [Source: org.elasticsearch.common.bytes.BytesReference$MarkSupportingStreamInputWrapper@54fb0584; line: 1, column: 73]
+ at [Source: org.elasticsearch.common.bytes.BytesReference$MarkSupportingStreamInputWrapper@5dd13306; line: 1, column: 73]
 	at com.fasterxml.jackson.core.JsonParser._constructError(JsonParser.java:1702) ~[jackson-core-2.8.1.jar:2.8.1]
 	at com.fasterxml.jackson.core.base.ParserMinimalBase._reportError(ParserMinimalBase.java:558) ~[jackson-core-2.8.1.jar:2.8.1]
 	at com.fasterxml.jackson.core.base.ParserMinimalBase._decodeBase64(ParserMinimalBase.java:422) ~[jackson-core-2.8.1.jar:2.8.1]
 	at com.fasterxml.jackson.core.json.UTF8StreamJsonParser.getBinaryValue(UTF8StreamJsonParser.java:553) ~[jackson-core-2.8.1.jar:2.8.1]
 	at com.fasterxml.jackson.core.JsonParser.getBinaryValue(JsonParser.java:1346) ~[jackson-core-2.8.1.jar:2.8.1]
 	at org.elasticsearch.common.xcontent.json.JsonXContentParser.binaryValue(JsonXContentParser.java:182) ~[elasticsearch-5.1.1.jar:5.1.1]
-	at org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper.parseCreateField(LangdetectMapper.java:90) [main/:?]
+	at org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper.parseCreateField(LangdetectMapper.java:96) [main/:?]
 	at org.elasticsearch.index.mapper.FieldMapper.parse(FieldMapper.java:286) [elasticsearch-5.1.1.jar:5.1.1]
 	at org.elasticsearch.index.mapper.FieldMapper$MultiFields.parse(FieldMapper.java:560) [elasticsearch-5.1.1.jar:5.1.1]
 	at org.elasticsearch.index.mapper.FieldMapper.parse(FieldMapper.java:299) [elasticsearch-5.1.1.jar:5.1.1]
@@ -132,10 +143,10 @@ com.fasterxml.jackson.core.JsonParseException: Illegal character '&quot;' (code 
 	at org.elasticsearch.index.mapper.DocumentMapper.parse(DocumentMapper.java:274) [elasticsearch-5.1.1.jar:5.1.1]
 	at org.elasticsearch.index.mapper.DocumentMapper.parse(DocumentMapper.java:270) [elasticsearch-5.1.1.jar:5.1.1]
 	at org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMappingTest.testBinary2(LangdetectMappingTest.java:78) [test/:?]
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_92]
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_92]
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_92]
-	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_92]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_112]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_112]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_112]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_112]
 	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50) [junit-4.12.jar:4.12]
 	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12) [junit-4.12.jar:4.12]
 	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47) [junit-4.12.jar:4.12]
@@ -154,8 +165,8 @@ com.fasterxml.jackson.core.JsonParseException: Illegal character '&quot;' (code 
 	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassProcessor.processTestClass(JUnitTestClassProcessor.java:66) [gradle-testing-jvm-3.2.1.jar:3.2.1]
 	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:51) [gradle-testing-base-3.2.1.jar:3.2.1]
 	at sun.reflect.GeneratedMethodAccessor6.invoke(Unknown Source) ~[?:?]
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_92]
-	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_92]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_112]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_112]
 	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-3.2.1.jar:3.2.1]
 	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-3.2.1.jar:3.2.1]
 	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32) [gradle-messaging-3.2.1.jar:3.2.1]
@@ -163,29 +174,29 @@ com.fasterxml.jackson.core.JsonParseException: Illegal character '&quot;' (code 
 	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source) [?:?]
 	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:109) [gradle-testing-base-3.2.1.jar:3.2.1]
 	at sun.reflect.GeneratedMethodAccessor5.invoke(Unknown Source) ~[?:?]
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_92]
-	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_92]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_112]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_112]
 	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-3.2.1.jar:3.2.1]
 	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-3.2.1.jar:3.2.1]
 	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:377) [gradle-messaging-3.2.1.jar:3.2.1]
 	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:54) [gradle-base-services-3.2.1.jar:3.2.1]
 	at org.gradle.internal.concurrent.StoppableExecutorImpl$1.run(StoppableExecutorImpl.java:40) [gradle-base-services-3.2.1.jar:3.2.1]
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) [?:1.8.0_92]
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) [?:1.8.0_92]
-	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_92]
-[09:23:17,705][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
-[09:23:18,243][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
-[09:23:18,244][ERROR][org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper][Test worker] Illegal character '&quot;' (code 0x22) in base64 content
- at [Source: org.elasticsearch.common.bytes.BytesReference$MarkSupportingStreamInputWrapper@12d8e4e2; line: 1, column: 73]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) [?:1.8.0_112]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) [?:1.8.0_112]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_112]
+[22:11:48,708][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
+[22:11:48,921][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
+[22:11:48,923][ERROR][org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper][Test worker] Illegal character '&quot;' (code 0x22) in base64 content
+ at [Source: org.elasticsearch.common.bytes.BytesReference$MarkSupportingStreamInputWrapper@4ce33540; line: 1, column: 73]
 com.fasterxml.jackson.core.JsonParseException: Illegal character '&quot;' (code 0x22) in base64 content
- at [Source: org.elasticsearch.common.bytes.BytesReference$MarkSupportingStreamInputWrapper@12d8e4e2; line: 1, column: 73]
+ at [Source: org.elasticsearch.common.bytes.BytesReference$MarkSupportingStreamInputWrapper@4ce33540; line: 1, column: 73]
 	at com.fasterxml.jackson.core.JsonParser._constructError(JsonParser.java:1702) ~[jackson-core-2.8.1.jar:2.8.1]
 	at com.fasterxml.jackson.core.base.ParserMinimalBase._reportError(ParserMinimalBase.java:558) ~[jackson-core-2.8.1.jar:2.8.1]
 	at com.fasterxml.jackson.core.base.ParserMinimalBase._decodeBase64(ParserMinimalBase.java:422) ~[jackson-core-2.8.1.jar:2.8.1]
 	at com.fasterxml.jackson.core.json.UTF8StreamJsonParser.getBinaryValue(UTF8StreamJsonParser.java:553) ~[jackson-core-2.8.1.jar:2.8.1]
 	at com.fasterxml.jackson.core.JsonParser.getBinaryValue(JsonParser.java:1346) ~[jackson-core-2.8.1.jar:2.8.1]
 	at org.elasticsearch.common.xcontent.json.JsonXContentParser.binaryValue(JsonXContentParser.java:182) ~[elasticsearch-5.1.1.jar:5.1.1]
-	at org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper.parseCreateField(LangdetectMapper.java:90) [main/:?]
+	at org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper.parseCreateField(LangdetectMapper.java:96) [main/:?]
 	at org.elasticsearch.index.mapper.FieldMapper.parse(FieldMapper.java:286) [elasticsearch-5.1.1.jar:5.1.1]
 	at org.elasticsearch.index.mapper.FieldMapper$MultiFields.parse(FieldMapper.java:560) [elasticsearch-5.1.1.jar:5.1.1]
 	at org.elasticsearch.index.mapper.FieldMapper.parse(FieldMapper.java:299) [elasticsearch-5.1.1.jar:5.1.1]
@@ -198,10 +209,10 @@ com.fasterxml.jackson.core.JsonParseException: Illegal character '&quot;' (code 
 	at org.elasticsearch.index.mapper.DocumentMapper.parse(DocumentMapper.java:274) [elasticsearch-5.1.1.jar:5.1.1]
 	at org.elasticsearch.index.mapper.DocumentMapper.parse(DocumentMapper.java:270) [elasticsearch-5.1.1.jar:5.1.1]
 	at org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMappingTest.testBinary2(LangdetectMappingTest.java:88) [test/:?]
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_92]
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_92]
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_92]
-	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_92]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_112]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_112]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_112]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_112]
 	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50) [junit-4.12.jar:4.12]
 	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12) [junit-4.12.jar:4.12]
 	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47) [junit-4.12.jar:4.12]
@@ -220,8 +231,8 @@ com.fasterxml.jackson.core.JsonParseException: Illegal character '&quot;' (code 
 	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassProcessor.processTestClass(JUnitTestClassProcessor.java:66) [gradle-testing-jvm-3.2.1.jar:3.2.1]
 	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:51) [gradle-testing-base-3.2.1.jar:3.2.1]
 	at sun.reflect.GeneratedMethodAccessor6.invoke(Unknown Source) ~[?:?]
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_92]
-	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_92]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_112]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_112]
 	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-3.2.1.jar:3.2.1]
 	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-3.2.1.jar:3.2.1]
 	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32) [gradle-messaging-3.2.1.jar:3.2.1]
@@ -229,37 +240,37 @@ com.fasterxml.jackson.core.JsonParseException: Illegal character '&quot;' (code 
 	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source) [?:?]
 	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:109) [gradle-testing-base-3.2.1.jar:3.2.1]
 	at sun.reflect.GeneratedMethodAccessor5.invoke(Unknown Source) ~[?:?]
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_92]
-	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_92]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_112]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_112]
 	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-3.2.1.jar:3.2.1]
 	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-3.2.1.jar:3.2.1]
 	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:377) [gradle-messaging-3.2.1.jar:3.2.1]
 	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:54) [gradle-base-services-3.2.1.jar:3.2.1]
 	at org.gradle.internal.concurrent.StoppableExecutorImpl$1.run(StoppableExecutorImpl.java:40) [gradle-base-services-3.2.1.jar:3.2.1]
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) [?:1.8.0_92]
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) [?:1.8.0_92]
-	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_92]
-[09:23:18,732][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
-[09:23:19,259][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
-[09:23:19,752][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
-[09:23:20,299][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
-[09:23:20,812][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
-[09:23:21,357][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
-[09:23:21,859][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
-[09:23:22,412][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
-[09:23:22,894][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
-[09:23:23,430][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
-[09:23:23,431][ERROR][org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper][Test worker] Illegal white space character (code 0x20) as character #3 of 4-char base64 unit: can only used between units
- at [Source: org.elasticsearch.common.bytes.BytesReference$MarkSupportingStreamInputWrapper@4945baf2; line: 1, column: 61]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) [?:1.8.0_112]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) [?:1.8.0_112]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_112]
+[22:11:49,378][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
+[22:11:49,558][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
+[22:11:50,015][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
+[22:11:50,212][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
+[22:11:50,662][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
+[22:11:50,842][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
+[22:11:51,301][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
+[22:11:51,471][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
+[22:11:51,938][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
+[22:11:52,114][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
+[22:11:52,115][ERROR][org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper][Test worker] Illegal white space character (code 0x20) as character #3 of 4-char base64 unit: can only used between units
+ at [Source: org.elasticsearch.common.bytes.BytesReference$MarkSupportingStreamInputWrapper@5f3911a2; line: 1, column: 61]
 com.fasterxml.jackson.core.JsonParseException: Illegal white space character (code 0x20) as character #3 of 4-char base64 unit: can only used between units
- at [Source: org.elasticsearch.common.bytes.BytesReference$MarkSupportingStreamInputWrapper@4945baf2; line: 1, column: 61]
+ at [Source: org.elasticsearch.common.bytes.BytesReference$MarkSupportingStreamInputWrapper@5f3911a2; line: 1, column: 61]
 	at com.fasterxml.jackson.core.JsonParser._constructError(JsonParser.java:1702) ~[jackson-core-2.8.1.jar:2.8.1]
 	at com.fasterxml.jackson.core.base.ParserMinimalBase._reportError(ParserMinimalBase.java:558) ~[jackson-core-2.8.1.jar:2.8.1]
 	at com.fasterxml.jackson.core.base.ParserMinimalBase._decodeBase64(ParserMinimalBase.java:422) ~[jackson-core-2.8.1.jar:2.8.1]
 	at com.fasterxml.jackson.core.json.UTF8StreamJsonParser.getBinaryValue(UTF8StreamJsonParser.java:553) ~[jackson-core-2.8.1.jar:2.8.1]
 	at com.fasterxml.jackson.core.JsonParser.getBinaryValue(JsonParser.java:1346) ~[jackson-core-2.8.1.jar:2.8.1]
 	at org.elasticsearch.common.xcontent.json.JsonXContentParser.binaryValue(JsonXContentParser.java:182) ~[elasticsearch-5.1.1.jar:5.1.1]
-	at org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper.parseCreateField(LangdetectMapper.java:90) [main/:?]
+	at org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper.parseCreateField(LangdetectMapper.java:96) [main/:?]
 	at org.elasticsearch.index.mapper.FieldMapper.parse(FieldMapper.java:286) [elasticsearch-5.1.1.jar:5.1.1]
 	at org.elasticsearch.index.mapper.DocumentParser.parseObjectOrField(DocumentParser.java:438) [elasticsearch-5.1.1.jar:5.1.1]
 	at org.elasticsearch.index.mapper.DocumentParser.parseValue(DocumentParser.java:564) [elasticsearch-5.1.1.jar:5.1.1]
@@ -270,10 +281,10 @@ com.fasterxml.jackson.core.JsonParseException: Illegal white space character (co
 	at org.elasticsearch.index.mapper.DocumentMapper.parse(DocumentMapper.java:274) [elasticsearch-5.1.1.jar:5.1.1]
 	at org.elasticsearch.index.mapper.DocumentMapper.parse(DocumentMapper.java:270) [elasticsearch-5.1.1.jar:5.1.1]
 	at org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMappingTest.testBinary(LangdetectMappingTest.java:52) [test/:?]
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_92]
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_92]
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_92]
-	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_92]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_112]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_112]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_112]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_112]
 	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50) [junit-4.12.jar:4.12]
 	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12) [junit-4.12.jar:4.12]
 	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47) [junit-4.12.jar:4.12]
@@ -292,8 +303,8 @@ com.fasterxml.jackson.core.JsonParseException: Illegal white space character (co
 	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassProcessor.processTestClass(JUnitTestClassProcessor.java:66) [gradle-testing-jvm-3.2.1.jar:3.2.1]
 	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:51) [gradle-testing-base-3.2.1.jar:3.2.1]
 	at sun.reflect.GeneratedMethodAccessor6.invoke(Unknown Source) ~[?:?]
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_92]
-	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_92]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_112]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_112]
 	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-3.2.1.jar:3.2.1]
 	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-3.2.1.jar:3.2.1]
 	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32) [gradle-messaging-3.2.1.jar:3.2.1]
@@ -301,20 +312,20 @@ com.fasterxml.jackson.core.JsonParseException: Illegal white space character (co
 	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source) [?:?]
 	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:109) [gradle-testing-base-3.2.1.jar:3.2.1]
 	at sun.reflect.GeneratedMethodAccessor5.invoke(Unknown Source) ~[?:?]
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_92]
-	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_92]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_112]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_112]
 	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-3.2.1.jar:3.2.1]
 	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-3.2.1.jar:3.2.1]
 	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:377) [gradle-messaging-3.2.1.jar:3.2.1]
 	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:54) [gradle-base-services-3.2.1.jar:3.2.1]
 	at org.gradle.internal.concurrent.StoppableExecutorImpl$1.run(StoppableExecutorImpl.java:40) [gradle-base-services-3.2.1.jar:3.2.1]
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) [?:1.8.0_92]
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) [?:1.8.0_92]
-	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_92]
-[09:23:23,925][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
-[09:23:25,255][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
-[09:23:25,759][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
-[09:23:27,081][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) [?:1.8.0_112]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) [?:1.8.0_112]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_112]
+[22:11:52,609][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
+[22:11:53,086][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
+[22:11:53,532][DEBUG][org.elasticsearch.index.mapper.MapperService][Test worker] using dynamic[true]
+[22:11:54,019][DEBUG][org.xbib.elasticsearch.common.langdetect.LangdetectService][Test worker] language detection service installed for [ar, bg, bn, cs, da, de, el, en, es, et, fa, fi, fr, gu, he, hi, hr, hu, id, it, ja, ko, lt, lv, mk, ml, nl, no, pa, pl, pt, ro, ru, sq, sv, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
 </pre>
 </span>
 </div>
@@ -326,7 +337,7 @@ com.fasterxml.jackson.core.JsonParseException: Illegal white space character (co
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 3.2.1</a> at 03.01.2017 09:26:11</p>
+<a href="http://www.gradle.org">Gradle 3.2.1</a> at 25.01.2017 22:14:33</p>
 </div>
 </div>
 </body>
