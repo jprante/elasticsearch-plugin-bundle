@@ -108,7 +108,27 @@ public class LangdetectMappingTest extends Assert {
         assertEquals("en", doc.getFields("someField")[0].stringValue());
     }
 
-    public String copyToStringFromClasspath(String path) throws IOException {
+    @Test
+    public void testToFields() throws Exception {
+        String mapping = copyToStringFromClasspath("mapping-to-fields.json");
+        DocumentMapper docMapper = MapperTestUtils.newDocumentMapperParser("someIndex").parse("someType", new CompressedXContent(mapping));
+        String sampleText = copyToStringFromClasspath("english.txt");
+        BytesReference json = jsonBuilder().startObject().field("someField", sampleText).endObject().bytes();
+        ParseContext.Document doc = docMapper.parse("someIndex", "someType", "1", json).rootDoc();
+        assertEquals(1, doc.getFields("someField").length);
+        assertEquals("en", doc.getFields("someField")[0].stringValue());
+        // re-parse it
+        String builtMapping = docMapper.mappingSource().string();
+        docMapper = MapperTestUtils.newDocumentMapperParser("someIndex").parse("someType", new CompressedXContent(builtMapping));
+        json = jsonBuilder().startObject().field("someField", sampleText).endObject().bytes();
+        doc = docMapper.parse("someIndex", "someType", "1", json).rootDoc();
+        assertEquals(1, doc.getFields("someField").length);
+        assertEquals("en", doc.getFields("someField")[0].stringValue());
+        assertEquals(1, doc.getFields("english_field").length);
+        assertEquals("This is a very small example of a text", doc.getFields("english_field")[0].stringValue());
+    }
+
+    private String copyToStringFromClasspath(String path) throws IOException {
         return copyToString(new InputStreamReader(getClass().getResource(path).openStream(), "UTF-8"));
     }
 }

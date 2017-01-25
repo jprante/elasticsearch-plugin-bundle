@@ -22,7 +22,9 @@ import org.xbib.elasticsearch.common.langdetect.LanguageDetectionException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +41,8 @@ public class LangdetectMapper extends TextFieldMapper {
 
     private final LangdetectService langdetectService;
 
+    private final LanguageTo languageTo;
+
     private final int positionIncrementGap;
 
     public LangdetectMapper(String simpleName,
@@ -48,10 +52,12 @@ public class LangdetectMapper extends TextFieldMapper {
                             Settings indexSettings,
                             MultiFields multiFields,
                             CopyTo copyTo,
+                            LanguageTo languageTo,
                             LangdetectService langdetectService) {
         super(simpleName, fieldType, defaultFieldType,
                 positionIncrementGap, false, indexSettings, multiFields, copyTo);
         this.langdetectService = langdetectService;
+        this.languageTo = languageTo;
         this.positionIncrementGap = positionIncrementGap;
     }
 
@@ -100,6 +106,9 @@ public class LangdetectMapper extends TextFieldMapper {
             for (Language lang : langs) {
                 Field field = new Field(fieldType().name(), lang.getLanguage(), fieldType());
                 fields.add(field);
+                if (languageTo.languageToFields().containsKey(lang.getLanguage())) {
+                    parseLanguageToFields(context, languageTo.languageToFields().get(lang.getLanguage()));
+                }
             }
         } catch (LanguageDetectionException e) {
             logger.trace(e.getMessage(), e);
@@ -130,6 +139,38 @@ public class LangdetectMapper extends TextFieldMapper {
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             builder.field(entry.getKey(), entry.getValue());
         }
+        languageTo.toXContent(builder, params);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void parseLanguageToFields(ParseContext originalContext, Object languageToFields) throws IOException {
+        List<Object> fieldList = languageToFields instanceof List ?
+                (List<Object>)languageToFields : Collections.singletonList(languageToFields);
+        ParseContext context = originalContext.createCopyToContext();
+        for (Object field : fieldList) {
+            ParseContext.Document targetDoc = null;
+            for (ParseContext.Document doc = context.doc(); doc != null; doc = doc.getParent()) {
+                if (field.toString().startsWith(doc.getPrefix())) {
+                    targetDoc = doc;
+                    break;
+                }
+            }
+            if (targetDoc == null) {
+                throw new IllegalArgumentException("target doc is null");
+            }
+            final ParseContext copyToContext;
+            if (targetDoc == context.doc()) {
+                copyToContext = context;
+            } else {
+                copyToContext = context.switchDoc(targetDoc);
+            }
+            FieldMapper fieldMapper = copyToContext.docMapper().mappers().getMapper(field.toString());
+            if (fieldMapper != null) {
+                fieldMapper.parse(copyToContext);
+            } else {
+                throw new MapperParsingException("attempt to copy value to non-existing field [" + field + "]");
+            }
+        }
     }
 
     public static class Defaults {
@@ -149,6 +190,8 @@ public class LangdetectMapper extends TextFieldMapper {
     public static class Builder extends FieldMapper.Builder<Builder, TextFieldMapper> {
 
         protected int positionIncrementGap = -1;
+
+        protected LanguageTo languageTo = LanguageTo.builder().build();
 
         protected Settings.Builder settingsBuilder = Settings.builder();
 
@@ -240,6 +283,11 @@ public class LangdetectMapper extends TextFieldMapper {
             return this;
         }
 
+        public Builder languageTo(LanguageTo languageTo) {
+            this.languageTo = languageTo;
+            return this;
+        }
+
         @Override
         public LangdetectMapper build(BuilderContext context) {
             if (positionIncrementGap != -1) {
@@ -266,6 +314,7 @@ public class LangdetectMapper extends TextFieldMapper {
                     context.indexSettings(),
                     multiFieldsBuilder.build(this, context),
                     copyTo,
+                    languageTo,
                     service);
         }
     }
@@ -367,6 +416,13 @@ public class LangdetectMapper extends TextFieldMapper {
                         builder.profile(XContentMapValues.nodeStringValue(fieldNode, null));
                         iterator.remove();
                         break;
+                    case "language_to" :
+                        Map<String, Object> map = XContentMapValues.nodeMapValue(fieldNode, null);
+                        LanguageTo.Builder languageToBuilder = LanguageTo.builder();
+                        languageToBuilder.add(map);
+                        builder.languageTo(languageToBuilder.build());
+                        iterator.remove();
+                        break;
                     default:
                         break;
                 }
@@ -374,4 +430,51 @@ public class LangdetectMapper extends TextFieldMapper {
             return builder;
         }
     }
+
+    public static class LanguageTo {
+
+        private final Map<String, Object> languageToFields;
+
+        private LanguageTo(Map<String, Object> languageToFields) {
+            this.languageToFields = languageToFields;
+        }
+
+        public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
+            if (!languageToFields.isEmpty()) {
+                builder.startObject("language_to");
+                for (Map.Entry<String, Object> field : languageToFields.entrySet()) {
+                    builder.field(field.getKey(), field.getValue());
+                }
+                builder.endObject();
+            }
+            return builder;
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static class Builder {
+            private final Map<String, Object> languageToBuilders = new LinkedHashMap<>();
+
+            public LanguageTo.Builder add(String language, String field) {
+                languageToBuilders.put(language, field);
+                return this;
+            }
+
+            public LanguageTo.Builder add(Map<String, Object> map) {
+                languageToBuilders.putAll(map);
+                return this;
+            }
+
+            public LanguageTo build() {
+                return new LanguageTo(Collections.unmodifiableMap(languageToBuilders));
+            }
+        }
+
+        public Map<String, Object> languageToFields() {
+            return languageToFields;
+        }
+    }
+
 }
