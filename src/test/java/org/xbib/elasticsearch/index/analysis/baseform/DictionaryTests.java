@@ -15,7 +15,7 @@ public class DictionaryTests extends Assert {
     public void verifyDE() throws IOException {
         Dictionary dictionary = new Dictionary();
         InputStreamReader reader = new InputStreamReader(getClass().getResource("/baseform/de-lemma-utf8.txt").openStream(), "UTF-8");
-        dictionary.load(reader);
+        dictionary.loadBaseform(reader);
         reader.close();
         BufferedReader br = new BufferedReader(new InputStreamReader(getClass().getResource("/baseform/de-lemma-utf8.txt").openStream(), "UTF-8"));
         String line;
@@ -35,6 +35,7 @@ public class DictionaryTests extends Assert {
         try {
             CharSequence baseform = dictionary.lookup(word);
         } catch (StackOverflowError e) {
+            // if stack overflow error occurs, we have faulty entries
             return false;
         }
         return true;

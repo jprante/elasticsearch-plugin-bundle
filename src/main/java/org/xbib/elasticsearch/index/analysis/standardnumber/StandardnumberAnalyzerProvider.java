@@ -13,7 +13,6 @@ import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapper;
  */
 public class StandardnumberAnalyzerProvider extends AbstractIndexAnalyzerProvider<StandardnumberAnalyzer> {
 
-
     private final StandardnumberAnalyzer analyzer;
 
     public StandardnumberAnalyzerProvider(IndexSettings indexSettings, Environment environment, String name,

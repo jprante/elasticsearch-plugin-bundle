@@ -1,6 +1,7 @@
 package org.xbib.elasticsearch.index.mapper.standardnumber;
 
 import org.elasticsearch.common.inject.AbstractModule;
+import org.xbib.elasticsearch.common.standardnumber.StandardnumberService;
 
 /**
  *

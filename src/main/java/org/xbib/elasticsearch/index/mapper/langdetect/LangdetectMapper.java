@@ -46,7 +46,7 @@ public class LangdetectMapper extends TextFieldMapper {
     private final int positionIncrementGap;
 
     public LangdetectMapper(String simpleName,
-                            TextFieldType fieldType,
+                            MappedFieldType fieldType,
                             MappedFieldType defaultFieldType,
                             int positionIncrementGap,
                             Settings indexSettings,
@@ -175,7 +175,7 @@ public class LangdetectMapper extends TextFieldMapper {
 
     public static class Defaults {
 
-        public static final MappedFieldType LANG_FIELD_TYPE = new TextFieldType();
+        public static final TextFieldType LANG_FIELD_TYPE = new TextFieldType();
 
         static {
             LANG_FIELD_TYPE.setStored(true);
@@ -308,7 +308,7 @@ public class LangdetectMapper extends TextFieldMapper {
             setupFieldType(context);
             LangdetectService service = new LangdetectService(settingsBuilder.build());
             return new LangdetectMapper(name,
-                    (TextFieldType) fieldType(),
+                    fieldType(),
                     defaultFieldType,
                     positionIncrementGap,
                     context.indexSettings(),

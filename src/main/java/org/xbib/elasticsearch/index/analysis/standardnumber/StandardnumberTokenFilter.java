@@ -6,7 +6,7 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PackedTokenAttributeImpl;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.elasticsearch.common.settings.Settings;
-import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberService;
+import org.xbib.elasticsearch.common.standardnumber.StandardnumberService;
 
 import java.io.IOException;
 import java.nio.charset.CharacterCodingException;

@@ -5,6 +5,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
+import org.xbib.elasticsearch.common.decompound.fst.FstDecompounder;
 
 import java.io.IOException;
 
@@ -28,7 +29,7 @@ public class FstDecompoundTokenFilterFactory extends AbstractTokenFilterFactory 
 
     private FstDecompounder createDecompounder(Settings settings) {
         try {
-            String words = settings.get("words", "/decompound/fst/words.fst");
+            String words = settings.get("fst", "/decompound/fst/words.fst");
             return new FstDecompounder(getClass().getResourceAsStream(words));
         } catch (IOException e) {
             throw new IllegalArgumentException("fst decompounder resources in settings not found: " + settings, e);

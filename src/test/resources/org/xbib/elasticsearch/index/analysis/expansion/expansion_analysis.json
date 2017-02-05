@@ -1,0 +1,12 @@
+{
+  "index":{
+    "analysis":{
+      "analyzer" : {
+        "expansion" : {
+          "type": "custom",
+          "filter" : ["expansion", "unique" ]
+        }
+      }
+    }
+  }
+}

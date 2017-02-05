@@ -1,0 +1,364 @@
+= Standard numbers for Java
+Jörg Prante
+Version 1.0
+:sectnums:
+:toc: preamble
+:toclevels: 4
+:!toc-title: Content
+:experimental:
+:description: Stndard number processing
+:keywords: Standard number, Java
+:icons: font
+:linkattrs:
+
+Standard numbers are numbers that have a defined syntax, drafted and maintained by
+standard bodies, and embraced by organizations worldwide.
+Standard numbers are considered to be unique.
+They are assigned by the standard body or can be constructed in a specified manner to ensure uniqueness.
+They can be checked for validity and carry checksums.
+
+The economic advantages of standard numbers are manifold
+
+* they are compact
+* they identify things or entities
+* they can be printed, recognized, and compared for identification
+* they can be processed by computers, for instance as a key in a database
+* they are globally available
+* they persist
+
+The Java API for standard numbers provides
+
+* a parser for standard numbers
+* a formatter for standard numbers
+* a checksum calculator
+* and a validator for standard numbers
+
+The following standard numbers are implemented
+
+ARK, DOI, EAN, GTIN, IBAN, ISAN, ISBN, ISMN, ISNI, ISSN, ISTC, ISWC, ORCID, PPN, SICI, UPC, ZDB
+
+== ARK - Archival Resource Key
+
+An ARK is a Uniform Resource Locator (URL) that is a multi-purpose identifier
+for information objects of any type. An ARK contains the label ark: after the
+hostname, an URL request terminated by '?' returns a brief metadata record,
+and an URL request terminated by '??' returns metadata that includes a commitment
+statement from the current service provider.
+
+The ARK and its inflections ('?' and '??') gain access to three facets of a
+provider's ability to provide persistence.
+
+Implicit in the design of the ARK scheme is that persistence is purely a matter
+of service and not a property of a naming syntax.
+
+See link:http://tools.ietf.org/html/draft-kunze-ark-18[ARK IETF RFC, window='_blank'],
+link:http://www.cdlib.org/services/uc3/docs/jak_ARKs_Berlin_2012.pdf[10 years ARK, window='_blank']
+
+== DOI - Digital Object Identifier System (ISO 26324, Z39.50 BIB-1 Use Attribute 1094)
+
+DOI is an acronym for "digital object identifier", meaning a "digital identifier of an object"
+rather than an "identifier of a digital object". The DOI system was initiated by the
+International DOI Foundation in 1998, and initially developed with the collaboration
+of some participants in ISO/TC46/SC9. Due to its application in the fields of
+information and documentation and previous collaboration with some ISO/TC46/SC9 participants,
+it was introduced as a possible work item in 2004 and further developed from 2006 to 2010.
+
+The DOI system is designed to work over the Internet. A DOI name is permanently assigned
+to an object to provide a resolvable persistent network link to current information about
+that object, including where the object, or information about it, can be found on the
+Internet. While information about an object can change over time, its DOI name will not
+change. A DOI name can be resolved within the DOI system to values of one or more types
+of data relating to the object identified by that DOI name, such as a URL, an e-mail address,
+other identifiers and descriptive metadata.
+
+The DOI system enables the construction of automated services and transactions.
+Applications of the DOI system include but are not limited to managing information
+and documentation location and access; managing metadata; facilitating electronic
+transactions; persistent unique identification of any form of any data; and commercial
+and non-commercial transactions.
+
+The content of an object associated with a DOI name is described unambiguously
+by DOI metadata, based on a structured extensible data model that enables the object
+to be associated with metadata of any desired degree of precision and granularity
+to support description and services. The data model supports interoperability
+between DOI applications.
+
+The scope of the DOI system is not defined by reference to the type of content
+(format, etc.) of the referent, but by reference to the functionalities it provides
+and the context of use. The DOI system provides, within networks of DOI applications,
+for unique identification, persistence, resolution, metadata and semantic interoperability.
+
+== EAN
+
+European Article Number is a 13-digit barcoding standard for marking products
+sold at retail point of sale.
+
+Numbers encoded in UPC and EAN barcodes are known as
+Global Trade Item Numbers (GTIN).
+
+== GTIN - Global Trade Item Number
+
+GTIN describes a family of GS1 (EAN.UCC) global data structures that employ
+14 digits and can be encoded into various types of data carriers.
+
+Currently, GTIN is used exclusively within bar codes, but it could also be used
+in other data carriers such as radio frequency identification (RFID).
+The GTIN is only a term and does not impact any existing standards, nor does
+it place any additional requirements on scanning hardware.
+
+For North American companies, the UPC is an existing form of the GTIN.
+
+Since 2005, EAN International and American UCC merged to GS1 and also
+EAN and UPC is now named GTIN.
+
+The EAN/UCC-13 code is now officially called GTIN-13 (Global Trade Identifier Number).
+Former 12-digit UPC codes can be converted into EAN/UCC-13 code by simply
+adding a preceeding zero.
+
+As of January 1, 2007, the former ISBN numbers have been integrated into
+the EAN/UCC-13 code. For each old ISBN-10 code, there exists a proper translation
+into EAN/UCC-13 by adding "978" as prefix.
+
+The family of data structures comprising GTIN include
+
+* GTIN-8 (EAN/UCC-8): this is an 8-digit number
+* GTIN-12 (UPC-A): this is a 12-digit number
+* GTIN-13 (EAN/UCC-13): this is a 13-digit number
+* GTIN-14 (EAN/UCC-14 or ITF-14): this is a 14-digit number
+
+See link:http://www.gtin.info/[GTIN info, window='_blank']
+
+== IBAN ISO 13616 International Bank Account Number (IBAN)
+
+The International Bank Account Number (IBAN) is an internationally agreed means of
+identifying bank accounts across national borders with a reduced risk of transcription
+errors. It was originally adopted by the European Committee for Banking Standards (ECBS)
+and later as an international standard under ISO 13616:1997. The current standard
+is ISO 13616:2007, which indicates SWIFT as the formal registrar.
+
+Checksum calculation is in accordance to ISO 7064 MOD-97.
+
+== ISAN - ISO 15706 International Standard Audiovisual Number
+
+The International Standard Audiovisual Number (ISAN) is a unique identifier for
+audiovisual works and related versions, similar to ISBN for books.
+
+It was developed within an ISO (International Organisation for Standardisation) TC46/SC9
+working group. ISAN is managed and run by ISAN-IA.
+
+The ISAN standard (ISO standard 15706:2002 and ISO 15706-2) is recommended or required
+as the audiovisual identifier of choice for producers, studios, broadcasters,
+Internet media providers and video games publishers who need to encode, track, and
+distribute video in a variety of formats.
+
+It provides a unique, internationally recognized and permanent reference number for each
+audiovisual work and related versions registered in the ISAN system.
+
+ISAN identifies works throughout their entire life cycle from conception, to production,
+to distribution and consumption.
+
+ISANs can be incorporated in both digital and physical media, such as theatrical
+release prints, DVDs, publications, advertising, marketing materials and packaging,
+as well as licensing contracts to uniquely identify works.
+
+The ISAN identifier is incorporated in many draft and final standards such as
+AACS, DCI, MPEG, DVB, and ATSC.
+
+== ISBN - International Standard Book Number (ISO 2108, Z39.50 BIB-1 Use Attribute 7)
+
+The International Standard Book Number is a 13-digit number
+that uniquely identifies books and book-like products published
+internationally.
+
+The purpose of the ISBN is to establish and identify one title or
+edition of a title from one specific publisher
+and is unique to that edition, allowing for more efficient marketing of products by booksellers,
+libraries, universities, wholesalers and distributors.
+
+Every ISBN consists of thirteen digits and whenever it is printed it is preceded by the letters ISBN.
+The thirteen-digit number is divided into four parts of variable length, each part separated by a hyphen.
+
+This class is based upon the ISBN converter and formatter class by
+link:http://www.openly.com/[Openly Informatics, Inc.]
+
+See link:https://www.isbn-international.org/content/isbn-users-manual[The ISBN Users' Manual, window='_blank'],
+link:https://www.ietf.org/proceedings/37/charters/urn-charter.html[The IETF URN Charter, window='_blank'],
+link:http://www.iana.org/assignments/urn-namespaces[The IANA URN assignments, window='_blank'],
+link:https://www.isbn-international.org/range_file_generation[ISBN prefix generation, window='_blank']
+
+== ISMN - International Standard Music Number (ISO 10957, Z39.50 BIB-1 Use Attribute 1092)
+
+The International Standard Music Number (ISMN) is a thirteen-character alphanumeric identifier
+for printed music developed by ISO. The original proposal for an ISMN was made by the
+UK Branch of IAML (International Association of Music Libraries, Archives and Documentation
+Centres).
+
+The original format comprised four elements: a distinguishing prefix M, a publisher ID,
+an item ID and a check digit, typically looking like M-2306-7118-7.
+
+From 1 January 2008 the ISMN was defined as a thirteen digit identifier beginning 979-0 where
+the zero replaced M in the old-style number. The resulting number is identical with its
+EAN-13 number as encoded in the item's barcode.
+
+See link:http://www.ismn-international.org/download/Web_ISMN%20Manual_2008-3.pdf[ISMN Manual 2008, window='_blank']
+
+== ISNI - International Standard Name Identifier (ISO 27729)
+
+The International Standard Name Identifier (ISNI) is a method for uniquely identifying
+the public identities of contributors to media content such as books, TV programmes,
+and newspaper articles. Such an identifier consists of 16 numerical digits divided
+into four blocks.
+
+Checksum calculation is in accordance to ISO/IEC 7064:2003, MOD 11-2.
+ 
+== ISSN - International Standard Serial Number (ISO 3297, Z39.50 BIB-1 Use Attribute 8)
+
+The International Standard Serial Number (ISSN) is a unique
+eight-digit number used to identify a print or electronic periodical
+publication. The ISSN system was adopted as international standard
+ISO 3297 in 1975. The ISO subcommittee TC 46/SC 9 is responsible
+for the standard.
+
+The ISSN (International Standard Serial Number) is an eight-digit number
+which identifies periodical publications as such, including electronic
+serials.
+
+The ISSN is a numeric code which is used as an identifier: it has no
+signification in itself and does not contain in itself any information
+referring to the origin or contents of the publication.
+
+The ISSN takes the form of the acronym ISSN followed by two groups
+of four digits, separated by a hyphen. The eighth character is a
+control digit calculated according to a modulo 11 algorithm on
+the basis of the 7 preceding digits; this eighth control character
+may be an "X" if the result of the computing is equal to "10",
+in order to avoid any ambiguity.
+
+The ISSN is linked to a standardized form of the title of the
+identified serial, known as the "key title", which repeats
+the title of the publication, qualifying it with additional elements
+in order to distinguish it from other publications having identical
+titles.
+
+If the title of the publication changes in any significant way,
+a new ISSN must be assigned in order to correspond to this new form
+of title and avoid any confusion. A serial publication whose
+title is modified several times in the course of its existence
+will be assigned each time a new ISSN, thus allowing precise
+identification of each form of the title : in fact it is then
+considered that they are different publications even if there
+is a logical link between them.
+
+Contrary to other types of publications, the world of serial
+publications is particularly changeable and complex :
+the lifetime of a title may be extremely short; many publications
+may be part of a complex set of relationships, etc.
+These particularities themselves necessitated the introduction
+of the ISSN.
+
+See link:http://www.issn.org/2-22636-All-about-ISSN.php["All about ISSN", window='_blank']:
+
+== ISTC - International Standard Text Code (ISO 21047)
+
+The International Standard Text Code (ISTC) is a numbering system for the unique identification
+of text-based works; the term “work” can refer to any content appearing in conventional
+printed books, audio-books, static e-books or enhanced digital books, as well as content
+which might appear in a newspaper or journal.
+
+The ISTC provides sales analysis systems, retail websites, library catalogs and other
+bibliographic systems with a method of automatically linking together publications
+of the “same content” and/or “related content”, thus improving discoverability of
+products and efficiencies.
+
+An ISTC number is the link between a user’s search for a piece of content and the
+ultimate sale or loan of a publication.
+
+The standard was formally published in March 2009.
+
+Checksum algorithm is ISO 7064 MOD 16/3.
+
+== ISWC - International Standard Musical Work Code (ISO 15707)
+
+International Standard Musical Work Code (ISWC) is a unique identifier for
+musical works, similar to ISBN.
+
+Its primary purpose is in collecting society administration, and to clearly identify works in
+legal contracts. It would also be useful in library cataloging.
+
+Due to the fact that a musical work can have multiple authors, it is inevitable that,
+on rare occasions, a duplicate ISWC might exist and might not be detected immediately.
+
+Because of the existing business practices among collecting societies, it is not possible
+to simply declare an ISWC as obsolete. In such cases, as soon as they are identified,
+the system will deal with duplicate registrations by linking such registration records
+in the ISWC database.
+
+== ORCID - Open Researcher and Contributor ID
+
+ORCID is compatible to International Standard Name Identifier (ISNI, ISO 2772).
+
+Checksum calculation is according to ISO/IEC 7064:2003, MOD 11-2.
+
+== PPN - Pica Productie Nummer
+
+A catalog record numbering system, uniquely identifying records, used by PICA
+(Project voor geIntegreerde Catalogus Automatisering) integrated library systems.
+
+== SICII - Serial Item and Contribution Identifier (Z39.56)
+
+The SICI code (Serial Item and Contribution Identifier) is described in the
+American standard ANSI/NISO Z39.56. The SICI code is known among
+international scientific publishers and reproduction rights agencies.
+The SICI even provides for the unambiguous identification of each article
+or contribution published in a given issue of a serial publication.
+
+The SICI contains
+
+* the ISSN
+
+* the date of publication, between brackets and formatted according to the
+formula YYYYMM
+
+* the issue number
+
+* the version number of the standard, here 1, preceded by a semicolon
+
+* and lastly a hyphen which precedes the control character calculated
+on the basis of all the preceding characters
+
+Example:
+++++
+0095-4403(199502/03)21:3&lt;12:WATIIB&gt;2.0.TX;2-J
+++++
+
+== UPC - Universal Product Code (ISO 15420)
+
+The Universal Product Code (UPC) is a barcode symbology (i.e., a specific type of barcode)
+that is widely used in the United States, Canada, the United Kingdom, Australia,
+New Zealand and in other countries for tracking trade items in stores.
+Its most common form, the UPC-A, consists of 12 numerical digits, which are uniquely
+assigned to each trade item.
+
+Along with the related EAN barcode, the UPC is the barcode mainly used for scanning
+of trade items at the point of sale, per GS1 specifications.
+
+UPC data structures are a component of GTINs (Global Trade Item Numbers).
+
+All of these data structures follow the global GS1 specification which bases on
+international standards.
+
+== ZDB - Zeitschriftendatenbank-ID
+
+ZDB is the world’s largest specialized database for serial titles (journals, annuals, newspapers, also
+e-journals).
+
+See link:http://support.d-nb.de/iltis/onlineRoutinen/Pruefziffernberechnung.htm[Prüfziffernberechnung in ILTIS, window='_blank'],
+link:https://wiki.dnb.de/pages/viewpage.action?pageId=48139522[DNB Wiki, window='_blank']
+
+== Javadoc
+
+The Javadoc can be found link:javadoc[here].
+
+== Gradle test report
+
+The Gradle test report can be found link:test[here].

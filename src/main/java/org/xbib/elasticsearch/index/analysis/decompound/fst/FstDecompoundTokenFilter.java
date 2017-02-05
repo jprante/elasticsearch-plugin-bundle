@@ -5,6 +5,7 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
+import org.xbib.elasticsearch.common.decompound.fst.FstDecompounder;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -16,7 +17,7 @@ public class FstDecompoundTokenFilter extends TokenFilter {
 
     protected final LinkedList<DecompoundToken> tokens;
 
-    protected final FstDecompounder decomp;
+    protected final FstDecompounder fstDecompounder;
 
     protected final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
 
@@ -26,10 +27,10 @@ public class FstDecompoundTokenFilter extends TokenFilter {
 
     private State current;
 
-    protected FstDecompoundTokenFilter(TokenStream input, FstDecompounder decomp) {
+    protected FstDecompoundTokenFilter(TokenStream input, FstDecompounder fstDecompounder) {
         super(input);
         this.tokens = new LinkedList<>();
-        this.decomp = decomp;
+        this.fstDecompounder = fstDecompounder;
     }
 
     @Override
@@ -59,10 +60,19 @@ public class FstDecompoundTokenFilter extends TokenFilter {
     protected void decompound() {
         int start = offsetAtt.startOffset();
         CharSequence term = new String(termAtt.buffer(), 0, termAtt.length());
-        for (String s : decomp.decompound(term.toString())) {
-            int len = s.length();
-            tokens.add(new DecompoundToken(s, start, len));
-            start += len;
+        for (String suggestions : fstDecompounder.decompound(term.toString())) {
+            for (String suggestion : suggestions.split(",")) {
+                int off = start;
+                int maxlen = -1;
+                for (String s : suggestion.split("\\.")) {
+                    int len = s.length();
+                    tokens.add(new DecompoundToken(s, off, len));
+                    if (len > maxlen) {
+                        maxlen = len;
+                    }
+                }
+                start += maxlen;
+            }
         }
     }
 
@@ -76,21 +86,21 @@ public class FstDecompoundTokenFilter extends TokenFilter {
     @Override
     public boolean equals(Object object) {
         return object instanceof FstDecompoundTokenFilter &&
-                decomp.equals( ((FstDecompoundTokenFilter)object).decomp);
+                fstDecompounder.equals( ((FstDecompoundTokenFilter)object).fstDecompounder);
     }
 
     @Override
     public int hashCode() {
-        return decomp.hashCode();
+        return fstDecompounder.hashCode();
     }
 
-    protected class DecompoundToken {
+    private class DecompoundToken {
 
-        public final CharSequence txt;
-        public final int startOffset;
-        public final int endOffset;
+        final CharSequence txt;
+        final int startOffset;
+        final int endOffset;
 
-        public DecompoundToken(CharSequence txt, int offset, int length) {
+        DecompoundToken(CharSequence txt, int offset, int length) {
             this.txt = txt;
             int startOff = FstDecompoundTokenFilter.this.offsetAtt.startOffset();
             int endOff = FstDecompoundTokenFilter.this.offsetAtt.endOffset();

@@ -15,7 +15,7 @@
         },
         "standardnumber" : {
           "type" : "standardnumber",
-          "number_types" : [ "isbn" ]
+          "number_types" : [ "isbn", "issn", "zdb" ]
         },
         "simple_hyphen" : {
           "type" : "hyphen",
@@ -175,6 +175,18 @@
           "filter" : [
             "sortform"
           ]
+        },
+        "isbn" : {
+          "type" : "standardnumber",
+          "standardnumbers" : [ "isbn" ]
+        },
+        "issn" : {
+          "type" : "standardnumber",
+          "standardnumbers" : [ "isbn" ]
+        },
+        "zdb" : {
+          "type" : "standardnumber",
+          "standardnumbers" : [ "zdb" ]
         }
       }
     }

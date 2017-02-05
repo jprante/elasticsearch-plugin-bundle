@@ -6,7 +6,7 @@ import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapper;
-import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberService;
+import org.xbib.elasticsearch.common.standardnumber.StandardnumberService;
 
 /**
  *

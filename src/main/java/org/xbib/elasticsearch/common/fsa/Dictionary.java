@@ -20,19 +20,45 @@ public class Dictionary {
 
     private FSATraversal matcher;
 
-    public Dictionary load(String language) throws IOException {
-        return load(new InputStreamReader(this.getClass()
-                .getResourceAsStream(language + "-lemma-utf8.txt"), StandardCharsets.UTF_8));
+    /**
+     * Format of file: lemma "\t" baseform
+     * @param reader the reader
+     * @return the dictionary
+     * @throws IOException if dictionary load fails
+     */
+    public Dictionary loadBaseform(Reader reader) throws IOException {
+        List<byte[]> lines = new ArrayList<>();
+        try (BufferedReader bufferedReader = new BufferedReader(reader)) {
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                lines.add(line.replace('\t', '+').getBytes(StandardCharsets.UTF_8));
+            }
+        }
+        lines.sort(FSABuilder.LEXICAL_ORDERING);
+        FSABuilder builder = new FSABuilder();
+        for (byte[] b : lines) {
+            builder.add(b, 0, b.length);
+        }
+        this.fsa = builder.complete();
+        this.matcher = new FSATraversal(fsa);
+        return this;
     }
 
-    public Dictionary load(Reader in) throws IOException {
-        BufferedReader reader = new BufferedReader(in);
+    /**
+     * Format of file: baseform "\t" lemma
+     * @param reader the reader
+     * @return the dictionary
+     * @throws IOException if dictionary load fails
+     */
+    public Dictionary loadExpansions(Reader reader) throws IOException {
         List<byte[]> lines = new ArrayList<>();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            lines.add(line.replace('\t', '+').getBytes(StandardCharsets.UTF_8));
+        try (BufferedReader bufferedReader = new BufferedReader(reader)) {
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] s = line.split("\t");
+                lines.add((s[1] + '+' + s[0]).getBytes(StandardCharsets.UTF_8));
+            }
         }
-        reader.close();
         lines.sort(FSABuilder.LEXICAL_ORDERING);
         FSABuilder builder = new FSABuilder();
         for (byte[] b : lines) {

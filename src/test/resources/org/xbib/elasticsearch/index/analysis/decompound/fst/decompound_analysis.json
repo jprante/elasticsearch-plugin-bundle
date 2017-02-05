@@ -1,17 +1,17 @@
 {
-    "index":{
-        "analysis":{
-          "filter":{
-            "decomp":{
-              "type":"fst_decompound"
-            }
-          },
-          "tokenizer" : {
-                "decomp" : {
-                   "type":"standard",
-                   "filter" : "decomp"
-                }            
-            }
+  "index":{
+    "analysis":{
+      "filter":{
+        "decomp":{
+          "type":"fst_decompound"
         }
+      },
+      "analyzer" : {
+        "decomp" : {
+          "type": "custom",
+          "filter" : ["decomp", "unique" ]
+        }
+      }
     }
+  }
 }

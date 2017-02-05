@@ -35,5 +35,4 @@ public class StandardnumberAnalyzer extends Analyzer {
         }
         return new TokenStreamComponents(tokenizer, tokenStream);
     }
-
 }

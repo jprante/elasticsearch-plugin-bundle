@@ -1480,9 +1480,6 @@
                 "properties": {
                     "standardNumber": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -1491,9 +1488,6 @@
                 "properties": {
                     "identifierDNB": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -1502,9 +1496,6 @@
                 "properties": {
                     "standardNumber": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -1513,9 +1504,6 @@
                 "properties": {
                     "identifierEKZ": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -1524,9 +1512,6 @@
                 "properties": {
                     "identifierGBV": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -1535,9 +1520,6 @@
                 "properties": {
                     "identifierHBZ": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -1546,9 +1528,6 @@
                 "properties": {
                     "identifierHES": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -1557,9 +1536,6 @@
                 "properties": {
                     "identifierISBN": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword",
                         "copy_to": [
                             "cql.allIndexes",
@@ -1580,9 +1556,6 @@
                 "properties": {
                     "identifierISBN": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword",
                         "copy_to": [
                             "cql.allIndexes",
@@ -1596,9 +1569,6 @@
                 "properties": {
                     "identifierISBN": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword",
                         "copy_to": [
                             "cql.allIndexes",
@@ -1618,9 +1588,6 @@
                     },
                     "standardNumber": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -1635,9 +1602,6 @@
                     },
                     "standardNumber": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -1672,16 +1636,10 @@
                 "properties": {
                     "identifierLocal": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "standardNumber": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -1690,9 +1648,6 @@
                 "properties": {
                     "identifierNBV": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -1701,9 +1656,6 @@
                 "properties": {
                     "identifierNIE": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -1712,9 +1664,6 @@
                 "properties": {
                     "standardNumber": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -1723,9 +1672,6 @@
                 "properties": {
                     "standardNumber": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -1734,16 +1680,10 @@
                 "properties": {
                     "identifierNorm": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "standardNumber": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -3047,18 +2987,12 @@
             },
             "RecordCodes": {
                 "type": "text",
-                "norms": {
-                    "enabled": false
-                },
                 "analyzer": "keyword"
             },
             "RecordIdentifier": {
                 "properties": {
                     "identifierForTheRecord": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "copy_to": [
                             "cql.allIndexes",
                             "dc.identifier",
@@ -3074,9 +3008,6 @@
                     },
                     "identifierForTheExternalRecord": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -3085,9 +3016,6 @@
                 "properties": {
                     "identifierForTheLocalRecord": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "recordIdentifierLocal": {
@@ -3099,9 +3027,6 @@
                 "properties": {
                     "recordIdentifierSuper": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword",
                         "copy_to": [
                             "bib.identifierAuthority=mabwhole"
@@ -3113,9 +3038,6 @@
                 "properties": {
                     "systemNumber": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -3199,9 +3121,6 @@
                 "properties": {
                     "secondaryEdition": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword",
                         "copy_to": [
                             "cql.allIndexes"
@@ -3221,9 +3140,6 @@
                 "properties": {
                     "secondaryEdition": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "copy_to": [
                             "cql.allIndexes",
                             "bib.dateIssued"
@@ -3320,9 +3236,6 @@
                     },
                     "designation": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword",
                         "copy_to": [
                             "bib.identifierAuthority=mabwhole"
@@ -3378,9 +3291,6 @@
                 "properties": {
                     "source": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "copy_to": [
                             "cql.allIndexes",
                             "bib.dateIssued"
@@ -3508,9 +3418,6 @@
                 "properties": {
                     "subject": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -3519,9 +3426,6 @@
                 "properties": {
                     "subject": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -3530,9 +3434,6 @@
                 "properties": {
                     "subject": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -3547,16 +3448,10 @@
                     },
                     "subject": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "subjectIdentifier": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword",
                         "copy_to": [
                             "dc.identifier"
@@ -3564,9 +3459,6 @@
                     },
                     "type": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -3701,114 +3593,66 @@
                     },
                     "basenotation": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "edition": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "notation": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "notation1": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "notation2": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "notation3a": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "notation3b": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "notation3c": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "notation4": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "notation5": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "notation6": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "othernotation": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "source": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "subject": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "subjectSource": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "type": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -3817,16 +3661,10 @@
                 "properties": {
                     "subject": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "subjectIdentifier": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword",
                         "copy_to": [
                             "dc.identifier"
@@ -3837,9 +3675,6 @@
                     },
                     "type": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -3848,9 +3683,6 @@
                 "properties": {
                     "subject": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -3964,23 +3796,14 @@
                             },
                             "identifierGND": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectChronological": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectConference": {
@@ -3988,51 +3811,30 @@
                             },
                             "subjectCorporateBodyName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectCorporateBodySubUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectDate": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGenre": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGeoName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectIdentifier": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectMusic": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectMusicKey": {
@@ -4043,44 +3845,26 @@
                             },
                             "subjectNameAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectNumbering": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectPersonName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTitleName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTopicName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             }
                         }
@@ -4092,23 +3876,14 @@
                             },
                             "identifierGND": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectChronological": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectConference": {
@@ -4116,51 +3891,30 @@
                             },
                             "subjectCorporateBodyName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectCorporateBodySubUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectDate": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGenre": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGeoName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectIdentifier": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectMusic": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectName": {
@@ -4168,44 +3922,26 @@
                             },
                             "subjectNameAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectNumbering": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectPersonName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTitleName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTopicName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             }
                         }
@@ -4217,23 +3953,14 @@
                             },
                             "identifierGND": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectChronological": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectConference": {
@@ -4241,51 +3968,30 @@
                             },
                             "subjectCorporateBodyName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectCorporateBodySubUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectDate": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGenre": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGeoName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectIdentifier": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectMusic": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectName": {
@@ -4293,44 +3999,26 @@
                             },
                             "subjectNameAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectNumbering": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectPersonName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTitleName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTopicName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             }
                         }
@@ -4342,23 +4030,14 @@
                             },
                             "identifierGND": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectChronological": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectConference": {
@@ -4366,51 +4045,30 @@
                             },
                             "subjectCorporateBodyName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectCorporateBodySubUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectDate": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGenre": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGeoName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectIdentifier": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectMusic": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectName": {
@@ -4418,44 +4076,26 @@
                             },
                             "subjectNameAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectNumbering": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectPersonName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTitleName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTopicName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             }
                         }
@@ -4467,23 +4107,14 @@
                             },
                             "identifierGND": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectChronological": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectConference": {
@@ -4491,51 +4122,30 @@
                             },
                             "subjectCorporateBodyName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectCorporateBodySubUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectDate": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGenre": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGeoName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectIdentifier": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectMusic": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectName": {
@@ -4543,44 +4153,26 @@
                             },
                             "subjectNameAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectNumbering": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectPersonName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTitleName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTopicName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             }
                         }
@@ -4592,23 +4184,14 @@
                             },
                             "identifierGND": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectChronological": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectConference": {
@@ -4616,51 +4199,30 @@
                             },
                             "subjectCorporateBodyName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectCorporateBodySubUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectDate": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGenre": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGeoName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectIdentifier": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectMusic": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectName": {
@@ -4668,44 +4230,26 @@
                             },
                             "subjectNameAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectNumbering": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectPersonName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTitleName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTopicName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             }
                         }
@@ -4714,23 +4258,14 @@
                         "properties": {
                             "identifierGND": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectChronological": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectConference": {
@@ -4738,51 +4273,30 @@
                             },
                             "subjectCorporateBodyName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectCorporateBodySubUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectDate": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGenre": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGeoName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectIdentifier": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectMusic": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectName": {
@@ -4790,44 +4304,26 @@
                             },
                             "subjectNameAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectNumbering": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectPersonName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTitleName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTopicName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             }
                         }
@@ -4836,23 +4332,14 @@
                         "properties": {
                             "identifierGND": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectChronological": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectConference": {
@@ -4860,51 +4347,30 @@
                             },
                             "subjectCorporateBodyName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectCorporateBodySubUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectDate": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGenre": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGeoName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectIdentifier": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectMusic": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectName": {
@@ -4912,44 +4378,26 @@
                             },
                             "subjectNameAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectNumbering": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectPersonName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTitleName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTopicName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             }
                         }
@@ -4961,23 +4409,14 @@
                             },
                             "identifierGND": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectChronological": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectConference": {
@@ -4985,51 +4424,30 @@
                             },
                             "subjectCorporateBodyName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectCorporateBodySubUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectDate": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGenre": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGeoName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectIdentifier": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectMusic": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectName": {
@@ -5037,44 +4455,26 @@
                             },
                             "subjectNameAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectNumbering": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectPersonName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTitleName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTopicName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             }
                         }
@@ -5086,23 +4486,14 @@
                             },
                             "identifierGND": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectChronological": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectConference": {
@@ -5110,51 +4501,30 @@
                             },
                             "subjectCorporateBodyName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectCorporateBodySubUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectDate": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGenre": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectGeoName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectIdentifier": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectMusic": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectName": {
@@ -5162,44 +4532,26 @@
                             },
                             "subjectNameAddendum": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectNumbering": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectPersonName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTitleName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectTopicName": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             },
                             "subjectUnit": {
                                 "type": "text",
-                                "norms": {
-                                    "enabled": false
-                                },
                                 "analyzer": "keyword"
                             }
                         }
@@ -5321,9 +4673,6 @@
                 "properties": {
                     "subject": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "subjectSource": {
@@ -5342,9 +4691,6 @@
                 "properties": {
                     "subject": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -5353,9 +4699,6 @@
                 "properties": {
                     "subject": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -5364,9 +4707,6 @@
                 "properties": {
                     "subject": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -5739,16 +5079,10 @@
                 "properties": {
                     "subject": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "subjectSource": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "type": {
@@ -5794,9 +5128,6 @@
                 "properties": {
                     "subject": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "subjectSource": {
@@ -5822,9 +5153,6 @@
                 "properties": {
                     "subject": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
@@ -5984,9 +5312,6 @@
                 "properties": {
                     "subject": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     },
                     "subjectSource": {
@@ -6241,9 +5566,6 @@
                 "properties": {
                     "titleSuperIdentifier": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword",
                         "copy_to": [
                             "bib.identifierAuthority=mabwhole"
@@ -6330,32 +5652,20 @@
                 "properties": {
                     "titleUniformIdentifier": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
                         "analyzer": "keyword"
                     }
                 }
             },
             "TypeMedia": {
                 "type": "text",
-                "norms": {
-                    "enabled": false
-                },
                 "analyzer": "keyword"
             },
             "TypeMediaElectronic": {
                 "type": "text",
-                "norms": {
-                    "enabled": false
-                },
                 "analyzer": "keyword"
             },
             "TypeMediaElectronicPreservation": {
                 "type": "text",
-                "norms": {
-                    "enabled": false
-                },
                 "analyzer": "keyword"
             },
             "TypeMediaSpecial": {
@@ -6366,23 +5676,14 @@
             },
             "TypeMicroform": {
                 "type": "text",
-                "norms": {
-                    "enabled": false
-                },
                 "analyzer": "keyword"
             },
             "TypeMonograph": {
                 "type": "text",
-                "norms": {
-                    "enabled": false
-                },
                 "analyzer": "keyword"
             },
             "TypePeriodical": {
                 "type": "text",
-                "norms": {
-                    "enabled": false
-                },
                 "analyzer": "keyword"
             },
             "VolumeDesignation": {
@@ -6408,11 +5709,11 @@
                     },
                     "identifierAuthority=isbn": {
                         "type": "text",
-                        "analyzer": "standardnumber"
+                        "analyzer": "isbn"
                     },
                     "identifierAuthority=issn": {
                         "type": "text",
-                        "analyzer": "standardnumber"
+                        "analyzer": "issn"
                     },
                     "identifierAuthority=mab": {
                         "type": "text",
@@ -6424,7 +5725,7 @@
                     },
                     "identifierAuthority=zdb": {
                         "type": "text",
-                        "analyzer": "standardnumber"
+                        "analyzer": "zdb"
                     },
                     "nameConference": {
                         "type": "text"
@@ -6452,9 +5753,6 @@
             },
             "collection": {
                 "type": "text",
-                "norms": {
-                    "enabled": false
-                },
                 "analyzer": "keyword"
             },
             "cql": {

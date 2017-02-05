@@ -8,7 +8,7 @@
                 },
                 "standardnumber" : {
                     "type" : "standardnumber",
-                    "number_types" : [ "isbn" ]
+                    "standardnumbers" : [ "isbn" ]
                 },
                 "simple_hyphen" : {
                     "type" : "hyphen",

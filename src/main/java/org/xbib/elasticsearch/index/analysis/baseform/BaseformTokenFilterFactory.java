@@ -35,7 +35,7 @@ public class BaseformTokenFilterFactory extends AbstractTokenFilterFactory {
         try {
             String lang = settings.get("language", "de");
             String path = "/baseform/" + lang + "-lemma-utf8.txt";
-            return new Dictionary().load(new InputStreamReader(getClass().getResourceAsStream(path), "UTF-8"));
+            return new Dictionary().loadBaseform(new InputStreamReader(getClass().getResourceAsStream(path), "UTF-8"));
         } catch (IOException e) {
             throw new ElasticsearchException("resources in settings not found: " + settings, e);
         }

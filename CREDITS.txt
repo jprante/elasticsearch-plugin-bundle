@@ -1,11 +1,4 @@
+Thanks to David Weiss for
 
-
-
-
-
-
-
-
-
-
+https://github.com/dweiss/compound-splitter
 

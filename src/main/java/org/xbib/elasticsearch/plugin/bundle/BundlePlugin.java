@@ -25,8 +25,9 @@ import org.xbib.elasticsearch.index.analysis.autophrase.AutoPhrasingTokenFilterF
 import org.xbib.elasticsearch.index.analysis.baseform.BaseformTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.concat.ConcatTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.concat.PairTokenFilterFactory;
-import org.xbib.elasticsearch.index.analysis.decompound.DecompoundTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.decompound.patricia.DecompoundTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.decompound.fst.FstDecompoundTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.expansion.fst.FstExpansionTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.german.GermanNormalizationFilterFactory;
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenAnalyzerProvider;
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenFilterFactory;
@@ -55,11 +56,11 @@ import org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper;
 import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapper;
 import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapperModule;
 import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapperTypeParser;
-import org.xbib.elasticsearch.index.mapper.reference.ReferenceService;
+import org.xbib.elasticsearch.common.reference.ReferenceService;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapper;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapperModule;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapperTypeParser;
-import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberService;
+import org.xbib.elasticsearch.common.standardnumber.StandardnumberService;
 import org.xbib.elasticsearch.rest.action.isbnformat.RestISBNFormatterAction;
 import org.xbib.elasticsearch.rest.action.langdetect.RestLangdetectAction;
 
@@ -120,6 +121,7 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
         extra.put("worddelimiter2", WordDelimiterFilter2Factory::new);
         extra.put("symbolname", SymbolnameTokenFilterFactory::new);
         extra.put("year", GregorianYearTokenFilterFactory::new);
+        extra.put("expansion", FstExpansionTokenFilterFactory::new);
         return extra;
     }
 

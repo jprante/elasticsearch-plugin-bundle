@@ -1,17 +1,20 @@
 package org.xbib.elasticsearch.index.mapper.standardnumber;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexOptions;
+import org.elasticsearch.common.lucene.Lucene;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
+import org.elasticsearch.common.xcontent.support.XContentMapValues;
 import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.ParseContext;
-import org.elasticsearch.index.mapper.StringFieldType;
 import org.elasticsearch.index.mapper.TextFieldMapper;
-import org.xbib.elasticsearch.common.standardnumber.StandardNumber;
+import org.xbib.elasticsearch.common.standardnumber.StandardnumberService;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -22,70 +25,72 @@ import java.util.Map;
 /**
  *
  */
-public class StandardnumberMapper extends FieldMapper {
+public class StandardnumberMapper extends TextFieldMapper {
+
+    private static final Logger logger = LogManager.getLogger(StandardnumberMapper.class.getName());
 
     public static final String MAPPER_TYPE = "standardnumber";
 
+    private final Settings settings;
+
     private final StandardnumberService service;
 
-    private final FieldMapper contentMapper;
-
-    private final FieldMapper stdnumMapper;
-
-    public StandardnumberMapper(String simpleName,
+    public StandardnumberMapper(Settings settings,
+                                String simpleName,
                                 MappedFieldType fieldType,
                                 MappedFieldType defaultFieldType,
                                 Settings indexSettings,
                                 MultiFields multiFields,
                                 CopyTo copyTo,
-                                StandardnumberService service,
-                                FieldMapper contentMapper,
-                                FieldMapper stdnumMapper) {
-        super(simpleName, fieldType, defaultFieldType, indexSettings, multiFields, copyTo);
+                                StandardnumberService service) {
+        super(simpleName, fieldType, defaultFieldType,
+                -1, false, indexSettings, multiFields, copyTo);
+        this.settings = settings;
         this.service = service;
-        this.contentMapper = contentMapper;
-        this.stdnumMapper = stdnumMapper;
     }
 
     @Override
-    public Mapper parse(ParseContext originalContext) throws IOException {
-        String content = null;
-        ParseContext context = originalContext;
+    protected void parseCreateField(ParseContext context, List<Field> fields) throws IOException {
+        if (context.externalValueSet()) {
+            return;
+        }
         XContentParser parser = context.parser();
-        XContentParser.Token token = parser.currentToken();
-        if (token == XContentParser.Token.VALUE_STRING) {
-            content = parser.text();
+        if (parser.currentToken() == XContentParser.Token.VALUE_NULL) {
+            return;
         }
-        if (content == null) {
-            return null;
+        String value = fieldType().nullValueAsString();
+        if (parser.currentToken() == XContentParser.Token.START_OBJECT) {
+            XContentParser.Token token;
+            String currentFieldName = null;
+            while ((token = parser.nextToken()) != XContentParser.Token.END_OBJECT) {
+                if (token == XContentParser.Token.FIELD_NAME) {
+                    currentFieldName = parser.currentName();
+                } else {
+                    if ("value".equals(currentFieldName) || "_value".equals(currentFieldName)) {
+                        value = parser.textOrNull();
+                    }
+                }
+            }
+        } else {
+            value = parser.textOrNull();
         }
-        context = context.createExternalValueContext(content);
-        contentMapper.parse(context);
         try {
-            Collection<StandardNumber> stdnums = service.detect(content);
-            for (StandardNumber stdnum : stdnums) {
-                context = context.createExternalValueContext(stdnum.normalizedValue());
-                stdnumMapper.parse(context);
+            Collection<CharSequence> stdnums = service.lookup(settings, value);
+            for (CharSequence stdnum : stdnums) {
+                Field field = new Field(fieldType().name(), stdnum.toString(), fieldType());
+                fields.add(field);
             }
         } catch (NumberFormatException e) {
-            context = context.createExternalValueContext("unknown");
-            stdnumMapper.parse(context);
+            logger.trace(e.getMessage(), e);
+            context.createExternalValueContext("unknown");
         }
-        return null;
-    }
-
-    @Override
-    protected void parseCreateField(ParseContext parseContext, List<Field> fields) throws IOException {
     }
 
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject(simpleName());
         builder.field("type", MAPPER_TYPE);
-        builder.startObject("fields");
-        contentMapper.toXContent(builder, params);
-        stdnumMapper.toXContent(builder, params);
-        builder.endObject();
+        builder.array("standardnumbers", settings.getAsArray("standardnumbers"));
         builder.endObject();
         return builder;
     }
@@ -96,68 +101,57 @@ public class StandardnumberMapper extends FieldMapper {
     }
 
     public static final class Defaults {
-        public static final StandardnumberFieldType FIELD_TYPE = new StandardnumberFieldType();
+        public static final TextFieldType FIELD_TYPE = new TextFieldType();
 
         static {
+            FIELD_TYPE.setStored(true);
+            FIELD_TYPE.setOmitNorms(true);
+            FIELD_TYPE.setIndexAnalyzer(Lucene.KEYWORD_ANALYZER);
+            FIELD_TYPE.setSearchAnalyzer(Lucene.KEYWORD_ANALYZER);
+            FIELD_TYPE.setName(MAPPER_TYPE);
+            FIELD_TYPE.freeze();
             FIELD_TYPE.freeze();
         }
     }
 
     public static class Builder extends FieldMapper.Builder<Builder, StandardnumberMapper> {
 
-        private TextFieldMapper.Builder contentBuilder;
-
-        private TextFieldMapper.Builder stdnumBuilder;
+        private Settings.Builder settingsBuilder = Settings.builder();
 
         private StandardnumberService service;
 
         public Builder(String name, StandardnumberService service) {
             super(name, Defaults.FIELD_TYPE, Defaults.FIELD_TYPE);
             this.service = service;
-            this.stdnumBuilder = new TextFieldMapper.Builder("standardnumber");
-            this.contentBuilder = new TextFieldMapper.Builder(name);
             this.builder = this;
         }
 
-        public Builder content(TextFieldMapper.Builder content) {
-            this.contentBuilder = content;
-            return this;
-        }
-
-        public Builder stdnum(TextFieldMapper.Builder stdnum) {
-            this.stdnumBuilder = stdnum;
+        public Builder standardNumbers(String[] standardnumbers) {
+            settingsBuilder.putArray("standardnumbers", standardnumbers);
             return this;
         }
 
         @Override
         public StandardnumberMapper build(BuilderContext context) {
-            MappedFieldType defaultFieldType = Defaults.FIELD_TYPE.clone();
-            if (this.fieldType.indexOptions() != IndexOptions.NONE && !this.fieldType.tokenized()) {
+            if (fieldType.indexOptions() != IndexOptions.NONE && !fieldType.tokenized()) {
                 defaultFieldType.setOmitNorms(true);
                 defaultFieldType.setIndexOptions(IndexOptions.DOCS);
-                if (!this.omitNormsSet && Float.compare(this.fieldType.boost(), 1f) == 0) {
-                    this.fieldType.setOmitNorms(true);
+                if (!omitNormsSet && Float.compare(fieldType.boost(), 1.0f) == 0) {
+                    fieldType.setOmitNorms(true);
                 }
-                if (!this.indexOptionsSet) {
-                    this.fieldType.setIndexOptions(IndexOptions.DOCS);
+                if (!indexOptionsSet) {
+                    fieldType.setIndexOptions(IndexOptions.DOCS);
                 }
             }
-            defaultFieldType.freeze();
-            this.setupFieldType(context);
-
-            context.path().add(name);
-            TextFieldMapper contentMapper = contentBuilder.build(context);
-            TextFieldMapper stdnumMapper = stdnumBuilder.build(context);
-            context.path().remove();
-            return new StandardnumberMapper(name,
-                    this.fieldType,
+            setupFieldType(context);
+            return new StandardnumberMapper(settingsBuilder.build(),
+                    name,
+                    fieldType,
                     defaultFieldType,
                     context.indexSettings(),
                     multiFieldsBuilder.build(this, context),
                     copyTo,
-                    service,
-                    contentMapper,
-                    stdnumMapper);
+                    service);
         }
     }
 
@@ -178,50 +172,16 @@ public class StandardnumberMapper extends FieldMapper {
                 Map.Entry<String, Object> entry = iterator.next();
                 String fieldName = entry.getKey();
                 Object fieldNode = entry.getValue();
-                if ("fields".equals(fieldName)) {
-                    Map<String, Object> fieldsNode = (Map<String, Object>) fieldNode;
-                    for (Map.Entry<String, Object> fieldsEntry : fieldsNode.entrySet()) {
-                        String propName = fieldsEntry.getKey();
-                        Object propNode = fieldsEntry.getValue();
-                        if (name.equals(propName)) {
-                            builder.content((TextFieldMapper.Builder) parserContext.typeParser("text").parse(name,
-                                    (Map<String, Object>) propNode, parserContext));
-                        } else if ("standardnumber".equals(propName)) {
-                            builder.stdnum((TextFieldMapper.Builder) parserContext.typeParser("text").parse(propName,
-                                    (Map<String, Object>) propNode, parserContext));
-                        }
-                    }
-                    iterator.remove();
+                switch (fieldName) {
+                    case "standardnumbers" :
+                        builder.settingsBuilder.putArray("standardnumbers", XContentMapValues.nodeStringArrayValue(fieldNode));
+                        iterator.remove();
+                        break;
+                    default:
+                        break;
                 }
             }
             return builder;
         }
     }
-
-    public static class StandardnumberFieldType extends StringFieldType implements Cloneable {
-
-        public StandardnumberFieldType() {
-            super();
-        }
-
-        public StandardnumberFieldType(StandardnumberMapper.StandardnumberFieldType ref) {
-            super(ref);
-        }
-
-        @Override
-        public StandardnumberMapper.StandardnumberFieldType clone() {
-            return new StandardnumberMapper.StandardnumberFieldType(this);
-        }
-
-        @Override
-        public String typeName() {
-            return "standardnumber";
-        }
-
-        public String value(Object value) {
-            return value == null ? null : value.toString();
-        }
-
-    }
-
 }
