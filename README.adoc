@@ -7,10 +7,7 @@ image:https://img.shields.io/badge/License-Apache%202.0-blue.svg[title="Apache L
 image:https://img.shields.io/twitter/url/https/twitter.com/xbib.svg?style=social&label=Follow%20%40xbib[title="Twitter", link="https://twitter.com/xbib"]
 image:https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif[title="PayPal", link="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GVHFQYZ9WZ8HG"]
 
-This plugin contains 18 token filters, 4 tokenizers, 2 char filters, 5 analyzers, 4 field mappers,
-and 2 REST actions to enhance Elasticsearch.
-
-It's the combination of the following plugins:
+This plugin is the combination of the following plugins:
 
 - elasticsearch-analysis-autophrase
 - elasticsearch-analysis-baseform
@@ -20,6 +17,7 @@ It's the combination of the following plugins:
 - elasticsearch-analysis-hyphen
 - elasticsearch-analysis-icu
 - elasticsearch-analysis-naturalsort
+- elasticsearch-analysis-reference
 - elasticsearch-analysis-sortform
 - elasticsearch-analysis-standardnumber
 - elasticsearch-analysis-symbolname
@@ -27,7 +25,6 @@ It's the combination of the following plugins:
 - elasticsearch-analysis-year
 - elasticsearch-mapper-crypt
 - elasticsearch-mapper-langdetect
-- elasticsearch-mapper-reference
 
 The plugin code in each plugin is equivalent to the code in this combined bundle plugin.
 
@@ -35,7 +32,8 @@ The plugin code in each plugin is equivalent to the code in this combined bundle
 [frame="all"]
 |===
 | Plugin version | Elasticsearch version | Release date
-| 5.1.1.0  | 5.1.1     | Dec 31 2016
+| 5.1.1.1  | 5.1.1     | feb 27, 2016
+| 5.1.1.0  | 5.1.1     | Dec 31, 2016
 | 2.3.4.0  | 2.3.4     | Jul 30, 2016
 | 2.3.3.0  | 2.3.3     | May 23, 2016
 | 2.3.2.0  | 2.3.2     | May 11, 2016
@@ -68,14 +66,14 @@ The plugin code in each plugin is equivalent to the code in this combined bundle
 
 [source]
 ----
-./bin/elasticsearch-plugin install http://search.maven.org/remotecontent?filepath=org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/5.1.1.0/elasticsearch-plugin-bundle-5.1.1.0-plugin.zip
+./bin/elasticsearch-plugin install http://search.maven.org/remotecontent?filepath=org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/5.1.1.1/elasticsearch-plugin-bundle-5.1.1.1-plugin.zip
 ----
 
 or
 
 [source]
 ----
-./bin/elasticsearch-plugin install http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/5.1.1.0/elasticsearch-plugin-bundle-5.1.1.0-plugin.zip
+./bin/elasticsearch-plugin install http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/5.1.1.1/elasticsearch-plugin-bundle-5.1.1.1-plugin.zip
 ----
 Do not forget to restart the node after installing.
 
