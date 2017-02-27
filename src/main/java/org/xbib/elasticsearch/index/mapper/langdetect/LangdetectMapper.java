@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexOptions;
+import org.apache.lucene.index.IndexableField;
 import org.elasticsearch.common.lucene.Lucene;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
@@ -29,7 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.elasticsearch.index.mapper.TypeParsers.parseStore;
+import static org.elasticsearch.common.xcontent.support.XContentMapValues.lenientNodeBooleanValue;
 
 /**
  *
@@ -68,7 +69,7 @@ public class LangdetectMapper extends TextFieldMapper {
     }
 
     @Override
-    protected void parseCreateField(ParseContext context, List<Field> fields) throws IOException {
+    protected void parseCreateField(ParseContext context, List<IndexableField> fields) throws IOException {
         if (context.externalValueSet()) {
             return;
         }
@@ -363,7 +364,7 @@ public class LangdetectMapper extends TextFieldMapper {
                         iterator.remove();
                         break;
                     case "store":
-                        builder.store(parseStore(fieldName, fieldNode.toString(), parserContext));
+                        builder.store(parseStore(fieldNode.toString()));
                         iterator.remove();
                         break;
                     case "number_of_trials":
@@ -431,6 +432,10 @@ public class LangdetectMapper extends TextFieldMapper {
                 }
             }
             return builder;
+        }
+
+        private static boolean parseStore(String store) throws MapperParsingException {
+            return !"no".equals(store) && ("yes".equals(store) || lenientNodeBooleanValue(store));
         }
     }
 

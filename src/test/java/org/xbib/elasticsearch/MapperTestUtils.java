@@ -6,6 +6,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.elasticsearch.Version;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.xcontent.NamedXContentRegistry;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AnalysisRegistry;
@@ -74,12 +75,17 @@ public class MapperTestUtils {
         Map<String, TokenFilterFactory> tokenFilterFactoryMap = analysisRegistry.buildTokenFilterFactories(indexSettings);
         Map<String, TokenizerFactory> tokenizerFactoryMap = analysisRegistry.buildTokenizerFactories(indexSettings);
         Map<String, AnalyzerProvider<?>> analyzerProviderMap = analysisRegistry.buildAnalyzerFactories(indexSettings);
-        IndexAnalyzers indexAnalyzers = analysisRegistry.build(indexSettings, analyzerProviderMap,
-                tokenizerFactoryMap, charFilterFactoryMap, tokenFilterFactoryMap);
-        MapperService mapperService = new MapperService(indexSettings, indexAnalyzers,
+        Map<String, AnalyzerProvider<?>> normalizerProviderMap = analysisRegistry.buildNormalizerFactories(indexSettings);
+        IndexAnalyzers indexAnalyzers = analysisRegistry.build(indexSettings,
+                analyzerProviderMap,
+                normalizerProviderMap,
+                tokenizerFactoryMap,
+                charFilterFactoryMap,
+                tokenFilterFactoryMap);
+        MapperService mapperService = new MapperService(indexSettings, indexAnalyzers, NamedXContentRegistry.EMPTY,
                 similarityService, mapperRegistry, null);
-        return new DocumentMapperParser(indexSettings,
-                mapperService, indexAnalyzers, similarityService, mapperRegistry, null);
+        return new DocumentMapperParser(indexSettings, mapperService, indexAnalyzers, NamedXContentRegistry.EMPTY,
+                similarityService, mapperRegistry, null);
     }
 
     public static Analyzer analyzer(String name) throws IOException {
@@ -98,7 +104,8 @@ public class MapperTestUtils {
         Map<String, TokenFilterFactory> tokenFilterFactoryMap = analysisRegistry.buildTokenFilterFactories(indexSettings);
         Map<String, TokenizerFactory> tokenizerFactoryMap = analysisRegistry.buildTokenizerFactories(indexSettings);
         Map<String, AnalyzerProvider<?>> analyzerProviderMap = analysisRegistry.buildAnalyzerFactories(indexSettings);
-        IndexAnalyzers indexAnalyzers = analysisRegistry.build(indexSettings, analyzerProviderMap,
+        Map<String, AnalyzerProvider<?>> normalizerProviderMap = analysisRegistry.buildNormalizerFactories(indexSettings);
+        IndexAnalyzers indexAnalyzers = analysisRegistry.build(indexSettings, analyzerProviderMap, normalizerProviderMap,
                 tokenizerFactoryMap, charFilterFactoryMap, tokenFilterFactoryMap);
         Analyzer analyzer = indexAnalyzers.get(name) != null ? indexAnalyzers.get(name) : analysisRegistry.getAnalyzer(name);
         assertNotNull(analyzer);
@@ -122,7 +129,8 @@ public class MapperTestUtils {
         Map<String, TokenFilterFactory> tokenFilterFactoryMap = analysisRegistry.buildTokenFilterFactories(indexSettings);
         Map<String, TokenizerFactory> tokenizerFactoryMap = analysisRegistry.buildTokenizerFactories(indexSettings);
         Map<String, AnalyzerProvider<?>> analyzerProviderMap = analysisRegistry.buildAnalyzerFactories(indexSettings);
-        IndexAnalyzers indexAnalyzers = analysisRegistry.build(indexSettings, analyzerProviderMap,
+        Map<String, AnalyzerProvider<?>> normalizerProviderMap = analysisRegistry.buildNormalizerFactories(indexSettings);
+        IndexAnalyzers indexAnalyzers = analysisRegistry.build(indexSettings, analyzerProviderMap, normalizerProviderMap,
                 tokenizerFactoryMap, charFilterFactoryMap, tokenFilterFactoryMap);
         Analyzer analyzer = indexAnalyzers.get(name) != null ? indexAnalyzers.get(name) : analysisRegistry.getAnalyzer(name);
         assertNotNull(analyzer);
@@ -146,7 +154,8 @@ public class MapperTestUtils {
         Map<String, TokenFilterFactory> tokenFilterFactoryMap = analysisRegistry.buildTokenFilterFactories(indexSettings);
         Map<String, TokenizerFactory> tokenizerFactoryMap = analysisRegistry.buildTokenizerFactories(indexSettings);
         Map<String, AnalyzerProvider<?>> analyzerProviderMap = analysisRegistry.buildAnalyzerFactories(indexSettings);
-        IndexAnalyzers indexAnalyzers = analysisRegistry.build(indexSettings, analyzerProviderMap,
+        Map<String, AnalyzerProvider<?>> normalizerProviderMap = analysisRegistry.buildNormalizerFactories(indexSettings);
+        IndexAnalyzers indexAnalyzers = analysisRegistry.build(indexSettings, analyzerProviderMap, normalizerProviderMap,
                 tokenizerFactoryMap, charFilterFactoryMap, tokenFilterFactoryMap);
         Analyzer analyzer = indexAnalyzers.get(name) != null ? indexAnalyzers.get(name) : analysisRegistry.getAnalyzer(name);
         assertNotNull(analyzer);

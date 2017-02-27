@@ -32,6 +32,7 @@ The plugin code in each plugin is equivalent to the code in this combined bundle
 [frame="all"]
 |===
 | Plugin version | Elasticsearch version | Release date
+| 5.2.1.0  | 5.2.1     | Feb 27, 2017
 | 5.1.1.2  | 5.1.1     | Feb 27, 2017
 | 5.1.1.0  | 5.1.1     | Dec 31, 2016
 | 2.3.4.0  | 2.3.4     | Jul 30, 2016
@@ -66,14 +67,14 @@ The plugin code in each plugin is equivalent to the code in this combined bundle
 
 [source]
 ----
-./bin/elasticsearch-plugin install http://search.maven.org/remotecontent?filepath=org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/5.1.1.1/elasticsearch-plugin-bundle-5.1.1.1-plugin.zip
+./bin/elasticsearch-plugin install http://search.maven.org/remotecontent?filepath=org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/5.2.1.0/elasticsearch-plugin-bundle-5.2.1.0-plugin.zip
 ----
 
 or
 
 [source]
 ----
-./bin/elasticsearch-plugin install http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/5.1.1.1/elasticsearch-plugin-bundle-5.1.1.1-plugin.zip
+./bin/elasticsearch-plugin install http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/5.2.1.0/elasticsearch-plugin-bundle-5.2.1.0-plugin.zip
 ----
 Do not forget to restart the node after installing.
 

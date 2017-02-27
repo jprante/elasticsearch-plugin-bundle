@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.SortedSetDocValuesField;
 import org.apache.lucene.index.IndexOptions;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.util.BytesRef;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.ToXContent;
@@ -110,7 +111,7 @@ public class CryptMapper extends TextFieldMapper {
     }
 
     @Override
-    protected void parseCreateField(ParseContext context, List<Field> fields) throws IOException {
+    protected void parseCreateField(ParseContext context, List<IndexableField> fields) throws IOException {
         StringFieldMapper.ValueAndBoost valueAndBoost =
                 parseCreateFieldForCrypt(context, fieldType().nullValueAsString(), fieldType().boost(), algo);
         if (valueAndBoost.value() == null) {
