@@ -1,14 +1,17 @@
 package org.xbib.elasticsearch.common.fsa;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.Reader;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -21,12 +24,12 @@ public class Dictionary {
     private FSATraversal matcher;
 
     /**
-     * Format of file: lemma "\t" baseform
+     * Format of file: sourceform "\t" targetform1 "\t" targetform2 ...
      * @param reader the reader
      * @return the dictionary
      * @throws IOException if dictionary load fails
      */
-    public Dictionary loadBaseform(Reader reader) throws IOException {
+    public Dictionary loadLines(Reader reader) throws IOException {
         List<byte[]> lines = new ArrayList<>();
         try (BufferedReader bufferedReader = new BufferedReader(reader)) {
             String line;
@@ -45,18 +48,18 @@ public class Dictionary {
     }
 
     /**
-     * Format of file: baseform "\t" lemma
      * @param reader the reader
      * @return the dictionary
      * @throws IOException if dictionary load fails
      */
-    public Dictionary loadExpansions(Reader reader) throws IOException {
+    public Dictionary loadLinesReverse(Reader reader) throws IOException {
         List<byte[]> lines = new ArrayList<>();
         try (BufferedReader bufferedReader = new BufferedReader(reader)) {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                String[] s = line.split("\t");
-                lines.add((s[1] + '+' + s[0]).getBytes(StandardCharsets.UTF_8));
+                List<String> s = Arrays.asList(line.split("\t"));
+                Collections.reverse(s);
+                lines.add(String.join("+", s).getBytes(StandardCharsets.UTF_8));
             }
         }
         lines.sort(FSABuilder.LEXICAL_ORDERING);
@@ -65,6 +68,13 @@ public class Dictionary {
             builder.add(b, 0, b.length);
         }
         this.fsa = builder.complete();
+        this.matcher = new FSATraversal(fsa);
+        return this;
+    }
+
+    public Dictionary loadFSA(InputStream inputStream) throws IOException {
+        FSABuilder builder = new FSABuilder();
+        this.fsa = builder.load(new DataInputStream(inputStream));
         this.matcher = new FSATraversal(fsa);
         return this;
     }
@@ -104,5 +114,9 @@ public class Dictionary {
                 break;
         }
         return request;
+    }
+
+    public FSA fsa() {
+        return fsa;
     }
 }

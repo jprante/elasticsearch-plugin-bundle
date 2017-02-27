@@ -79,7 +79,7 @@ public class LangDetectActionTest extends NodeTestUtils {
                             .endObject())
                     .execute().actionGet();
 
-            client().admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
+            client().admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
 
             client().prepareIndex("test", "article", "1")
                     .setSource(jsonBuilder().startObject()

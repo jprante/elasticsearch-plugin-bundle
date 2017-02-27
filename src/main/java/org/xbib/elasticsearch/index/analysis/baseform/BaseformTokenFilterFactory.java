@@ -10,6 +10,7 @@ import org.xbib.elasticsearch.common.fsa.Dictionary;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -35,7 +36,7 @@ public class BaseformTokenFilterFactory extends AbstractTokenFilterFactory {
         try {
             String lang = settings.get("language", "de");
             String path = "/baseform/" + lang + "-lemma-utf8.txt";
-            return new Dictionary().loadBaseform(new InputStreamReader(getClass().getResourceAsStream(path), "UTF-8"));
+            return new Dictionary().loadLines(new InputStreamReader(getClass().getResourceAsStream(path), StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new ElasticsearchException("resources in settings not found: " + settings, e);
         }

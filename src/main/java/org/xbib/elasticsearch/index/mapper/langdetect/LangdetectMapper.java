@@ -1,5 +1,6 @@
 package org.xbib.elasticsearch.index.mapper.langdetect;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.Field;
@@ -97,6 +98,8 @@ public class LangdetectMapper extends TextFieldMapper {
                 if (b != null && b.length > 0) {
                     value = new String(b, StandardCharsets.UTF_8);
                 }
+            } catch (JsonParseException e) {
+                logger.trace(e.getMessage(), e);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }

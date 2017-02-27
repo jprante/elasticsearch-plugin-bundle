@@ -55,7 +55,6 @@ public class StandardnumberMappingTest {
         assertEquals(0, doc.getFields("someField").length);
     }
 
-
     private String copyToStringFromClasspath(String path) throws IOException {
         return copyToString(new InputStreamReader(getClass().getResource(path).openStream(), "UTF-8"));
     }

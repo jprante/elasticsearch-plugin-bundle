@@ -4,7 +4,6 @@ import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.KeywordAttribute;
-import org.apache.lucene.analysis.tokenattributes.PackedTokenAttributeImpl;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.util.AttributeSource;
 import org.xbib.elasticsearch.common.fsa.Dictionary;
@@ -18,7 +17,7 @@ import java.util.LinkedList;
  */
 public class BaseformTokenFilter extends TokenFilter {
 
-    private final LinkedList<PackedTokenAttributeImpl> tokens;
+    private final LinkedList<String> tokens;
 
     private final Dictionary dictionary;
 
@@ -45,7 +44,7 @@ public class BaseformTokenFilter extends TokenFilter {
             if (current == null) {
                 throw new IllegalArgumentException("current is null");
             }
-            PackedTokenAttributeImpl token = tokens.removeFirst();
+            String token = tokens.removeFirst();
             restoreState(current);
             termAtt.setEmpty().append(token);
             posIncAtt.setPositionIncrement(0);
@@ -68,9 +67,7 @@ public class BaseformTokenFilter extends TokenFilter {
         CharSequence term = new String(termAtt.buffer(), 0, termAtt.length());
         CharSequence s = dictionary.lookup(term);
         if (s != null && s.length() > 0) {
-            PackedTokenAttributeImpl impl = new PackedTokenAttributeImpl();
-            impl.append(s);
-            tokens.add(impl);
+            tokens.add(s.toString());
         }
     }
 

@@ -7,7 +7,17 @@ import com.ibm.icu.text.UnicodeSetIterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -18,7 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Generates UTR30 data files from icu-project.org
+ * Generates UTR30 data files from icu-project.org.
  * <ol>
  * <li>
  * Downloads nfc.txt, nfkc.txt and nfkc_cf.txt from icu-project.org,
@@ -53,9 +63,9 @@ public class UTR30DataFileGenerator {
             = Pattern.compile("Numeric[-\\s_]*Value", Pattern.CASE_INSENSITIVE);
     private static byte[] bytes = new byte[8192];
 
-    public void execute() throws IOException {
-        getNFKCDataFilesFromIcuProject("build/");
-        expandRulesInUTR30DataFiles();
+    public void execute(String dir) throws IOException {
+        getNFKCDataFilesFromIcuProject(dir);
+        expandRulesInUTR30DataFiles(dir);
     }
 
     private static void getNFKCDataFilesFromIcuProject(String dir) throws IOException {
@@ -127,14 +137,13 @@ public class UTR30DataFileGenerator {
         return connection;
     }
 
-    private static void expandRulesInUTR30DataFiles() throws IOException {
+    private static void expandRulesInUTR30DataFiles(String dir) throws IOException {
         FileFilter filter = pathname -> {
             String name = pathname.getName();
             return pathname.isFile() && name.matches(".*\\.(?s:txt)")
                     && !name.equals(NFC_TXT) && !name.equals(NFKC_TXT) && !name.equals(NFKC_CF_TXT);
         };
-        File currentDir = new File(".");
-        for (File file : currentDir.listFiles(filter)) {
+        for (File file : new File(dir).listFiles(filter)) {
             expandDataFileRules(file);
         }
     }

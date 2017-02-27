@@ -30,7 +30,8 @@ public class FstDecompoundTokenFilterFactory extends AbstractTokenFilterFactory 
     private FstDecompounder createDecompounder(Settings settings) {
         try {
             String words = settings.get("fst", "/decompound/fst/words.fst");
-            return new FstDecompounder(getClass().getResourceAsStream(words));
+            String[] glueMorphs = settings.getAsArray("glue_morphs");
+            return new FstDecompounder(getClass().getResourceAsStream(words), glueMorphs);
         } catch (IOException e) {
             throw new IllegalArgumentException("fst decompounder resources in settings not found: " + settings, e);
         }

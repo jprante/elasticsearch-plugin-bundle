@@ -42,7 +42,7 @@ public class NaturalSortKeyTests extends NodeTestUtils {
                             .endObject())
                     .execute().actionGet();
 
-            client().admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
+            client().admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
 
             String[] words = new String[]{
                     "Bob: 3 points", "Bob: 10 points", "Bob: 2 points"

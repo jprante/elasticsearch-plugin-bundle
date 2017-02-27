@@ -1,5 +1,9 @@
 package org.xbib.elasticsearch.common.fsa;
 
+import org.elasticsearch.common.io.Streams;
+
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
@@ -240,6 +244,20 @@ public final class FSABuilder {
         final FSA fsa = new ConstantArcSizeFSA(Arrays.copyOf(this.serialized, this.size), epsilon);
         this.serialized = null;
         this.hashSet = null;
+        return fsa;
+    }
+
+    public FSA load(DataInputStream inputStream) throws IOException {
+        this.size = inputStream.readInt();
+        this.epsilon = inputStream.readInt();
+        this.serialized = new byte[this.size];
+        try {
+            Streams.readFully(inputStream, serialized);
+        } finally {
+            inputStream.close();
+        }
+        final FSA fsa = new ConstantArcSizeFSA(Arrays.copyOf(this.serialized, this.size), this.epsilon);
+        this.serialized = null;
         return fsa;
     }
 

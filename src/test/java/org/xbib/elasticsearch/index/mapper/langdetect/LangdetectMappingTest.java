@@ -56,8 +56,9 @@ public class LangdetectMappingTest extends Assert {
 
     @Test
     public void testCustomMappings() throws Exception {
+        String home =  System.getProperty("path.home") != null ?  System.getProperty("path.home") :  System.getProperty("user.dir");
         Settings settings = Settings.builder()
-                .put("path.home", System.getProperty("path.home"))
+                .put("path.home", home)
                 .loadFromStream("settings.json", getClass().getResourceAsStream("settings.json")).build();
         String mapping = copyToStringFromClasspath("mapping.json");
         DocumentMapper docMapper = MapperTestUtils.newDocumentMapperParser(settings, "someIndex").parse("someType", new CompressedXContent(mapping));

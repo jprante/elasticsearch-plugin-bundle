@@ -3,7 +3,6 @@ plugins {
     id "org.sonarqube" version "2.2"
     id "org.xbib.gradle.plugin.asciidoctor" version "1.5.4.1.0"
     id "org.xbib.gradle.plugin.jflex" version "1.1.0"
-
 }
 
 printf "Host: %s\nOS: %s %s %s\nJVM: %s %s %s %s\nGroovy: %s\nGradle: %s\n" +
@@ -19,22 +18,6 @@ printf "Host: %s\nOS: %s %s %s\nJVM: %s %s %s %s\nGroovy: %s\nGradle: %s\n" +
         GroovySystem.getVersion(),
         gradle.gradleVersion
 
-ext {
-    pluginName = 'bundle'
-    pluginClassname  = 'org.xbib.elasticsearch.plugin.bundle.BundlePlugin'
-    pluginDescription = 'A bundle of plugins for Elasticsearch'
-    user = 'jprante'
-    name = 'elasticsearch-plugin-bundle'
-    scmUrl = 'https://github.com/' + user + '/' + name
-    scmConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
-    scmDeveloperConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
-    versions = [
-            'elasticsearch' : '5.1.1',
-            'icu4j' : '58.2',
-            'standardnumber': '1.0.1',
-            'log4j': '2.7'
-    ]
-}
 
 apply plugin: 'java'
 apply plugin: 'maven'
@@ -65,15 +48,19 @@ configurations {
     }
 }
 
+apply from: 'gradle/ext.gradle'
+apply from: 'gradle/publish.gradle'
+apply from: 'gradle/sonarqube.gradle'
+
 dependencies {
-    compile "org.elasticsearch:elasticsearch:${versions.elasticsearch}"
-    compile "com.ibm.icu:icu4j:${versions.icu4j}"
-    compile "org.xbib:standardnumber:${versions.standardnumber}"
-    compileOnly "org.apache.logging.log4j:log4j-core:${versions.log4j}"
-    testCompile "junit:junit:4.12"
-    testCompile "org.apache.logging.log4j:log4j-core:${versions.log4j}"
+    compile "org.elasticsearch:elasticsearch:${project.property('elasticsearch.version')}"
+    compile "com.ibm.icu:icu4j:${project.property('icu4j.version')}"
+    compile "org.xbib:standardnumber:${project.property('standardnumber.version')}"
+    compileOnly "org.apache.logging.log4j:log4j-core:${project.property('log4j.version')}"
+    testCompile "junit:junit:${project.property('junit.version')}"
+    testCompile "org.apache.logging.log4j:log4j-core:${project.property('log4j.version')}"
     distJars "${project.group}:${project.name}:${project.version}"
-    wagon 'org.apache.maven.wagon:wagon-ssh-external:2.10'
+    wagon "org.apache.maven.wagon:wagon-ssh-external:${project.property('wagon-ssh-external.version')}"
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -90,7 +77,6 @@ test {
         showStandardStreams = false
         exceptionFormat = 'full'
     }
-    reports.html.destination = "docs/test"
 }
 
 task makePluginDescriptor(type: Copy) {
@@ -103,7 +89,7 @@ task makePluginDescriptor(type: Copy) {
                 'description': pluginDescription,
                 'version': project.property('version'),
                 'javaVersion': project.property('targetCompatibility'),
-                'elasticsearchVersion' : versions.elasticsearch
+                'elasticsearchVersion' : project.property('elasticsearch.version')
             ]
     ])
 }
@@ -130,7 +116,6 @@ clean {
 
 asciidoctor {
     backends 'html5'
-    outputDir = file('docs')
     separateOutputDirs = false
     attributes 'source-highlighter': 'coderay',
             toc                 : '',
@@ -160,6 +145,3 @@ if (project.hasProperty('signing.keyId')) {
         sign configurations.archives
     }
 }
-
-apply from: 'gradle/publish.gradle'
-apply from: 'gradle/sonarqube.gradle'

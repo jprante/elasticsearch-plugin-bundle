@@ -27,7 +27,7 @@ import org.xbib.elasticsearch.index.analysis.concat.ConcatTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.concat.PairTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.decompound.patricia.DecompoundTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.decompound.fst.FstDecompoundTokenFilterFactory;
-import org.xbib.elasticsearch.index.analysis.expansion.fst.FstExpansionTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.lemmatize.LemmatizeTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.german.GermanNormalizationFilterFactory;
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenAnalyzerProvider;
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenFilterFactory;
@@ -121,7 +121,7 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
         extra.put("worddelimiter2", WordDelimiterFilter2Factory::new);
         extra.put("symbolname", SymbolnameTokenFilterFactory::new);
         extra.put("year", GregorianYearTokenFilterFactory::new);
-        extra.put("expansion", FstExpansionTokenFilterFactory::new);
+        extra.put("lemmatize", LemmatizeTokenFilterFactory::new);
         return extra;
     }
 

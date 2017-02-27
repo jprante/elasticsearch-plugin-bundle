@@ -1,5 +1,7 @@
 package org.xbib.elasticsearch.common.fsa;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.BitSet;
 import java.util.Collections;
@@ -90,6 +92,8 @@ public abstract class FSA implements Iterable<ByteBuffer> {
      */
     public abstract Set<FSAFlags> getFlags();
 
+    public abstract void write(DataOutputStream outputStream) throws IOException;
+
     /**
      * @param node node
      * @return Returns the number of sequences reachable from the given state if
@@ -121,7 +125,7 @@ public abstract class FSA implements Iterable<ByteBuffer> {
      */
     public Iterable<ByteBuffer> getSequences(final int node) {
         if (node == 0) {
-            return Collections.<ByteBuffer>emptyList();
+            return Collections.emptyList();
         }
         return () -> new FSAFinalStatesIterator(FSA.this, node);
     }
@@ -251,6 +255,4 @@ public abstract class FSA implements Iterable<ByteBuffer> {
             }
         }
     }
-
-
 }

@@ -1,5 +1,7 @@
 package org.xbib.elasticsearch.common.fsa;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
@@ -146,5 +148,13 @@ public final class ConstantArcSizeFSA extends FSA {
     @Override
     public Set<FSAFlags> getFlags() {
         return Collections.emptySet();
+    }
+
+    @Override
+    public void write(DataOutputStream outputStream) throws IOException {
+        outputStream.writeInt(data.length);
+        outputStream.writeInt(epsilon);
+        outputStream.write(data);
+        outputStream.close();
     }
 }

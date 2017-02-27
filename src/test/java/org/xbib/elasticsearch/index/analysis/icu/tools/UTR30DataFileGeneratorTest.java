@@ -11,6 +11,6 @@ public class UTR30DataFileGeneratorTest {
     @Test
     public void generate() throws IOException {
         UTR30DataFileGenerator utr30DataFileGenerator = new UTR30DataFileGenerator();
-        utr30DataFileGenerator.execute();
+        utr30DataFileGenerator.execute("build/");
     }
 }

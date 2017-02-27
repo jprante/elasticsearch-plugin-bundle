@@ -15,7 +15,7 @@ public class DictionaryTests extends Assert {
     public void verifyDE() throws IOException {
         Dictionary dictionary = new Dictionary();
         InputStreamReader reader = new InputStreamReader(getClass().getResource("/baseform/de-lemma-utf8.txt").openStream(), "UTF-8");
-        dictionary.loadBaseform(reader);
+        dictionary.loadLines(reader);
         reader.close();
         BufferedReader br = new BufferedReader(new InputStreamReader(getClass().getResource("/baseform/de-lemma-utf8.txt").openStream(), "UTF-8"));
         String line;

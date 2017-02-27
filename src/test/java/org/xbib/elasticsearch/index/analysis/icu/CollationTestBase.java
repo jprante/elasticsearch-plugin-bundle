@@ -154,7 +154,7 @@ public abstract class CollationTestBase extends LuceneTestCase {
                             BytesRef bytes = termAtt.getBytesRef();
                             ts.reset();
                             ts.incrementToken();
-                            if (expected != bytes) {
+                            if (!expected.utf8ToString().equals(bytes.utf8ToString())) {
                                 throw new IOException("unexpected: bytes=" + bytes.utf8ToString() + " expected=" + expected.utf8ToString());
                             }
                             ts.incrementToken();

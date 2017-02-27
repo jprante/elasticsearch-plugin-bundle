@@ -112,21 +112,17 @@ public final class FSAFinalStatesIterator implements Iterator<ByteBuffer> {
         if (position == 0) {
             return null;
         }
-
         while (position > 0) {
             final int lastIndex = position - 1;
             final int arc = arcs[lastIndex];
-
             if (arc == 0) {
                 // Remove the current node from the queue.
                 position--;
                 continue;
             }
-
             // Go to the next arc, but leave it on the stack
             // so that we keep the recursion depth level accurate.
             arcs[lastIndex] = fsa.getNextArc(arc);
-
             // Expand buffer if needed.
             final int bufferLength = this.buffer.length;
             if (lastIndex >= bufferLength) {
@@ -135,19 +131,16 @@ public final class FSAFinalStatesIterator implements Iterator<ByteBuffer> {
                 this.bufferWrapper = ByteBuffer.wrap(buffer);
             }
             buffer[lastIndex] = fsa.getArcLabel(arc);
-
             if (!fsa.isArcTerminal(arc)) {
                 // Recursively descend into the arc's node.
                 pushNode(fsa.getEndNode(arc));
             }
-
             if (fsa.isArcFinal(arc)) {
                 bufferWrapper.clear();
                 bufferWrapper.limit(lastIndex + 1);
                 return bufferWrapper;
             }
         }
-
         return null;
     }
 
@@ -167,7 +160,6 @@ public final class FSAFinalStatesIterator implements Iterator<ByteBuffer> {
         if (position == arcs.length) {
             arcs = Arrays.copyOf(arcs, arcs.length + EXPECTED_MAX_STATES);
         }
-
         arcs[position++] = fsa.getFirstArc(node);
     }
 }

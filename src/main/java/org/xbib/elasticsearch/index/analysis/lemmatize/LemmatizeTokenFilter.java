@@ -1,4 +1,4 @@
-package org.xbib.elasticsearch.index.analysis.decompound.patricia;
+package org.xbib.elasticsearch.index.analysis.lemmatize;
 
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
@@ -6,23 +6,24 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.KeywordAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.util.AttributeSource;
-import org.xbib.elasticsearch.common.decompound.patricia.Decompounder;
+import org.xbib.elasticsearch.common.fsa.Dictionary;
 
 import java.io.IOException;
+import java.nio.charset.CharacterCodingException;
 import java.util.LinkedList;
 
 /**
  *
  */
-public class DecompoundTokenFilter extends TokenFilter {
+public class LemmatizeTokenFilter extends TokenFilter {
 
     private final LinkedList<String> tokens;
 
-    private final Decompounder decomp;
+    private final Dictionary dictionary;
 
     private final boolean respectKeywords;
 
-    private final boolean subwordsonly;
+    private final boolean lemmaOnly;
 
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
 
@@ -32,12 +33,13 @@ public class DecompoundTokenFilter extends TokenFilter {
 
     private AttributeSource.State current;
 
-    protected DecompoundTokenFilter(TokenStream input, Decompounder decomp, boolean respectKeywords, boolean subwordsonly) {
+    protected LemmatizeTokenFilter(TokenStream input, Dictionary dictionary,
+                                   boolean respectKeywords, boolean lemmaOnly) {
         super(input);
         this.tokens = new LinkedList<>();
-        this.decomp = decomp;
+        this.dictionary = dictionary;
         this.respectKeywords = respectKeywords;
-        this.subwordsonly = subwordsonly;
+        this.lemmaOnly = lemmaOnly;
     }
 
     @Override
@@ -49,7 +51,7 @@ public class DecompoundTokenFilter extends TokenFilter {
             String token = tokens.removeFirst();
             restoreState(current);
             termAtt.setEmpty().append(token);
-            if (!subwordsonly) {
+            if (!lemmaOnly) {
                 posIncAtt.setPositionIncrement(0);
             }
             return true;
@@ -60,9 +62,9 @@ public class DecompoundTokenFilter extends TokenFilter {
         if (respectKeywords && keywordAtt.isKeyword()) {
             return true;
         }
-        if (!decompound()) {
+        if (!expand()) {
             current = captureState();
-            if (subwordsonly) {
+            if (lemmaOnly) {
                 String token = tokens.removeFirst();
                 restoreState(current);
                 termAtt.setEmpty().append(token);
@@ -72,10 +74,11 @@ public class DecompoundTokenFilter extends TokenFilter {
         return true;
     }
 
-    protected boolean decompound() {
+    private boolean expand() throws CharacterCodingException {
         String term = new String(termAtt.buffer(), 0, termAtt.length());
-        for (String s : decomp.decompound(term)) {
-            tokens.add(s);
+        CharSequence s = dictionary.lookup(term);
+        if (s != null) {
+            tokens.add(s.toString());
         }
         return tokens.isEmpty();
     }
@@ -89,14 +92,16 @@ public class DecompoundTokenFilter extends TokenFilter {
 
     @Override
     public boolean equals(Object object) {
-        return object instanceof DecompoundTokenFilter &&
-                tokens.equals(((DecompoundTokenFilter)object).tokens) &&
-                respectKeywords == ((DecompoundTokenFilter)object).respectKeywords &&
-                subwordsonly == ((DecompoundTokenFilter)object).subwordsonly;
+        return object instanceof LemmatizeTokenFilter &&
+                tokens.equals(((LemmatizeTokenFilter)object).tokens) &&
+                dictionary.equals(((LemmatizeTokenFilter)object).dictionary) &&
+                respectKeywords == ((LemmatizeTokenFilter)object).respectKeywords &&
+                lemmaOnly == ((LemmatizeTokenFilter)object).lemmaOnly;
     }
 
     @Override
     public int hashCode() {
-        return tokens.hashCode() ^ Boolean.hashCode(respectKeywords) ^ Boolean.hashCode(subwordsonly);
+        return tokens.hashCode() ^ dictionary.hashCode()
+                ^ Boolean.hashCode(respectKeywords) ^ Boolean.hashCode(lemmaOnly);
     }
 }

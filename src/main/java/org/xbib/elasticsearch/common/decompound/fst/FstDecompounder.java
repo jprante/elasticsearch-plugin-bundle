@@ -44,25 +44,29 @@ public class FstDecompounder {
      */
     private final FST<Object> glueMorphemes;
 
-    public FstDecompounder(InputStream inputStream) throws IOException {
+    public FstDecompounder(InputStream inputStream, String[] glue) throws IOException {
         try {
             this.surfaceForms = new FST<>(new InputStreamDataInput(inputStream), NoOutputs.getSingleton());
         } finally {
             inputStream.close();
         }
         // set up glue morphemes
-        for (int i = 0; i < morphemes.length; i++) {
-            morphemes[i] = new StringBuilder(morphemes[i]).reverse().toString();
+        this.glueMorphemes = createGlueMorphemes(glue != null && glue.length > 0 ? glue : morphemes);
+    }
+
+    private FST<Object> createGlueMorphemes(String[] glue) throws IOException {
+        for (int i = 0; i < glue.length; i++) {
+            glue[i] = new StringBuilder(glue[i]).reverse().toString();
         }
-        Arrays.sort(morphemes);
+        Arrays.sort(glue);
         final Builder<Object> builder = new Builder<>(INPUT_TYPE.BYTE4, NoOutputs.getSingleton());
         final Object nothing = NoOutputs.getSingleton().getNoOutput();
         IntsRefBuilder intsBuilder = new IntsRefBuilder();
-        for (String morpheme : morphemes) {
+        for (String morpheme : glue) {
             fromUTF16ToUTF32(morpheme, intsBuilder);
             builder.add(intsBuilder.get(), nothing);
         }
-        this.glueMorphemes = builder.finish();
+        return builder.finish();
     }
 
     public List<String> decompound(String word) {
@@ -151,10 +155,8 @@ public class FstDecompounder {
                             builder.append('.');
                         }
                         first = false;
-                        StringBuilder sb = new StringBuilder(newString(utf32.ints, chunk.start,
-                                chunk.end - chunk.start)).reverse();
-                        System.err.println("adding: " + sb);
-                        builder.append(sb);
+                        builder.append(new StringBuilder(newString(utf32.ints, chunk.start,
+                                chunk.end - chunk.start)).reverse());
                     }
                 }
             } else {
@@ -205,7 +207,7 @@ public class FstDecompounder {
      * Category for a given chunk of a compound.
      */
      enum ChunkType {
-        GLUE_MORPHEME, WORD,
+        GLUE_MORPHEME, WORD
     }
 
     /**

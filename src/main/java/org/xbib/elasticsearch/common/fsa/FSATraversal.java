@@ -95,8 +95,7 @@ public final class FSATraversal {
      * @return The same object as <code>result</code>, but with reset internal
      * type and other fields.
      */
-    public MatchResult match(MatchResult result,
-                             byte[] sequence, int start, int length, int n) {
+    public MatchResult match(MatchResult result, byte[] sequence, int start, int length, int n) {
         int node = n;
         if (node == 0) {
             result.reset(MatchResult.NO_MATCH, start, node);

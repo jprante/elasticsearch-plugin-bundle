@@ -48,7 +48,7 @@ public enum FSAFlags {
      */
     public final int bits;
 
-    private FSAFlags(int bits) {
+    FSAFlags(int bits) {
         this.bits = bits;
     }
 
