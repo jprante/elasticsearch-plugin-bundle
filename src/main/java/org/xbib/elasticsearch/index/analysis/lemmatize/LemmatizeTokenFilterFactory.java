@@ -8,7 +8,6 @@ import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.xbib.elasticsearch.common.fsa.Dictionary;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -39,8 +38,8 @@ public class LemmatizeTokenFilterFactory extends AbstractTokenFilterFactory {
     }
 
     private Dictionary createDictionary(Settings settings) {
+        String language = settings.get("language", "en");
         try {
-            String language = settings.get("language", "en");
             String resource = settings.get("resource", "/lemmatize/lemmatization-" + language + ".fsa.gz");
             if (resource.endsWith(".fsa") || resource.endsWith("fsa.gz")) {
                 // FSA
@@ -62,8 +61,9 @@ public class LemmatizeTokenFilterFactory extends AbstractTokenFilterFactory {
                 reader.close();
                 return dictionary;
             }
-        } catch (IOException e) {
-            throw new ElasticsearchException("resources in settings not found: " + settings, e);
+        } catch (Exception e) {
+            throw new ElasticsearchException("resources for language " + language +
+                    " in settings not found: " + settings.getAsMap(), e);
         }
     }
 }
