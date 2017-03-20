@@ -518,6 +518,21 @@ POST /test/docs/_search?explain
 
 ## Baseform
 
+Try it out
+----
+GET _analyze
+{
+  "tokenizer": "standard",
+  "filter": [
+    {
+      "type": "baseform",
+      "language": "de"
+    }
+  ],
+  "text": "Ich gehe dahin"
+}
+----
+
     {
      "index":{
         "analysis":{
@@ -542,6 +557,20 @@ POST /test/docs/_search?explain
 
 ## WordDelimiterFilter2
 
+Try it out
+----
+GET _analyze
+{
+  "tokenizer": "standard",
+  "filter": [
+    {
+      "type": "worddelimiter2"
+    }
+  ],
+  "text": "PowerShot Wi-Fi SD500"
+}
+----
+
     {
         "index":{
             "analysis":{
@@ -561,6 +590,20 @@ POST /test/docs/_search?explain
     }
 
 # Example
+
+Try it out
+----
+GET _analyze
+{
+  "tokenizer": "standard",
+  "filter": [
+    {
+      "type": "decompound"
+    }
+  ],
+  "text": "PowerShot Donaudampfschiff"
+}
+----
 
 In the mapping, us a token filter of type "decompound"::
 
@@ -730,6 +773,20 @@ Sometimes only the decomposed subwords should be indexed. For this, you can use 
     '
 
 ## Standardnumber
+
+Try it out
+----
+GET _analyze
+{
+  "tokenizer": "standard",
+  "filter": [
+    {
+      "type": "standardnumber"
+    }
+  ],
+  "text": "Die ISBN von Elasticsearch in Action lautet 9781617291623"
+}
+----
 
     {
        "index" : {
