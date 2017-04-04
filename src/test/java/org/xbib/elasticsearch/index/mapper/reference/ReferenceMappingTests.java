@@ -10,6 +10,7 @@ import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.compress.CompressedXContent;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.mapper.DocumentMapper;
 import org.elasticsearch.index.mapper.DocumentMapperParser;
 import org.elasticsearch.index.mapper.ParseContext;
@@ -142,17 +143,16 @@ public class ReferenceMappingTests extends NodeTestUtils {
 
     @Test
     public void testSearch() throws Exception {
-        String json = copyToStringFromClasspath("ref-doc-book.json");
-        String mapping = copyToStringFromClasspath("ref-mapping-books-test.json");
         try {
             client().admin().indices().prepareDelete("books").execute().actionGet();
         } catch (Exception e) {
             logger.warn("unable to delete index 'books'");
         }
         client().admin().indices().prepareCreate("books")
-                .addMapping("test", mapping)
+                .addMapping("test", copyToStringFromClasspath("ref-mapping-books-test.json"), XContentType.JSON)
                 .execute().actionGet();
-        client().prepareIndex("books", "test", "1").setSource(json)
+        client().prepareIndex("books", "test", "1")
+                .setSource(copyToStringFromClasspath("ref-doc-book.json"), XContentType.JSON)
                 .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).execute().actionGet();
 
         // get mappings

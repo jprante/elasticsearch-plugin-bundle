@@ -17,6 +17,7 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.node.MockNode;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeValidationException;
+import org.elasticsearch.transport.Netty4Plugin;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -97,18 +99,17 @@ public class NodeTestUtils {
     }
 
     protected Settings getNodeSettings() {
-        //String hostname = NetworkUtils.getLocalAddress().getHostName();
         return Settings.builder()
                 .put("cluster.name", clustername)
                 .put("transport.type", "local")
-                .put("http.enabled", false)
+                .put("http.enabled", true)
+                .put("http.type", "netty4")
                 .put("path.home", getHome())
-                //.put("node.max_local_storage_nodes", 1)
                 .build();
     }
 
     protected String getHome() {
-        return System.getProperty("path.home");
+        return System.getProperty("path.home") != null ? System.getProperty("path.home") : System.getProperty("user.dir");
     }
 
     public Node startNode() throws IOException {
@@ -168,12 +169,12 @@ public class NodeTestUtils {
         return null;
     }
 
-    public Node buildNodeWithoutPlugins() throws IOException {
+    public Node buildNodeWithoutBundlePlugin() throws IOException {
         Settings nodeSettings = Settings.builder()
                 .put(getNodeSettings())
                 .build();
         logger.info("settings={}", nodeSettings.getAsMap());
-        return new MockNode(nodeSettings, Collections.emptyList());
+        return new MockNode(nodeSettings, Collections.singletonList(Netty4Plugin.class));
     }
 
     public Node buildNode() throws IOException {
@@ -181,7 +182,7 @@ public class NodeTestUtils {
                 .put(getNodeSettings())
                 .build();
         logger.info("settings={}", nodeSettings.getAsMap());
-        return new MockNode(nodeSettings, Collections.singletonList(BundlePlugin.class));
+        return new MockNode(nodeSettings, Arrays.asList(Netty4Plugin.class, BundlePlugin.class));
     }
 
 

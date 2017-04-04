@@ -23,12 +23,14 @@ public class RestISBNFormatterAction extends BaseRestHandler {
     public RestISBNFormatterAction(Settings settings, RestController controller) {
         super(settings);
         controller.registerHandler(GET, "/_isbn", this);
+        controller.registerHandler(GET, "/_isbn/{value}", this);
     }
 
     @Override
     protected RestChannelConsumer prepareRequest(RestRequest request, NodeClient client) throws IOException {
-        return channel -> client.execute(ISBNFormatAction.INSTANCE, new ISBNFormatRequest()
-                            .setValue(request.param("value")),
+        final String value = request.param("value");
+        final ISBNFormatRequest isbnFormatRequest = new ISBNFormatRequest().setValue(value);
+        return channel -> client.execute(ISBNFormatAction.INSTANCE, isbnFormatRequest,
                     new RestStatusToXContentListener<>(channel));
     }
 }

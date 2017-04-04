@@ -1,7 +1,8 @@
 package org.xbib.elasticsearch.action.isbnformat;
 
 import org.elasticsearch.action.ActionResponse;
-import org.elasticsearch.common.xcontent.StatusToXContent;
+import org.elasticsearch.common.xcontent.StatusToXContentObject;
+import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.rest.RestStatus;
 
@@ -12,7 +13,7 @@ import static org.elasticsearch.rest.RestStatus.OK;
 /**
  *
  */
-public class ISBNFormatResponse extends ActionResponse implements StatusToXContent {
+public class ISBNFormatResponse extends ActionResponse implements StatusToXContentObject {
 
     private String isbn10;
 
@@ -50,13 +51,15 @@ public class ISBNFormatResponse extends ActionResponse implements StatusToXConte
     }
 
     @Override
-    public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
-        builder.startObject("result")
+    public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
+        builder.startObject()
+                .startObject("result")
                 .field("isbn10", isbn10)
                 .field("isbn10formatted", isbn10Formatted)
                 .field("isbn13", isbn13)
                 .field("isbn13formatted", isbn13Formatted)
                 .field("invalid", invalid)
+                .endObject()
                 .endObject();
         return builder;
     }

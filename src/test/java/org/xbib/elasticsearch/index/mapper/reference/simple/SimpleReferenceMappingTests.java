@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.WriteRequest;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.junit.Test;
@@ -34,11 +35,11 @@ public class SimpleReferenceMappingTests extends NodeTestUtils {
                 logger.warn("can not delete index ref");
             }
             client().admin().indices().prepareCreate("ref")
-                    .setSettings(copyToStringFromClasspath("ref-simple-settings.json"))
-                    .addMapping("ref", copyToStringFromClasspath("ref-simple-mapping.json"))
+                    .setSettings(copyToStringFromClasspath("ref-simple-settings.json"), XContentType.JSON)
+                    .addMapping("ref", copyToStringFromClasspath("ref-simple-mapping.json"), XContentType.JSON)
                     .execute().actionGet();
             client().prepareIndex("ref", "ref", "1")
-                    .setSource(copyToStringFromClasspath("ref-simple-document.json"))
+                    .setSource(copyToStringFromClasspath("ref-simple-document.json"), XContentType.JSON)
                     .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).execute().actionGet();
 
             try {
@@ -47,11 +48,11 @@ public class SimpleReferenceMappingTests extends NodeTestUtils {
                 logger.warn("can not delete index doc");
             }
             client().admin().indices().prepareCreate("doc")
-                    .setSettings(copyToStringFromClasspath("doc-simple-settings.json"))
-                    .addMapping("doc", copyToStringFromClasspath("doc-simple-mapping.json"))
+                    .setSettings(copyToStringFromClasspath("doc-simple-settings.json"), XContentType.JSON)
+                    .addMapping("doc", copyToStringFromClasspath("doc-simple-mapping.json"), XContentType.JSON)
                     .execute().actionGet();
             client().prepareIndex("doc", "doc", "1")
-                    .setSource(copyToStringFromClasspath("doc-simple-document.json"))
+                    .setSource(copyToStringFromClasspath("doc-simple-document.json"), XContentType.JSON)
                     .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).execute().actionGet();
 
             // search for "first"

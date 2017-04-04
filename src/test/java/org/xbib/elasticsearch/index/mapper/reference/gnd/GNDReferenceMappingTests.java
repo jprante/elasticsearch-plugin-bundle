@@ -6,6 +6,7 @@ import org.elasticsearch.action.search.SearchAction;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.WriteRequest;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.junit.Test;
@@ -34,30 +35,25 @@ public class GNDReferenceMappingTests extends NodeTestUtils {
             } catch (Exception e) {
                 logger.warn(e.getMessage());
             }
-            String gndSettings = copyToStringFromClasspath("gnd-settings.json");
-            String gndMapping = copyToStringFromClasspath("gnd-mapping.json");
             client().admin().indices().prepareCreate("gnd")
-                    .setSettings(gndSettings)
-                    .addMapping("gnd", gndMapping)
+                    .setSettings(copyToStringFromClasspath("gnd-settings.json"), XContentType.JSON)
+                    .addMapping("gnd", copyToStringFromClasspath("gnd-mapping.json"), XContentType.JSON)
                     .execute().actionGet();
-            String gndDocument = copyToStringFromClasspath("gnd-document.json");
             client().prepareIndex("gnd", "gnd", "11862444X")
-                    .setSource(gndDocument)
+                    .setSource(copyToStringFromClasspath("gnd-document.json"), XContentType.JSON)
                     .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                     .execute().actionGet();
 
-            String titleSettings = copyToStringFromClasspath("title-settings.json");
-            String titleMapping = copyToStringFromClasspath("title-mapping.json");
             client().admin().indices().prepareCreate("title")
-                    .setSettings(titleSettings)
-                    .addMapping("title", titleMapping)
+                    .setSettings(copyToStringFromClasspath("title-settings.json"), XContentType.JSON)
+                    .addMapping("title", copyToStringFromClasspath("title-mapping.json"), XContentType.JSON)
                     .execute().actionGet();
             client().prepareIndex("title", "title", "(DE-605)008427902")
-                    .setSource(copyToStringFromClasspath("title-document-1.json"))
+                    .setSource(copyToStringFromClasspath("title-document-1.json"), XContentType.JSON)
                     .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                     .execute().actionGet();
             client().prepareIndex("title", "title", "(DE-605)017215715")
-                    .setSource(copyToStringFromClasspath("title-document-2.json"))
+                    .setSource(copyToStringFromClasspath("title-document-2.json"), XContentType.JSON)
                     .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                     .execute().actionGet();
 

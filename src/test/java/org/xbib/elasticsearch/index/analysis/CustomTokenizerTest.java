@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.elasticsearch.ResourceAlreadyExistsException;
 import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeValidationException;
 import org.junit.Test;
@@ -33,13 +34,12 @@ public class CustomTokenizerTest extends NodeTestUtils {
 
         // custom tokenizer in settings
         client.admin().indices().prepareCreate("demo")
-                .setSettings(copyToStringFromClasspath("settings.json"))
-                .addMapping("demo", copyToStringFromClasspath("mapping.json"))
+                .setSettings(copyToStringFromClasspath("settings.json"), XContentType.JSON)
+                .addMapping("demo", copyToStringFromClasspath("mapping.json"), XContentType.JSON)
                 .execute().actionGet();
-        String document = copyToStringFromClasspath("document.json");
         // use tokenizer
         client.prepareIndex("demo", "demo", "1")
-                .setSource(document)
+                .setSource(copyToStringFromClasspath("document.json"), XContentType.JSON)
                 .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                 .execute().actionGet();
 
@@ -51,7 +51,7 @@ public class CustomTokenizerTest extends NodeTestUtils {
         node.close();
 
         // start a new node, but without plugin, trying to recover from demo index (if present)
-        node = buildNodeWithoutPlugins();
+        node = buildNodeWithoutBundlePlugin();
         try {
             node.start();
         } catch (NodeValidationException e) {

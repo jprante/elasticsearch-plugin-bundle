@@ -3,9 +3,14 @@ package org.xbib.elasticsearch.plugin.bundle;
 import org.apache.lucene.analysis.Analyzer;
 import org.elasticsearch.action.ActionRequest;
 import org.elasticsearch.action.ActionResponse;
+import org.elasticsearch.cluster.metadata.IndexNameExpressionResolver;
+import org.elasticsearch.cluster.node.DiscoveryNodes;
 import org.elasticsearch.common.component.LifecycleComponent;
 import org.elasticsearch.common.inject.Module;
+import org.elasticsearch.common.settings.ClusterSettings;
+import org.elasticsearch.common.settings.IndexScopedSettings;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.settings.SettingsFilter;
 import org.elasticsearch.index.analysis.AnalyzerProvider;
 import org.elasticsearch.index.analysis.CharFilterFactory;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
@@ -16,6 +21,7 @@ import org.elasticsearch.plugins.ActionPlugin;
 import org.elasticsearch.plugins.AnalysisPlugin;
 import org.elasticsearch.plugins.MapperPlugin;
 import org.elasticsearch.plugins.Plugin;
+import org.elasticsearch.rest.RestController;
 import org.elasticsearch.rest.RestHandler;
 import org.xbib.elasticsearch.action.isbnformat.ISBNFormatAction;
 import org.xbib.elasticsearch.action.isbnformat.TransportISBNFormatAction;
@@ -69,6 +75,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  *
@@ -170,10 +177,16 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
     }
 
     @Override
-    public List<Class<? extends RestHandler>> getRestHandlers() {
-        List<Class<? extends RestHandler>> extra = new ArrayList<>();
-        extra.add(RestISBNFormatterAction.class);
-        extra.add(RestLangdetectAction.class);
+    public List<RestHandler> getRestHandlers(Settings settings,
+                                             RestController restController,
+                                             ClusterSettings clusterSettings,
+                                             IndexScopedSettings indexScopedSettings,
+                                             SettingsFilter settingsFilter,
+                                             IndexNameExpressionResolver indexNameExpressionResolver,
+                                             Supplier<DiscoveryNodes> nodesInCluster) {
+        List<RestHandler> extra = new ArrayList<>();
+        extra.add(new RestISBNFormatterAction(settings, restController));
+        extra.add(new RestLangdetectAction(settings, restController));
         return extra;
     }
 

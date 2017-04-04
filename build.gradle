@@ -59,6 +59,7 @@ dependencies {
     compileOnly "org.apache.logging.log4j:log4j-core:${project.property('log4j.version')}"
     testCompile "junit:junit:${project.property('junit.version')}"
     testCompile "org.apache.logging.log4j:log4j-core:${project.property('log4j.version')}"
+    testCompile "org.elasticsearch.plugin:transport-netty4-client:${project.property('elasticsearch.version')}"
     distJars "${project.group}:${project.name}:${project.version}"
     wagon "org.apache.maven.wagon:wagon-ssh-external:${project.property('wagon-ssh-external.version')}"
 }
