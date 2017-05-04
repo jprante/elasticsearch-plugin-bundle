@@ -58,14 +58,14 @@ public class LemmatizeSearchTests extends NodeTestUtils {
             SearchResponse searchResponse = client().prepareSearch()
                     .setQuery(QueryBuilders.matchQuery("content", "library"))
                     .execute().actionGet();
-            assertEquals(1L, searchResponse.getHits().totalHits());
+            assertEquals(1L, searchResponse.getHits().getTotalHits());
 
             // phrase search: academic libraries -> academic library
             searchResponse = client().prepareSearch()
                     .setQuery(QueryBuilders.matchPhraseQuery("content", "academic library"))
                     .setExplain(true)
                     .execute().actionGet();
-            assertEquals(1L, searchResponse.getHits().totalHits());
+            assertEquals(1L, searchResponse.getHits().getTotalHits());
 
         } finally {
             stopCluster();

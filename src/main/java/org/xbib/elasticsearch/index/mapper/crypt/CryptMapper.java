@@ -119,7 +119,6 @@ public class CryptMapper extends TextFieldMapper {
         }
         if (fieldType().indexOptions() != IndexOptions.NONE || fieldType().stored()) {
             Field field = new Field(fieldType().name(), valueAndBoost.value(), fieldType());
-            field.setBoost(valueAndBoost.boost());
             fields.add(field);
         }
         if (fieldType().hasDocValues()) {
