@@ -9,6 +9,7 @@ import org.elasticsearch.common.component.LifecycleComponent;
 import org.elasticsearch.common.inject.Module;
 import org.elasticsearch.common.settings.ClusterSettings;
 import org.elasticsearch.common.settings.IndexScopedSettings;
+import org.elasticsearch.common.settings.Setting;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.SettingsFilter;
 import org.elasticsearch.index.analysis.AnalyzerProvider;
@@ -71,10 +72,12 @@ import org.xbib.elasticsearch.rest.action.isbnformat.RestISBNFormatterAction;
 import org.xbib.elasticsearch.rest.action.langdetect.RestLangdetectAction;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -92,6 +95,11 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
 
     public BundlePlugin(Settings settings) {
         this.settings = settings;
+    }
+
+    @Override
+    public List<Setting<?>> getSettings() {
+        return Arrays.asList(new Setting<>("plugins.xbib.icu.enabled", "true", Function.identity(), Setting.Property.NodeScope));
     }
 
     @Override
