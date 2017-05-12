@@ -7,6 +7,7 @@ import org.elasticsearch.cluster.metadata.IndexNameExpressionResolver;
 import org.elasticsearch.cluster.node.DiscoveryNodes;
 import org.elasticsearch.common.component.LifecycleComponent;
 import org.elasticsearch.common.inject.Module;
+import org.elasticsearch.common.io.stream.NamedWriteableRegistry;
 import org.elasticsearch.common.settings.ClusterSettings;
 import org.elasticsearch.common.settings.IndexScopedSettings;
 import org.elasticsearch.common.settings.Setting;
@@ -24,6 +25,7 @@ import org.elasticsearch.plugins.MapperPlugin;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.rest.RestController;
 import org.elasticsearch.rest.RestHandler;
+import org.elasticsearch.search.DocValueFormat;
 import org.xbib.elasticsearch.action.isbnformat.ISBNFormatAction;
 import org.xbib.elasticsearch.action.isbnformat.TransportISBNFormatAction;
 import org.xbib.elasticsearch.action.langdetect.LangdetectAction;
@@ -59,6 +61,7 @@ import org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2F
 import org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilterFactory;
 import org.xbib.elasticsearch.index.analysis.year.GregorianYearTokenFilterFactory;
 import org.xbib.elasticsearch.index.mapper.crypt.CryptMapper;
+import org.xbib.elasticsearch.index.mapper.icu.IcuCollationKeyFieldMapper;
 import org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper;
 import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapper;
 import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapperModule;
@@ -74,6 +77,7 @@ import org.xbib.elasticsearch.rest.action.langdetect.RestLangdetectAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -173,6 +177,7 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
         extra.put(ReferenceMapper.MAPPER_TYPE, referenceMapperTypeParser);
         extra.put(CryptMapper.MAPPER_TYPE, new CryptMapper.TypeParser());
         extra.put(LangdetectMapper.MAPPER_TYPE, new LangdetectMapper.TypeParser());
+        extra.put(IcuCollationKeyFieldMapper.MAPPER_TYPE, new IcuCollationKeyFieldMapper.TypeParser());
         return extra;
     }
 
@@ -212,5 +217,16 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
         extra.add(ReferenceService.class);
         extra.add(StandardnumberService.class);
         return extra;
+    }
+
+    @Override
+    public List<NamedWriteableRegistry.Entry> getNamedWriteables() {
+        return Collections.singletonList(
+                new NamedWriteableRegistry.Entry(
+                        DocValueFormat.class,
+                        IcuCollationKeyFieldMapper.CollationFieldType.COLLATE_FORMAT.getWriteableName(),
+                        in -> IcuCollationKeyFieldMapper.CollationFieldType.COLLATE_FORMAT
+                )
+        );
     }
 }
