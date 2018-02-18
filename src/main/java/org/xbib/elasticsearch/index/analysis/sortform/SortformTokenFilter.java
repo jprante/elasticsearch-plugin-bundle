@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.regex.Pattern;
 
 /**
- *
+ * Sort form token filter.
  */
 public class SortformTokenFilter extends TokenFilter {
 

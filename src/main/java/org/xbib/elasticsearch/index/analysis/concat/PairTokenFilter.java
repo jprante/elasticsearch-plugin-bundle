@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Queue;
 
 /**
- *
+ * Pair token filter.
  */
 public final class PairTokenFilter extends TokenFilter {
 

@@ -94,11 +94,13 @@ public final class IndexableBinaryStringTools {
                 codingCase = CODING_CASES[caseNum];
                 if (2 == codingCase.numBytes) {
                     outputArray[outputCharNum] = (char) (((inputArray[inputByteNum] & 0xFF) << codingCase.initialShift)
-                            + (((inputArray[inputByteNum + 1] & 0xFF) >>> codingCase.finalShift) & codingCase.finalMask) & (short) 0x7FFF);
+                            + (((inputArray[inputByteNum + 1] & 0xFF) >>> codingCase.finalShift) &
+                            codingCase.finalMask) & (short) 0x7FFF);
                 } else { // numBytes is 3
                     outputArray[outputCharNum] = (char) (((inputArray[inputByteNum] & 0xFF) << codingCase.initialShift)
                             + ((inputArray[inputByteNum + 1] & 0xFF) << codingCase.middleShift)
-                            + (((inputArray[inputByteNum + 2] & 0xFF) >>> codingCase.finalShift) & codingCase.finalMask) & (short) 0x7FFF);
+                            + (((inputArray[inputByteNum + 2] & 0xFF) >>> codingCase.finalShift) &
+                            codingCase.finalMask) & (short) 0x7FFF);
                 }
                 inputByteNum += codingCase.advanceBytes;
                 if (++caseNum == CODING_CASES.length) {
@@ -109,11 +111,13 @@ public final class IndexableBinaryStringTools {
             codingCase = CODING_CASES[caseNum];
 
             if (inputByteNum + 1 < inputLength) { // codingCase.numBytes must be 3
-                outputArray[outputCharNum++] = (char) ((((inputArray[inputByteNum] & 0xFF) << codingCase.initialShift) + ((inputArray[inputByteNum + 1] & 0xFF) << codingCase.middleShift)) & (short) 0x7FFF);
+                outputArray[outputCharNum++] = (char) ((((inputArray[inputByteNum] & 0xFF) << codingCase.initialShift) +
+                        ((inputArray[inputByteNum + 1] & 0xFF) << codingCase.middleShift)) & (short) 0x7FFF);
                 // Add trailing char containing the number of full bytes in final char
                 outputArray[outputCharNum] = (char) 1;
             } else if (inputByteNum < inputLength) {
-                outputArray[outputCharNum++] = (char) (((inputArray[inputByteNum] & 0xFF) << codingCase.initialShift) & (short) 0x7FFF);
+                outputArray[outputCharNum++] = (char) (((inputArray[inputByteNum] & 0xFF) << codingCase.initialShift) &
+                        (short) 0x7FFF);
                 // Add trailing char containing the number of full bytes in final char
                 outputArray[outputCharNum] = caseNum == 0 ? (char) 1 : (char) 0;
             } else { // No left over bits - last char is completely filled.

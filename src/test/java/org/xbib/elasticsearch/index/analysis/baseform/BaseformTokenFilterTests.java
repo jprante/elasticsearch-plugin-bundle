@@ -1,27 +1,21 @@
 package org.xbib.elasticsearch.index.analysis.baseform;
 
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
+import org.elasticsearch.test.ESTestCase;
+import org.elasticsearch.test.ESTokenStreamTestCase;
+import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.io.IOException;
 import java.io.StringReader;
 
-import static org.xbib.elasticsearch.MapperTestUtils.tokenFilterFactory;
-import static org.xbib.elasticsearch.MapperTestUtils.tokenizerFactory;
-
 /**
- *
+ * Base form token filter tests.
  */
-public class BaseformTokenFilterTests extends Assert {
+public class BaseformTokenFilterTests extends ESTokenStreamTestCase {
 
-    @Test
-    public void testOne() throws IOException {
+    public void testOne() throws Exception {
 
         String source = "Die Jahresfeier der Rechtsanwaltskanzleien auf dem Donaudampfschiff hat viel Ökosteuer gekostet";
 
@@ -49,14 +43,16 @@ public class BaseformTokenFilterTests extends Assert {
             "gekostet",
             "kosten"
         };
-        TokenFilterFactory tokenFilter = tokenFilterFactory("baseform");
-        Tokenizer tokenizer = tokenizerFactory("standard").create();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                Settings.EMPTY,
+                new BundlePlugin(Settings.EMPTY));
+        TokenFilterFactory tokenFilter = analysis.tokenFilter.get("baseform");
+        Tokenizer tokenizer = analysis.tokenizer.get("standard").create();
         tokenizer.setReader(new StringReader(source));
-        assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
+        assertTokenStreamContents(tokenFilter.create(tokenizer), expected);
     }
 
-    @Test
-    public void testTwo() throws IOException {
+    public void testTwo() throws Exception {
 
         String source = "Das sind Autos, die Nudeln transportieren.";
 
@@ -74,15 +70,16 @@ public class BaseformTokenFilterTests extends Assert {
                 "transportieren",
                 "transportieren"
         };
-        TokenFilterFactory tokenFilter = tokenFilterFactory("baseform");
-        Tokenizer tokenizer = tokenizerFactory("standard").create();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                Settings.EMPTY,
+                new BundlePlugin(Settings.EMPTY));
+        TokenFilterFactory tokenFilter = analysis.tokenFilter.get("baseform");
+        Tokenizer tokenizer = analysis.tokenizer.get("standard").create();
         tokenizer.setReader(new StringReader(source));
-        assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
+        assertTokenStreamContents(tokenFilter.create(tokenizer), expected);
     }
 
-
-    @Test
-    public void testThree() throws IOException {
+    public void testThree() throws Exception {
 
         String source = "wurde zum tollen gemacht";
 
@@ -96,23 +93,12 @@ public class BaseformTokenFilterTests extends Assert {
                 "gemacht",
                 "machen"
         };
-        TokenFilterFactory tokenFilter = tokenFilterFactory("baseform");
-        Tokenizer tokenizer = tokenizerFactory("standard").create();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                Settings.EMPTY,
+                new BundlePlugin(Settings.EMPTY));
+        TokenFilterFactory tokenFilter = analysis.tokenFilter.get("baseform");
+        Tokenizer tokenizer = analysis.tokenizer.get("standard").create();
         tokenizer.setReader(new StringReader(source));
-        assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
-    }
-
-    private void assertSimpleTSOutput(TokenStream stream, String[] expected) throws IOException {
-        stream.reset();
-        CharTermAttribute termAttr = stream.getAttribute(CharTermAttribute.class);
-        assertNotNull(termAttr);
-        int i = 0;
-        while (stream.incrementToken()) {
-            assertTrue(i < expected.length);
-            assertEquals(expected[i], termAttr.toString());
-            i++;
-        }
-        assertEquals(i, expected.length);
-        stream.close();
+        assertTokenStreamContents(tokenFilter.create(tokenizer), expected);
     }
 }

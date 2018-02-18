@@ -5,12 +5,12 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.index.analysis.TokenizerFactory;
-import org.elasticsearch.index.analysis.UniqueTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.unique.UniqueTokenFilterFactory;
 
 import java.util.Arrays;
 
 /**
- *
+ * Standard number analyzer.
  */
 public class StandardnumberAnalyzer extends Analyzer {
 

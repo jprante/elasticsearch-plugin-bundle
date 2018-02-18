@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 
 /**
- *
+ * Lemmatize token filter factory.
  */
 public class LemmatizeTokenFilterFactory extends AbstractTokenFilterFactory {
 
@@ -63,7 +63,7 @@ public class LemmatizeTokenFilterFactory extends AbstractTokenFilterFactory {
             }
         } catch (Exception e) {
             throw new ElasticsearchException("resources for language " + language +
-                    " in settings not found: " + settings.getAsMap(), e);
+                    " in settings not found: " + settings, e);
         }
     }
 }

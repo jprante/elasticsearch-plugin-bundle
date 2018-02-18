@@ -122,7 +122,7 @@ public final class FSATraversal {
                 return result;
             }
         }
-		/* The sequence is a prefix of at least one sequence in the automaton. */
+        /* The sequence is a prefix of at least one sequence in the automaton. */
         result.reset(MatchResult.SEQUENCE_IS_A_PREFIX, 0, node);
         return result;
     }

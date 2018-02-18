@@ -12,6 +12,7 @@ import org.elasticsearch.index.analysis.AbstractIndexAnalyzerProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * An ICU collation analyzer provider.
@@ -73,7 +74,7 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
         String strength = settings.get("strength");
         if (strength != null) {
             int i;
-            switch (strength.toLowerCase()) {
+            switch (strength.toLowerCase(Locale.ROOT)) {
                 case "primary":
                     i = Collator.PRIMARY;
                     break;
@@ -139,11 +140,11 @@ public class IcuCollationKeyAnalyzerProvider extends AbstractIndexAnalyzerProvid
         }
         int maxVariable = settings.getAsInt("variableTop", Collator.ReorderCodes.DEFAULT);
         rbc.setMaxVariable(maxVariable);
-        String[] reorderStrings = settings.getAsArray("reorder");
-        if (reorderStrings.length > 0) {
+        List<String> reorderStrings = settings.getAsList("reorder");
+        if (reorderStrings.size() > 0) {
             List<Integer> list = new ArrayList<>();
             for (String s : reorderStrings) {
-                switch (s.toLowerCase()) {
+                switch (s.toLowerCase(Locale.ROOT)) {
                     case "currency":
                         list.add(Collator.ReorderCodes.CURRENCY);
                         break;

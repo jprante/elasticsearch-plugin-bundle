@@ -36,6 +36,8 @@ import org.xbib.elasticsearch.index.analysis.concat.ConcatTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.concat.PairTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.decompound.patricia.DecompoundTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.decompound.fst.FstDecompoundTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.keyword.KeywordMarkerTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.keyword.KeywordRepeatTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.lemmatize.LemmatizeTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.german.GermanNormalizationFilterFactory;
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenAnalyzerProvider;
@@ -52,15 +54,16 @@ import org.xbib.elasticsearch.index.analysis.icu.IcuTransformTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizerFactory;
 import org.xbib.elasticsearch.index.analysis.naturalsort.NaturalSortKeyAnalyzerProvider;
 import org.xbib.elasticsearch.index.analysis.naturalsort.NaturalSortKeyTokenizerFactory;
+import org.xbib.elasticsearch.index.analysis.snowball.SnowballTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.sortform.SortformAnalyzerProvider;
 import org.xbib.elasticsearch.index.analysis.sortform.SortformTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberAnalyzerProvider;
 import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.symbolname.SymbolnameTokenFilterFactory;
+import org.xbib.elasticsearch.index.analysis.unique.UniqueTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2Factory;
 import org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilterFactory;
 import org.xbib.elasticsearch.index.analysis.year.GregorianYearTokenFilterFactory;
-import org.xbib.elasticsearch.index.mapper.crypt.CryptMapper;
 import org.xbib.elasticsearch.index.mapper.icu.IcuCollationKeyFieldMapper;
 import org.xbib.elasticsearch.index.mapper.langdetect.LangdetectMapper;
 import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapper;
@@ -75,7 +78,6 @@ import org.xbib.elasticsearch.rest.action.isbnformat.RestISBNFormatterAction;
 import org.xbib.elasticsearch.rest.action.langdetect.RestLangdetectAction;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -85,7 +87,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- *
+ * Bundle plugin.
  */
 public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin, ActionPlugin {
 
@@ -103,7 +105,8 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
 
     @Override
     public List<Setting<?>> getSettings() {
-        return Arrays.asList(new Setting<>("plugins.xbib.icu.enabled", "true", Function.identity(), Setting.Property.NodeScope));
+        return Collections.singletonList(new Setting<>("plugins.xbib.icu.enabled", "true",
+                Function.identity(), Setting.Property.NodeScope));
     }
 
     @Override
@@ -124,6 +127,18 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
             extra.put("icu_folding", IcuFoldingTokenFilterFactory::new);
             extra.put("icu_transform", IcuTransformTokenFilterFactory::new);
             extra.put("icu_numberformat", IcuNumberFormatTokenFilterFactory::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.snowball.enabled", true)) {
+            extra.put("snowball", SnowballTokenFilterFactory::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.unique.enabled", true)) {
+            extra.put("unique", UniqueTokenFilterFactory::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.keywordmarker.enabled", true)) {
+            extra.put("keyword_marker", KeywordMarkerTokenFilterFactory::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.keywordrepeat.enabled", true)) {
+            extra.put("keyword_repeat", KeywordRepeatTokenFilterFactory::new);
         }
         extra.put("auto_phrase", AutoPhrasingTokenFilterFactory::new);
         extra.put("baseform", BaseformTokenFilterFactory::new);
@@ -174,10 +189,9 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
     public Map<String, Mapper.TypeParser> getMappers() {
         Map<String, Mapper.TypeParser> extra = new LinkedHashMap<>();
         extra.put(StandardnumberMapper.MAPPER_TYPE, standardNumberTypeParser);
-        extra.put(ReferenceMapper.MAPPER_TYPE, referenceMapperTypeParser);
-        extra.put(CryptMapper.MAPPER_TYPE, new CryptMapper.TypeParser());
-        extra.put(LangdetectMapper.MAPPER_TYPE, new LangdetectMapper.TypeParser());
-        extra.put(IcuCollationKeyFieldMapper.MAPPER_TYPE, new IcuCollationKeyFieldMapper.TypeParser());
+        extra.put(ReferenceMapper.CONTENT_TYPE, referenceMapperTypeParser);
+        extra.put(LangdetectMapper.CONTENT_TYPE, new LangdetectMapper.TypeParser());
+        extra.put(IcuCollationKeyFieldMapper.CONTENT_TYPE, new IcuCollationKeyFieldMapper.TypeParser());
         return extra;
     }
 

@@ -53,17 +53,20 @@ public final class MatchResult {
      */
     private int node;
 
-    /*
-     *
+    /**
+     * Constructor.
      */
     public MatchResult() {
         reset(NO_MATCH, 0, 0);
     }
 
-    /*
-     * 
+    /**
+     * Reset.
+     * @param index index
+     * @param kind kind
+     * @param node node
      */
-    final void reset(int kind, int index, int node) {
+    void reset(int kind, int index, int node) {
         this.kind = kind;
         this.index = index;
         this.node = node;

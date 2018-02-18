@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import org.apache.lucene.store.OutputStreamDataOutput;
@@ -43,7 +44,7 @@ public class FstCompiler {
                 continue;
             }
             line = pattern.split(line)[0].trim();
-            line = line.toLowerCase();
+            line = line.toLowerCase(Locale.ROOT);
             if (line.equals(last)) {
                 continue;
             }
@@ -74,7 +75,7 @@ public class FstCompiler {
             builder.add(intsRef.get(), nothing);
         }
         final FST<Object> fst = builder.finish();
-        try (final OutputStreamDataOutput out = new OutputStreamDataOutput(outputStream)) {
+        try (OutputStreamDataOutput out = new OutputStreamDataOutput(outputStream)) {
             fst.save(out);
         }
     }

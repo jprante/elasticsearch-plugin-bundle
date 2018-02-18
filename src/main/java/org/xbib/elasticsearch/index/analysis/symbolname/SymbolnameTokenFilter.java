@@ -11,11 +11,12 @@ import java.nio.charset.CharacterCodingException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
+ * Symbol name token filter.
  */
 public class SymbolnameTokenFilter extends TokenFilter {
 
@@ -82,7 +83,7 @@ public class SymbolnameTokenFilter extends TokenFilter {
         while (m.find()) {
             String symbol = m.group();
             Character ch = symbol.charAt(0);
-            String symbolname = " __" + Character.getName(ch).toUpperCase()
+            String symbolname = " __" + Character.getName(ch).toUpperCase(Locale.ROOT)
                     .replaceAll("\\s", "").replaceAll("\\-", "") + "__";
             m.appendReplacement(sb, symbolname);
         }

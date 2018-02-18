@@ -10,7 +10,7 @@ import org.elasticsearch.index.analysis.AbstractTokenizerFactory;
 import java.text.Collator;
 
 /**
- *
+ * Natural sort key tokenizer factory.
  */
 public class NaturalSortKeyTokenizerFactory extends AbstractTokenizerFactory {
 

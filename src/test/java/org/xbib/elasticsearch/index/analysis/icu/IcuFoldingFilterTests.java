@@ -2,27 +2,30 @@ package org.xbib.elasticsearch.index.analysis.icu;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.junit.Test;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.Index;
+import org.elasticsearch.test.ESTestCase;
+import org.elasticsearch.test.ESTokenStreamTestCase;
+import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import static org.junit.Assert.*;
-import static org.xbib.elasticsearch.MapperTestUtils.analyzer;
-import static org.xbib.elasticsearch.MapperTestUtils.charFilterFactory;
-
 /**
- *
+ * ICU folding filter tests.
  */
-public class IcuFoldingFilterTests {
+public class IcuFoldingFilterTests extends ESTokenStreamTestCase {
 
-    @Test
-    public void testFoldingCharFilter() throws IOException {
+    public void testFoldingCharFilter() throws Exception {
         String source = "Jörg Prante";
-        String resource = "org/xbib/elasticsearch/index/analysis/icu/icu_folding.json";
-        Reader charFilter = charFilterFactory(resource, "my_icu_folder").create(new StringReader(source));
+        String resource = "/org/xbib/elasticsearch/index/analysis/icu/icu_folding.json";
+        Settings settings = Settings.builder()
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        Reader charFilter = analysis.charFilter.get("my_icu_folder").create(new StringReader(source));
         StringBuilder sb = new StringBuilder();
         int ch;
         while ((ch = charFilter.read()) != -1) {
@@ -31,48 +34,45 @@ public class IcuFoldingFilterTests {
         assertEquals("jorg prante", sb.toString());
     }
 
-    @Test
-    public void testFoldingAnalyzer() throws IOException {
-        String resource = "org/xbib/elasticsearch/index/analysis/icu/icu_folding.json";
-        Analyzer analyzer = analyzer(resource,"my_icu_analyzer");
+    public void testFoldingAnalyzer() throws Exception {
+        String resource = "/org/xbib/elasticsearch/index/analysis/icu/icu_folding.json";
+        Settings settings = Settings.builder()
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        Analyzer analyzer = analysis.indexAnalyzers.get("my_icu_analyzer");
         TokenStream ts = analyzer.tokenStream("test", "Jörg Prante");
         String[] expected = {"jorg", "prante"};
-        assertSimpleTSOutput(ts, expected);
-        assertSimpleTSOutput(analyzer.tokenStream("test", "This is a test"), new String[]{ "this", "is", "a", "test" });
-        assertSimpleTSOutput(analyzer.tokenStream("test", "Ruß"), new String[]{ "russ" });
-        assertSimpleTSOutput(analyzer.tokenStream("test", "ΜΆΪΟΣ"), new String[]{  "μαιοσ" });
-        assertSimpleTSOutput(analyzer.tokenStream("test", "Μάϊος"), new String[] { "μαιοσ" });
-        assertSimpleTSOutput(analyzer.tokenStream("test", "𐐖"), new String[] { "𐐾" });
-        assertSimpleTSOutput(analyzer.tokenStream("test", "ﴳﴺﰧ"), new String[] { "طمطمطم" });
-        assertSimpleTSOutput(analyzer.tokenStream("test", "क्‍ष"), new String[] { "कष" });
-        assertSimpleTSOutput(analyzer.tokenStream("test", "résumé"), new String[] { "resume" });
-        assertSimpleTSOutput(analyzer.tokenStream("test", "re\u0301sume\u0301"), new String[] { "resume" });
-        assertSimpleTSOutput(analyzer.tokenStream("test", "৭০৬"), new String[] { "706" });
-        assertSimpleTSOutput(analyzer.tokenStream("test", "đis is cræzy"), new String[] { "dis", "is", "craezy" });
-        assertSimpleTSOutput(analyzer.tokenStream("test",  "ELİF"), new String[] { "elif" });
-        assertSimpleTSOutput(analyzer.tokenStream("test", "eli\u0307f"), new String[] { "elif" });
+        assertTokenStreamContents(ts, expected);
+        assertTokenStreamContents(analyzer.tokenStream("test", "This is a test"), new String[]{ "this", "is", "a", "test" });
+        assertTokenStreamContents(analyzer.tokenStream("test", "Ruß"), new String[]{ "russ" });
+        assertTokenStreamContents(analyzer.tokenStream("test", "ΜΆΪΟΣ"), new String[]{  "μαιοσ" });
+        assertTokenStreamContents(analyzer.tokenStream("test", "Μάϊος"), new String[] { "μαιοσ" });
+        assertTokenStreamContents(analyzer.tokenStream("test", "𐐖"), new String[] { "𐐾" });
+        assertTokenStreamContents(analyzer.tokenStream("test", "ﴳﴺﰧ"), new String[] { "طمطمطم" });
+        assertTokenStreamContents(analyzer.tokenStream("test", "क्‍ष"), new String[] { "कष" });
+        assertTokenStreamContents(analyzer.tokenStream("test", "résumé"), new String[] { "resume" });
+        assertTokenStreamContents(analyzer.tokenStream("test", "re\u0301sume\u0301"), new String[] { "resume" });
+        assertTokenStreamContents(analyzer.tokenStream("test", "৭০৬"), new String[] { "706" });
+        assertTokenStreamContents(analyzer.tokenStream("test", "đis is cræzy"), new String[] { "dis", "is", "craezy" });
+        assertTokenStreamContents(analyzer.tokenStream("test",  "ELİF"), new String[] { "elif" });
+        assertTokenStreamContents(analyzer.tokenStream("test", "eli\u0307f"), new String[] { "elif" });
     }
 
-    @Test
-    public void testFoldingAnalyzerrWithExceptions() throws IOException {
-        String resource = "org/xbib/elasticsearch/index/analysis/icu/icu_folding.json";
-        Analyzer analyzer = analyzer(resource, "my_icu_analyzer_with_exceptions");
+    public void testFoldingAnalyzerWithExceptions() throws Exception {
+        String resource = "/org/xbib/elasticsearch/index/analysis/icu/icu_folding.json";
+        Settings settings = Settings.builder()
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+
+        Analyzer analyzer = analysis.indexAnalyzers.get("my_icu_analyzer_with_exceptions");
         TokenStream ts = analyzer.tokenStream("test", "Jörg Prante");
         String[] expected = { "jörg", "prante" };
-        assertSimpleTSOutput(ts, expected);
-    }
-
-    private void assertSimpleTSOutput(TokenStream stream, String[] expected) throws IOException {
-        stream.reset();
-        CharTermAttribute termAttr = stream.getAttribute(CharTermAttribute.class);
-        assertNotNull(termAttr);
-        int i = 0;
-        while (stream.incrementToken()) {
-            assertTrue(i < expected.length);
-            assertEquals(expected[i], termAttr.toString());
-            i++;
-        }
-        assertEquals(i, expected.length);
-        stream.close();
+        assertTokenStreamContents(ts, expected);
     }
 }

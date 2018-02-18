@@ -4,7 +4,7 @@ import org.elasticsearch.action.ActionRequestBuilder;
 import org.elasticsearch.client.ElasticsearchClient;
 
 /**
- *
+ * ISBN format request builder.
  */
 public class ISBNFormatRequestBuilder
         extends ActionRequestBuilder<ISBNFormatRequest, ISBNFormatResponse, ISBNFormatRequestBuilder> {

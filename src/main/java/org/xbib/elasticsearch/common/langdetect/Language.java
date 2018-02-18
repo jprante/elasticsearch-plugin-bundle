@@ -7,7 +7,7 @@ import org.elasticsearch.common.io.stream.Streamable;
 import java.io.IOException;
 
 /**
- *
+ * Language.
  */
 public class Language implements Streamable {
 

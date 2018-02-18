@@ -10,7 +10,7 @@ import java.io.IOException;
 import static org.elasticsearch.action.ValidateActions.addValidationError;
 
 /**
- *
+ * Language detection request.
  */
 public class LangdetectRequest extends ActionRequest {
 

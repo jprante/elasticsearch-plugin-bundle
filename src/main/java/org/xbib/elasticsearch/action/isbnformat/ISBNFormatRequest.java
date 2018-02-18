@@ -10,7 +10,7 @@ import java.io.IOException;
 import static org.elasticsearch.action.ValidateActions.addValidationError;
 
 /**
- *
+ * ISBN format request.
  */
 public class ISBNFormatRequest extends ActionRequest {
 

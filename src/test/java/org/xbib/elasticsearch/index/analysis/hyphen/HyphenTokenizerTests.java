@@ -3,25 +3,21 @@ package org.xbib.elasticsearch.index.analysis.hyphen;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
-import org.junit.Assert;
-import org.junit.Test;
+import org.elasticsearch.test.ESTestCase;
+import org.elasticsearch.test.ESTokenStreamTestCase;
+import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
-import java.io.IOException;
 import java.io.StringReader;
 
-import static org.xbib.elasticsearch.MapperTestUtils.analyzer;
-import static org.xbib.elasticsearch.MapperTestUtils.tokenFilterFactory;
-import static org.xbib.elasticsearch.MapperTestUtils.tokenizerFactory;
-
 /**
- *
+ * Hyphen tokenizer tests.
  */
-public class HyphenTokenizerTests extends Assert {
+public class HyphenTokenizerTests extends ESTokenStreamTestCase {
 
-    @Test
-    public void testOne() throws IOException {
+    public void testOne() throws Exception {
 
         String source = "Das ist ein Bindestrich-Wort.";
 
@@ -34,16 +30,21 @@ public class HyphenTokenizerTests extends Assert {
                 "Wort",
                 "Bindestrich"
         };
-        String resource = "org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json";
-        Tokenizer tokenizer = tokenizerFactory(resource, "my_hyphen_tokenizer").create();
+        String resource = "/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json";
+        Settings settings = Settings.builder()
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        Tokenizer tokenizer = analysis.tokenizer.get("my_hyphen_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
-        TokenFilterFactory tokenFilter = tokenFilterFactory(resource,"hyphen");
+        TokenFilterFactory tokenFilter = analysis.tokenFilter.get("hyphen");
         TokenStream tokenStream = tokenFilter.create(tokenizer);
-        assertSimpleTSOutput(tokenStream, expected);
+        assertTokenStreamContents(tokenStream, expected);
     }
 
-    @Test
-    public void testTwo() throws IOException {
+    public void testTwo() throws Exception {
 
         String source = "Das E-Book muss dringend zum Buchbinder.";
 
@@ -57,15 +58,20 @@ public class HyphenTokenizerTests extends Assert {
                 "zum",
                 "Buchbinder"
         };
-        String resource = "org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json";
-        Tokenizer tokenizer = tokenizerFactory(resource,"my_icu_tokenizer").create();
+        String resource = "/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json";
+        Settings settings = Settings.builder()
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        Tokenizer tokenizer = analysis.tokenizer.get("my_icu_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
-        TokenFilterFactory tokenFilter = tokenFilterFactory(resource,"hyphen");
-        assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
+        TokenFilterFactory tokenFilter = analysis.tokenFilter.get("hyphen");
+        assertTokenStreamContents(tokenFilter.create(tokenizer), expected);
     }
 
-    @Test
-    public void testThree() throws IOException {
+    public void testThree() throws Exception {
 
         String source = "Ich will nicht als Service-Center-Mitarbeiterin, sondern 100-prozentig als Dipl.-Ing. arbeiten!";
 
@@ -88,15 +94,20 @@ public class HyphenTokenizerTests extends Assert {
                 "Ing",
                 "arbeiten"
         };
-        String resource = "org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json";
-        Tokenizer tokenizer = tokenizerFactory(resource,"my_hyphen_tokenizer").create();
+        String resource = "/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json";
+        Settings settings = Settings.builder()
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        Tokenizer tokenizer = analysis.tokenizer.get("my_hyphen_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
-        TokenFilterFactory tokenFilter = tokenFilterFactory(resource,"hyphen");
-        assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
+        TokenFilterFactory tokenFilter = analysis.tokenFilter.get("hyphen");
+        assertTokenStreamContents(tokenFilter.create(tokenizer), expected);
     }
 
-    @Test
-    public void testFour() throws IOException {
+    public void testFour() throws Exception {
 
         String source = "So wird's was: das Elasticsearch-Buch erscheint beim O'Reilly-Verlag.";
 
@@ -113,16 +124,20 @@ public class HyphenTokenizerTests extends Assert {
                 "beim",
                 "O'Reilly-Verlag"
         };
-        String resource = "org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json";
-        Tokenizer tokenizer = tokenizerFactory(resource,"my_hyphen_tokenizer").create();
+        String resource = "/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json";
+        Settings settings = Settings.builder()
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        Tokenizer tokenizer = analysis.tokenizer.get("my_hyphen_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
-        TokenFilterFactory tokenFilter = tokenFilterFactory(resource,"hyphen");
-        assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
+        TokenFilterFactory tokenFilter = analysis.tokenFilter.get("hyphen");
+        assertTokenStreamContents(tokenFilter.create(tokenizer), expected);
     }
 
-
-    @Test
-    public void testFive() throws IOException {
+    public void testFive() throws Exception {
 
         String source = "978-1-4493-5854-9";
 
@@ -130,15 +145,20 @@ public class HyphenTokenizerTests extends Assert {
                 "978-1-4493-5854-9"
         };
 
-        String resource = "org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json";
-        Tokenizer tokenizer = tokenizerFactory(resource,"my_hyphen_tokenizer").create();
+        String resource = "/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json";
+        Settings settings = Settings.builder()
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        Tokenizer tokenizer = analysis.tokenizer.get("my_hyphen_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
-        TokenFilterFactory tokenFilter = tokenFilterFactory(resource,"hyphen");
-        assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
+        TokenFilterFactory tokenFilter = analysis.tokenFilter.get("hyphen");
+        assertTokenStreamContents(tokenFilter.create(tokenizer), expected);
     }
 
-    @Test
-    public void testSix() throws IOException {
+    public void testSix() throws Exception {
 
         String source = "E-Book";
 
@@ -148,15 +168,20 @@ public class HyphenTokenizerTests extends Assert {
                 "Book"
         };
 
-        String resource = "org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json";
-        Tokenizer tokenizer = tokenizerFactory(resource,"my_hyphen_tokenizer").create();
+        String resource = "/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json";
+        Settings settings = Settings.builder()
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        Tokenizer tokenizer = analysis.tokenizer.get("my_hyphen_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
-        TokenFilterFactory tokenFilter = tokenFilterFactory(resource,"hyphen");
-        assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
+        TokenFilterFactory tokenFilter = analysis.tokenFilter.get("hyphen");
+        assertTokenStreamContents(tokenFilter.create(tokenizer), expected);
     }
 
-    @Test
-    public void testSeven() throws IOException {
+    public void testSeven() throws Exception {
         String source = "Procter & Gamble ist Procter&Gamble. Schwarz - weiss ist schwarz-weiss";
 
         String[] expected = {
@@ -173,15 +198,20 @@ public class HyphenTokenizerTests extends Assert {
                 "schwarz"
         };
 
-        String resource = "org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json";
-        Tokenizer tokenizer = tokenizerFactory(resource,"my_hyphen_tokenizer").create();
+        String resource = "/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer.json";
+        Settings settings = Settings.builder()
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        Tokenizer tokenizer = analysis.tokenizer.get("my_hyphen_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
-        TokenFilterFactory tokenFilter = tokenFilterFactory(resource,"hyphen");
-        assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
+        TokenFilterFactory tokenFilter = analysis.tokenFilter.get("hyphen");
+        assertTokenStreamContents(tokenFilter.create(tokenizer), expected);
     }
 
-    @Test
-    public void testEight() throws IOException {
+    public void testEight() throws Exception {
 
         String source = "Ich will nicht als Service-Center-Mitarbeiterin mit C++, sondern 100-prozentig als Dipl.-Ing. arbeiten!";
 
@@ -202,16 +232,20 @@ public class HyphenTokenizerTests extends Assert {
                 "Ing",
                 "arbeiten"
         };
-        String resource = "org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer_without_subwords.json";
-        Tokenizer tokenizer = tokenizerFactory(resource, "my_hyphen_tokenizer").create();
+        String resource = "/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer_without_subwords.json";
+        Settings settings = Settings.builder()
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        Tokenizer tokenizer = analysis.tokenizer.get("my_hyphen_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
-        TokenFilterFactory tokenFilter = tokenFilterFactory(resource,"my_hyphen_tokenfilter");
-        assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
+        TokenFilterFactory tokenFilter = analysis.tokenFilter.get("my_hyphen_tokenfilter");
+        assertTokenStreamContents(tokenFilter.create(tokenizer), expected);
     }
 
-
-    @Test
-    public void testNine() throws IOException {
+    public void testNine() throws Exception {
 
         String source = "Das ist ein Punkt. Und noch ein Punkt für U.S.A. Oder? Nicht doch.";
 
@@ -231,15 +265,20 @@ public class HyphenTokenizerTests extends Assert {
                 "doch"
 
         };
-        String resource = "org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer_without_subwords.json";
-        Tokenizer tokenizer = tokenizerFactory(resource,"my_hyphen_tokenizer").create();
+        String resource = "/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_tokenizer_without_subwords.json";
+        Settings settings = Settings.builder()
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        Tokenizer tokenizer = analysis.tokenizer.get("my_hyphen_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
-        TokenFilterFactory tokenFilter = tokenFilterFactory(resource,"my_hyphen_tokenfilter");
-        assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
+        TokenFilterFactory tokenFilter = analysis.tokenFilter.get("my_hyphen_tokenfilter");
+        assertTokenStreamContents(tokenFilter.create(tokenizer), expected);
     }
 
-    @Test
-    public void testTen() throws IOException {
+    public void testTen() throws Exception {
 
         String source = "Das ist ein Punkt. Und noch ein Punkt für U.S.A. Oder? Nicht doch.";
 
@@ -259,22 +298,14 @@ public class HyphenTokenizerTests extends Assert {
                 "doch"
 
         };
-        String resource = "org/xbib/elasticsearch/index/analysis/hyphen/hyphen_analyzer.json";
-        Analyzer analyzer = analyzer(resource, "my_hyphen_analyzer");
-        assertSimpleTSOutput(analyzer.tokenStream("text", new StringReader(source)), expected);
-    }
-
-    private void assertSimpleTSOutput(TokenStream stream, String[] expected) throws IOException {
-        stream.reset();
-        CharTermAttribute termAttr = stream.getAttribute(CharTermAttribute.class);
-        assertNotNull(termAttr);
-        int i = 0;
-        while (stream.incrementToken()) {
-            assertTrue(i < expected.length);
-            assertEquals(expected[i], termAttr.toString());
-            i++;
-        }
-        assertEquals(expected.length, i);
-        stream.close();
+        String resource = "/org/xbib/elasticsearch/index/analysis/hyphen/hyphen_analyzer.json";
+        Settings settings = Settings.builder()
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        Analyzer analyzer = analysis.indexAnalyzers.get("my_hyphen_analyzer");
+        assertTokenStreamContents(analyzer.tokenStream("text", new StringReader(source)), expected);
     }
 }

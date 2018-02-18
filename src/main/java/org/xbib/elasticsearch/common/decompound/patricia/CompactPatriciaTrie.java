@@ -1,5 +1,7 @@
 package org.xbib.elasticsearch.common.decompound.patricia;
 
+import org.apache.lucene.util.SuppressForbidden;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -8,12 +10,13 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
- *
+ * Compact patricia trie.
  */
 public class CompactPatriciaTrie {
 
@@ -25,9 +28,9 @@ public class CompactPatriciaTrie {
 
     private static final String NL = "\n";
 
-    private boolean reverse = false;
+    private boolean reverse;
 
-    private boolean ignorecase = false;
+    private boolean ignorecase;
 
     private double thresh = 0.0;
 
@@ -91,7 +94,7 @@ public class CompactPatriciaTrie {
         }
         stringtree = null;
         if (ignorecase) {
-            word = word.toLowerCase();
+            word = word.toLowerCase(Locale.ROOT);
         }
         if (reverse) {
             word = reverse(word);
@@ -260,7 +263,7 @@ public class CompactPatriciaTrie {
             StringTokenizer st = new StringTokenizer(cl, "=");
             actclass = st.nextToken();
             if (st.hasMoreTokens()) {
-                actval = new Integer(st.nextToken());
+                actval = Integer.valueOf(st.nextToken());
             } else {
                 actval = 0;
             }
@@ -270,7 +273,7 @@ public class CompactPatriciaTrie {
                 maxclass = actclass;
             }
             if ((actval == maxval) && !actclass.equals(maxclass) && !actclass.isEmpty()) {
-                maxclass = new StringBuilder().append(maxclass).append(";").append(actclass).toString();
+                maxclass = maxclass + ";" + actclass;
             }
         }
         if (((double) maxval / (double) sum) >= this.thresh) {
@@ -454,7 +457,7 @@ public class CompactPatriciaTrie {
     private String classifyString(String s) {
         String word = s;
         if (ignorecase) {
-            word = word.toLowerCase();
+            word = word.toLowerCase(Locale.ROOT);
         }
         if (reverse) {
             word = reverse(word);
@@ -466,7 +469,7 @@ public class CompactPatriciaTrie {
     private String classifyObject(String s) {
         String word = s;
         if (ignorecase) {
-            word = word.toLowerCase();
+            word = word.toLowerCase(Locale.ROOT);
         }
         if (reverse) {
             word = reverse(word);
@@ -482,7 +485,7 @@ public class CompactPatriciaTrie {
             return getProbabilityForClassString(word, cla);
         }
         if (ignorecase) {
-            word = word.toLowerCase();
+            word = word.toLowerCase(Locale.ROOT);
         }
         if (reverse) {
             word = reverse(word);
@@ -495,7 +498,7 @@ public class CompactPatriciaTrie {
         for (String s : k.classes()) {
             StringTokenizer st = new StringTokenizer(s, "=");
             actclass = st.nextToken();
-            actval = new Integer(st.nextToken());
+            actval = Integer.valueOf(st.nextToken());
             valsum += actval;
             if (actclass.equals(cla)) {
                 goalval = actval;
@@ -511,7 +514,7 @@ public class CompactPatriciaTrie {
         String word = string;
         double ret = 0;
         if (this.ignorecase) {
-            word = word.toLowerCase();
+            word = word.toLowerCase(Locale.ROOT);
         }
         if (this.reverse) {
             word = reverse(word);
@@ -915,25 +918,6 @@ public class CompactPatriciaTrie {
         return ret.toString().toCharArray();
     }
 
-    public void save(OutputStream out) throws IOException {
-        ObjectOutputStream oos2 = new ObjectOutputStream(out);
-        if (this.stringtree == null) {
-            this.stringtree = getStringTree(this.root);
-        }
-        oos2.writeObject("Pretree");
-        oos2.writeObject("Stringformat char[]");
-        oos2.writeObject("version=1.3");
-        oos2.writeObject(this.startchar);
-        oos2.writeObject(this.endchar);
-        oos2.writeObject((int) this.attentionNumber);
-        oos2.writeObject((int) this.attentionNode);
-        oos2.writeObject((int) this.endOfWordChar);
-        oos2.writeObject(this.reverse);
-        oos2.writeObject(this.ignorecase);
-        oos2.writeObject(this.stringtree);
-        oos2.close();
-    }
-
     private StringBuilder tree2string(Node aktKnoten, int startPos) {
         StringBuilder ret = new StringBuilder();
         ret.append(this.attentionNode);
@@ -1011,12 +995,9 @@ public class CompactPatriciaTrie {
         return ret;
     }
 
+    @SuppressForbidden(reason = "we load CPT from file in a format using serialization, yes")
     public void load(InputStream in) throws IOException {
-        load(new ObjectInputStream(in));
-    }
-
-    public void load(ObjectInputStream ois) throws IOException {
-        try {
+        try (ObjectInputStream ois = new ObjectInputStream(in)) {
             ois.readObject();
             ois.readObject();
             ois.readObject();
@@ -1028,7 +1009,6 @@ public class CompactPatriciaTrie {
             boolean rv = (Boolean) ois.readObject();
             boolean ic = (Boolean) ois.readObject();
             char[] st = (char[]) ois.readObject();
-            ois.close();
             internalSetStartChar(sc);
             internalSetEndChar(ec);
             internalSetAttentionNumber(az);
@@ -1043,4 +1023,25 @@ public class CompactPatriciaTrie {
             throw new IllegalArgumentException("class not found", e);
         }
     }
+
+    @SuppressForbidden(reason = "we save CPT to file in a format using serialization, yes")
+    public void save(OutputStream out) throws IOException {
+        try (ObjectOutputStream oos2 = new ObjectOutputStream(out)) {
+            if (this.stringtree == null) {
+                this.stringtree = getStringTree(this.root);
+            }
+            oos2.writeObject("Pretree");
+            oos2.writeObject("Stringformat char[]");
+            oos2.writeObject("version=1.3");
+            oos2.writeObject(this.startchar);
+            oos2.writeObject(this.endchar);
+            oos2.writeObject((int) this.attentionNumber);
+            oos2.writeObject((int) this.attentionNode);
+            oos2.writeObject((int) this.endOfWordChar);
+            oos2.writeObject(this.reverse);
+            oos2.writeObject(this.ignorecase);
+            oos2.writeObject(this.stringtree);
+        }
+    }
+
 }

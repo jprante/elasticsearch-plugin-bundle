@@ -20,7 +20,7 @@ import static org.elasticsearch.rest.RestRequest.Method.GET;
 import static org.elasticsearch.rest.RestRequest.Method.POST;
 
 /**
- *
+ * REST language detection action.
  */
 public class RestLangdetectAction extends BaseRestHandler {
 
@@ -31,6 +31,11 @@ public class RestLangdetectAction extends BaseRestHandler {
         controller.registerHandler(GET, "/_langdetect/{profile}", this);
         controller.registerHandler(POST, "/_langdetect", this);
         controller.registerHandler(POST, "/_langdetect/{profile}", this);
+    }
+
+    @Override
+    public String getName() {
+        return "langdetect";
     }
 
     @Override

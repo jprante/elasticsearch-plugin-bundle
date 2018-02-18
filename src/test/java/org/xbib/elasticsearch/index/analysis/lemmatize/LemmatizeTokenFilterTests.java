@@ -2,19 +2,17 @@ package org.xbib.elasticsearch.index.analysis.lemmatize;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.elasticsearch.common.settings.Settings;
-import org.junit.Test;
-import org.xbib.elasticsearch.MapperTestUtils;
-import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
-
-import java.io.IOException;
+import org.elasticsearch.index.Index;
+import org.elasticsearch.test.ESTestCase;
+import org.elasticsearch.test.ESTokenStreamTestCase;
+import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 /**
- *
+ * Lemmatize token filter tests.
  */
-public class LemmatizeTokenFilterTests extends BaseTokenStreamTest {
+public class LemmatizeTokenFilterTests extends ESTokenStreamTestCase {
 
-    @Test
-    public void testLemmatizer() throws IOException {
+    public void testLemmatizer() throws Exception {
 
         String source = "While these texts were previously only available to users of academic libraries " +
                 "participating in the partnership, at the end of the first phase of EEBO-TCP the current " +
@@ -57,12 +55,14 @@ public class LemmatizeTokenFilterTests extends BaseTokenStreamTest {
                 .put("index.analysis.analyzer.myanalyzer.filter.0", "lemmatize")
                 .put("index.analysis.analyzer.myanalyzer.filter.1", "unique")
                 .build();
-        Analyzer myanalyzer = MapperTestUtils.analyzer(settings, "myanalyzer");
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        Analyzer myanalyzer = analysis.indexAnalyzers.get( "myanalyzer");
         assertAnalyzesTo(myanalyzer, source, expected);
     }
 
-    @Test
-    public void testFull() throws IOException {
+    public void testFull() throws Exception {
 
         String source = "While these texts were previously only available to users of academic libraries " +
                 "participating in the partnership, at the end of the first phase of EEBO-TCP the current " +
@@ -116,12 +116,14 @@ public class LemmatizeTokenFilterTests extends BaseTokenStreamTest {
                 .put("index.analysis.analyzer.myanalyzer.filter.0", "myfilter")
                 .put("index.analysis.analyzer.myanalyzer.filter.1", "unique")
                 .build();
-        Analyzer myanalyzer = MapperTestUtils.analyzer(settings, "myanalyzer");
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        Analyzer myanalyzer =analysis.indexAnalyzers.get("myanalyzer");
         assertAnalyzesTo(myanalyzer, source, expected);
     }
 
-    @Test
-    public void testGermanLemmatizer() throws IOException {
+    public void testGermanLemmatizer() throws Exception {
 
         String source = "Die Würde des Menschen ist unantastbar. " +
                 "Sie zu achten und zu schützen ist Verpflichtung aller staatlichen Gewalt. " +
@@ -177,7 +179,10 @@ public class LemmatizeTokenFilterTests extends BaseTokenStreamTest {
                 .put("index.analysis.analyzer.myanalyzer.tokenizer", "standard")
                 .put("index.analysis.analyzer.myanalyzer.filter.0", "myfilter")
                 .build();
-        Analyzer myanalyzer = MapperTestUtils.analyzer(settings, "myanalyzer");
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        Analyzer myanalyzer = analysis.indexAnalyzers.get("myanalyzer");
         assertAnalyzesTo(myanalyzer, source, expected);
     }
 }

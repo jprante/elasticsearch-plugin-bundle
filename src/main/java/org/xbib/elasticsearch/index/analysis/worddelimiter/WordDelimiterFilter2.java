@@ -98,12 +98,14 @@ public final class WordDelimiterFilter2 extends TokenFilter implements WordDelim
         super(in);
         this.flags = configurationFlags;
         this.protWords = protWords;
-        this.iterator = new WordDelimiterIterator(charTypeTable, has(SPLIT_ON_CASE_CHANGE), has(SPLIT_ON_NUMERICS), has(STEM_ENGLISH_POSSESSIVE));
+        this.iterator = new WordDelimiterIterator(charTypeTable, has(SPLIT_ON_CASE_CHANGE),
+                has(SPLIT_ON_NUMERICS), has(STEM_ENGLISH_POSSESSIVE));
     }
 
     /**
-     * Creates a new WordDelimiterFilter2 using {@link org.apache.lucene.analysis.miscellaneous.WordDelimiterIterator#DEFAULT_WORD_DELIM_TABLE}
-     * as its charTypeTable
+     * Creates a new WordDelimiterFilter2 using
+     * {@link org.apache.lucene.analysis.miscellaneous.WordDelimiterIterator#DEFAULT_WORD_DELIM_TABLE}
+     * as its charTypeTable.
      *
      * @param in                 TokenStream to be filtered
      * @param configurationFlags Flags configuring the filter

@@ -9,7 +9,7 @@ import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.xbib.elasticsearch.common.decompound.patricia.Decompounder;
 
 /**
- *
+ * Decompound token filter factory.
  */
 public class DecompoundTokenFilterFactory extends AbstractTokenFilterFactory {
 

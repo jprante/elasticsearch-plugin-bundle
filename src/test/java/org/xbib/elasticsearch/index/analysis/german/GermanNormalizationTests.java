@@ -1,24 +1,23 @@
 package org.xbib.elasticsearch.index.analysis.german;
 
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.elasticsearch.Version;
+import org.elasticsearch.cluster.metadata.IndexMetaData;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
-import org.junit.Assert;
-import org.junit.Test;
+import org.elasticsearch.test.ESTestCase;
+import org.elasticsearch.test.ESTokenStreamTestCase;
+import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 import java.io.IOException;
 import java.io.StringReader;
 
-import static org.xbib.elasticsearch.MapperTestUtils.tokenFilterFactory;
-import static org.xbib.elasticsearch.MapperTestUtils.tokenizerFactory;
-
 /**
- *
+ * German normalization tests.
  */
-public class GermanNormalizationTests extends Assert {
+public class GermanNormalizationTests extends ESTokenStreamTestCase {
 
-    @Test
     public void testGerman1() throws IOException {
 
         String source = "Ein schöner Tag in Köln im Café an der Straßenecke";
@@ -35,24 +34,19 @@ public class GermanNormalizationTests extends Assert {
             "der",
             "Strassenecke"
         };
-        String resource = "org/xbib/elasticsearch/index/analysis/german/german_normalization_analysis.json";
-        TokenFilterFactory tokenFilter = tokenFilterFactory(resource, "umlaut");
-        Tokenizer tokenizer = tokenizerFactory(resource, "standard").create();
-        tokenizer.setReader(new StringReader(source));
-        assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
-    }
+        String resource = "/org/xbib/elasticsearch/index/analysis/german/german_normalization_analysis.json";
+        Settings settings = Settings.builder()
+                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
+                .put("path.home", System.getProperty("path.home"))
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
 
-    private void assertSimpleTSOutput(TokenStream stream, String[] expected) throws IOException {
-        stream.reset();
-        CharTermAttribute termAttr = stream.getAttribute(CharTermAttribute.class);
-        assertNotNull(termAttr);
-        int i = 0;
-        while (stream.incrementToken()) {
-            assertTrue(i < expected.length);
-            assertEquals(expected[i], termAttr.toString());
-            i++;
-        }
-        assertEquals(i, expected.length);
-        stream.close();
+        TokenFilterFactory tokenFilter = analysis.tokenFilter.get("umlaut");
+        Tokenizer tokenizer = analysis.tokenizer.get("standard").create();
+        tokenizer.setReader(new StringReader(source));
+        assertTokenStreamContents(tokenFilter.create(tokenizer), expected);
     }
 }

@@ -15,7 +15,7 @@ import java.io.IOException;
 import static org.elasticsearch.rest.RestRequest.Method.GET;
 
 /**
- *
+ * REST ISBN format action.
  */
 public class RestISBNFormatterAction extends BaseRestHandler {
 
@@ -24,6 +24,11 @@ public class RestISBNFormatterAction extends BaseRestHandler {
         super(settings);
         controller.registerHandler(GET, "/_isbn", this);
         controller.registerHandler(GET, "/_isbn/{value}", this);
+    }
+
+    @Override
+    public String getName() {
+        return "ISBN";
     }
 
     @Override

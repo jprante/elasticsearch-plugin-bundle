@@ -104,7 +104,9 @@ public final class FSABuilder {
      */
     private int serializationBufferReallocations;
 
-    /** */
+    /**
+     * Constructor.
+     */
     public FSABuilder() {
         this(BUFFER_GROWTH_SIZE);
     }

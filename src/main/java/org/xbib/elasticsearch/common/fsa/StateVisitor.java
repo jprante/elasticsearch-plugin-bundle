@@ -10,5 +10,5 @@ package org.xbib.elasticsearch.common.fsa;
 @FunctionalInterface
 public interface StateVisitor {
 
-    public boolean accept(int state);
+    boolean accept(int state);
 }

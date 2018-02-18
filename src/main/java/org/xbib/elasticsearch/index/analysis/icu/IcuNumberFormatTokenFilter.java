@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.text.ParsePosition;
 
 /**
- *
+ * ICU number format token filter.
  */
 public final class IcuNumberFormatTokenFilter extends TokenFilter {
 
@@ -25,7 +25,7 @@ public final class IcuNumberFormatTokenFilter extends TokenFilter {
     }
 
     @Override
-    public final boolean incrementToken() throws IOException {
+    public boolean incrementToken() throws IOException {
         if (!input.incrementToken()) {
             return false;
         } else {

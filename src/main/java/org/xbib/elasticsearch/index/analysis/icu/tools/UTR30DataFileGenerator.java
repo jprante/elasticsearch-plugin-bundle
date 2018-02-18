@@ -6,6 +6,7 @@ import com.ibm.icu.text.UnicodeSet;
 import com.ibm.icu.text.UnicodeSetIterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.lucene.util.SuppressForbidden;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,31 +47,41 @@ public class UTR30DataFileGenerator {
 
     private static final String ICU_SVN_TAG_URL
             = "http://source.icu-project.org/repos/icu/icu/tags";
-    private static final String ICU_RELEASE_TAG = "release-58-1";
-    private static final String ICU_DATA_NORM2_PATH = "source/data/unidata/norm2";
+
+    private static final String ICU_DATA_NORM2_PATH = "icu4c/source/data/unidata/norm2";
+
     private static final String NFC_TXT = "nfc.txt";
+
     private static final String NFKC_TXT = "nfkc.txt";
+
     private static final String NFKC_CF_TXT = "nfkc_cf.txt";
+
     private static final Pattern ROUND_TRIP_MAPPING_LINE_PATTERN
             = Pattern.compile("^\\s*([^=]+?)\\s*=\\s*(.*)$");
+
     private static final Pattern VERBATIM_RULE_LINE_PATTERN
             = Pattern.compile("^#\\s*Rule:\\s*verbatim\\s*$", Pattern.CASE_INSENSITIVE);
+
     private static final Pattern RULE_LINE_PATTERN
             = Pattern.compile("^#\\s*Rule:\\s*(.*)>(.*)", Pattern.CASE_INSENSITIVE);
+
     private static final Pattern BLANK_OR_COMMENT_LINE_PATTERN
             = Pattern.compile("^\\s*(?:#.*)?$");
+
     private static final Pattern NUMERIC_VALUE_PATTERN
             = Pattern.compile("Numeric[-\\s_]*Value", Pattern.CASE_INSENSITIVE);
+
     private static byte[] bytes = new byte[8192];
 
-    public void execute(String dir) throws IOException {
-        getNFKCDataFilesFromIcuProject(dir);
+    public void execute(String releaseTag, String dir) throws IOException {
+        getNFKCDataFilesFromIcuProject(releaseTag, dir);
         expandRulesInUTR30DataFiles(dir);
     }
 
-    private static void getNFKCDataFilesFromIcuProject(String dir) throws IOException {
+    @SuppressForbidden(reason = "fetching resources from ICU repository is trusted")
+    private static void getNFKCDataFilesFromIcuProject(String releaseTag, String dir) throws IOException {
         URL icuTagsURL = new URL(ICU_SVN_TAG_URL + "/");
-        URL icuReleaseTagURL = new URL(icuTagsURL, ICU_RELEASE_TAG + "/");
+        URL icuReleaseTagURL = new URL(icuTagsURL, releaseTag + "/");
         URL norm2url = new URL(icuReleaseTagURL, ICU_DATA_NORM2_PATH + "/");
         logger.info("Downloading " + NFKC_TXT + " ... ");
         download(new URL(norm2url, NFKC_TXT), dir + NFKC_TXT);
@@ -118,6 +129,7 @@ public class UTR30DataFileGenerator {
         logger.info("done.");
     }
 
+    @SuppressForbidden(reason = "fetching resources from ICU repository is trusted")
     private static void download(URL url, String outputFile) throws IOException {
         final URLConnection connection = openConnection(url);
         int numBytes;
@@ -129,6 +141,7 @@ public class UTR30DataFileGenerator {
         }
     }
 
+    @SuppressForbidden(reason = "fetching resources from ICU repository is trusted")
     private static URLConnection openConnection(URL url) throws IOException {
         final URLConnection connection = url.openConnection();
         connection.setUseCaches(false);
@@ -137,17 +150,25 @@ public class UTR30DataFileGenerator {
         return connection;
     }
 
+    @SuppressForbidden(reason = "nio file porting will be done later")
     private static void expandRulesInUTR30DataFiles(String dir) throws IOException {
         FileFilter filter = pathname -> {
             String name = pathname.getName();
             return pathname.isFile() && name.matches(".*\\.(?s:txt)")
                     && !name.equals(NFC_TXT) && !name.equals(NFKC_TXT) && !name.equals(NFKC_CF_TXT);
         };
-        for (File file : new File(dir).listFiles(filter)) {
-            expandDataFileRules(file);
+        if (dir != null) {
+            File dirFile = new File(dir);
+            File[] files = dirFile.listFiles(filter);
+            if (files != null) {
+                for (File file : files) {
+                    expandDataFileRules(file);
+                }
+            }
         }
     }
 
+    @SuppressForbidden(reason = "nio file porting will be done later")
     private static void expandDataFileRules(File file) throws IOException {
         StringBuilder builder = new StringBuilder();
         String line;

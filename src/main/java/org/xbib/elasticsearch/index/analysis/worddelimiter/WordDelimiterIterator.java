@@ -47,29 +47,29 @@ public final class WordDelimiterIterator {
      * If false, causes case changes to be ignored (subwords will only be generated
      * given SUBWORD_DELIM tokens). (Defaults to true)
      */
-    final boolean splitOnCaseChange;
+    private final boolean splitOnCaseChange;
     /**
      * If false, causes numeric changes to be ignored (subwords will only be generated
      * given SUBWORD_DELIM tokens). (Defaults to true)
      */
-    final boolean splitOnNumerics;
+    private final boolean splitOnNumerics;
     /**
      * If true, causes trailing "'s" to be removed for each subword. (Defaults to true)
      * <p/>
      * "O'Neil's" => "O", "Neil"
      */
-    final boolean stemEnglishPossessive;
+    private final boolean stemEnglishPossessive;
     private final byte[] charTypeTable;
     char[] text;
-    int length;
+    private int length;
     /**
      * start position of text, excluding leading delimiters
      */
-    int startBounds;
+    private int startBounds;
     /**
      * end position of text, excluding trailing delimiters
      */
-    int endBounds;
+    private int endBounds;
     /**
      * Beginning of subword
      */

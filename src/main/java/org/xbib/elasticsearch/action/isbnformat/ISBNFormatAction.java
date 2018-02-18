@@ -4,7 +4,7 @@ import org.elasticsearch.action.Action;
 import org.elasticsearch.client.ElasticsearchClient;
 
 /**
- *
+ * ISBN format action.
  */
 public class ISBNFormatAction extends Action<ISBNFormatRequest, ISBNFormatResponse, ISBNFormatRequestBuilder> {
 

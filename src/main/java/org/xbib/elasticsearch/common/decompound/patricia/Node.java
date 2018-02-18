@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Node.
  */
 class Node {
 
@@ -16,13 +16,13 @@ class Node {
 
     private List<Node> children;
 
-    public Node() {
+    Node() {
         this.content = "";
         this.classes = new ArrayList<>();
         this.children = new ArrayList<>();
     }
 
-    public Node(String content) {
+    Node(String content) {
         this.content = content;
         this.classes = new ArrayList<>();
         this.children = new ArrayList<>();

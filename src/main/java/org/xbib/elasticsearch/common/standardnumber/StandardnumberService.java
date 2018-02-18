@@ -9,16 +9,18 @@ import org.xbib.standardnumber.ISBN;
 import org.xbib.standardnumber.NoSuchStandardNumberException;
 import org.xbib.standardnumber.StandardNumber;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
- *
+ * Standard number service.
  */
 public class StandardnumberService extends AbstractLifecycleComponent {
 
-    private static final String[] DEFAULT_STANDARD_NUMBERS =
-            { "isbn", "issn", "ismn", "isni",  "orcid", "ppn", "zdb" };
+    private static final List<String> DEFAULT_STANDARD_NUMBERS =
+            Arrays.asList("isbn", "issn", "ismn", "isni",  "orcid", "ppn", "zdb");
 
     @Inject
     public StandardnumberService(Settings settings) {
@@ -55,9 +57,8 @@ public class StandardnumberService extends AbstractLifecycleComponent {
      * @return a collection of variants of the detected standard number or an empty collection
      */
     public Collection<CharSequence> lookup(Settings settings, CharSequence content) {
-        String[] stdnums = settings.getAsArray("standardnumbers",
-                DEFAULT_STANDARD_NUMBERS);
-        if (stdnums.length == 0) {
+        List<String> stdnums = settings.getAsList("standardnumbers", DEFAULT_STANDARD_NUMBERS);
+        if (stdnums.isEmpty()) {
             stdnums = DEFAULT_STANDARD_NUMBERS;
         }
         Collection<CharSequence> variants = new LinkedList<>();

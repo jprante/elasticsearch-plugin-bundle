@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
+ * Gregorian year token filter.
  */
 public class GregorianYearTokenFilter extends TokenFilter {
 

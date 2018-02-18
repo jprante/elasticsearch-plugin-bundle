@@ -4,7 +4,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
 
 /**
- *
+ * Hyphen analyzer.
  */
 public class HyphenAnalyzer extends Analyzer {
 

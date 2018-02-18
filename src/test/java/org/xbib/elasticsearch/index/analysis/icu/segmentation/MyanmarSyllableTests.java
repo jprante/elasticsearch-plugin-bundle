@@ -3,21 +3,15 @@ package org.xbib.elasticsearch.index.analysis.icu.segmentation;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.util.AttributeFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
+import org.elasticsearch.test.ESTokenStreamTestCase;
 
 /**
- *
+ * Myanmar syllable tests.
  */
-public class MyanmarSyllableTests extends BaseTokenStreamTest {
+public class MyanmarSyllableTests extends ESTokenStreamTestCase {
 
-    private static Analyzer a;
-
-    @BeforeClass
-    public static void setUp() throws Exception {
-        a = new Analyzer() {
+    private static Analyzer createAnalyzer() {
+        return new Analyzer() {
             @Override
             protected TokenStreamComponents createComponents(String fieldName) {
                 Tokenizer tokenizer = new IcuTokenizer(AttributeFactory.DEFAULT_ATTRIBUTE_FACTORY,
@@ -27,113 +21,133 @@ public class MyanmarSyllableTests extends BaseTokenStreamTest {
         };
     }
 
-    @AfterClass
-    public static void tearDown() throws Exception {
+    private static void destroyAnalyzer(Analyzer a) {
         a.close();
     }
 
-    @Test
     public void testBasics() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "သက်ဝင်လှုပ်ရှားစေပြီး", new String[] { "သက်", "ဝင်", "လှုပ်", "ရှား", "စေ", "ပြီး" });
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testC() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ကက", new String[] { "က", "က" });
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testCF() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ကံကံ", new String[] { "ကံ", "ကံ" });
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testCCA() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ကင်ကင်", new String[] { "ကင်", "ကင်" });
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testCCAF() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ကင်းကင်း", new String[] { "ကင်း", "ကင်း" });
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testCV() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ကာကာ", new String[] { "ကာ", "ကာ" });
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testCVF() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ကားကား", new String[] { "ကား", "ကား" });
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testCVVA() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ကော်ကော်", new String[] { "ကော်", "ကော်" });
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testCVVCA() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ကောင်ကောင်", new String[] { "ကောင်", "ကောင်" });
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testCVVCAF() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ကောင်းကောင်း", new String[] { "ကောင်း", "ကောင်း" });
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testCM() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ကျကျ", new String[] { "ကျ", "ကျ" });
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testCMF() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ကျံကျံ", new String[] { "ကျံ", "ကျံ" });
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testCMCA() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ကျင်ကျင်", new String[] { "ကျင်", "ကျင်" });
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testCMCAF() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ကျင်းကျင်း", new String[] { "ကျင်း", "ကျင်း" });
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testCMV() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ကျာကျာ", new String[] { "ကျာ", "ကျာ" });
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testCMVF() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ကျားကျား", new String[] { "ကျား", "ကျား" });
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testCMVVA() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ကျော်ကျော်", new String[] { "ကျော်", "ကျော်" });
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testCMVVCA() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ကြောင်ကြောင်", new String[] { "ကြောင်", "ကြောင်"});
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testCMVVCAF() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ကြောင်းကြောင်း", new String[] { "ကြောင်း", "ကြောင်း"});
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testI() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ဪဪ", new String[] { "ဪ", "ဪ" });
+        destroyAnalyzer(a);
     }
 
-    @Test
     public void testE() throws Exception {
+        Analyzer a = createAnalyzer();
         assertAnalyzesTo(a, "ဣဣ", new String[] { "ဣ", "ဣ" });
+        destroyAnalyzer(a);
     }
 }

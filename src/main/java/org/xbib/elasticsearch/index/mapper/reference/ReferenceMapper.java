@@ -6,6 +6,8 @@ import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BoostQuery;
+import org.apache.lucene.search.DocValuesFieldExistsQuery;
+import org.apache.lucene.search.MultiTermQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermInSetQuery;
 import org.apache.lucene.search.TermQuery;
@@ -16,10 +18,12 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.lucene.BytesRefs;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.support.XContentMapValues;
 import org.elasticsearch.index.mapper.FieldMapper;
+import org.elasticsearch.index.mapper.FieldNamesFieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
@@ -37,13 +41,22 @@ import java.util.Map;
 import static org.elasticsearch.index.mapper.TypeParsers.parseField;
 
 /**
- *
+ * Reference field mapper.
  */
 public class ReferenceMapper extends FieldMapper {
 
     private static final Logger logger = LogManager.getLogger(ReferenceMapper.class.getName());
 
-    public static final String MAPPER_TYPE = "ref";
+    public static final String CONTENT_TYPE = "ref";
+
+    public static final MappedFieldType FIELD_TYPE = new ReferenceFieldType();
+
+    public static final class Defaults {
+
+        static {
+            FIELD_TYPE.freeze();
+        }
+    }
 
     private static final CopyTo COPYTO_EMPTY = new CopyTo.Builder().build();
 
@@ -213,7 +226,7 @@ public class ReferenceMapper extends FieldMapper {
     @Override
     protected void doXContentBody(XContentBuilder builder, boolean includeDefaults, Params params) throws IOException {
         super.doXContentBody(builder, includeDefaults, params);
-        builder.field("type", MAPPER_TYPE);
+        builder.field("type", CONTENT_TYPE);
         if (index != null) {
             builder.field("ref_index", index);
         }
@@ -230,15 +243,12 @@ public class ReferenceMapper extends FieldMapper {
 
     @Override
     protected String contentType() {
-        return MAPPER_TYPE;
+        return CONTENT_TYPE;
     }
 
-    public static final class Defaults {
-        public static final ReferenceFieldType FIELD_TYPE = new ReferenceFieldType();
-
-        static {
-            FIELD_TYPE.freeze();
-        }
+    @Override
+    protected void doMerge(Mapper mergeWith, boolean updateAllTypes) {
+        super.doMerge(mergeWith, updateAllTypes);
     }
 
     public static final class ReferenceFieldType extends MappedFieldType implements Cloneable {
@@ -258,7 +268,7 @@ public class ReferenceMapper extends FieldMapper {
 
         @Override
         public String typeName() {
-            return MAPPER_TYPE;
+            return CONTENT_TYPE;
         }
 
         public String value(Object value) {
@@ -298,6 +308,31 @@ public class ReferenceMapper extends FieldMapper {
             return new TermInSetQuery(name(), bytesRefs);
         }
 
+        @Override
+        public Query existsQuery(QueryShardContext context) {
+            if (hasDocValues()) {
+                return new DocValuesFieldExistsQuery(name());
+            } else {
+                return new TermQuery(new Term(FieldNamesFieldMapper.NAME, name()));
+            }
+        }
+
+        @Override
+        public Query fuzzyQuery(Object value, Fuzziness fuzziness, int prefixLength, int maxExpansions,
+                                boolean transpositions) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Query prefixQuery(String value, MultiTermQuery.RewriteMethod method, QueryShardContext context) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Query regexpQuery(String value, int flags, int maxDeterminizedStates,
+                                 MultiTermQuery.RewriteMethod method, QueryShardContext context) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @SuppressWarnings({"rawtypes"})
@@ -314,7 +349,7 @@ public class ReferenceMapper extends FieldMapper {
         private List<String> refFields;
 
         public Builder(String name, Client client) {
-            super(name, Defaults.FIELD_TYPE, Defaults.FIELD_TYPE);
+            super(name, FIELD_TYPE, FIELD_TYPE);
             this.client = client;
             this.refFields = new LinkedList<>();
             this.contentBuilder = new TextFieldMapper.Builder(name);
@@ -343,7 +378,7 @@ public class ReferenceMapper extends FieldMapper {
         @Override
         public ReferenceMapper build(BuilderContext context) {
             FieldMapper contentMapper = (FieldMapper) contentBuilder.build(context);
-            MappedFieldType defaultFieldType = Defaults.FIELD_TYPE.clone();
+            MappedFieldType defaultFieldType = FIELD_TYPE.clone();
             if (this.fieldType.indexOptions() != IndexOptions.NONE && !this.fieldType.tokenized()) {
                 defaultFieldType.setOmitNorms(true);
                 defaultFieldType.setIndexOptions(IndexOptions.DOCS);
@@ -414,5 +449,4 @@ public class ReferenceMapper extends FieldMapper {
             return builder;
         }
     }
-
 }

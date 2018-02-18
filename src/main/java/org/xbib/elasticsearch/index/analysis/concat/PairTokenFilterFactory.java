@@ -6,10 +6,11 @@ import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- *
+ * Pair token filter factory.
  */
 public class PairTokenFilterFactory extends AbstractTokenFilterFactory {
 
@@ -17,8 +18,11 @@ public class PairTokenFilterFactory extends AbstractTokenFilterFactory {
 
     public PairTokenFilterFactory(IndexSettings indexSettings, Environment environment, String name, Settings settings) {
         super(indexSettings, name, settings);
-        this.pairs = settings.getAsSettings("pairs").getAsMap();
-
+        this.pairs = new LinkedHashMap<>();
+        Settings pairsSettings = settings.getAsSettings("pairs");
+        for (String key: pairsSettings.keySet()) {
+            pairs.put(key, pairsSettings.get(key));
+        }
     }
 
     @Override

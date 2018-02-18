@@ -27,7 +27,7 @@ public class HyphenAnalyzerProvider extends CustomAnalyzerProvider {
     private CustomAnalyzer customAnalyzer;
 
     public HyphenAnalyzerProvider(IndexSettings indexSettings, Environment environment, String name, Settings settings) {
-        super(indexSettings, name, settings);
+        super(indexSettings, name, settings, environment);
         this.tokenizerFactory = new HyphenTokenizerFactory(indexSettings, environment, name, settings);
         this.tokenFilterFactory = new HyphenTokenFilterFactory(indexSettings, environment, name, settings);
         this.analyzerSettings = settings;
@@ -38,7 +38,7 @@ public class HyphenAnalyzerProvider extends CustomAnalyzerProvider {
                       final Map<String, CharFilterFactory> charFilters,
                       final Map<String, TokenFilterFactory> tokenFilters) {
         List<CharFilterFactory> myCharFilters = new ArrayList<>();
-        String[] charFilterNames = analyzerSettings.getAsArray("char_filter");
+        List<String> charFilterNames = analyzerSettings.getAsList("char_filter");
         for (String charFilterName : charFilterNames) {
             CharFilterFactory charFilter = charFilters.get(charFilterName);
             if (charFilter == null) {
@@ -49,7 +49,7 @@ public class HyphenAnalyzerProvider extends CustomAnalyzerProvider {
         }
         List<TokenFilterFactory> myTokenFilters = new ArrayList<>();
         myTokenFilters.add(tokenFilterFactory);
-        String[] tokenFilterNames = analyzerSettings.getAsArray("filter");
+        List<String> tokenFilterNames = analyzerSettings.getAsList("filter");
         for (String tokenFilterName : tokenFilterNames) {
             TokenFilterFactory tokenFilter = tokenFilters.get(tokenFilterName);
             if (tokenFilter == null) {
@@ -60,7 +60,7 @@ public class HyphenAnalyzerProvider extends CustomAnalyzerProvider {
         }
         int positionOffsetGap = analyzerSettings.getAsInt("position_offset_gap", 0);
         int offsetGap = analyzerSettings.getAsInt("offset_gap", -1);
-        this.customAnalyzer = new CustomAnalyzer(tokenizerFactory,
+        this.customAnalyzer = new CustomAnalyzer(name(), tokenizerFactory,
                 myCharFilters.toArray(new CharFilterFactory[myCharFilters.size()]),
                 myTokenFilters.toArray(new TokenFilterFactory[myTokenFilters.size()]),
                 positionOffsetGap,

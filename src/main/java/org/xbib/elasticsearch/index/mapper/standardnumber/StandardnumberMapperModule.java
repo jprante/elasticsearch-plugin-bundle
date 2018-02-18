@@ -4,7 +4,7 @@ import org.elasticsearch.common.inject.AbstractModule;
 import org.xbib.elasticsearch.common.standardnumber.StandardnumberService;
 
 /**
- *
+ * Standard number field mapper module.
  */
 public class StandardnumberMapperModule extends AbstractModule {
 

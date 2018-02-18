@@ -3,51 +3,57 @@ package org.xbib.elasticsearch.index.mapper.icu;
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RawCollationKey;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.SortedDocValuesField;
+import org.apache.lucene.document.SortedSetDocValuesField;
 import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.DocValuesFieldExistsQuery;
+import org.apache.lucene.search.MultiTermQuery;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.util.BytesRef;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.common.lucene.Lucene;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.support.XContentMapValues;
 import org.elasticsearch.index.fielddata.IndexFieldData;
 import org.elasticsearch.index.fielddata.plain.DocValuesIndexFieldData;
 import org.elasticsearch.index.mapper.FieldMapper;
+import org.elasticsearch.index.mapper.FieldNamesFieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.mapper.StringFieldType;
 import org.elasticsearch.index.mapper.TypeParsers;
+import org.elasticsearch.index.query.QueryShardContext;
 import org.elasticsearch.search.DocValueFormat;
 import org.joda.time.DateTimeZone;
 import org.xbib.elasticsearch.index.analysis.icu.IcuCollationKeyAnalyzerProvider;
+import org.xbib.elasticsearch.index.analysis.icu.IndexableBinaryStringTools;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.LongSupplier;
-
-import static org.xbib.elasticsearch.index.analysis.icu.IndexableBinaryStringTools.decode;
-import static org.xbib.elasticsearch.index.analysis.icu.IndexableBinaryStringTools.encode;
-import static org.xbib.elasticsearch.index.analysis.icu.IndexableBinaryStringTools.getDecodedLength;
-import static org.xbib.elasticsearch.index.analysis.icu.IndexableBinaryStringTools.getEncodedLength;
 
 /**
  * ICU collation key field mapper.
  */
 public class IcuCollationKeyFieldMapper extends FieldMapper {
 
-    public static final String MAPPER_TYPE = "icu_collation_key";
+    public static final String CONTENT_TYPE = "icu_collation_key";
+
+    public static final MappedFieldType FIELD_TYPE = new CollationFieldType();
 
     public static class Defaults {
-        public static final MappedFieldType FIELD_TYPE = new CollationFieldType();
 
         static {
             FIELD_TYPE.setTokenized(false);
@@ -55,11 +61,10 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
             FIELD_TYPE.setIndexOptions(IndexOptions.DOCS);
             FIELD_TYPE.freeze();
         }
-
-        public static final String NULL_VALUE = null;
     }
 
     public static final class CollationFieldType extends StringFieldType {
+
         private Collator collator = null;
 
         public CollationFieldType() {
@@ -97,7 +102,7 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
 
         @Override
         public String typeName() {
-            return MAPPER_TYPE;
+            return CONTENT_TYPE;
         }
 
         public Collator collator() {
@@ -110,6 +115,15 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
         }
 
         @Override
+        public Query existsQuery(QueryShardContext context) {
+            if (hasDocValues()) {
+                return new DocValuesFieldExistsQuery(name());
+            } else {
+                return new TermQuery(new Term(FieldNamesFieldMapper.NAME, name()));
+            }
+        }
+
+        @Override
         public Query nullValueQuery() {
             if (nullValue() == null) {
                 return null;
@@ -118,7 +132,7 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
         }
 
         @Override
-        public IndexFieldData.Builder fielddataBuilder() {
+        public IndexFieldData.Builder fielddataBuilder(String fullyQualifiedIndexName) {
             failIfNoDocValues();
             return new DocValuesIndexFieldData.Builder();
         }
@@ -139,6 +153,28 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
             }
         }
 
+        @Override
+        public Query fuzzyQuery(Object value, Fuzziness fuzziness, int prefixLength, int maxExpansions,
+                                boolean transpositions) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Query prefixQuery(String value, MultiTermQuery.RewriteMethod method, QueryShardContext context) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Query regexpQuery(String value, int flags, int maxDeterminizedStates,
+                                 MultiTermQuery.RewriteMethod method, QueryShardContext context) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public DocValueFormat docValueFormat(final String format, final DateTimeZone timeZone) {
+            return COLLATE_FORMAT;
+        }
+
         public static DocValueFormat COLLATE_FORMAT = new DocValueFormat() {
             @Override
             public String getWriteableName() {
@@ -146,7 +182,7 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
             }
 
             @Override
-            public void writeTo(StreamOutput out) throws IOException {
+            public void writeTo(StreamOutput out) {
             }
 
             @Override
@@ -161,9 +197,9 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
 
             @Override
             public String format(BytesRef value) {
-                int encodedLength = getEncodedLength(value.bytes, value.offset, value.length);
+                int encodedLength = IndexableBinaryStringTools.getEncodedLength(value.bytes, value.offset, value.length);
                 char[] encoded = new char[encodedLength];
-                encode(value.bytes, value.offset, value.length, encoded, 0, encodedLength);
+                IndexableBinaryStringTools.encode(value.bytes, value.offset, value.length, encoded, 0, encodedLength);
                 return new String(encoded, 0, encodedLength);
             }
 
@@ -180,24 +216,19 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
             @Override
             public BytesRef parseBytesRef(String value) {
                 char[] encoded = value.toCharArray();
-                int decodedLength = getDecodedLength(encoded, 0, encoded.length);
+                int decodedLength = IndexableBinaryStringTools.getDecodedLength(encoded, 0, encoded.length);
                 byte[] decoded = new byte[decodedLength];
-                decode(encoded, 0, encoded.length, decoded, 0, decodedLength);
+                IndexableBinaryStringTools.decode(encoded, 0, encoded.length, decoded, 0, decodedLength);
                 return new BytesRef(decoded);
             }
         };
-
-        @Override
-        public DocValueFormat docValueFormat(final String format, final DateTimeZone timeZone) {
-            return COLLATE_FORMAT;
-        }
     }
 
     public static class Builder extends FieldMapper.Builder<Builder, IcuCollationKeyFieldMapper> {
         private Settings.Builder settingsBuilder;
 
         public Builder(String name) {
-            super(name, Defaults.FIELD_TYPE, Defaults.FIELD_TYPE);
+            super(name, FIELD_TYPE, FIELD_TYPE);
             builder = this;
             this.settingsBuilder = Settings.builder();
         }
@@ -210,7 +241,7 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
         @Override
         public Builder indexOptions(IndexOptions indexOptions) {
             if (indexOptions.compareTo(IndexOptions.DOCS_AND_FREQS) > 0) {
-                throw new IllegalArgumentException("The [" + MAPPER_TYPE + "] field does not support positions, got [index_options]="
+                throw new IllegalArgumentException("The [" + CONTENT_TYPE + "] field does not support positions, got [index_options]="
                     + indexOptionToString(indexOptions));
             }
             return super.indexOptions(indexOptions);
@@ -280,20 +311,20 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
         }
 
         public boolean caseLevel() {
-            return settingsBuilder.get("caseLevel") != null && Boolean.parseBoolean(settingsBuilder.get("caseLevel"));
+            return settingsBuilder.get("case_level") != null && Boolean.parseBoolean(settingsBuilder.get("case_level"));
         }
 
         public Builder caseLevel(final boolean caseLevel) {
-            settingsBuilder.put("caseLevel", caseLevel);
+            settingsBuilder.put("case_level", caseLevel);
             return this;
         }
 
         public String caseFirst() {
-            return settingsBuilder.get("caseFirst");
+            return settingsBuilder.get("case_first");
         }
 
         public Builder caseFirst(final String caseFirst) {
-            settingsBuilder.put("caseFirst", caseFirst);
+            settingsBuilder.put("case_first", caseFirst);
             return this;
         }
 
@@ -392,6 +423,7 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
 
     private final Settings collatorSettings;
     private final Collator collator;
+    private final BiFunction<String, BytesRef, Field> getDVField;
 
     protected IcuCollationKeyFieldMapper(String simpleName, MappedFieldType fieldType, MappedFieldType defaultFieldType,
                                          Settings indexSettings, MultiFields multiFields,
@@ -400,6 +432,7 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
         assert collator.isFrozen();
         this.collatorSettings = collatorSettings;
         this.collator = collator;
+        this.getDVField = SortedSetDocValuesField::new;
     }
 
     @Override
@@ -409,8 +442,49 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
 
     @Override
     protected String contentType() {
-        return MAPPER_TYPE;
+        return CONTENT_TYPE;
     }
+
+    @Override
+    protected void doMerge(Mapper mergeWith, boolean updateAllTypes) {
+        super.doMerge(mergeWith, updateAllTypes);
+        List<String> conflicts = new ArrayList<>();
+        IcuCollationKeyFieldMapper icuMergeWith = (IcuCollationKeyFieldMapper) mergeWith;
+        if (!Objects.equals(collatorSettings.get("rules"), icuMergeWith.collatorSettings.get("rules"))) {
+            conflicts.add("Cannot update rules setting for [" + CONTENT_TYPE + "]");
+        }
+        if (!Objects.equals(collatorSettings.get("language"), icuMergeWith.collatorSettings.get("language"))) {
+            conflicts.add("Cannot update language setting for [" + CONTENT_TYPE + "]");
+        }
+        if (!Objects.equals(collatorSettings.get("country"), icuMergeWith.collatorSettings.get("country"))) {
+            conflicts.add("Cannot update country setting for [" + CONTENT_TYPE + "]");
+        }
+        if (!Objects.equals(collatorSettings.get("variant"), icuMergeWith.collatorSettings.get("variant"))) {
+            conflicts.add("Cannot update variant setting for [" + CONTENT_TYPE + "]");
+        }
+        if (!Objects.equals(collatorSettings.get("strength"), icuMergeWith.collatorSettings.get("strength"))) {
+            conflicts.add("Cannot update strength setting for [" + CONTENT_TYPE + "]");
+        }
+        if (!Objects.equals(collatorSettings.get("decomposition"), icuMergeWith.collatorSettings.get("decomposition"))) {
+            conflicts.add("Cannot update decomposition setting for [" + CONTENT_TYPE + "]");
+        }
+        if (!Objects.equals(collatorSettings.get("alternate"), icuMergeWith.collatorSettings.get("alternate"))) {
+            conflicts.add("Cannot update alternate setting for [" + CONTENT_TYPE + "]");
+        }
+        if (collatorSettings.getAsBoolean("case_level", true) != icuMergeWith.collatorSettings.getAsBoolean("case_level", true)) {
+            conflicts.add("Cannot update case_level setting for [" + CONTENT_TYPE + "]");
+        }
+        if (!Objects.equals(collatorSettings.get("case_first"), icuMergeWith.collatorSettings.get("case_first"))) {
+            conflicts.add("Cannot update case_first setting for [" + CONTENT_TYPE + "]");
+        }
+        if (collatorSettings.getAsBoolean("numeric", true) != icuMergeWith.collatorSettings.getAsBoolean("numeric", true)) {
+            conflicts.add("Cannot update numeric setting for [" + CONTENT_TYPE + "]");
+        }
+        if (!conflicts.isEmpty()) {
+            throw new IllegalArgumentException("Can't merge because of conflicts: " + conflicts);
+        }
+    }
+
 
     @Override
     protected void doXContentBody(XContentBuilder builder, boolean includeDefaults, Params params) throws IOException {
@@ -440,10 +514,10 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
             builder.field("alternate", collatorSettings.get("alternate"));
         }
         if (includeDefaults) {
-            builder.field("caseLevel", collatorSettings.getAsBoolean("caseLevel", false));
+            builder.field("case_level", collatorSettings.getAsBoolean("case_level", false));
         }
         if (includeDefaults) {
-            builder.field("caseFirst", collatorSettings.get("caseFirst"));
+            builder.field("case_first", collatorSettings.get("case_first"));
         }
         if (includeDefaults) {
             builder.field("numeric", collatorSettings.getAsBoolean("numeric", false));
@@ -473,7 +547,7 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
             fields.add(field);
         }
         if (fieldType().hasDocValues()) {
-            fields.add(new SortedDocValuesField(fieldType().name(), binaryValue));
+            fields.add(getDVField.apply(fieldType().name(), binaryValue));
         }
     }
 }

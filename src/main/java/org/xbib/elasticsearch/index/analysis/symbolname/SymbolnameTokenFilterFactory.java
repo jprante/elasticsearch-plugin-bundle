@@ -7,7 +7,7 @@ import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 
 /**
- *
+ * Symbol name token filter factory.
  */
 public class SymbolnameTokenFilterFactory extends AbstractTokenFilterFactory {
 

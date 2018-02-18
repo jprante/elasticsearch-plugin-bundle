@@ -9,7 +9,7 @@ import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 
 /**
- *
+ * ICU transform token filter factory.
  */
 public class IcuTransformTokenFilterFactory extends AbstractTokenFilterFactory {
 

@@ -4,7 +4,11 @@ import com.ibm.icu.text.RuleBasedBreakIterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,8 +21,12 @@ public class RBBIRuleCompiler {
     private static final Logger logger = LogManager.getLogger(RBBIRuleCompiler.class.getName());
 
     public void compile(Path inputPath, Path outputPath) throws IOException {
-        String rules = getRules(inputPath);
-        try (OutputStream os = Files.newOutputStream(outputPath)) {
+        compile(Files.newInputStream(inputPath), Files.newOutputStream(outputPath));
+    }
+
+    public void compile(InputStream inputStream, OutputStream outputStream) throws IOException {
+        String rules = getRules(inputStream);
+        try (OutputStream os = outputStream) {
             new RuleBasedBreakIterator(rules);
             RuleBasedBreakIterator.compileRules(rules, os);
         } catch (IllegalArgumentException e) {
@@ -26,13 +34,12 @@ public class RBBIRuleCompiler {
         }
     }
 
-    private String getRules(Path rulePath) throws IOException {
+    private String getRules(InputStream inputStream) throws IOException {
         StringBuilder rules = new StringBuilder();
-        try (InputStream inputStream = Files.newInputStream(rulePath);
-                BufferedReader cin =
+        try (BufferedReader bufferedReader =
                      new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String line;
-            while ((line = cin.readLine()) != null) {
+            while ((line = bufferedReader.readLine()) != null) {
                 if (!line.startsWith("#")) {
                     rules.append(line);
                     rules.append('\n');

@@ -8,7 +8,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.xbib.elasticsearch.index.mapper.reference.ReferenceMapperTypeParser;
 
 /**
- *
+ * Reference service.
  */
 public class ReferenceService extends AbstractLifecycleComponent {
 

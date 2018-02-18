@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * Transport action for language detection response.
  */
 public class TransportLangdetectAction extends TransportAction<LangdetectRequest, LangdetectResponse> {
 

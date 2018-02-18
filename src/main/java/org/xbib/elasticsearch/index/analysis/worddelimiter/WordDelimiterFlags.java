@@ -1,7 +1,7 @@
 package org.xbib.elasticsearch.index.analysis.worddelimiter;
 
 /**
- *
+ * Flags for {@link WordDelimiterFilter}.
  */
 public interface WordDelimiterFlags {
     int LOWER = 0x01;

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Sort form analyzer provider.
  */
 public class SortformAnalyzerProvider extends CustomAnalyzerProvider {
 
@@ -31,7 +32,7 @@ public class SortformAnalyzerProvider extends CustomAnalyzerProvider {
 
     public SortformAnalyzerProvider(IndexSettings indexSettings, Environment environment, String name,
                                     Settings settings) {
-        super(indexSettings, name, settings);
+        super(indexSettings, name, settings, environment);
         this.tokenizerFactory = new SortformTokenizerFactory(indexSettings, name, settings);
         this.analyzerSettings = settings;
     }
@@ -41,26 +42,28 @@ public class SortformAnalyzerProvider extends CustomAnalyzerProvider {
                       final Map<String, CharFilterFactory> charFilters,
                       final Map<String, TokenFilterFactory> tokenFilters) {
         List<CharFilterFactory> myCharFilters = new ArrayList<>();
-        String[] charFilterNames = analyzerSettings.getAsArray("char_filter");
+        List<String> charFilterNames = analyzerSettings.getAsList("char_filter");
         for (String charFilterName : charFilterNames) {
             CharFilterFactory charFilter = charFilters.get(charFilterName);
             if (charFilter == null) {
-                throw new IllegalArgumentException("Sortform Analyzer [" + name() + "] failed to find char_filter under name [" + charFilterName + "]");
+                throw new IllegalArgumentException("Sortform Analyzer [" + name() +
+                        "] failed to find char_filter under name [" + charFilterName + "]");
             }
             myCharFilters.add(charFilter);
         }
         List<TokenFilterFactory> myTokenFilters = new ArrayList<>();
-        String[] tokenFilterNames = analyzerSettings.getAsArray("filter");
+        List<String> tokenFilterNames = analyzerSettings.getAsList("filter");
         for (String tokenFilterName : tokenFilterNames) {
             TokenFilterFactory tokenFilter = tokenFilters.get(tokenFilterName);
             if (tokenFilter == null) {
-                throw new IllegalArgumentException("Sortform Analyzer [" + name() + "] failed to find filter under name [" + tokenFilterName + "]");
+                throw new IllegalArgumentException("Sortform Analyzer [" + name() +
+                        "] failed to find filter under name [" + tokenFilterName + "]");
             }
             myTokenFilters.add(tokenFilter);
         }
         int positionOffsetGap = analyzerSettings.getAsInt("position_offset_gap", 0);
         int offsetGap = analyzerSettings.getAsInt("offset_gap", -1);
-        this.customAnalyzer = new CustomAnalyzer(tokenizerFactory,
+        this.customAnalyzer = new CustomAnalyzer(name(), tokenizerFactory,
                 myCharFilters.toArray(new CharFilterFactory[myCharFilters.size()]),
                 myTokenFilters.toArray(new TokenFilterFactory[myTokenFilters.size()]),
                 positionOffsetGap,

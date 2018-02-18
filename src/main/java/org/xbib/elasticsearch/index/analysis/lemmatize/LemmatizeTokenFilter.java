@@ -13,7 +13,7 @@ import java.nio.charset.CharacterCodingException;
 import java.util.LinkedList;
 
 /**
- *
+ * Lemmative token filter.
  */
 public class LemmatizeTokenFilter extends TokenFilter {
 

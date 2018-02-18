@@ -10,7 +10,7 @@ import java.text.Collator;
 import java.util.Locale;
 
 /**
- *
+ * Natural sort key analyzer provider.
  */
 public class NaturalSortKeyAnalyzerProvider extends AbstractIndexAnalyzerProvider<NaturalSortKeyAnalyzer> {
 

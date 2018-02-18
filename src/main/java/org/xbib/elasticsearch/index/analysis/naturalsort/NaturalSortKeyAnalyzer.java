@@ -6,7 +6,7 @@ import org.apache.lucene.analysis.core.KeywordTokenizer;
 import java.text.Collator;
 
 /**
- *
+ * Natural sort key analyzer.
  */
 public class NaturalSortKeyAnalyzer extends Analyzer {
 

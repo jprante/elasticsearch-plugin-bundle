@@ -26,9 +26,9 @@ public enum FSAFlags {
      */
     TAILS(1 << 3),
 
-	/*
+    /*
      * These flags are outside of byte range (never occur in Daciuk's FSA).
-	 */
+     */
 
     /**
      * The FSA contains right-language count numbers on states.

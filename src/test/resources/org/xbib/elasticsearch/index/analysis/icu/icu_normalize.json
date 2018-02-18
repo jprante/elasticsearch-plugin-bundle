@@ -4,12 +4,12 @@
       "char_filter" : {
         "my_icu_normalizer" : {
           "type" : "icu_normalizer",
-          "name" : "utr30"
+          "normalization_name" : "utr30"
         },
         "my_icu_normalizer_with_exceptions" : {
           "type" : "icu_normalizer",
-          "name" : "utr30",
-          "unicodeSetFilter" : "[^åäöÅÄÖ]"
+          "normalization_name" : "utr30",
+          "unicode_set_filter" : "[^åäöÅÄÖ]"
         }
       },
       "tokenizer" : {

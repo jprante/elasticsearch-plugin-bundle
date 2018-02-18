@@ -11,7 +11,7 @@ import org.xbib.elasticsearch.index.analysis.hyphen.HyphenTokenizerImpl;
 import java.io.IOException;
 
 /**
- *
+ * Hyphen tokenizer.
  */
 public final class HyphenTokenizer extends Tokenizer {
 
@@ -45,7 +45,6 @@ public final class HyphenTokenizer extends Tokenizer {
         super();
         this.maxTokenLength = maxTokenLength;
         this.scanner = new HyphenTokenizerImpl(input);
-
     }
 
     /**
@@ -61,7 +60,7 @@ public final class HyphenTokenizer extends Tokenizer {
     }
 
     @Override
-    public final boolean incrementToken() throws IOException {
+    public boolean incrementToken() throws IOException {
         clearAttributes();
         skippedPositions = 0;
         while (true) {
@@ -83,7 +82,7 @@ public final class HyphenTokenizer extends Tokenizer {
     }
 
     @Override
-    public final void end() throws IOException {
+    public void end() throws IOException {
         super.end();
         int finalOffset = correctOffset(scanner.yychar() + scanner.yylength());
         offsetAtt.setOffset(finalOffset, finalOffset);

@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 /**
- *
+ * Finite state decompound token filter.
  */
 public class FstDecompoundTokenFilter extends TokenFilter {
 
@@ -57,7 +57,7 @@ public class FstDecompoundTokenFilter extends TokenFilter {
         }
     }
 
-    protected void decompound() {
+    protected synchronized void decompound() {
         int start = offsetAtt.startOffset();
         CharSequence term = new String(termAtt.buffer(), 0, termAtt.length());
         for (String suggestions : fstDecompounder.decompound(term.toString())) {
@@ -102,15 +102,15 @@ public class FstDecompoundTokenFilter extends TokenFilter {
 
         DecompoundToken(CharSequence txt, int offset, int length) {
             this.txt = txt;
-            int startOff = FstDecompoundTokenFilter.this.offsetAtt.startOffset();
-            int endOff = FstDecompoundTokenFilter.this.offsetAtt.endOffset();
-            if (endOff - startOff != FstDecompoundTokenFilter.this.termAtt.length()) {
-                this.startOffset = startOff;
-                this.endOffset = endOff;
-            } else {
+            //int startOff = FstDecompoundTokenFilter.this.offsetAtt.startOffset();
+            //int endOff = FstDecompoundTokenFilter.this.offsetAtt.endOffset();
+            //if (endOff - startOff != FstDecompoundTokenFilter.this.termAtt.length()) {
+            //    this.startOffset = startOff;
+            //    this.endOffset = endOff;
+            //} else {
                 this.startOffset = offset;
                 this.endOffset = offset + length;
-            }
+            //}
         }
     }
 }

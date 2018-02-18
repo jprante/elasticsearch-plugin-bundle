@@ -1,25 +1,21 @@
 package org.xbib.elasticsearch.index.analysis.symbolname;
 
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
-import org.junit.Assert;
-import org.junit.Test;
+import org.elasticsearch.test.ESTestCase;
+import org.elasticsearch.test.ESTokenStreamTestCase;
+import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
-import java.io.IOException;
 import java.io.StringReader;
 
-import static org.xbib.elasticsearch.MapperTestUtils.tokenFilterFactory;
-import static org.xbib.elasticsearch.MapperTestUtils.tokenizerFactory;
-
 /**
- *
+ * Symbol name tokenfilter tests.
  */
-public class SymbolnameTokenFilterTests extends Assert {
+public class SymbolnameTokenFilterTests extends ESTokenStreamTestCase {
 
-    @Test
-    public void testSimple() throws IOException {
+    public void testSimple() throws Exception {
 
         String source = "Programmieren mit C++";
 
@@ -32,15 +28,16 @@ public class SymbolnameTokenFilterTests extends Assert {
                 "__PLUSSIGN__",
                 "__PLUSSIGN__"
         };
-        TokenFilterFactory tokenFilter = tokenFilterFactory("symbolname");
-        Tokenizer tokenizer = tokenizerFactory("whitespace").create();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                Settings.EMPTY,
+                new BundlePlugin(Settings.EMPTY));
+        TokenFilterFactory tokenFilter = analysis.tokenFilter.get("symbolname");
+        Tokenizer tokenizer = analysis.tokenizer.get("whitespace").create();
         tokenizer.setReader(new StringReader(source));
-        assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
+        assertTokenStreamContents(tokenFilter.create(tokenizer), expected);
     }
 
-
-    @Test
-    public void testPunctuation() throws IOException {
+    public void testPunctuation() throws Exception {
 
         String source = "Programmieren mit C++ Version 2.0";
 
@@ -59,14 +56,16 @@ public class SymbolnameTokenFilterTests extends Assert {
                 "__FULLSTOP__",
                 "__DIGITZERO__"
         };
-        TokenFilterFactory tokenFilter = tokenFilterFactory("symbolname");
-        Tokenizer tokenizer = tokenizerFactory("whitespace").create();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                Settings.EMPTY,
+                new BundlePlugin(Settings.EMPTY));
+        TokenFilterFactory tokenFilter = analysis.tokenFilter.get("symbolname");
+        Tokenizer tokenizer = analysis.tokenizer.get("whitespace").create();
         tokenizer.setReader(new StringReader(source));
-        assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
+        assertTokenStreamContents(tokenFilter.create(tokenizer), expected);
     }
 
-    @Test
-    public void testSingleSymbols() throws IOException {
+    public void testSingleSymbols() throws Exception {
 
         String source = "Programmieren mit + und - ist toll, oder?";
 
@@ -88,24 +87,12 @@ public class SymbolnameTokenFilterTests extends Assert {
                 "oder",
                 "__QUESTIONMARK__"
         };
-        TokenFilterFactory tokenFilter = tokenFilterFactory("symbolname");
-        Tokenizer tokenizer = tokenizerFactory("whitespace").create();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                Settings.EMPTY,
+                new BundlePlugin(Settings.EMPTY));
+        TokenFilterFactory tokenFilter = analysis.tokenFilter.get("symbolname");
+        Tokenizer tokenizer = analysis.tokenizer.get("whitespace").create();
         tokenizer.setReader(new StringReader(source));
-        assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
-    }
-
-    private void assertSimpleTSOutput(TokenStream stream, String[] expected) throws IOException {
-        stream.reset();
-        CharTermAttribute termAttr = stream.getAttribute(CharTermAttribute.class);
-        Assert.assertNotNull(termAttr);
-        int i = 0;
-        while (stream.incrementToken()) {
-            //logger.info("'i={}'", termAttr.toString());
-            assertTrue(i < expected.length);
-            assertEquals("at position " + i, expected[i], termAttr.toString());
-            i++;
-        }
-        assertEquals(i, expected.length);
-        stream.close();
+        assertTokenStreamContents(tokenFilter.create(tokenizer), expected);
     }
 }

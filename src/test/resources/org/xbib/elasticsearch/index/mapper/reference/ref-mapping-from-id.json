@@ -1,6 +1,9 @@
 {
     "docs" : {
         "properties" : {
+            "ref" : {
+                "type" : "text"
+            },
             "authorID": {
                 "type" : "ref",
                 "ref_index" : "authorities",
@@ -9,9 +12,6 @@
                 "copy_to" : [
                     "ref"
                 ]
-            },
-            "ref" : {
-                "type" : "text"
             }
         }
     }

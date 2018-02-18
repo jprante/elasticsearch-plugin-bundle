@@ -6,7 +6,7 @@ import org.apache.lucene.util.AttributeFactory;
 import java.text.Collator;
 
 /**
- *
+ * Natural sort key attribute factory.
  */
 public class NaturalSortKeyAttributeFactory
         extends AttributeFactory.StaticImplementationAttributeFactory<NaturalSortKeyAttributeImpl> {

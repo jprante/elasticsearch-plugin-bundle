@@ -7,7 +7,7 @@ import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 
 /**
- *
+ * Sort form token filter factory.
  */
 public class SortformTokenFilterFactory extends AbstractTokenFilterFactory {
 

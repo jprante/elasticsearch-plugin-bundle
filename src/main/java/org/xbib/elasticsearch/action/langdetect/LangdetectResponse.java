@@ -15,7 +15,7 @@ import java.util.List;
 import static org.elasticsearch.rest.RestStatus.OK;
 
 /**
- *
+ * Language detection response.
  */
 public class LangdetectResponse extends ActionResponse implements StatusToXContentObject {
 

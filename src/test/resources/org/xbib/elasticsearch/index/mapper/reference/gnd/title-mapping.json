@@ -1692,9 +1692,7 @@
                 "properties": {
                     "identifierOBV": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     }
                 }
@@ -1703,9 +1701,7 @@
                 "properties": {
                     "identifierOCLC": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     }
                 }
@@ -1714,9 +1710,7 @@
                 "properties": {
                     "standardNumber": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     }
                 }
@@ -1731,16 +1725,12 @@
                     },
                     "identifierOther": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "standardNumber": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     }
                 }
@@ -1749,9 +1739,7 @@
                 "properties": {
                     "standardNumber": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     }
                 }
@@ -1760,9 +1748,7 @@
                 "properties": {
                     "identifierForTheRegion": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     }
                 }
@@ -1771,9 +1757,7 @@
                 "properties": {
                     "standardNumber": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     }
                 }
@@ -1782,9 +1766,7 @@
                 "properties": {
                     "identifierSWB": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     }
                 }
@@ -1793,9 +1775,7 @@
                 "properties": {
                     "identifierISSN": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword",
                         "copy_to": [
                             "cql.allIndexes",
@@ -1805,9 +1785,7 @@
                     },
                     "identifierISSNElectronicMedia": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword",
                         "copy_to": [
                             "cql.allIndexes",
@@ -1817,9 +1795,7 @@
                     },
                     "identifierISSNOnline": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword",
                         "copy_to": [
                             "cql.allIndexes",
@@ -1829,9 +1805,7 @@
                     },
                     "identifierISSNOther": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword",
                         "copy_to": [
                             "cql.allIndexes",
@@ -1841,9 +1815,7 @@
                     },
                     "identifierISSNPrint": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword",
                         "copy_to": [
                             "cql.allIndexes",
@@ -1857,9 +1829,7 @@
                 "properties": {
                     "standardNumber": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     }
                 }
@@ -1868,9 +1838,7 @@
                 "properties": {
                     "standardNumber": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     }
                 }
@@ -1879,9 +1847,7 @@
                 "properties": {
                     "identifierZDB": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword",
                         "copy_to": [
                             "cql.allIndexes",
@@ -1902,16 +1868,12 @@
                 "properties": {
                     "language": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "languageSource": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     }
                 }
@@ -1920,9 +1882,7 @@
                 "properties": {
                     "standardNumber": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     }
                 }
@@ -1940,9 +1900,7 @@
                     },
                     "identifierDNB": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "identifierGND": {
@@ -1963,9 +1921,7 @@
                     },
                     "identifierZDB": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "musicDate": {
@@ -1976,9 +1932,7 @@
                     },
                     "musicIdentifier": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword",
                         "copy_to": [
                             "dc.identifier"
@@ -2019,9 +1973,7 @@
                 "properties": {
                     "standardNumber": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     }
                 }
@@ -2033,37 +1985,27 @@
                     },
                     "access": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "accessmode": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "accessnumber": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "compression": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "contact": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "controlnumber": {
@@ -2071,128 +2013,92 @@
                     },
                     "electronicname": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "format": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "hostname": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "hoursaccess": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "instruction": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "label": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "locationofhost": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "nonpublicnote": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "password": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "path": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "persistentidentifier": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "port": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "prefix": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "processor": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "publicnote": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "relatedto": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "size": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "uri": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     }
                 }
@@ -2317,9 +2223,7 @@
                     },
                     "identifierZDB": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "personBio": {
@@ -2331,9 +2235,7 @@
                     },
                     "personIdentifier": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword",
                         "copy_to": [
                             "dc.identifier"
@@ -2378,9 +2280,7 @@
                     },
                     "identifierDNB": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "identifierGND": {
@@ -2398,9 +2298,7 @@
                     },
                     "identifierZDB": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "personBio": {
@@ -2409,9 +2307,7 @@
                     },
                     "personIdentifier": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword",
                         "copy_to": [
                             "dc.identifier"
@@ -2451,9 +2347,7 @@
                     },
                     "identifierDNB": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "identifierGND": {
@@ -2471,9 +2365,7 @@
                     },
                     "identifierZDB": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "k": {
@@ -2488,9 +2380,7 @@
                     },
                     "personIdentifier": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword",
                         "copy_to": [
                             "dc.identifier"
@@ -2532,9 +2422,7 @@
                 "properties": {
                     "identifierDNB": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "identifierGND": {
@@ -2552,9 +2440,7 @@
                     },
                     "identifierZDB": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "personBio": {
@@ -2566,9 +2452,7 @@
                     },
                     "personIdentifier": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword",
                         "copy_to": [
                             "dc.identifier"
@@ -2604,9 +2488,7 @@
                 "properties": {
                     "personIdentifier": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword",
                         "copy_to": [
                             "dc.identifier"
@@ -2621,9 +2503,7 @@
                     },
                     "identifierDNB": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "identifierGND": {
@@ -2641,9 +2521,7 @@
                     },
                     "identifierZDB": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "k": {
@@ -2651,16 +2529,12 @@
                     },
                     "personBio": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "personIdentifier": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword",
                         "copy_to": [
                             "dc.identifier"
@@ -2806,9 +2680,7 @@
                     },
                     "identifierDNB": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "identifierGND": {
@@ -2835,9 +2707,7 @@
                     },
                     "identifierZDB": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword"
                     },
                     "subjectAddendum": {
@@ -2899,9 +2769,7 @@
                     },
                     "subjectIdentifier": {
                         "type": "text",
-                        "norms": {
-                            "enabled": false
-                        },
+                        "norms": false,
                         "analyzer": "keyword",
                         "copy_to": [
                             "dc.identifier"

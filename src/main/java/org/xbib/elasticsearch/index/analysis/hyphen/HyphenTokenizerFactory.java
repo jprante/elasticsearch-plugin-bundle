@@ -8,7 +8,7 @@ import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenizerFactory;
 
 /**
- *
+ * Hyphen tokenizer factory.
  */
 public class HyphenTokenizerFactory extends AbstractTokenizerFactory {
 

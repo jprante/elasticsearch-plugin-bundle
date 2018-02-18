@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 /**
- *
+ * Decompound token filter.
  */
 public class DecompoundTokenFilter extends TokenFilter {
 
@@ -74,9 +74,7 @@ public class DecompoundTokenFilter extends TokenFilter {
 
     protected boolean decompound() {
         String term = new String(termAtt.buffer(), 0, termAtt.length());
-        for (String s : decomp.decompound(term)) {
-            tokens.add(s);
-        }
+        tokens.addAll(decomp.decompound(term));
         return tokens.isEmpty();
     }
 

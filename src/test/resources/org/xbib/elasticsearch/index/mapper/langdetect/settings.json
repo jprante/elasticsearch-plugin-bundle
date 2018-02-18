@@ -1,22 +1,9 @@
 {
   "index" : {
-    "analysis" : {
-      "analyzer" : {
-        "default" : {
-          "type" : "standard"
-        }
-      }
-    }
-  },
-  "mappings" : {
-    "someType" : {
-      "properties" : {
-        "someField":{
-          "type" : "langdetect",
-          "languages" : [ "de", "en", "fr", "nl", "it" ],
-          "map" : {
-            "de" : "ger"
-          }
+    "analysis": {
+      "analyzer": {
+        "default": {
+          "type": "standard"
         }
       }
     }

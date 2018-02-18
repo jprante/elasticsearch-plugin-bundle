@@ -3,20 +3,29 @@ package org.xbib.elasticsearch.index.analysis.lemmatize;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.junit.Test;
-import org.xbib.elasticsearch.NodeTestUtils;
+import org.elasticsearch.plugins.Plugin;
+import org.elasticsearch.test.ESSingleNodeTestCase;
+import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
+
+import java.util.Collection;
+import java.util.Collections;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
-import static org.junit.Assert.assertEquals;
 
 /**
+ * Lemmatize search tests.
  */
-public class LemmatizeSearchTests extends NodeTestUtils {
+public class LemmatizeSearchTests extends ESSingleNodeTestCase {
 
-    @Test
+    /** The plugin classes that should be added to the node. */
+    @Override
+    protected Collection<Class<? extends Plugin>> getPlugins() {
+        return Collections.singletonList(BundlePlugin.class);
+    }
+
     public void testFstExpansionIndexAndSearchAnalyzer() throws Exception {
-        startCluster();
-        try {
+        //startCluster();
+        //try {
             Settings settings = Settings.builder()
                     .put("index.analysis.analyzer.myanalyzer.type", "custom")
                     .put("index.analysis.analyzer.myanalyzer.tokenizer", "standard")
@@ -67,8 +76,8 @@ public class LemmatizeSearchTests extends NodeTestUtils {
                     .execute().actionGet();
             assertEquals(1L, searchResponse.getHits().getTotalHits());
 
-        } finally {
-            stopCluster();
-        }
+        //} finally {
+        //    stopCluster();
+        //}
     }
 }

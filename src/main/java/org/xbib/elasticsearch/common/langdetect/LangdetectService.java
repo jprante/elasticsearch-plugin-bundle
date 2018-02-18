@@ -7,8 +7,11 @@ import org.elasticsearch.common.settings.Settings;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -16,12 +19,11 @@ import java.util.Random;
 import java.util.regex.Pattern;
 
 /**
- *
+ * Language detection service.
  */
 public class LangdetectService {
 
     private static final String[] DEFAULT_LANGUAGES = new String[]{
-            // "af",
             "ar",
             "bg",
             "bn",
@@ -43,14 +45,11 @@ public class LangdetectService {
             "id",
             "it",
             "ja",
-            // "kn",
             "ko",
             "lt",
             "lv",
             "mk",
             "ml",
-            // "mr",
-            // "ne",
             "nl",
             "no",
             "pa",
@@ -58,12 +57,8 @@ public class LangdetectService {
             "pt",
             "ro",
             "ru",
-            // "sk",
-            //"sl",
-            // "so",
             "sq",
             "sv",
-            // "sw",
             "ta",
             "te",
             "th",
@@ -75,19 +70,60 @@ public class LangdetectService {
             "zh-cn",
             "zh-tw"
     };
+
+    private static final String[] DEFAULT_LANGUAGES_SHORT_TEXT = {
+            "bg",
+            "bn",
+            "cs",
+            "da",
+            "de",
+            "en",
+            "es",
+            "fa",
+            "fi",
+            "fr",
+            "gu",
+            "hi",
+            "hr",
+            "hu",
+            "id",
+            "it",
+            "lt",
+            "lv",
+            "mk",
+            "nl",
+            "no",
+            "pa",
+            "pl",
+            "pt",
+            "ro",
+            "sv",
+            "ta",
+            "te",
+            "tr",
+            "uk",
+            "ur",
+            "vi"
+    };
+
     private static final Logger logger = LogManager.getLogger(LangdetectService.class.getName());
+
     private static final Pattern word = Pattern.compile("[\\P{IsWord}]", Pattern.UNICODE_CHARACTER_CLASS);
+
     private static final Settings DEFAULT_SETTINGS = Settings.builder()
-            .putArray("languages", DEFAULT_LANGUAGES)
+            .putList("languages", DEFAULT_LANGUAGES)
+            .putList("languages_short_text", DEFAULT_LANGUAGES_SHORT_TEXT)
             .build();
+
     private final Settings settings;
+
+    private final String profile;
+
     private Map<String, double[]> wordLangProbMap = new HashMap<>();
 
     private List<String> langlist = new LinkedList<>();
 
     private Map<String, String> langmap = new HashMap<>();
-
-    private String profile;
 
     private double alpha;
 
@@ -130,38 +166,40 @@ public class LangdetectService {
 
     private void load(Settings settings) {
         if (settings.equals(Settings.EMPTY)) {
+            // empty service
             return;
         }
-        try {
-            String[] keys = settings.getAsArray("languages");
-            if (keys.length == 0) {
-                keys = DEFAULT_LANGUAGES;
+        List<String> keys = "short-text".equals(profile) ?
+                settings.getAsList("languages_short_text", Arrays.asList(DEFAULT_LANGUAGES_SHORT_TEXT)) :
+                settings.getAsList("languages", Arrays.asList(DEFAULT_LANGUAGES));
+        int index = 0;
+        int size = keys.size();
+        for (String key : keys) {
+            try {
+                loadProfileFromResource(key, index++, size);
+            } catch (Exception e) {
+                logger.error(e.getMessage() + " key=" + key + " profile=" + profile, e);
+                //throw new ElasticsearchException(e.getMessage() + " key=" + key + " profile=" + profile);
             }
-            int index = 0;
-            int size = keys.length;
-            for (String key : keys) {
-                if (key != null && !key.isEmpty()) {
-                    loadProfileFromResource(key, index++, size);
-                }
-            }
-            logger.debug("language detection service installed for {}", langlist);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw new ElasticsearchException(e.getMessage() + " profile=" + profile);
         }
+        logger.debug("language detection service installed for {}", langlist);
         try {
             // map by settings
-            Settings map = Settings.builder().put(settings.getByPrefix("map.")).build();
-            if (map.getAsMap().isEmpty()) {
+            Settings settings1 = Settings.builder().put(settings.getByPrefix("map.")).build();
+            Map<String, String> map = new LinkedHashMap<>();
+            if (settings1.isEmpty()) {
                 // is in "map" a resource name?
                 String s = settings.get("map") != null ?
                         settings.get("map") : this.profile + "language.json";
                 InputStream in = getClass().getResourceAsStream(s);
                 if (in != null) {
-                    map = Settings.builder().loadFromStream(s, in).build();
+                    settings1 = Settings.builder().loadFromStream(s, in, false).build();
                 }
             }
-            this.langmap = map.getAsMap();
+            for (String key : settings1.keySet()) {
+                map.put(key, settings1.get(key));
+            }
+            this.langmap = map;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new ElasticsearchException(e.getMessage());
@@ -186,7 +224,7 @@ public class LangdetectService {
         String thisProfile = "/langdetect/" + (this.profile != null ? this.profile + "/" : "");
         InputStream in = getClass().getResourceAsStream(thisProfile + resource);
         if (in == null) {
-            throw new IOException("profile '" + resource + "' not found");
+            throw new IOException("resource for profile '" + resource + "' not found");
         }
         LangProfile langProfile = new LangProfile();
         langProfile.read(in);
@@ -229,7 +267,7 @@ public class LangdetectService {
         return languages.subList(0, Math.min(languages.size(), settings.getAsInt("max", languages.size())));
     }
 
-    private double[] detectBlock(List<String> list, String string) throws LanguageDetectionException {
+    private double[] detectBlock(List<String> list, String string) {
         // clean all non-work characters from text
         String text = string.replaceAll(word.pattern(), " ");
         extractNGrams(list, text);
@@ -237,7 +275,7 @@ public class LangdetectService {
         if (list.isEmpty()) {
             return langprob;
         }
-        Random rand = new Random();
+        Random rand = new SecureRandom();
         Long seed = 0L;
         rand.setSeed(seed);
         for (int t = 0; t < nTrial; ++t) {

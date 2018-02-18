@@ -4,7 +4,7 @@ import org.elasticsearch.common.inject.AbstractModule;
 import org.xbib.elasticsearch.common.reference.ReferenceService;
 
 /**
- *
+ * Reference field mapper module.
  */
 public class ReferenceMapperModule extends AbstractModule {
 

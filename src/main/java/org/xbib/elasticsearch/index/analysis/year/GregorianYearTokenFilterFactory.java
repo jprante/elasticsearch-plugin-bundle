@@ -7,7 +7,7 @@ import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 
 /**
- *
+ * Gregorian year token filter factory.
  */
 public class GregorianYearTokenFilterFactory extends AbstractTokenFilterFactory {
 

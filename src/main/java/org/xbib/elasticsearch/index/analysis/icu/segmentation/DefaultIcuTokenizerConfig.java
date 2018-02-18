@@ -56,9 +56,9 @@ public class DefaultIcuTokenizerConfig implements IcuTokenizerConfig {
     private static final BreakIterator cjkBreakIterator = BreakIterator.getWordInstance(ULocale.ROOT);
     // the same as ROOT, except no dictionary segmentation for cjk
     private static final BreakIterator defaultBreakIterator =
-            readBreakIterator(DefaultIcuTokenizerConfig.class.getClassLoader(), "icu/Default.brk");
+            readBreakIterator("/icu/Default.brk");
     private static final BreakIterator myanmarSyllableIterator =
-            readBreakIterator(DefaultIcuTokenizerConfig.class.getClassLoader(), "icu/MyanmarSyllable.brk");
+            readBreakIterator("/icu/MyanmarSyllable.brk");
 
     private final boolean cjkAsWords;
     private final boolean myanmarAsWords;
@@ -79,8 +79,8 @@ public class DefaultIcuTokenizerConfig implements IcuTokenizerConfig {
         this.myanmarAsWords = myanmarAsWords;
     }
 
-    private static RuleBasedBreakIterator readBreakIterator(ClassLoader classLoader, String resourceName) {
-        try (InputStream inputStream = classLoader.getResource(resourceName).openStream()) {
+    private static RuleBasedBreakIterator readBreakIterator(String resourceName) {
+        try (InputStream inputStream = DefaultIcuTokenizerConfig.class.getResourceAsStream(resourceName)) {
             return RuleBasedBreakIterator.getInstanceFromCompiledRules(inputStream);
         } catch (IOException e) {
             throw new UncheckedIOException("unable to load resource " + resourceName + " " + e.getMessage(), e);

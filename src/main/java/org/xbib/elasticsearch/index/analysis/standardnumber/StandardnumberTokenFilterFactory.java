@@ -9,7 +9,7 @@ import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapper;
 import org.xbib.elasticsearch.common.standardnumber.StandardnumberService;
 
 /**
- *
+ * Standard number token filter factory.
  */
 public class StandardnumberTokenFilterFactory extends AbstractTokenFilterFactory {
 

@@ -18,7 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
+ * Factory for {@link WordDelimiterFilter}.
  */
 public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory implements WordDelimiterFlags {
 

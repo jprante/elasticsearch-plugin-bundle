@@ -1,6 +1,7 @@
 package org.xbib.elasticsearch.index.analysis.worddelimiter;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.MockTokenizer;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
@@ -8,9 +9,11 @@ import org.apache.lucene.analysis.core.StopFilter;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.junit.Test;
-import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
-import org.xbib.elasticsearch.index.analysis.MockTokenizer;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.Index;
+import org.elasticsearch.test.ESTestCase;
+import org.elasticsearch.test.ESTokenStreamTestCase;
+import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -18,8 +21,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.xbib.elasticsearch.MapperTestUtils.tokenFilterFactory;
-import static org.xbib.elasticsearch.MapperTestUtils.tokenizerFactory;
 import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.ALL_PARTS_AT_SAME_POSITION;
 import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.CATENATE_ALL;
 import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.CATENATE_WORDS;
@@ -30,16 +31,22 @@ import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterF
 import static org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2.STEM_ENGLISH_POSSESSIVE;
 
 /**
- *
+ * Word delimiter filter 2 tests.
  */
-public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
+public class WordDelimiterFilter2Tests extends ESTokenStreamTestCase {
 
-    @Test
-    public void testOffsets() throws IOException {
-        String resource = "org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json";
-        Tokenizer tokenizer = tokenizerFactory(resource, "keyword").create();
+    public void testOffsets() throws Exception {
+        String resource = "/org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json";
+        Settings settings = Settings.builder()
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+
+        Tokenizer tokenizer = analysis.tokenizer.get("keyword").create();
         tokenizer.setReader(new StringReader("foo-bar"));
-        TokenStream ts = tokenFilterFactory(resource, "wd").create(tokenizer);
+        TokenStream ts = analysis.tokenFilter.get("wd").create(tokenizer);
 
         assertTokenStreamContents(ts,
                 new String[]{"foo", "bar", "foobar"},
@@ -48,12 +55,17 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
                 null, null, null, null, false);
     }
 
-    @Test
     public void testOffsetChange() throws Exception {
-        String resource = "org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json";
-        Tokenizer tokenizer = tokenizerFactory(resource, "keyword").create();
+        String resource = "/org/xbib/elasticsearch/index/analysis/worddelimiter/worddelimiter.json";
+        Settings settings = Settings.builder()
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        Tokenizer tokenizer = analysis.tokenizer.get("keyword").create();
         tokenizer.setReader(new StringReader("übelkeit"));
-        TokenStream ts = tokenFilterFactory(resource,"wd").create(tokenizer);
+        TokenStream ts = analysis.tokenFilter.get("wd").create(tokenizer);
 
         assertTokenStreamContents(ts,
                 new String[]{"übelkeit" },
@@ -69,7 +81,6 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
         assertTokenStreamContents(wdf, output);
     }
 
-    @Test
     public void testSplits() throws Exception {
         doSplit("basic-split", "basic", "split");
         doSplit("camelCase", "camel", "Case");
@@ -116,7 +127,6 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
     /*
      * Test option that allows disabling the special "'s" stemming, instead treating the single quote like other delimiters.
      */
-    @Test
     public void testPossessives() throws Exception {
         doSplitPossessive(1, "ra's", "ra");
         doSplitPossessive(0, "ra's", "ra", "s");
@@ -129,7 +139,7 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
         private CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
         private PositionIncrementAttribute posIncAtt = addAttribute(PositionIncrementAttribute.class);
 
-        protected LargePosIncTokenFilter(TokenStream input) {
+        LargePosIncTokenFilter(TokenStream input) {
             super(input);
         }
 
@@ -146,9 +156,9 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
         }
     }
 
-    @Test
     public void testPositionIncrements() throws Exception {
-        final int flags = GENERATE_WORD_PARTS | GENERATE_NUMBER_PARTS | CATENATE_ALL | SPLIT_ON_CASE_CHANGE | SPLIT_ON_NUMERICS | STEM_ENGLISH_POSSESSIVE;
+        final int flags = GENERATE_WORD_PARTS | GENERATE_NUMBER_PARTS | CATENATE_ALL | SPLIT_ON_CASE_CHANGE |
+                SPLIT_ON_NUMERICS | STEM_ENGLISH_POSSESSIVE;
         final Set<String> protWords = new HashSet<String>(Collections.singletonList("NUTCH"));
 
     /* analyzer that uses whitespace + wdf */
@@ -289,9 +299,9 @@ public class WordDelimiterFilter2Tests extends BaseTokenStreamTest {
                 false);
     }
 
-    @Test
     public void testPositionIncrementsCollapsePositions() throws Exception {
-        final int flags = GENERATE_WORD_PARTS | GENERATE_NUMBER_PARTS | CATENATE_ALL | SPLIT_ON_CASE_CHANGE | SPLIT_ON_NUMERICS | STEM_ENGLISH_POSSESSIVE | ALL_PARTS_AT_SAME_POSITION;
+        final int flags = GENERATE_WORD_PARTS | GENERATE_NUMBER_PARTS | CATENATE_ALL | SPLIT_ON_CASE_CHANGE |
+                SPLIT_ON_NUMERICS | STEM_ENGLISH_POSSESSIVE | ALL_PARTS_AT_SAME_POSITION;
         final Set<String> protWords = new HashSet<String>(Collections.singletonList("NUTCH"));
 
     /* analyzer that uses whitespace + wdf */

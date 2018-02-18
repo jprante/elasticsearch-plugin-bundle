@@ -1,44 +1,46 @@
 package org.xbib.elasticsearch.index.analysis.icu;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.CharFilterFactory;
 import org.elasticsearch.index.analysis.NamedAnalyzer;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.index.analysis.TokenizerFactory;
-import org.junit.Test;
-import org.xbib.elasticsearch.MapperTestUtils;
+import org.elasticsearch.test.ESTestCase;
 import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizerFactory;
+import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.xbib.elasticsearch.MapperTestUtils.*;
 
 /**
- *
+ * ICU analysis tests
  */
-public class IcuAnalysisTests {
+public class IcuAnalysisTests extends ESTestCase {
 
-    @Test
     public void testDefaultsIcuAnalysis() throws IOException {
 
-        CharFilterFactory charFilterFactory = charFilterFactory("icu_normalizer");
+        TestAnalysis analysis = createTestAnalysis(new Index("test", "_na_"), Settings.EMPTY,
+                new BundlePlugin(Settings.EMPTY));
+
+        CharFilterFactory charFilterFactory = analysis.charFilter.get("icu_normalizer");
         assertThat(charFilterFactory, instanceOf(IcuNormalizerCharFilterFactory.class));
 
-        TokenizerFactory tf = tokenizerFactory("icu_tokenizer");
+        TokenizerFactory tf = analysis.tokenizer.get("icu_tokenizer");
         assertThat(tf, instanceOf(IcuTokenizerFactory.class));
 
-        TokenFilterFactory filterFactory = tokenFilterFactory("icu_normalizer");
+        TokenFilterFactory filterFactory = analysis.tokenFilter.get("icu_normalizer");
         assertThat(filterFactory, instanceOf(IcuNormalizerTokenFilterFactory.class));
 
-        filterFactory = tokenFilterFactory("icu_folding");
+        filterFactory = analysis.tokenFilter.get("icu_folding");
         assertThat(filterFactory, instanceOf(IcuFoldingTokenFilterFactory.class));
 
-        filterFactory = tokenFilterFactory("icu_transform");
+        filterFactory = analysis.tokenFilter.get("icu_transform");
         assertThat(filterFactory, instanceOf(IcuTransformTokenFilterFactory.class));
 
-        Analyzer analyzer = MapperTestUtils.analyzer( "icu_collation");
+        Analyzer analyzer = analysis.indexAnalyzers.get( "icu_collation");
         assertThat(analyzer, instanceOf(NamedAnalyzer.class));
     }
 }

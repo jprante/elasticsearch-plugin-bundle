@@ -24,22 +24,35 @@ import org.xbib.elasticsearch.common.langdetect.LanguageDetectionException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.elasticsearch.common.xcontent.support.XContentMapValues.lenientNodeBooleanValue;
-
 /**
- *
+ * Language detection field mapper.
  */
 public class LangdetectMapper extends TextFieldMapper {
 
     private static final Logger logger = LogManager.getLogger(LangdetectMapper.class.getName());
 
-    public static final String MAPPER_TYPE = "langdetect";
+    public static final String CONTENT_TYPE = "langdetect";
+
+    public static final MappedFieldType FIELD_TYPE = new TextFieldType();
+
+    public static class Defaults {
+
+        static {
+            FIELD_TYPE.setStored(true);
+            FIELD_TYPE.setOmitNorms(true);
+            FIELD_TYPE.setIndexAnalyzer(Lucene.KEYWORD_ANALYZER);
+            FIELD_TYPE.setSearchAnalyzer(Lucene.KEYWORD_ANALYZER);
+            FIELD_TYPE.setName(CONTENT_TYPE);
+            FIELD_TYPE.freeze();
+        }
+    }
 
     private final LangdetectService langdetectService;
 
@@ -65,7 +78,7 @@ public class LangdetectMapper extends TextFieldMapper {
 
     @Override
     protected String contentType() {
-        return MAPPER_TYPE;
+        return CONTENT_TYPE;
     }
 
     @Override
@@ -139,10 +152,7 @@ public class LangdetectMapper extends TextFieldMapper {
                 builder.field("search_quote_analyzer", searchQuoteAnalyzer.name());
             }
         }
-        Map<String, Object> map = langdetectService.getSettings().getAsStructuredMap();
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            builder.field(entry.getKey(), entry.getValue());
-        }
+        langdetectService.getSettings().toXContent(builder, params);
         languageTo.toXContent(builder, params);
     }
 
@@ -177,20 +187,6 @@ public class LangdetectMapper extends TextFieldMapper {
         }
     }
 
-    public static class Defaults {
-
-        public static final TextFieldType LANG_FIELD_TYPE = new TextFieldType();
-
-        static {
-            LANG_FIELD_TYPE.setStored(true);
-            LANG_FIELD_TYPE.setOmitNorms(true);
-            LANG_FIELD_TYPE.setIndexAnalyzer(Lucene.KEYWORD_ANALYZER);
-            LANG_FIELD_TYPE.setSearchAnalyzer(Lucene.KEYWORD_ANALYZER);
-            LANG_FIELD_TYPE.setName(MAPPER_TYPE);
-            LANG_FIELD_TYPE.freeze();
-        }
-    }
-
     public static class Builder extends FieldMapper.Builder<Builder, TextFieldMapper> {
 
         protected int positionIncrementGap = -1;
@@ -200,7 +196,7 @@ public class LangdetectMapper extends TextFieldMapper {
         protected Settings.Builder settingsBuilder = Settings.builder();
 
         public Builder(String name) {
-            super(name, Defaults.LANG_FIELD_TYPE, Defaults.LANG_FIELD_TYPE);
+            super(name, FIELD_TYPE, FIELD_TYPE);
             this.builder = this;
         }
 
@@ -272,13 +268,14 @@ public class LangdetectMapper extends TextFieldMapper {
 
         public Builder map(Map<String, Object> map) {
             for (Map.Entry<String, Object> entry : map.entrySet()) {
-                settingsBuilder.put("map." + entry.getKey(), entry.getValue());
+                settingsBuilder.put("map." + entry.getKey(), (String) entry.getValue());
             }
             return this;
         }
 
         public Builder languages(String[] languages) {
-            settingsBuilder.putArray("languages", languages);
+            List<String> list = Arrays.asList(languages);
+            settingsBuilder.putList("languages", list);
             return this;
         }
 
@@ -435,7 +432,7 @@ public class LangdetectMapper extends TextFieldMapper {
         }
 
         private static boolean parseStore(String store) throws MapperParsingException {
-            return !"no".equals(store) && ("yes".equals(store) || lenientNodeBooleanValue(null, store, false));
+            return !"no".equals(store) && ("yes".equals(store));
         }
     }
 

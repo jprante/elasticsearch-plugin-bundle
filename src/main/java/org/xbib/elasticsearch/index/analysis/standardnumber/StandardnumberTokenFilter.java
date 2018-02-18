@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- *
+ * Standard number token filter.
  */
 public class StandardnumberTokenFilter extends TokenFilter {
 

@@ -11,7 +11,7 @@ import org.elasticsearch.transport.TransportService;
 import org.xbib.elasticsearch.common.standardnumber.StandardnumberService;
 
 /**
- *
+ * Transport action for ISBN format action.
  */
 public class TransportISBNFormatAction extends TransportAction<ISBNFormatRequest, ISBNFormatResponse> {
 

@@ -24,11 +24,17 @@ public final class IcuTokenizer extends Tokenizer {
     private static final int IOBUFFER = 4096;
 
     private final char[] buffer = new char[IOBUFFER];
+
     private final CompositeBreakIterator breaker;
+
     private final IcuTokenizerConfig config;
+
     private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
+
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
+
     private final TypeAttribute typeAtt = addAttribute(TypeAttribute.class);
+
     private final ScriptAttribute scriptAtt = addAttribute(ScriptAttribute.class);
     /**
      * True length of text in the buffer.
@@ -79,22 +85,6 @@ public final class IcuTokenizer extends Tokenizer {
         breaker = new CompositeBreakIterator(config);
     }
 
-    private static int read(Reader input, char[] buffer, int offset, int length) throws IOException {
-        if (length < 0) {
-            throw new IllegalArgumentException("length must not be negative: " + length);
-        }
-        int remaining = length;
-        while (remaining > 0) {
-            int location = length - remaining;
-            int count = input.read(buffer, offset + location, remaining);
-            if (-1 == count) {
-                break;
-            }
-            remaining -= count;
-        }
-        return length - remaining;
-    }
-
     @Override
     public boolean incrementToken() throws IOException {
         clearAttributes();
@@ -136,6 +126,18 @@ public final class IcuTokenizer extends Tokenizer {
         offsetAtt.setOffset(correctOffset(finalOffset), correctOffset(finalOffset));
     }
 
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof IcuTokenizer &&
+                breaker.equals(((IcuTokenizer) object).breaker) &&
+                config.equals(((IcuTokenizer) object).config);
+    }
+
+    @Override
+    public int hashCode() {
+        return breaker.hashCode() ^ config.hashCode();
+    }
+
     /**
      * Returns the last unambiguous break position in the text.
      *
@@ -163,9 +165,11 @@ public final class IcuTokenizer extends Tokenizer {
         int requested = buffer.length - leftover;
         int returned = read(input, buffer, leftover, requested);
         length = returned + leftover;
-        if (returned < requested) /* reader has been emptied, process the rest */ {
+        if (returned < requested)  {
+            /* reader has been emptied, process the rest */
             usableLength = length;
-        } else { /* still more data to be read, find a safe-stopping place */
+        } else {
+            /* still more data to be read, find a safe-stopping place */
             usableLength = findSafeEnd();
             if (usableLength < 0) {
                 usableLength = length; /*
@@ -184,15 +188,15 @@ public final class IcuTokenizer extends Tokenizer {
     private boolean incrementTokenBuffer() {
         int start = breaker.current();
         if (start == BreakIterator.DONE) {
-            return false;
+            throw new IllegalStateException();
         }
         // find the next set of boundaries, skipping over non-tokens (rule status 0)
         int end = breaker.next();
-        while (start != BreakIterator.DONE && breaker.getRuleStatus() == 0) {
+        while (end != BreakIterator.DONE && breaker.getRuleStatus() == 0) {
             start = end;
             end = breaker.next();
         }
-        if (start == BreakIterator.DONE) {
+        if (end == BreakIterator.DONE) {
             return false;
         }
         termAtt.copyBuffer(buffer, start, end - start);
@@ -202,15 +206,19 @@ public final class IcuTokenizer extends Tokenizer {
         return true;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        return object instanceof IcuTokenizer &&
-                breaker.equals(((IcuTokenizer) object).breaker) &&
-                config.equals(((IcuTokenizer) object).config);
-    }
-
-    @Override
-    public int hashCode() {
-        return breaker.hashCode() ^ config.hashCode();
+    private static int read(Reader input, char[] buffer, int offset, int length) throws IOException {
+        if (length < 0) {
+            throw new IllegalArgumentException("length must not be negative: " + length);
+        }
+        int remaining = length;
+        while (remaining > 0) {
+            int location = length - remaining;
+            int count = input.read(buffer, offset + location, remaining);
+            if (-1 == count) {
+                break;
+            }
+            remaining -= count;
+        }
+        return length - remaining;
     }
 }

@@ -4,7 +4,7 @@ import org.elasticsearch.action.ActionRequestBuilder;
 import org.elasticsearch.client.ElasticsearchClient;
 
 /**
- *
+ * Language detection request builder.
  */
 public class LangdetectRequestBuilder extends ActionRequestBuilder<LangdetectRequest, LangdetectResponse, LangdetectRequestBuilder> {
 

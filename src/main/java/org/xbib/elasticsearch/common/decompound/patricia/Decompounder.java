@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- *
+ * Decompounder.
  */
 public class Decompounder {
 

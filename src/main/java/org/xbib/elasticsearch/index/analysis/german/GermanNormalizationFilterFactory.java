@@ -8,7 +8,7 @@ import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 
 /**
- *
+ * German normalization filter factory.
  */
 public class GermanNormalizationFilterFactory extends AbstractTokenFilterFactory {
 

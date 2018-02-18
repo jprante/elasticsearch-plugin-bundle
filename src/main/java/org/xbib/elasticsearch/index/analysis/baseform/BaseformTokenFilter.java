@@ -13,7 +13,7 @@ import java.nio.charset.CharacterCodingException;
 import java.util.LinkedList;
 
 /**
- *
+ * Base form tokern filter.
  */
 public class BaseformTokenFilter extends TokenFilter {
 

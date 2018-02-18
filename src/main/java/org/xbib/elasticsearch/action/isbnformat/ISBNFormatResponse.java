@@ -11,7 +11,7 @@ import java.io.IOException;
 import static org.elasticsearch.rest.RestStatus.OK;
 
 /**
- *
+ * ISBN format response.
  */
 public class ISBNFormatResponse extends ActionResponse implements StatusToXContentObject {
 

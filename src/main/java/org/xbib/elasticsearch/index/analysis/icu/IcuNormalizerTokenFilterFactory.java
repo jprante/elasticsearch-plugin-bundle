@@ -25,9 +25,11 @@ public class IcuNormalizerTokenFilterFactory extends AbstractTokenFilterFactory 
     public IcuNormalizerTokenFilterFactory(IndexSettings indexSettings, Environment environment, String name,
                                            Settings settings) {
         super(indexSettings, name, settings);
+
         Normalizer2 base = Normalizer2.getInstance(getNormalizationResource(settings),
                 getNormalizationName(settings), getNormalizationMode(settings));
-        String unicodeSetFilter = settings.get("unicodeSetFilter");
+
+        String unicodeSetFilter = settings.get("unicode_set_filter");
         this.normalizer = unicodeSetFilter != null ?
                 new FilteredNormalizer2(base, new UnicodeSet(unicodeSetFilter).freeze()) : base;
     }
@@ -43,16 +45,20 @@ public class IcuNormalizerTokenFilterFactory extends AbstractTokenFilterFactory 
     }
 
     protected InputStream getNormalizationResource(Settings settings) {
-        return null;
+        InputStream inputStream = null;
+        if ("utr30".equals(getNormalizationName(settings))) {
+            inputStream = getClass().getResourceAsStream("/icu/folding/utr30.nrm");
+        }
+        return inputStream;
     }
 
     protected String getNormalizationName(Settings settings) {
-        return settings.get("name", "nfkc_cf");
+        return settings.get("normalization_name", "nfkc_cf");
     }
 
     protected Normalizer2.Mode getNormalizationMode(Settings settings) {
         Normalizer2.Mode normalizationMode;
-        switch (settings.get("mode", "compose")) {
+        switch (settings.get("normalization_mode", "compose")) {
             case "compose_contiguous":
                 normalizationMode = Normalizer2.Mode.COMPOSE_CONTIGUOUS;
                 break;

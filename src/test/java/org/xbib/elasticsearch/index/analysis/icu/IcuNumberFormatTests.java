@@ -2,24 +2,21 @@ package org.xbib.elasticsearch.index.analysis.icu;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
-import org.junit.Test;
+import org.elasticsearch.test.ESTestCase;
+import org.elasticsearch.test.ESTokenStreamTestCase;
+import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
-import java.io.IOException;
 import java.io.StringReader;
 
-import static org.junit.Assert.*;
-import static org.xbib.elasticsearch.MapperTestUtils.tokenFilterFactory;
-import static org.xbib.elasticsearch.MapperTestUtils.tokenizerFactory;
-
 /**
- *
+ * ICU number format tests.
  */
-public class IcuNumberFormatTests {
+public class IcuNumberFormatTests extends ESTokenStreamTestCase {
 
-    @Test
-    public void testGermanNumberFormat() throws IOException {
+    public void testGermanNumberFormat() throws Exception {
 
         String source = "Muss Rudi Völler fünftausend oder 10000 EUR Strafe zahlen?";
 
@@ -34,16 +31,21 @@ public class IcuNumberFormatTests {
                 "Strafe",
                 "zahlen"
         };
-        String resource = "org/xbib/elasticsearch/index/analysis/icu/icu_numberformat.json";
-        Tokenizer tokenizer = tokenizerFactory(resource, "my_tokenizer").create();
+        String resource = "/org/xbib/elasticsearch/index/analysis/icu/icu_numberformat.json";
+        Settings settings = Settings.builder()
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        Tokenizer tokenizer = analysis.tokenizer.get("my_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
-        TokenFilterFactory tokenFilter = tokenFilterFactory(resource, "spellout_de");
+        TokenFilterFactory tokenFilter = analysis.tokenFilter.get("spellout_de");
         TokenStream tokenStream = tokenFilter.create(tokenizer);
-        assertSimpleTSOutput(tokenStream, expected);
+        assertTokenStreamContents(tokenStream, expected);
     }
 
-    @Test
-    public void testAmericanEnglish() throws IOException {
+    public void testAmericanEnglish() throws Exception {
 
         String source = "You will never get 100,000 US dollars of salary per year.";
 
@@ -60,25 +62,17 @@ public class IcuNumberFormatTests {
                 "per",
                 "year"
         };
-        String resource = "org/xbib/elasticsearch/index/analysis/icu/icu_numberformat.json";
-        Tokenizer tokenizer = tokenizerFactory(resource, "my_tokenizer").create();
+        String resource = "/org/xbib/elasticsearch/index/analysis/icu/icu_numberformat.json";
+        Settings settings = Settings.builder()
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        Tokenizer tokenizer = analysis.tokenizer.get("my_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
-        TokenFilterFactory tokenFilter = tokenFilterFactory(resource,"spellout_en");
+        TokenFilterFactory tokenFilter = analysis.tokenFilter.get("spellout_en");
         TokenStream tokenStream = tokenFilter.create(tokenizer);
-        assertSimpleTSOutput(tokenStream, expected);
-    }
-
-    private void assertSimpleTSOutput(TokenStream stream, String[] expected) throws IOException {
-        stream.reset();
-        CharTermAttribute termAttr = stream.getAttribute(CharTermAttribute.class);
-        assertNotNull(termAttr);
-        int i = 0;
-        while (stream.incrementToken()) {
-            assertTrue(i < expected.length);
-            assertEquals(expected[i], termAttr.toString());
-            i++;
-        }
-        assertEquals(i, expected.length);
-        stream.close();
+        assertTokenStreamContents(tokenStream, expected);
     }
 }

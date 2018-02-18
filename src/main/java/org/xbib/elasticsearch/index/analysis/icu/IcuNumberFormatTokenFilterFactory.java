@@ -8,8 +8,10 @@ import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 
+import java.util.Locale;
+
 /**
- *
+ * ICU number format token filter factory.
  */
 public class IcuNumberFormatTokenFilterFactory extends AbstractTokenFilterFactory {
 
@@ -26,7 +28,7 @@ public class IcuNumberFormatTokenFilterFactory extends AbstractTokenFilterFactor
         super(indexSettings, name, settings);
         this.locale = settings.get("locale") != null ? new ULocale(settings.get("locale")) : ULocale.getDefault();
         String formatStr = settings.get("format", "SPELLOUT");
-        switch (formatStr.toUpperCase()) {
+        switch (formatStr.toUpperCase(Locale.ROOT)) {
             case "DURATION":
                 format = RuleBasedNumberFormat.DURATION;
                 break;

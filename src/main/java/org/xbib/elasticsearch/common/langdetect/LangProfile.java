@@ -1,8 +1,7 @@
 package org.xbib.elasticsearch.common.langdetect;
 
-import org.elasticsearch.common.xcontent.XContentFactory;
-import org.elasticsearch.common.xcontent.XContentParser;
-import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.common.xcontent.XContentHelper;
+import org.elasticsearch.common.xcontent.json.JsonXContent;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * Language profile.
  */
 public class LangProfile {
 
@@ -68,11 +67,9 @@ public class LangProfile {
 
     @SuppressWarnings("unchecked")
     public void read(InputStream input) throws IOException {
-        XContentParser parser = XContentFactory.xContent(XContentType.JSON).createParser(null, input);
-        Map<String, Object> map = parser.map();
+        Map<String, Object> map = XContentHelper.convertToMap(JsonXContent.jsonXContent, input, true);
         freq = (Map<String, Integer>) map.get("freq");
         name = (String) map.get("name");
         nWords = (List<Integer>) map.get("n_words");
     }
-
 }

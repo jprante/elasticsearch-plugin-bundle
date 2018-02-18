@@ -2,26 +2,18 @@ package org.xbib.elasticsearch.index.analysis.icu;
 
 import com.ibm.icu.text.Normalizer2;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.MockTokenizer;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.KeywordTokenizer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.xbib.elasticsearch.index.analysis.BaseTokenStreamTest;
-import org.xbib.elasticsearch.index.analysis.MockTokenizer;
-
-import java.io.IOException;
+import org.elasticsearch.test.ESTokenStreamTestCase;
 
 /**
- *
+ * ICU normalizer filter tests.
  */
-public class IcuNormalizerFilterTests extends BaseTokenStreamTest {
+public class IcuNormalizerFilterTests extends ESTokenStreamTestCase {
 
-    private static Analyzer a;
-
-    @BeforeClass
-    public static void setUp() throws Exception {
-        a = new Analyzer() {
+    public void testDefaults() throws Exception {
+        Analyzer a = new Analyzer() {
             @Override
             public TokenStreamComponents createComponents(String fieldName) {
                 Tokenizer tokenizer = new MockTokenizer(MockTokenizer.WHITESPACE, false);
@@ -30,15 +22,6 @@ public class IcuNormalizerFilterTests extends BaseTokenStreamTest {
                                 Normalizer2.getInstance(null, "nfkc_cf", Normalizer2.Mode.COMPOSE)));
             }
         };
-    }
-
-    @AfterClass
-    public static void tearDown() throws Exception {
-        a.close();
-    }
-
-    @Test
-    public void testDefaults() throws IOException {
         assertAnalyzesTo(a, "This is a test", new String[] { "this", "is", "a", "test" });
         assertAnalyzesTo(a, "Ruß", new String[] { "russ" });
         assertAnalyzesTo(a, "ΜΆΪΟΣ", new String[] { "μάϊοσ" });
@@ -46,10 +29,10 @@ public class IcuNormalizerFilterTests extends BaseTokenStreamTest {
         assertAnalyzesTo(a, "𐐖", new String[] { "𐐾" });
         assertAnalyzesTo(a, "ﴳﴺﰧ", new String[] { "طمطمطم" });
         assertAnalyzesTo(a, "क्‍ष", new String[] { "क्ष" });
+        a.close();
     }
 
-    @Test
-    public void testAlternate() throws IOException {
+    public void testAlternate() throws Exception {
         Analyzer a = new Analyzer() {
             @Override
             public TokenStreamComponents createComponents(String fieldName) {
@@ -63,8 +46,7 @@ public class IcuNormalizerFilterTests extends BaseTokenStreamTest {
         a.close();
     }
 
-    @Test
-    public void testEmptyTerm() throws IOException {
+    public void testEmptyTerm() throws Exception {
         Analyzer a = new Analyzer() {
             @Override
             protected TokenStreamComponents createComponents(String fieldName) {

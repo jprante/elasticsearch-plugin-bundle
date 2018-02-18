@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,7 +32,7 @@ public class IcuTokenizerFactory extends AbstractTokenizerFactory {
         boolean cjkAsWords = settings.getAsBoolean("cjk_as_words", true);
         boolean myanmarAsWords = settings.getAsBoolean("myanmar_as_words", true);
         Map<Integer, String> tailored = new HashMap<>();
-        String[] scriptAndResourcePaths = settings.getAsArray("rulefiles");
+        List<String> scriptAndResourcePaths = settings.getAsList("rulefiles");
         if (scriptAndResourcePaths != null) {
             for (String scriptAndResourcePath : scriptAndResourcePaths) {
                 // "rulefiles" : "Latn:my.Latin.rules.rbbi,Cyrl:my.Cyrillic.rules.rbbi"

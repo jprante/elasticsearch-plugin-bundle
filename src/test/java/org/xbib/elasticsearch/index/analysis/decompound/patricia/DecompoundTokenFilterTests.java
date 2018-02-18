@@ -1,27 +1,22 @@
 package org.xbib.elasticsearch.index.analysis.decompound.patricia;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
-import org.junit.Assert;
-import org.junit.Test;
-import org.xbib.elasticsearch.MapperTestUtils;
+import org.elasticsearch.test.ESTestCase;
+import org.elasticsearch.test.ESTokenStreamTestCase;
+import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
-import java.io.IOException;
 import java.io.StringReader;
 
-import static org.xbib.elasticsearch.MapperTestUtils.tokenFilterFactory;
-import static org.xbib.elasticsearch.MapperTestUtils.tokenizerFactory;
-
 /**
- *
+  Decompound token filter tests.
  */
-public class DecompoundTokenFilterTests extends Assert {
+public class DecompoundTokenFilterTests extends ESTokenStreamTestCase {
 
-    @Test
-    public void test() throws IOException {
+    public void test() throws Exception {
 
         String source = "Die Jahresfeier der Rechtsanwaltskanzleien auf dem Donaudampfschiff hat viel Ökosteuer gekostet";
 
@@ -54,15 +49,20 @@ public class DecompoundTokenFilterTests extends Assert {
             "gekostet",
             "gekosten"
         };
-        String resource = "org/xbib/elasticsearch/index/analysis/decompound/patricia/decompound_analysis.json";
-        TokenFilterFactory tokenFilter = tokenFilterFactory(resource, "decomp");
-        Tokenizer tokenizer = tokenizerFactory(resource, "standard").create();
+        String resource = "/org/xbib/elasticsearch/index/analysis/decompound/patricia/decompound_analysis.json";
+        Settings settings = Settings.builder()
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        TokenFilterFactory tokenFilter = analysis.tokenFilter.get("decomp");
+        Tokenizer tokenizer = analysis.tokenizer.get("standard").create();
         tokenizer.setReader(new StringReader(source));
-        assertSimpleTSOutput(tokenFilter.create(tokenizer), expected);
+        assertTokenStreamContents(tokenFilter.create(tokenizer), expected);
     }
 
-    @Test
-    public void testWithSubwordsOnly() throws IOException {
+    public void testWithSubwordsOnly() throws Exception {
         String source = "Das ist ein Schlüsselwort, ein Bindestrichwort";
         String[] expected = {
                 "Da",
@@ -74,23 +74,15 @@ public class DecompoundTokenFilterTests extends Assert {
                 "Bindestrich",
                 "wort"
         };
-        String resource = "org/xbib/elasticsearch/index/analysis/decompound/patricia/keywords_analysis.json";
-        Analyzer analyzer = MapperTestUtils.analyzer(resource, "with_subwords_only");
+        String resource = "/org/xbib/elasticsearch/index/analysis/decompound/patricia/keywords_analysis.json";
+        Settings settings = Settings.builder()
+                .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
+                .build();
+        ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
+                settings,
+                new BundlePlugin(Settings.EMPTY));
+        Analyzer analyzer =analysis.indexAnalyzers.get("with_subwords_only");
         assertNotNull(analyzer);
-        assertSimpleTSOutput(analyzer.tokenStream("test-field", source), expected);
-    }
-
-    private void assertSimpleTSOutput(TokenStream stream, String[] expected) throws IOException {
-        stream.reset();
-        CharTermAttribute termAttr = stream.getAttribute(CharTermAttribute.class);
-        Assert.assertNotNull(termAttr);
-        int i = 0;
-        while (stream.incrementToken()) {
-            assertTrue(i < expected.length);
-            assertEquals(expected[i], termAttr.toString());
-            i++;
-        }
-        assertEquals(i, expected.length);
-        stream.close();
+        assertTokenStreamContents(analyzer.tokenStream("test-field", source), expected);
     }
 }

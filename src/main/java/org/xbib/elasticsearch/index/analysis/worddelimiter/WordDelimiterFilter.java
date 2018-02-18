@@ -117,7 +117,8 @@ public final class WordDelimiterFilter extends TokenFilter implements WordDelimi
         super(in);
         this.flags = configurationFlags;
         this.protWords = protWords;
-        this.iterator = new WordDelimiterIterator(charTypeTable, has(SPLIT_ON_CASE_CHANGE), has(SPLIT_ON_NUMERICS), has(STEM_ENGLISH_POSSESSIVE));
+        this.iterator = new WordDelimiterIterator(charTypeTable, has(SPLIT_ON_CASE_CHANGE),
+                has(SPLIT_ON_NUMERICS), has(STEM_ENGLISH_POSSESSIVE));
     }
 
     /**

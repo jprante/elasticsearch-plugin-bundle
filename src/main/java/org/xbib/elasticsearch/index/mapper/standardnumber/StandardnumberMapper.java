@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * Standard number field mapper.
  */
 public class StandardnumberMapper extends TextFieldMapper {
 
@@ -91,7 +91,7 @@ public class StandardnumberMapper extends TextFieldMapper {
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject(simpleName());
         builder.field("type", MAPPER_TYPE);
-        builder.array("standardnumbers", settings.getAsArray("standardnumbers"));
+        builder.array("standardnumbers", settings.getAsList("standardnumbers"));
         builder.endObject();
         return builder;
     }
@@ -128,7 +128,7 @@ public class StandardnumberMapper extends TextFieldMapper {
         }
 
         public Builder standardNumbers(String[] standardnumbers) {
-            settingsBuilder.putArray("standardnumbers", standardnumbers);
+            settingsBuilder.putList("standardnumbers", standardnumbers);
             return this;
         }
 
@@ -175,7 +175,7 @@ public class StandardnumberMapper extends TextFieldMapper {
                 Object fieldNode = entry.getValue();
                 switch (fieldName) {
                     case "standardnumbers" :
-                        builder.settingsBuilder.putArray("standardnumbers", XContentMapValues.nodeStringArrayValue(fieldNode));
+                        builder.settingsBuilder.putList("standardnumbers", XContentMapValues.nodeStringArrayValue(fieldNode));
                         iterator.remove();
                         break;
                     default:

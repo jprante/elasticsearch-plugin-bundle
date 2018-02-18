@@ -1,11 +1,23 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url 'http://xbib.org/repository'
+        }
+    }
+    dependencies {
+        classpath "org.xbib.elasticsearch:gradle-plugin-elasticsearch-build:6.2.1.0"
+    }
+}
+
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 plugins {
     id "org.sonarqube" version "2.6.1"
     id "io.codearte.nexus-staging" version "0.11.0"
-    id "org.xbib.gradle.plugin.asciidoctor" version "1.6.0.0"
     id "org.xbib.gradle.plugin.jflex" version "1.1.0"
+    id "org.xbib.gradle.plugin.asciidoctor" version "1.6.0.0"
 }
 
 printf "Date: %s\nHost: %s\nOS: %s %s %s\nJVM: %s %s %s %s\nGradle: %s Groovy: %s Java: %s\n" +
@@ -24,87 +36,43 @@ printf "Date: %s\nHost: %s\nOS: %s %s %s\nJVM: %s %s %s %s\nGradle: %s Groovy: %
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'org.xbib.gradle.plugin.elasticsearch.plugin'
 apply plugin: 'org.xbib.gradle.plugin.jflex'
 apply plugin: 'org.xbib.gradle.plugin.asciidoctor'
 
-repositories {
-    mavenCentral()
+esplugin {
+    description 'Plugin bundle for Elasticsearch'
+    classname 'org.xbib.elasticsearch.plugin.bundle.BundlePlugin'
+    name 'bundle'
+    url 'https://github.com/jprante/elasticsearch-plugin-bundle'
 }
 
 configurations {
     wagon
-    distJars {
-        extendsFrom runtime
-        exclude group: 'org.elasticsearch'
-        exclude module: 'lucene-core'
-        exclude module: 'lucene-analyzers-common'
-        exclude module: 'jna'
-        exclude module: 'jackson-core'
-        exclude module: 'jackson-dataformat-smile'
-        exclude module: 'jackson-dataformat-yaml'
-        exclude module: 'jflex'
-    }
 }
 
-apply from: 'gradle/ext.gradle'
-apply from: 'gradle/publish.gradle'
-apply from: 'gradle/quality.gradle'
-
 dependencies {
-    compile "org.elasticsearch:elasticsearch:${project.property('elasticsearch.version')}"
     compile "com.ibm.icu:icu4j:${project.property('icu4j.version')}"
     compile "org.xbib:standardnumber:${project.property('standardnumber.version')}"
-    compileOnly "org.apache.logging.log4j:log4j-core:${project.property('log4j.version')}"
-    testCompile "junit:junit:${project.property('junit.version')}"
     testCompile "org.apache.logging.log4j:log4j-core:${project.property('log4j.version')}"
     testCompile "org.elasticsearch.plugin:transport-netty4-client:${project.property('elasticsearch.version')}"
-    distJars "${project.group}:${project.name}:${project.version}"
     wagon "org.apache.maven.wagon:wagon-ssh:${project.property('wagon.version')}"
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_1_9
 targetCompatibility = JavaVersion.VERSION_1_8
 
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-tasks.withType(JavaCompile) {
-    options.compilerArgs << "-Xlint:all" << "-profile" << "compact2"
-}
-
 test {
-    systemProperties['path.home'] = System.getProperty("user.dir")
+    include '**/*Test.*'
+    systemProperty 'path.home', System.getProperty("user.dir")
     testLogging {
         showStandardStreams = false
         exceptionFormat = 'full'
     }
 }
 
-task makePluginDescriptor(type: Copy) {
-    from 'src/main/templates'
-    into 'build/tmp/plugin'
-    expand([
-            'descriptor': [
-                'name': pluginName,
-                'classname': pluginClassname,
-                'description': pluginDescription,
-                'version': project.property('version'),
-                'javaVersion': project.property('targetCompatibility'),
-                'elasticsearchVersion' : project.property('elasticsearch.version')
-            ]
-    ])
-}
-
-task buildPluginZip(type: Zip, dependsOn: [':jar', ':makePluginDescriptor']) {
-    from configurations.distJars
-    from 'build/tmp/plugin'
-    into 'elasticsearch'
-    classifier = 'plugin'
-}
-
-task unpackPlugin(type: Copy, dependsOn: [':buildPluginZip']) {
-    delete "plugins"
-    from configurations.distJars
-    from 'build/tmp/plugin'
-    into "plugins/${pluginName}"
+esTest {
+    include '**/IcuAnalysisTests.*'
 }
 
 clean {
@@ -113,19 +81,6 @@ clean {
     delete "logs"
 }
 
-task javadocJar(type: Jar, dependsOn: classes) {
-    from javadoc
-    classifier 'javadoc'
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    from sourceSets.main.allSource
-    classifier 'sources'
-}
-
-artifacts {
-    archives javadocJar, sourcesJar, buildPluginZip
-}
 
 if (project.hasProperty('signing.keyId')) {
     signing {
@@ -144,3 +99,6 @@ asciidoctor {
             imagesdir: 'img',
             'source-highlighter': 'coderay'
 }
+
+checkstyleMain.source = 'src/main/java'
+forbiddenPatterns.exclude('**/*.txt')

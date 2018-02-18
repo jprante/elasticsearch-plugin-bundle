@@ -44,21 +44,22 @@ public class FstDecompounder {
      */
     private final FST<Object> glueMorphemes;
 
-    public FstDecompounder(InputStream inputStream, String[] glue) throws IOException {
+    public FstDecompounder(InputStream inputStream, List<String> glue) throws IOException {
         try {
             this.surfaceForms = new FST<>(new InputStreamDataInput(inputStream), NoOutputs.getSingleton());
         } finally {
             inputStream.close();
         }
         // set up glue morphemes
-        this.glueMorphemes = createGlueMorphemes(glue != null && glue.length > 0 ? glue : morphemes);
+        this.glueMorphemes = createGlueMorphemes(glue != null && glue.size() > 0 ?
+                glue : Arrays.asList(morphemes));
     }
 
-    private FST<Object> createGlueMorphemes(String[] glue) throws IOException {
-        for (int i = 0; i < glue.length; i++) {
-            glue[i] = new StringBuilder(glue[i]).reverse().toString();
+    private FST<Object> createGlueMorphemes(List<String> glue) throws IOException {
+        for (int i = 0; i < glue.size(); i++) {
+            glue.set(i, new StringBuilder(glue.get(i)).reverse().toString());
         }
-        Arrays.sort(glue);
+        Collections.sort(glue);
         final Builder<Object> builder = new Builder<>(INPUT_TYPE.BYTE4, NoOutputs.getSingleton());
         final Object nothing = NoOutputs.getSingleton().getNoOutput();
         IntsRefBuilder intsBuilder = new IntsRefBuilder();

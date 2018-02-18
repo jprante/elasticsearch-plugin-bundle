@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- *
+ * Auto phrase token filter factory.
  */
 public class AutoPhrasingTokenFilterFactory extends AbstractTokenFilterFactory implements ResourceLoaderAware {
 

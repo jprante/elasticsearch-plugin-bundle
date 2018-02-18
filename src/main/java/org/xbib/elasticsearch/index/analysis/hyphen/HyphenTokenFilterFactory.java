@@ -7,7 +7,7 @@ import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 
 /**
- *
+ * Hyphen token filter factory.
  */
 public class HyphenTokenFilterFactory extends AbstractTokenFilterFactory {
 

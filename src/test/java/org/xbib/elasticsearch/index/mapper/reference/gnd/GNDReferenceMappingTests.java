@@ -2,38 +2,44 @@ package org.xbib.elasticsearch.index.mapper.reference.gnd;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.lucene.util.SuppressForbidden;
 import org.elasticsearch.action.search.SearchAction;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.search.SearchHit;
-import org.junit.Test;
-import org.xbib.elasticsearch.NodeTestUtils;
+import org.elasticsearch.test.ESSingleNodeTestCase;
+import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Collection;
+import java.util.Collections;
 
 import static org.elasticsearch.common.io.Streams.copyToString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
- *
+ * GND reference mapping tests.
  */
-public class GNDReferenceMappingTests extends NodeTestUtils {
+public class GNDReferenceMappingTests extends ESSingleNodeTestCase {
 
     private static final Logger logger = LogManager.getLogger(GNDReferenceMappingTests.class.getName());
 
-    @Test
-    public void testGND() throws IOException {
-        startCluster();
-        try {
+    /** The plugin classes that should be added to the node. */
+    @Override
+    protected Collection<Class<? extends Plugin>> getPlugins() {
+        return Collections.singletonList(BundlePlugin.class);
+    }
+
+    public void testGND() throws Exception {
+        //startCluster();
+        //try {
             try {
                 client().admin().indices().prepareDelete("title", "gnd").execute().actionGet();
             } catch (Exception e) {
-                logger.warn(e.getMessage());
+                logger.warn(e.getMessage() + " --> ok, ignored");
             }
             client().admin().indices().prepareCreate("gnd")
                     .setSettings(copyToStringFromClasspath("gnd-settings.json"), XContentType.JSON)
@@ -66,7 +72,7 @@ public class GNDReferenceMappingTests extends NodeTestUtils {
 
             logger.info("hits = {}", searchResponse.getHits().getTotalHits());
             for (SearchHit hit : searchResponse.getHits().getHits()) {
-                logger.info("kurt tucholsky = {}", hit.getSource());
+                logger.info("kurt tucholsky = {}", hit.getSourceAsMap());
             }
             assertEquals(1, searchResponse.getHits().getTotalHits());
 
@@ -78,7 +84,7 @@ public class GNDReferenceMappingTests extends NodeTestUtils {
             logger.info("hits = {}", searchResponse.getHits().getTotalHits());
             assertTrue(searchResponse.getHits().getTotalHits() > 0);
             for (SearchHit hit : searchResponse.getHits().getHits()) {
-                logger.info("peter panter = {}", hit.getSource());
+                logger.info("peter panter = {}", hit.getSourceAsMap());
             }
             assertEquals(1, searchResponse.getHits().getTotalHits());
 
@@ -91,7 +97,7 @@ public class GNDReferenceMappingTests extends NodeTestUtils {
             logger.info("hits = {}", searchResponse.getHits().getTotalHits());
             assertTrue(searchResponse.getHits().getTotalHits() > 0);
             for (SearchHit hit : searchResponse.getHits().getHits()) {
-                logger.info("schroeder = {}", hit.getSource());
+                logger.info("schroeder = {}", hit.getSourceAsMap());
                 logger.info(hit.getExplanation().toString());
             }
             assertEquals(1, searchResponse.getHits().getTotalHits());
@@ -101,12 +107,13 @@ public class GNDReferenceMappingTests extends NodeTestUtils {
             } catch (Exception e) {
                 logger.warn(e.getMessage());
             }
-        } finally {
-            stopCluster();
-        }
+        //} finally {
+         //   stopCluster();
+        //}
     }
 
-    private String copyToStringFromClasspath(String path) throws IOException {
+    @SuppressForbidden(reason = "accessing local resources from classpath")
+    private String copyToStringFromClasspath(String path) throws Exception {
         return copyToString(new InputStreamReader(getClass().getResource(path).openStream(), "UTF-8"));
     }
 }

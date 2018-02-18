@@ -8,9 +8,10 @@ import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.xbib.elasticsearch.common.decompound.fst.FstDecompounder;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
- *
+ * Finite state decompound token filter factory.
  */
 public class FstDecompoundTokenFilterFactory extends AbstractTokenFilterFactory {
 
@@ -30,7 +31,7 @@ public class FstDecompoundTokenFilterFactory extends AbstractTokenFilterFactory 
     private FstDecompounder createDecompounder(Settings settings) {
         try {
             String words = settings.get("fst", "/decompound/fst/words.fst");
-            String[] glueMorphs = settings.getAsArray("glue_morphs");
+            List<String> glueMorphs = settings.getAsList("glue_morphs");
             return new FstDecompounder(getClass().getResourceAsStream(words), glueMorphs);
         } catch (IOException e) {
             throw new IllegalArgumentException("fst decompounder resources in settings not found: " + settings, e);

@@ -3,7 +3,7 @@
     "properties" : {
       "someField":{
         "type" : "standardnumber",
-        "standardnumbers" : [ "isbn", "issn" ]
+        "standardnumbers" : "isbn"
       }
     }
   }
