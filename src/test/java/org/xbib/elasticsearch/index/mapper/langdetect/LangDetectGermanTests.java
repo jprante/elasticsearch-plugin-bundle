@@ -10,6 +10,7 @@ import org.elasticsearch.action.search.SearchAction;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.WriteRequest;
+import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.test.ESSingleNodeTestCase;
@@ -21,48 +22,50 @@ import java.util.Collections;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 /**
- * Language detection binary test.
+ * Language detection test for german.
  */
-public class LangDetectBinaryTests extends ESSingleNodeTestCase {
+public class LangDetectGermanTests extends ESSingleNodeTestCase {
 
-    /** The plugin classes that should be added to the node. */
     @Override
     protected Collection<Class<? extends Plugin>> getPlugins() {
         return Collections.singletonList(BundlePlugin.class);
     }
 
-    public void testLangDetectBinary() throws Exception {
+    public void testGermanLanguageCode() throws Exception {
         try {
-            CreateIndexRequestBuilder createIndexRequestBuilder =
-                    new CreateIndexRequestBuilder(client(), CreateIndexAction.INSTANCE).setIndex("test");
-            createIndexRequestBuilder.addMapping("someType", jsonBuilder()
+            XContentBuilder builder = jsonBuilder()
                     .startObject()
                     .startObject("properties")
                     .startObject("content")
-                    .field("type", "binary")
+                    .field("type", "text")
                     .startObject("fields")
                     .startObject("language")
                     .field("type", "langdetect")
-                    .field("binary", true)
+                    .array("languages", "zh-cn", "en", "de")
                     .endObject()
                     .endObject()
                     .endObject()
                     .endObject()
-                    .endObject());
-            createIndexRequestBuilder.execute().actionGet();
+                    .endObject();
+            CreateIndexRequestBuilder createIndexRequestBuilder =
+                    new CreateIndexRequestBuilder(client(), CreateIndexAction.INSTANCE);
+            createIndexRequestBuilder.setIndex("test").addMapping("someType", builder).execute().actionGet();
+            String source = "Einigkeit und Recht und Freiheit\n" +
+                    "für das deutsche Vaterland!\n" +
+                    "Danach lasst uns alle streben\n" +
+                    "brüderlich mit Herz und Hand!";
             IndexRequestBuilder indexRequestBuilder = new IndexRequestBuilder(client(), IndexAction.INSTANCE)
                     .setIndex("test").setType("someType").setId("1")
-                    //\"God Save the Queen\" (alternatively \"God Save the King\"
-                    .setSource("content", "IkdvZCBTYXZlIHRoZSBRdWVlbiIgKGFsdGVybmF0aXZlbHkgIkdvZCBTYXZlIHRoZSBLaW5nIg==");
+                    .setSource("content", source);
             indexRequestBuilder.setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                     .execute().actionGet();
             SearchRequestBuilder searchRequestBuilder = new SearchRequestBuilder(client(), SearchAction.INSTANCE)
                     .setIndices("test")
-                    .setQuery(QueryBuilders.termQuery("content.language", "en"))
+                    .setQuery(QueryBuilders.termQuery("content.language", "de"))
                     .addStoredField("content.language");
             SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
             assertEquals(1L, searchResponse.getHits().getTotalHits());
-            assertEquals("en", searchResponse.getHits().getAt(0).field("content.language").getValue());
+            assertEquals("de", searchResponse.getHits().getAt(0).field("content.language").getValue());
         } finally {
             DeleteIndexRequestBuilder deleteIndexRequestBuilder =
                     new DeleteIndexRequestBuilder(client(), DeleteIndexAction.INSTANCE, "test");

@@ -253,7 +253,7 @@ public class LangdetectService {
         return profile;
     }
 
-    public List<Language> detectAll(String text) throws LanguageDetectionException {
+    public synchronized List<Language> detectAll(String text) {
         if (!isStarted) {
             load(settings);
             init();

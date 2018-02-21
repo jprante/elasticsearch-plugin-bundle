@@ -51,11 +51,8 @@ public class ReferenceMapper extends FieldMapper {
 
     public static final MappedFieldType FIELD_TYPE = new ReferenceFieldType();
 
-    public static final class Defaults {
-
-        static {
-            FIELD_TYPE.freeze();
-        }
+    static {
+        FIELD_TYPE.freeze();
     }
 
     private static final CopyTo COPYTO_EMPTY = new CopyTo.Builder().build();

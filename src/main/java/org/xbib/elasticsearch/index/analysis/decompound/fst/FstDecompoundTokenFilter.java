@@ -3,34 +3,44 @@ package org.xbib.elasticsearch.index.analysis.decompound.fst;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
+import org.apache.lucene.analysis.tokenattributes.KeywordAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
+import org.apache.lucene.util.AttributeSource;
 import org.xbib.elasticsearch.common.decompound.fst.FstDecompounder;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Finite state decompound token filter.
  */
 public class FstDecompoundTokenFilter extends TokenFilter {
 
-    protected final LinkedList<DecompoundToken> tokens;
+    private final LinkedList<String> tokens;
 
-    protected final FstDecompounder fstDecompounder;
+    private final FstDecompounder fstDecompounder;
 
-    protected final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
+    private final boolean respectKeywords;
 
-    protected final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
+    private final boolean subwordsonly;
+
+    private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
+
+    private final KeywordAttribute keywordAtt = addAttribute(KeywordAttribute.class);
 
     private final PositionIncrementAttribute posIncAtt = addAttribute(PositionIncrementAttribute.class);
 
-    private State current;
+    private AttributeSource.State current;
 
-    protected FstDecompoundTokenFilter(TokenStream input, FstDecompounder fstDecompounder) {
+    protected FstDecompoundTokenFilter(TokenStream input, FstDecompounder fstDecompounder,
+                                       boolean respectKeywords, boolean subwordsonly) {
         super(input);
         this.tokens = new LinkedList<>();
         this.fstDecompounder = fstDecompounder;
+        this.respectKeywords = respectKeywords;
+        this.subwordsonly = subwordsonly;
     }
 
     @Override
@@ -39,41 +49,46 @@ public class FstDecompoundTokenFilter extends TokenFilter {
             if (current == null) {
                 throw new IllegalArgumentException("current is null");
             }
-            DecompoundToken token = tokens.removeFirst();
+            String token = tokens.removeFirst();
             restoreState(current);
-            termAtt.setEmpty().append(token.txt);
-            offsetAtt.setOffset(token.startOffset, token.endOffset);
-            posIncAtt.setPositionIncrement(0);
-            return true;
-        }
-        if (input.incrementToken()) {
-            decompound();
-            if (!tokens.isEmpty()) {
-                current = captureState();
+            termAtt.setEmpty().append(token);
+            if (!subwordsonly) {
+                posIncAtt.setPositionIncrement(0);
             }
             return true;
-        } else {
+        }
+        if (!input.incrementToken()) {
             return false;
         }
-    }
-
-    protected synchronized void decompound() {
-        int start = offsetAtt.startOffset();
-        CharSequence term = new String(termAtt.buffer(), 0, termAtt.length());
-        for (String suggestions : fstDecompounder.decompound(term.toString())) {
-            for (String suggestion : suggestions.split(",")) {
-                int off = start;
-                int maxlen = -1;
-                for (String s : suggestion.split("\\.")) {
-                    int len = s.length();
-                    tokens.add(new DecompoundToken(s, off, len));
-                    if (len > maxlen) {
-                        maxlen = len;
-                    }
-                }
-                start += maxlen;
+        if (respectKeywords && keywordAtt.isKeyword()) {
+            return true;
+        }
+        if (!decompound()) {
+            current = captureState();
+            if (subwordsonly) {
+                String token = tokens.removeFirst();
+                restoreState(current);
+                termAtt.setEmpty().append(token);
+                return true;
             }
         }
+        return true;
+    }
+
+    protected synchronized boolean decompound() {
+        String term = new String(termAtt.buffer(), 0, termAtt.length());
+        tokens.addAll(doDecompound(term));
+        return tokens.isEmpty();
+    }
+
+    private List<String> doDecompound(String term) {
+        List<String> list = new LinkedList<>();
+        for (String suggestions : fstDecompounder.decompound(term)) {
+            for (String suggestion : suggestions.split(",")) {
+                tokens.addAll(Arrays.asList(suggestion.split("\\.")));
+            }
+        }
+        return list;
     }
 
     @Override
@@ -92,25 +107,5 @@ public class FstDecompoundTokenFilter extends TokenFilter {
     @Override
     public int hashCode() {
         return fstDecompounder.hashCode();
-    }
-
-    private class DecompoundToken {
-
-        final CharSequence txt;
-        final int startOffset;
-        final int endOffset;
-
-        DecompoundToken(CharSequence txt, int offset, int length) {
-            this.txt = txt;
-            //int startOff = FstDecompoundTokenFilter.this.offsetAtt.startOffset();
-            //int endOff = FstDecompoundTokenFilter.this.offsetAtt.endOffset();
-            //if (endOff - startOff != FstDecompoundTokenFilter.this.termAtt.length()) {
-            //    this.startOffset = startOff;
-            //    this.endOffset = endOff;
-            //} else {
-                this.startOffset = offset;
-                this.endOffset = offset + length;
-            //}
-        }
     }
 }

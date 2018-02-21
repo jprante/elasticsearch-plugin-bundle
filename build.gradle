@@ -6,7 +6,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "org.xbib.elasticsearch:gradle-plugin-elasticsearch-build:6.2.1.0"
+        classpath "org.xbib.elasticsearch:gradle-plugin-elasticsearch-build:6.2.2.0"
     }
 }
 
@@ -62,7 +62,10 @@ dependencies {
 sourceCompatibility = JavaVersion.VERSION_1_9
 targetCompatibility = JavaVersion.VERSION_1_8
 
+esTest.dependsOn jar
+
 test {
+    enabled = false
     include '**/*Test.*'
     systemProperty 'path.home', System.getProperty("user.dir")
     testLogging {
@@ -71,14 +74,10 @@ test {
     }
 }
 
-esTest {
-    include '**/IcuAnalysisTests.*'
-}
+randomizedTest.enabled = false
 
 clean {
-    delete "plugins"
-    delete "data"
-    delete "logs"
+    delete fileTree('.') { include '.local*.log' }
 }
 
 

@@ -10,7 +10,6 @@ import org.elasticsearch.threadpool.ThreadPool;
 import org.elasticsearch.transport.TransportService;
 import org.xbib.elasticsearch.common.langdetect.LangdetectService;
 import org.xbib.elasticsearch.common.langdetect.Language;
-import org.xbib.elasticsearch.common.langdetect.LanguageDetectionException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,14 +40,7 @@ public class TransportLangdetectAction extends TransportAction<LangdetectRequest
         if (!services.containsKey(profile)) {
             services.put(profile, new LangdetectService(settings, profile));
         }
-        // detectAll() is not thread-safe
-        synchronized (services) {
-            try {
-                List<Language> langs = services.get(profile).detectAll(request.getText());
-                listener.onResponse(new LangdetectResponse().setLanguages(langs).setProfile(request.getProfile()));
-            } catch (LanguageDetectionException e) {
-                listener.onFailure(e);
-            }
-        }
+        List<Language> langs = services.get(profile).detectAll(request.getText());
+        listener.onResponse(new LangdetectResponse().setLanguages(langs).setProfile(request.getProfile()));
     }
 }

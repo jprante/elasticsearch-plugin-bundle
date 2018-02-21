@@ -12,7 +12,7 @@ import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
  */
 public class FstDecompoundTokenFilterTests extends ESTokenStreamTestCase {
 
-    public void testDecompund() throws Exception {
+    public void testDecompound() throws Exception {
 
         String source = "Die Jahresfeier der Rechtsanwaltskanzleien auf dem Donaudampfschiff hat viel Ökosteuer gekostet";
 
@@ -22,14 +22,14 @@ public class FstDecompoundTokenFilterTests extends ESTokenStreamTestCase {
                 "jahres",
                 "feier",
                 "jahre",
-                //"jahr",
+                "jahr",
                 "der",
                 "Rechtsanwaltskanzleien",
                 "rechts",
                 "anwalts",
                 "kanzleien",
-                //"recht",
-                //"anwalt",
+                "recht",
+                "anwalt",
                 "auf",
                 "dem",
                 "Donaudampfschiff",
@@ -54,10 +54,6 @@ public class FstDecompoundTokenFilterTests extends ESTokenStreamTestCase {
                 settings,
                 new BundlePlugin(Settings.EMPTY));
         Analyzer myanalyzer = analysis.indexAnalyzers.get("myanalyzer");
-        // TODO(jprante) flaky?
-        // inconsistent endOffset 2 pos=1 posLen=1 token=jahres expected:<15> but was:<10>
-        // inconsistent endOffset 10 pos=9 posLen=1 token=ökos expected:<86> but was:<81>
-        // term 10 expected:<[auf]> but was:<[recht]>
         assertAnalyzesTo(myanalyzer, source, expected);
     }
 }

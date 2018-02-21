@@ -17,15 +17,21 @@ public class FstDecompoundTokenFilterFactory extends AbstractTokenFilterFactory 
 
     private final FstDecompounder decompounder;
 
+    private final Boolean respectKeywords;
+
+    private final Boolean subwordsonly;
+
     public FstDecompoundTokenFilterFactory(IndexSettings indexSettings, Environment environment, String name,
                                            Settings settings) {
         super(indexSettings, name, settings);
         this.decompounder = createDecompounder(settings);
+        this.respectKeywords = settings.getAsBoolean("respect_keywords", false);
+        this.subwordsonly = settings.getAsBoolean("subwords_only", false);
     }
 
     @Override
     public TokenStream create(TokenStream tokenStream) {
-        return new FstDecompoundTokenFilter(tokenStream, decompounder);
+        return new FstDecompoundTokenFilter(tokenStream, decompounder, respectKeywords, subwordsonly);
     }
 
     private FstDecompounder createDecompounder(Settings settings) {

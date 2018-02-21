@@ -34,8 +34,6 @@ public class GNDReferenceMappingTests extends ESSingleNodeTestCase {
     }
 
     public void testGND() throws Exception {
-        //startCluster();
-        //try {
             try {
                 client().admin().indices().prepareDelete("title", "gnd").execute().actionGet();
             } catch (Exception e) {
@@ -107,9 +105,6 @@ public class GNDReferenceMappingTests extends ESSingleNodeTestCase {
             } catch (Exception e) {
                 logger.warn(e.getMessage());
             }
-        //} finally {
-         //   stopCluster();
-        //}
     }
 
     @SuppressForbidden(reason = "accessing local resources from classpath")

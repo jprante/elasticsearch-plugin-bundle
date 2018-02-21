@@ -10,16 +10,17 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.bytes.BytesReference;
-import org.elasticsearch.common.compress.CompressedXContent;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.common.xcontent.json.JsonXContent;
 import org.elasticsearch.index.IndexService;
 import org.elasticsearch.index.mapper.DocumentMapper;
-import org.elasticsearch.index.mapper.DocumentMapperParser;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.mapper.SourceToParse;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryShardContext;
-import org.elasticsearch.indices.mapper.MapperRegistry;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.test.ESSingleNodeTestCase;
@@ -31,7 +32,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.function.Supplier;
 
 import static org.elasticsearch.common.io.Streams.copyToString;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
@@ -52,7 +52,6 @@ public class ReferenceMappingTests extends ESSingleNodeTestCase {
 
     @Before
     public void setupReferences() throws Exception {
-        //startCluster();
         try {
             client().admin().indices().prepareDelete("test").execute().actionGet();
         } catch (Exception e) {
@@ -74,7 +73,7 @@ public class ReferenceMappingTests extends ESSingleNodeTestCase {
     }
 
     @After
-    public void destroyRefrences() {
+    public void destroyReferences() {
         try {
             client().admin().indices().prepareDelete("test").execute().actionGet();
         } catch (Exception e) {
@@ -88,9 +87,9 @@ public class ReferenceMappingTests extends ESSingleNodeTestCase {
     }
 
     public void testRefMappings() throws Exception {
-        String mapping = copyToStringFromClasspath("ref-mapping.json");
-        DocumentMapperParser mapperParser = createMapperParser("some_index");
-        DocumentMapper docMapper = mapperParser.parse("some_type", new CompressedXContent(mapping));
+        IndexService indexService = createIndex("some_index", Settings.EMPTY,
+                "someType", getMapping("ref-mapping.json"));
+        DocumentMapper docMapper = indexService.mapperService().documentMapper("someType");
         BytesReference json = jsonBuilder().startObject()
                 .field("someField", "1234")
                 .endObject().bytes();
@@ -106,29 +105,12 @@ public class ReferenceMappingTests extends ESSingleNodeTestCase {
         assertEquals("a", doc.getFields("ref")[0].stringValue());
         assertEquals("b", doc.getFields("ref")[1].stringValue());
         assertEquals("c", doc.getFields("ref")[2].stringValue());
-
-        // re-parse from mapping
-        String builtMapping = docMapper.mappingSource().string();
-        docMapper = mapperParser.parse("some_type", new CompressedXContent(builtMapping));
-        json = jsonBuilder().startObject()
-                .field("someField", "1234")
-                .endObject().bytes();
-        sourceToParse = SourceToParse.source("some_index", "some_type", "1", json, XContentType.JSON);
-        doc = docMapper.parse(sourceToParse).rootDoc();
-        for (IndexableField field : doc.getFields()) {
-            logger.info("reparse testRefMappings {} = {}", field.name(), field.stringValue());
-        }
-        assertEquals("1234", doc.getFields("someField")[0].stringValue());
-        assertEquals(3, doc.getFields("ref").length);
-        assertEquals("a", doc.getFields("ref")[0].stringValue());
-        assertEquals("b", doc.getFields("ref")[1].stringValue());
-        assertEquals("c", doc.getFields("ref")[2].stringValue());
     }
 
     public void testRefInDoc() throws Exception {
-        String mapping = copyToStringFromClasspath("ref-mapping-authorities.json");
-        DocumentMapperParser mapperParser = createMapperParser("docs");
-        DocumentMapper docMapper = mapperParser.parse("docs", new CompressedXContent(mapping));
+        IndexService indexService = createIndex("docs", Settings.EMPTY,
+                "docs", getMapping("ref-mapping-authorities.json"));
+        DocumentMapper docMapper = indexService.mapperService().documentMapper("docs");
         BytesReference json = jsonBuilder().startObject()
                 .field("title", "A title")
                 .field("dc.creator", "A creator")
@@ -149,9 +131,9 @@ public class ReferenceMappingTests extends ESSingleNodeTestCase {
     }
 
     public void testRefFromID() throws Exception {
-        String mapping = copyToStringFromClasspath("ref-mapping-from-id.json");
-        DocumentMapperParser mapperParser = createMapperParser("docs");
-        DocumentMapper docMapper = mapperParser.parse("docs", new CompressedXContent(mapping));
+        IndexService indexService = createIndex("docs", Settings.EMPTY,
+                "docs", getMapping("ref-mapping-from-id.json"));
+        DocumentMapper docMapper = indexService.mapperService().documentMapper("docs");
         BytesReference json = jsonBuilder().startObject()
                 .field("title", "A title")
                 .field("authorID", "1")
@@ -229,16 +211,8 @@ public class ReferenceMappingTests extends ESSingleNodeTestCase {
         return copyToString(new InputStreamReader(getClass().getResource(path).openStream(), StandardCharsets.UTF_8));
     }
 
-    private DocumentMapperParser createMapperParser(String indexName) {
-        IndexService indexService = createIndex(indexName);
-        MapperRegistry mapperRegistry = new MapperRegistry(
-                Collections.singletonMap(ReferenceMapper.CONTENT_TYPE, new ReferenceMapper.TypeParser()),
-                Collections.emptyMap(), BundlePlugin.NOOP_FIELD_FILTER);
-        Supplier<QueryShardContext> queryShardContext = () ->
-                indexService.newQueryShardContext(0, null,
-                        () -> { throw new UnsupportedOperationException(); }, null);
-        return new DocumentMapperParser(indexService.getIndexSettings(), indexService.mapperService(),
-                indexService.getIndexAnalyzers(), indexService.xContentRegistry(),
-                indexService.similarityService(), mapperRegistry, queryShardContext);
+    private XContentBuilder getMapping(String path) throws Exception {
+        return XContentFactory.jsonBuilder().map(XContentHelper.convertToMap(JsonXContent.jsonXContent,
+                getClass().getResourceAsStream(path), true));
     }
 }
