@@ -1,0 +1,41 @@
+# Integration tests for ICU analysis component
+#
+---
+"Index ICU content":
+    - do:
+        indices.create:
+            index:  test
+            body:
+                settings:
+                    index:
+                        analysis:
+                            analyzer:
+                                my_analyzer:
+                                    type: icu_collation
+                                    filter: ["standard", "lowercase"]
+                                    language: en
+                                    strength: primary
+                mappings:
+                    type:
+                        properties:
+                            text:
+                                type:     text
+                                analyzer: my_analyzer
+
+    - do:
+        index:
+            index:  test
+            type:   type
+            id:     1
+            body:   { "text": "Bâton enflammé" }
+    - do:
+        indices.refresh: {}
+
+    - do:
+        search:
+            index: test
+            body:
+                query:
+                    match:
+                        text: baton enflamme
+    - match: { hits.total: 1 }
