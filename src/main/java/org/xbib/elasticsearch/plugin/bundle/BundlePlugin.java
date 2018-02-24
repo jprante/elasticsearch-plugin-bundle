@@ -78,8 +78,8 @@ import org.xbib.elasticsearch.rest.action.isbnformat.RestISBNFormatterAction;
 import org.xbib.elasticsearch.rest.action.langdetect.RestLangdetectAction;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,8 +105,32 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
 
     @Override
     public List<Setting<?>> getSettings() {
-        return Collections.singletonList(new Setting<>("plugins.xbib.icu.enabled", "true",
-                Function.identity(), Setting.Property.NodeScope));
+        return Arrays.asList(
+                new Setting<>("plugins.xbib.icu.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.snowball.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.unique.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.keywordmarker.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.keywordrepeat.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.autophrase.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.baseform.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.concat.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.pair.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.decompound.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.german_normalize.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.hyphen.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.sortform.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.standardnumber.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.fst_decompound.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.worddelimiter.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.worddelimiter2.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.symbolname.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.year.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.lemmatize.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.naturalsort.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.reference.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.langdetect.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.isbnformat.enabled", "true", Function.identity(), Setting.Property.NodeScope)
+                );
     }
 
     @Override
@@ -140,22 +164,52 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
         if (settings.getAsBoolean("plugins.xbib.keywordrepeat.enabled", true)) {
             extra.put("keyword_repeat", KeywordRepeatTokenFilterFactory::new);
         }
-        extra.put("auto_phrase", AutoPhrasingTokenFilterFactory::new);
-        extra.put("baseform", BaseformTokenFilterFactory::new);
-        extra.put("concat", ConcatTokenFilterFactory::new);
-        extra.put("pair", PairTokenFilterFactory::new);
-        extra.put("decompound", DecompoundTokenFilterFactory::new);
-        extra.put("german_normalize", GermanNormalizationFilterFactory::new);
-        extra.put("hyphen", HyphenTokenFilterFactory::new);
-        extra.put("sortform", SortformTokenFilterFactory::new);
-        extra.put("standardnumber", (indexSettings, environment, name, factorySettings) ->
-                new StandardnumberTokenFilterFactory(indexSettings, environment, name, factorySettings, standardNumberTypeParser));
-        extra.put("fst_decompound", FstDecompoundTokenFilterFactory::new);
-        extra.put("worddelimiter", WordDelimiterFilterFactory::new);
-        extra.put("worddelimiter2", WordDelimiterFilter2Factory::new);
-        extra.put("symbolname", SymbolnameTokenFilterFactory::new);
-        extra.put("year", GregorianYearTokenFilterFactory::new);
-        extra.put("lemmatize", LemmatizeTokenFilterFactory::new);
+        if (settings.getAsBoolean("plugins.xbib.autophrase.enabled", true)) {
+            extra.put("auto_phrase", AutoPhrasingTokenFilterFactory::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.baseform.enabled", true)) {
+            extra.put("baseform", BaseformTokenFilterFactory::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.concat.enabled", true)) {
+            extra.put("concat", ConcatTokenFilterFactory::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.pair.enabled", true)) {
+            extra.put("pair", PairTokenFilterFactory::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.decompound.enabled", true)) {
+            extra.put("decompound", DecompoundTokenFilterFactory::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.german_normalize.enabled", true)) {
+            extra.put("german_normalize", GermanNormalizationFilterFactory::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.hyphen.enabled", true)) {
+            extra.put("hyphen", HyphenTokenFilterFactory::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.sortform.enabled", true)) {
+            extra.put("sortform", SortformTokenFilterFactory::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.standardnumber.enabled", true)) {
+            extra.put("standardnumber", (indexSettings, environment, name, factorySettings) ->
+                    new StandardnumberTokenFilterFactory(indexSettings, environment, name, factorySettings, standardNumberTypeParser));
+        }
+        if (settings.getAsBoolean("plugins.xbib.fst_decompound.enabled", true)) {
+            extra.put("fst_decompound", FstDecompoundTokenFilterFactory::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.worddelimiter.enabled", true)) {
+            extra.put("worddelimiter", WordDelimiterFilterFactory::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.worddelimiter2.enabled", true)) {
+            extra.put("worddelimiter2", WordDelimiterFilter2Factory::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.symbolname.enabled", true)) {
+            extra.put("symbolname", SymbolnameTokenFilterFactory::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.year.enabled", true)) {
+            extra.put("year", GregorianYearTokenFilterFactory::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.lemmatize.enabled", true)) {
+            extra.put("lemmatize", LemmatizeTokenFilterFactory::new);
+        }
         return extra;
     }
 
@@ -166,8 +220,12 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
             extra.put("icu_collation_tokenizer", IcuCollationTokenizerFactory::new);
             extra.put("icu_tokenizer", IcuTokenizerFactory::new);
         }
-        extra.put("hyphen", HyphenTokenizerFactory::new);
-        extra.put("naturalsort", NaturalSortKeyTokenizerFactory::new);
+        if (settings.getAsBoolean("plugins.xbib.hyphen.enabled", true)) {
+            extra.put("hyphen", HyphenTokenizerFactory::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.naturalsort.enabled", true)) {
+            extra.put("naturalsort", NaturalSortKeyTokenizerFactory::new);
+        }
         return extra;
     }
 
@@ -177,29 +235,49 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
         if (settings.getAsBoolean("plugins.xbib.icu.enabled", true)) {
             extra.put("icu_collation", IcuCollationKeyAnalyzerProvider::new);
         }
-        extra.put("hyphen", HyphenAnalyzerProvider::new);
-        extra.put("naturalsort", NaturalSortKeyAnalyzerProvider::new);
-        extra.put("sortform", SortformAnalyzerProvider::new);
-        extra.put("standardnumber", (indexSettings, environment, name, factorySettings) ->
-                new StandardnumberAnalyzerProvider(indexSettings, environment, name, factorySettings, standardNumberTypeParser));
+        if (settings.getAsBoolean("plugins.xbib.hyphen.enabled", true)) {
+            extra.put("hyphen", HyphenAnalyzerProvider::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.naturalsort.enabled", true)) {
+            extra.put("naturalsort", NaturalSortKeyAnalyzerProvider::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.sortform.enabled", true)) {
+            extra.put("sortform", SortformAnalyzerProvider::new);
+        }
+        if (settings.getAsBoolean("plugins.xbib.standardnumber.enabled", true)) {
+            extra.put("standardnumber", (indexSettings, environment, name, factorySettings) ->
+                    new StandardnumberAnalyzerProvider(indexSettings, environment, name, factorySettings, standardNumberTypeParser));
+        }
         return extra;
     }
 
     @Override
     public Map<String, Mapper.TypeParser> getMappers() {
         Map<String, Mapper.TypeParser> extra = new LinkedHashMap<>();
-        extra.put(StandardnumberMapper.MAPPER_TYPE, standardNumberTypeParser);
-        extra.put(ReferenceMapper.CONTENT_TYPE, referenceMapperTypeParser);
-        extra.put(LangdetectMapper.CONTENT_TYPE, new LangdetectMapper.TypeParser());
-        extra.put(IcuCollationKeyFieldMapper.CONTENT_TYPE, new IcuCollationKeyFieldMapper.TypeParser());
+        if (settings.getAsBoolean("plugins.xbib.standardnumber.enabled", true)) {
+            extra.put(StandardnumberMapper.MAPPER_TYPE, standardNumberTypeParser);
+        }
+        if (settings.getAsBoolean("plugins.xbib.reference.enabled", true)) {
+            extra.put(ReferenceMapper.CONTENT_TYPE, referenceMapperTypeParser);
+        }
+        if (settings.getAsBoolean("plugins.xbib.langdetect.enabled", true)) {
+            extra.put(LangdetectMapper.CONTENT_TYPE, new LangdetectMapper.TypeParser());
+        }
+        if (settings.getAsBoolean("plugins.xbib.icu.enabled", true)) {
+            extra.put(IcuCollationKeyFieldMapper.CONTENT_TYPE, new IcuCollationKeyFieldMapper.TypeParser());
+        }
         return extra;
     }
 
     @Override
     public List<ActionHandler<? extends ActionRequest, ? extends ActionResponse>> getActions() {
         List<ActionHandler<? extends ActionRequest, ? extends ActionResponse>> extra = new ArrayList<>();
-        extra.add(new ActionHandler<>(ISBNFormatAction.INSTANCE, TransportISBNFormatAction.class));
-        extra.add(new ActionHandler<>(LangdetectAction.INSTANCE, TransportLangdetectAction.class));
+        if (settings.getAsBoolean("plugins.xbib.isbnformat.enabled", true)) {
+            extra.add(new ActionHandler<>(ISBNFormatAction.INSTANCE, TransportISBNFormatAction.class));
+        }
+        if (settings.getAsBoolean("plugins.xbib.langdetect.enabled", true)) {
+            extra.add(new ActionHandler<>(LangdetectAction.INSTANCE, TransportLangdetectAction.class));
+        }
         return extra;
     }
 
@@ -212,35 +290,50 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
                                              IndexNameExpressionResolver indexNameExpressionResolver,
                                              Supplier<DiscoveryNodes> nodesInCluster) {
         List<RestHandler> extra = new ArrayList<>();
-        extra.add(new RestISBNFormatterAction(settings, restController));
-        extra.add(new RestLangdetectAction(settings, restController));
+        if (settings.getAsBoolean("plugins.xbib.isbnformat.enabled", true)) {
+            extra.add(new RestISBNFormatterAction(settings, restController));
+        }
+        if (settings.getAsBoolean("plugins.xbib.langdetect.enabled", true)) {
+            extra.add(new RestLangdetectAction(settings, restController));
+        }
         return extra;
     }
 
     @Override
     public Collection<Module> createGuiceModules() {
         Collection<Module> extra = new ArrayList<>();
-        extra.add(new ReferenceMapperModule(referenceMapperTypeParser));
-        extra.add(new StandardnumberMapperModule(standardNumberTypeParser));
+        if (settings.getAsBoolean("plugins.xbib.reference.enabled", true)) {
+            extra.add(new ReferenceMapperModule(referenceMapperTypeParser));
+        }
+        if (settings.getAsBoolean("plugins.xbib.standardnumber.enabled", true)) {
+            extra.add(new StandardnumberMapperModule(standardNumberTypeParser));
+        }
         return extra;
     }
 
     @Override
     public Collection<Class<? extends LifecycleComponent>> getGuiceServiceClasses() {
         Collection<Class<? extends LifecycleComponent>> extra = new ArrayList<>();
-        extra.add(ReferenceService.class);
-        extra.add(StandardnumberService.class);
+        if (settings.getAsBoolean("plugins.xbib.reference.enabled", true)) {
+            extra.add(ReferenceService.class);
+        }
+        if (settings.getAsBoolean("plugins.xbib.standardnumber.enabled", true)) {
+            extra.add(StandardnumberService.class);
+        }
         return extra;
     }
 
     @Override
     public List<NamedWriteableRegistry.Entry> getNamedWriteables() {
-        return Collections.singletonList(
-                new NamedWriteableRegistry.Entry(
-                        DocValueFormat.class,
-                        IcuCollationKeyFieldMapper.CollationFieldType.COLLATE_FORMAT.getWriteableName(),
-                        in -> IcuCollationKeyFieldMapper.CollationFieldType.COLLATE_FORMAT
-                )
-        );
+        List<NamedWriteableRegistry.Entry> extra = new ArrayList<>();
+        if (settings.getAsBoolean("plugins.xbib.icu.enabled", true)) {
+            extra.add(new NamedWriteableRegistry.Entry(
+                            DocValueFormat.class,
+                            IcuCollationKeyFieldMapper.CollationFieldType.COLLATE_FORMAT.getWriteableName(),
+                            in -> IcuCollationKeyFieldMapper.CollationFieldType.COLLATE_FORMAT
+                    )
+            );
+        }
+        return extra;
     }
 }

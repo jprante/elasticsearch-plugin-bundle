@@ -1,8 +1,6 @@
 package org.xbib.elasticsearch.index.mapper.langdetect;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.fasterxml.jackson.core.Base64Variants;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexableField;
 import org.elasticsearch.common.lucene.Lucene;
@@ -35,8 +33,6 @@ import java.util.Map;
  */
 public class LangdetectMapper extends TextFieldMapper {
 
-    private static final Logger logger = LogManager.getLogger(LangdetectMapper.class.getName());
-
     public static final String CONTENT_TYPE = "langdetect";
 
     public static final MappedFieldType FIELD_TYPE = new TextFieldType();
@@ -53,6 +49,7 @@ public class LangdetectMapper extends TextFieldMapper {
     private final LangdetectService langdetectService;
 
     private final LanguageTo languageTo;
+    private ParseContext context;
 
     public LangdetectMapper(String simpleName,
                             MappedFieldType fieldType,
@@ -93,10 +90,19 @@ public class LangdetectMapper extends TextFieldMapper {
                 if (b != null && b.length > 0) {
                     value = new String(b, StandardCharsets.UTF_8);
                 }
-            } catch (JsonParseException e) {
-                logger.trace(e.getMessage(), e);
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+                // Try to decode manually because of
+                // com.fasterxml.jackson.core.JsonParseException: Current token (VALUE_STRING) not VALUE_EMBEDDED_OBJECT,
+                // can not access as binary
+                try {
+                    byte[] b = Base64Variants.getDefaultVariant().decode(parser.text());
+                    if (b != null && b.length > 0) {
+                        value = new String(b, StandardCharsets.UTF_8);
+                    }
+                } catch (Exception e2) {
+                    // if clear text, this may fail with IllegalArgumentException[Illegal white space character (code 0x20)
+                    // ignore exception
+                }
             }
         }
         try {
@@ -110,7 +116,6 @@ public class LangdetectMapper extends TextFieldMapper {
                 }
             }
         } catch (LanguageDetectionException e) {
-            logger.trace(e.getMessage(), e);
             context.createExternalValueContext("unknown");
         }
     }

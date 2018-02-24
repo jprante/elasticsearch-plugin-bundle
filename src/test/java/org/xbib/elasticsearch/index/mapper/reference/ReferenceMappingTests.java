@@ -88,8 +88,8 @@ public class ReferenceMappingTests extends ESSingleNodeTestCase {
 
     public void testRefMappings() throws Exception {
         IndexService indexService = createIndex("some_index", Settings.EMPTY,
-                "someType", getMapping("ref-mapping.json"));
-        DocumentMapper docMapper = indexService.mapperService().documentMapper("someType");
+                "some_type", getMapping("ref-mapping.json"));
+        DocumentMapper docMapper = indexService.mapperService().documentMapper("some_type");
         BytesReference json = jsonBuilder().startObject()
                 .field("someField", "1234")
                 .endObject().bytes();

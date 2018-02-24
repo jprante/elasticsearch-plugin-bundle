@@ -40,23 +40,6 @@ public class StandardnumberMappingTests extends ESSingleNodeTestCase {
         assertEquals(2, doc.getFields("someField").length);
         assertEquals("978-3-551-75213-0", doc.getFields("someField")[0].stringValue());
         assertEquals("9783551752130", doc.getFields("someField")[1].stringValue());
-
-        // re-parse it
-
-        // TODO(jprante) java.lang.AssertionError: expected:<2> but was:<0>
-
-        /*String builtMapping = docMapper.mappingSource().string();
-        // {"someType":{"properties":{"someField":{"type":"standardnumber","standardnumbers":[["isbn","issn"]]}}}
-        logger.warn("testSimpleStandardNumber: built mapping =" + builtMapping);
-        DocumentMapper docMapper2 = createIndex("some_index2")
-                .mapperService().documentMapperParser()
-                .parse("someType", new CompressedXContent(builtMapping));
-        json = XContentFactory.jsonBuilder().startObject().field("someField", sampleText).endObject().bytes();
-        sourceToParse = SourceToParse.source("some_index2", "someType", "1", json, XContentType.JSON);
-        doc = docMapper2.parse(sourceToParse).rootDoc();
-        assertEquals(2, doc.getFields("someField").length);
-        assertEquals("978-3-551-75213-0", doc.getFields("someField")[0].stringValue());
-        assertEquals("9783551752130", doc.getFields("someField")[1].stringValue());*/
     }
 
     public void testNonStandardnumber() throws Exception {

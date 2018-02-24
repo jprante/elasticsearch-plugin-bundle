@@ -3,6 +3,7 @@ package org.xbib.elasticsearch.common.decompound.fst;
 import org.apache.lucene.store.InputStreamDataInput;
 import org.apache.lucene.util.IntsRef;
 import org.apache.lucene.util.IntsRefBuilder;
+import org.apache.lucene.util.UnicodeUtil;
 import org.apache.lucene.util.fst.Builder;
 import org.apache.lucene.util.fst.FST;
 import org.apache.lucene.util.fst.FST.BytesReader;
@@ -12,15 +13,14 @@ import org.apache.lucene.util.fst.NoOutputs;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
-import static org.apache.lucene.util.UnicodeUtil.newString;
 
 /**
  * This is a copy of org.apache.lucene.analysis.de.compounds.GermanCompoundSplitter from
@@ -28,9 +28,7 @@ import static org.apache.lucene.util.UnicodeUtil.newString;
  */
 public class FstDecompounder {
 
-    private static final String[] morphemes = {
-                    "e", "es", "en", "er", "n", "ens", "ns", "s"
-            };
+    private static final List<String> morphemes = Arrays.asList("e", "es", "en", "er", "n", "ens", "ns", "s");
 
     /**
      * A static FSA with inflected and base surface forms.
@@ -47,12 +45,11 @@ public class FstDecompounder {
     public FstDecompounder(InputStream inputStream, List<String> glue) throws IOException {
         try {
             this.surfaceForms = new FST<>(new InputStreamDataInput(inputStream), NoOutputs.getSingleton());
+            // set up glue morphemes
+            this.glueMorphemes = createGlueMorphemes(glue != null && glue.size() > 0 ? glue :morphemes);
         } finally {
             inputStream.close();
         }
-        // set up glue morphemes
-        this.glueMorphemes = createGlueMorphemes(glue != null && glue.size() > 0 ?
-                glue : Arrays.asList(morphemes));
     }
 
     private FST<Object> createGlueMorphemes(List<String> glue) throws IOException {
@@ -95,13 +92,21 @@ public class FstDecompounder {
             builder.append(word);
             builder.reverse();
             for (int i = builder.length(); --i > 0; ) {
-                builder.setCharAt(i, Character.toLowerCase(builder.charAt(i)));
+                // see https://issues.apache.org/jira/browse/COLLECTIONS-294
+                builder.setCharAt(i, Character.toLowerCase(Character.toUpperCase(builder.charAt(i))));
             }
             IntsRefBuilder utf32Builder = new IntsRefBuilder();
             IntsRef utf32 = fromUTF16ToUTF32(builder, utf32Builder).get();
+            /*
+             * This array stores the minimum number of decomposition words during traversals to
+             * avoid splitting a larger word into smaller chunks.
+             */
+            IntsRefBuilder maxPathsBuilder = new IntsRefBuilder();
+            maxPathsBuilder.grow(utf32.length + 1);
+            Arrays.fill(maxPathsBuilder.ints(), 0, utf32.length + 1, Integer.MAX_VALUE);
             builder.setLength(0);
-            Deque<Chunk> chunks = new ArrayDeque<>();
-            matchWord(utf32, utf32.offset, builder, chunks);
+            Deque<Chunk> chunks = new LinkedList<>();
+            matchWord(utf32, utf32.offset, builder, maxPathsBuilder, chunks);
             return builder.length() == 0 ? null : builder;
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -111,7 +116,7 @@ public class FstDecompounder {
     /**
      * Consume a word, then recurse into glue morphemes/ further words.
      */
-    private void matchWord(IntsRef utf32, int offset, StringBuilder builder,
+    private void matchWord(IntsRef utf32, int offset, StringBuilder builder, IntsRefBuilder maxPathsBuilder,
                            Deque<Chunk> chunks) throws IOException {
         FST.Arc<Object> arc = surfaceForms.getFirstArc(new FST.Arc<>());
         FST.Arc<Object> scratch = new FST.Arc<>();
@@ -127,13 +132,6 @@ public class FstDecompounder {
                 wordsFromHere.add(new Chunk(offset, i + 1, ChunkType.WORD));
             }
         }
-        /*
-         * This array stores the minimum number of decomposition words during traversals to
-         * avoid splitting a larger word into smaller chunks.
-         */
-        IntsRefBuilder maxPathsBuilder = new IntsRefBuilder();
-        maxPathsBuilder.grow(utf32.length + 1);
-        Arrays.fill(maxPathsBuilder.ints(), 0, utf32.length + 1, Integer.MAX_VALUE);
         int[] maxPaths = maxPathsBuilder.ints();
         for (int j = wordsFromHere.size(); --j >= 0; ) {
             final Chunk ch = wordsFromHere.get(j);
@@ -156,13 +154,13 @@ public class FstDecompounder {
                             builder.append('.');
                         }
                         first = false;
-                        builder.append(new StringBuilder(newString(utf32.ints, chunk.start,
+                        builder.append(new StringBuilder(UnicodeUtil.newString(utf32.ints, chunk.start,
                                 chunk.end - chunk.start)).reverse());
                     }
                 }
             } else {
-                matchWord(utf32, ch.end, builder, chunks);
-                matchGlueMorpheme(utf32, ch.end, builder, chunks);
+                matchWord(utf32, ch.end, builder, maxPathsBuilder, chunks);
+                matchGlueMorpheme(utf32, ch.end, builder, maxPathsBuilder, chunks);
             }
             chunks.removeLast();
         }
@@ -172,6 +170,7 @@ public class FstDecompounder {
      * Consume a maximal glue morpheme, if any, and consume the next word.
      */
     private void matchGlueMorpheme(IntsRef utf32, final int offset, StringBuilder builder,
+                                   IntsRefBuilder maxPathsBuilder,
                                    Deque<Chunk> chunks) throws IOException {
         FST.Arc<Object> arc = glueMorphemes.getFirstArc(new FST.Arc<>());
         BytesReader br = glueMorphemes.getBytesReader();
@@ -184,7 +183,7 @@ public class FstDecompounder {
             if (arc.isFinal()) {
                 chunks.addLast(new Chunk(offset, i + 1, ChunkType.GLUE_MORPHEME));
                 if (i + 1 < utf32.offset + utf32.length) {
-                    matchWord(utf32, i + 1, builder, chunks);
+                    matchWord(utf32, i + 1, builder, maxPathsBuilder, chunks);
                 }
                 chunks.removeLast();
             }

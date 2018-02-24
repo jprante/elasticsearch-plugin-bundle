@@ -1,5 +1,6 @@
 package org.xbib.elasticsearch.index.analysis.icu.tools;
 
+import com.carrotsearch.randomizedtesting.annotations.SuppressForbidden;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.nio.file.Paths;
  */
 public class RBBIRuleCompilerTest {
 
+    @SuppressForbidden(value = "execute this test to create brk files")
     @Test
     public void testRBBICompile() throws IOException {
         RBBIRuleCompiler rbbiRuleCompiler = new RBBIRuleCompiler();

@@ -27,7 +27,6 @@ public class GNDReferenceMappingTests extends ESSingleNodeTestCase {
 
     private static final Logger logger = LogManager.getLogger(GNDReferenceMappingTests.class.getName());
 
-    /** The plugin classes that should be added to the node. */
     @Override
     protected Collection<Class<? extends Plugin>> getPlugins() {
         return Collections.singletonList(BundlePlugin.class);

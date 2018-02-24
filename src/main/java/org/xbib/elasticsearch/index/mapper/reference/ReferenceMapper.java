@@ -2,11 +2,9 @@ package org.xbib.elasticsearch.index.mapper.reference;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BoostQuery;
-import org.apache.lucene.search.DocValuesFieldExistsQuery;
 import org.apache.lucene.search.MultiTermQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermInSetQuery;
@@ -23,12 +21,12 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.support.XContentMapValues;
 import org.elasticsearch.index.mapper.FieldMapper;
-import org.elasticsearch.index.mapper.FieldNamesFieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.mapper.TextFieldMapper;
+import org.elasticsearch.index.mapper.TypeParsers;
 import org.elasticsearch.index.query.QueryShardContext;
 
 import java.io.IOException;
@@ -37,8 +35,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import static org.elasticsearch.index.mapper.TypeParsers.parseField;
 
 /**
  * Reference field mapper.
@@ -90,42 +86,6 @@ public class ReferenceMapper extends FieldMapper {
         this.contentMapper = contentMapper;
     }
 
-    /**
-     * Creates instances of the fields that the current field should be copied to.
-     */
-    private static void parseCopyFields(ParseContext originalContext, List<String> copyToFields) throws IOException {
-        if (!originalContext.isWithinCopyTo() && !copyToFields.isEmpty()) {
-            ParseContext context = originalContext.createCopyToContext();
-            for (String field : copyToFields) {
-                // In case of a hierarchy of nested documents, we need to figure out
-                // which document the field should go to
-                ParseContext.Document targetDoc = null;
-                for (ParseContext.Document doc = context.doc(); doc != null; doc = doc.getParent()) {
-                    if (field.startsWith(doc.getPrefix())) {
-                        targetDoc = doc;
-                        break;
-                    }
-                }
-                if (targetDoc == null) {
-                    throw new IllegalArgumentException("target doc is null");
-                }
-                final ParseContext copyToContext;
-                if (targetDoc == context.doc()) {
-                    copyToContext = context;
-                } else {
-                    copyToContext = context.switchDoc(targetDoc);
-                }
-                // simplified - no dynamic field creation
-                FieldMapper fieldMapper = copyToContext.docMapper().mappers().getMapper(field);
-                if (fieldMapper != null) {
-                    fieldMapper.parse(copyToContext);
-                } else {
-                    throw new MapperParsingException("attempt to copy value to non-existing field [" + field + "]");
-                }
-            }
-        }
-    }
-
     @Override
     @SuppressWarnings("unchecked")
     public Mapper parse(ParseContext originalContext) throws IOException {
@@ -150,7 +110,7 @@ public class ReferenceMapper extends FieldMapper {
                                 type = parser.text();
                                 break;
                             case "ref_fields":
-                                // single field
+                                // single field only
                                 fields = new LinkedList<>();
                                 fields.add(parser.text());
                                 break;
@@ -158,8 +118,7 @@ public class ReferenceMapper extends FieldMapper {
                                 break;
                         }
                     }
-                } else if (token == XContentParser.Token.START_ARRAY &&
-                        "ref_fields".equals(currentFieldName)) {
+                } else if (token == XContentParser.Token.START_ARRAY && "ref_fields".equals(currentFieldName)) {
                     fields = new LinkedList<>();
                     while (parser.nextToken() != XContentParser.Token.END_ARRAY) {
                         if (parser.text() != null) {
@@ -197,7 +156,9 @@ public class ReferenceMapper extends FieldMapper {
                                 }
                             }
                         }
-                        list = XContentMapValues.extractRawValues(field, response.getSource());
+                        if (list.isEmpty()) {
+                            list = XContentMapValues.extractRawValues(field, response.getSource());
+                        }
                         for (Object object : list) {
                             context = context.createExternalValueContext(object);
                             if (copyTo != null) {
@@ -211,19 +172,26 @@ public class ReferenceMapper extends FieldMapper {
             } catch (Exception e) {
                 logger.error("error while getting ref doc " + index + "/" + type + "/"+ content + ": " + e.getMessage(), e);
             }
+        } else {
+            logger.warn("missing prerequisite: client={} index={} type={} fields={}",
+                    client, index, type, fields);
         }
         return null;
     }
 
     @Override
-    protected void parseCreateField(ParseContext parseContext, List<IndexableField> fields) throws IOException {
+    protected void parseCreateField(ParseContext parseContext, List<IndexableField> fields) {
         // override
+    }
+
+    @Override
+    protected void doMerge(Mapper mergeWith, boolean updateAllTypes) {
+        super.doMerge(mergeWith, updateAllTypes);
     }
 
     @Override
     protected void doXContentBody(XContentBuilder builder, boolean includeDefaults, Params params) throws IOException {
         super.doXContentBody(builder, includeDefaults, params);
-        builder.field("type", CONTENT_TYPE);
         if (index != null) {
             builder.field("ref_index", index);
         }
@@ -243,9 +211,37 @@ public class ReferenceMapper extends FieldMapper {
         return CONTENT_TYPE;
     }
 
-    @Override
-    protected void doMerge(Mapper mergeWith, boolean updateAllTypes) {
-        super.doMerge(mergeWith, updateAllTypes);
+    private static void parseCopyFields(ParseContext originalContext, List<String> copyToFields) throws IOException {
+        if (!originalContext.isWithinCopyTo() && !copyToFields.isEmpty()) {
+            ParseContext context = originalContext.createCopyToContext();
+            for (String field : copyToFields) {
+                // In case of a hierarchy of nested documents, we need to figure out
+                // which document the field should go to
+                ParseContext.Document targetDoc = null;
+                for (ParseContext.Document doc = context.doc(); doc != null; doc = doc.getParent()) {
+                    if (field.startsWith(doc.getPrefix())) {
+                        targetDoc = doc;
+                        break;
+                    }
+                }
+                if (targetDoc == null) {
+                    throw new IllegalArgumentException("target doc is null");
+                }
+                final ParseContext copyToContext;
+                if (targetDoc == context.doc()) {
+                    copyToContext = context;
+                } else {
+                    copyToContext = context.switchDoc(targetDoc);
+                }
+                // simplified - no dynamic field creation
+                FieldMapper fieldMapper = copyToContext.docMapper().mappers().getMapper(field);
+                if (fieldMapper != null) {
+                    fieldMapper.parse(copyToContext);
+                } else {
+                    throw new MapperParsingException("attempt to copy value to non-existing field [" + field + "]");
+                }
+            }
+        }
     }
 
     public static final class ReferenceFieldType extends MappedFieldType implements Cloneable {
@@ -307,11 +303,7 @@ public class ReferenceMapper extends FieldMapper {
 
         @Override
         public Query existsQuery(QueryShardContext context) {
-            if (hasDocValues()) {
-                return new DocValuesFieldExistsQuery(name());
-            } else {
-                return new TermQuery(new Term(FieldNamesFieldMapper.NAME, name()));
-            }
+            throw new UnsupportedOperationException();
         }
 
         @Override
@@ -375,22 +367,9 @@ public class ReferenceMapper extends FieldMapper {
         @Override
         public ReferenceMapper build(BuilderContext context) {
             FieldMapper contentMapper = (FieldMapper) contentBuilder.build(context);
-            MappedFieldType defaultFieldType = FIELD_TYPE.clone();
-            if (this.fieldType.indexOptions() != IndexOptions.NONE && !this.fieldType.tokenized()) {
-                defaultFieldType.setOmitNorms(true);
-                defaultFieldType.setIndexOptions(IndexOptions.DOCS);
-                if (!this.omitNormsSet && Float.compare(this.fieldType.boost(), 1f) == 0) {
-                    this.fieldType.setOmitNorms(true);
-                }
-                if (!this.indexOptionsSet) {
-                    this.fieldType.setIndexOptions(IndexOptions.DOCS);
-                }
-            }
-            defaultFieldType.freeze();
-            this.setupFieldType(context);
-
+            setupFieldType(context);
             return new ReferenceMapper(name,
-                    this.fieldType,
+                    fieldType,
                     defaultFieldType,
                     client,
                     refIndex,
@@ -416,7 +395,7 @@ public class ReferenceMapper extends FieldMapper {
         public Mapper.Builder parse(String name, Map<String, Object> node, ParserContext parserContext)
                 throws MapperParsingException {
             ReferenceMapper.Builder builder = new Builder(name, client);
-            parseField(builder, name, node, parserContext);
+            TypeParsers.parseField(builder, name, node, parserContext);
             Iterator<Map.Entry<String, Object>> iterator = node.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<String, Object> entry = iterator.next();
@@ -424,6 +403,7 @@ public class ReferenceMapper extends FieldMapper {
                 Object fieldNode = entry.getValue();
                 switch (fieldName) {
                     case "analyzer": {
+                        // ignore
                         iterator.remove();
                         break;
                     }

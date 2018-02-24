@@ -52,7 +52,6 @@ public class LangdetectMappingTests extends ESSingleNodeTestCase {
                 "someType", getMapping("base64-mapping.json"));
         DocumentMapper docMapper = indexService.mapperService().documentMapper("someType");
         String sampleBinary = copyToStringFromClasspath("base64.txt");
-        //String sampleText = copyToStringFromClasspath("base64-decoded.txt");
         BytesReference json = XContentFactory.jsonBuilder()
                 .startObject().field("someField", sampleBinary).endObject().bytes();
         SourceToParse sourceToParse = SourceToParse.source("some_index", "someType", "1", json, XContentType.JSON);
@@ -60,10 +59,8 @@ public class LangdetectMappingTests extends ESSingleNodeTestCase {
         for (IndexableField field : doc.rootDoc().getFields()) {
             logger.info("testBinary {} = {} stored={}", field.name(), field.stringValue(), field.fieldType().stored());
         }
-        assertEquals(2, doc.rootDoc().getFields("someField").length);
-        // must be en, then de
+        assertTrue(doc.rootDoc().getFields("someField").length >= 1);
         assertEquals("en", doc.rootDoc().getFields("someField")[0].stringValue());
-        assertEquals("de", doc.rootDoc().getFields("someField")[1].stringValue());
     }
 
     public void testBinary2() throws Exception {
@@ -98,7 +95,7 @@ public class LangdetectMappingTests extends ESSingleNodeTestCase {
         for (IndexableField field : doc.rootDoc().getFields()) {
             logger.info("custom {} = {} stored={}", field.name(), field.stringValue(), field.fieldType().stored());
         }
-        //assertEquals(1, doc.rootDoc().getFields("someField").length);
+        assertEquals(1, doc.rootDoc().getFields("someField").length);
         assertEquals("Deutsch", doc.rootDoc().getFields("someField")[0].stringValue());
     }
 

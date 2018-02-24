@@ -75,7 +75,7 @@ public class FstDecompoundTokenFilter extends TokenFilter {
         return true;
     }
 
-    protected synchronized boolean decompound() {
+    protected boolean decompound() {
         String term = new String(termAtt.buffer(), 0, termAtt.length());
         tokens.addAll(doDecompound(term));
         return tokens.isEmpty();
@@ -85,7 +85,7 @@ public class FstDecompoundTokenFilter extends TokenFilter {
         List<String> list = new LinkedList<>();
         for (String suggestions : fstDecompounder.decompound(term)) {
             for (String suggestion : suggestions.split(",")) {
-                tokens.addAll(Arrays.asList(suggestion.split("\\.")));
+                list.addAll(Arrays.asList(suggestion.split("\\.")));
             }
         }
         return list;
