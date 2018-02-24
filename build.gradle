@@ -43,7 +43,7 @@ apply plugin: 'org.xbib.gradle.plugin.asciidoctor'
 esplugin {
     description 'Plugin bundle for Elasticsearch'
     classname 'org.xbib.elasticsearch.plugin.bundle.BundlePlugin'
-    name 'bundle'
+    name 'elasticsearch-plugin-bundle'
     url 'https://github.com/jprante/elasticsearch-plugin-bundle'
 }
 
@@ -54,6 +54,7 @@ configurations {
 dependencies {
     compile "com.ibm.icu:icu4j:${project.property('icu4j.version')}"
     compile "org.xbib:standardnumber:${project.property('standardnumber.version')}"
+    testCompile "org.xbib.elasticsearch:elasticsearch-analysis-common:${project.property('xbib-elasticsearch-test.version')}"
     testCompile "org.apache.logging.log4j:log4j-core:${project.property('log4j.version')}"
     testCompile "org.elasticsearch.plugin:transport-netty4-client:${project.property('elasticsearch.version')}"
     wagon "org.apache.maven.wagon:wagon-ssh:${project.property('wagon.version')}"
@@ -61,8 +62,6 @@ dependencies {
 
 sourceCompatibility = JavaVersion.VERSION_1_9
 targetCompatibility = JavaVersion.VERSION_1_8
-
-esTest.dependsOn jar
 
 test {
     enabled = false
@@ -73,19 +72,27 @@ test {
         exceptionFormat = 'full'
     }
 }
-
 randomizedTest.enabled = false
+esTest.enabled = true
+esTest.dependsOn jar
 
 clean {
     delete fileTree('.') { include '.local*.log' }
 }
 
+artifacts {
+    archives sourcesJar, javadocJar
+}
 
 if (project.hasProperty('signing.keyId')) {
     signing {
         sign configurations.archives
     }
 }
+
+apply from: 'gradle/ext.gradle'
+apply from: 'gradle/publish.gradle'
+apply from: 'gradle/sourcequality.gradle'
 
 asciidoctor {
     attributes toc: 'left',

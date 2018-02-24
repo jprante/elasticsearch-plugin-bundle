@@ -5,9 +5,8 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.index.analysis.TokenizerFactory;
-import org.xbib.elasticsearch.index.analysis.unique.UniqueTokenFilterFactory;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Standard number analyzer.
@@ -16,21 +15,18 @@ public class StandardnumberAnalyzer extends Analyzer {
 
     private final TokenizerFactory tokenizerFactory;
     private final StandardnumberTokenFilterFactory stdnumTokenFilterFactory;
-    private final UniqueTokenFilterFactory uniqueTokenFilterFactory;
 
     public StandardnumberAnalyzer(TokenizerFactory tokenizerFactory,
-                                  StandardnumberTokenFilterFactory stdnumTokenFilterFactory,
-                                  UniqueTokenFilterFactory uniqueTokenFilterFactory) {
+                                  StandardnumberTokenFilterFactory stdnumTokenFilterFactory) {
         this.tokenizerFactory = tokenizerFactory;
         this.stdnumTokenFilterFactory = stdnumTokenFilterFactory;
-        this.uniqueTokenFilterFactory = uniqueTokenFilterFactory;
     }
 
     @Override
     protected TokenStreamComponents createComponents(String fieldName) {
         Tokenizer tokenizer = tokenizerFactory.create();
         TokenStream tokenStream = tokenizer;
-        for (TokenFilterFactory tokenFilter : Arrays.asList(stdnumTokenFilterFactory, uniqueTokenFilterFactory)) {
+        for (TokenFilterFactory tokenFilter : Collections.singletonList(stdnumTokenFilterFactory)) {
             tokenStream = tokenFilter.create(tokenStream);
         }
         return new TokenStreamComponents(tokenizer, tokenStream);

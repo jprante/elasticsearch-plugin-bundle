@@ -1,6 +1,7 @@
 package org.xbib.elasticsearch.index.analysis.lemmatize;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.test.ESTestCase;
@@ -57,7 +58,7 @@ public class LemmatizeTokenFilterTests extends ESTokenStreamTestCase {
                 .build();
         ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
                 settings,
-                new BundlePlugin(Settings.EMPTY));
+                new BundlePlugin(Settings.EMPTY), new CommonAnalysisPlugin());
         Analyzer myanalyzer = analysis.indexAnalyzers.get( "myanalyzer");
         assertAnalyzesTo(myanalyzer, source, expected);
     }
@@ -118,7 +119,7 @@ public class LemmatizeTokenFilterTests extends ESTokenStreamTestCase {
                 .build();
         ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
                 settings,
-                new BundlePlugin(Settings.EMPTY));
+                new BundlePlugin(Settings.EMPTY), new CommonAnalysisPlugin());
         Analyzer myanalyzer =analysis.indexAnalyzers.get("myanalyzer");
         assertAnalyzesTo(myanalyzer, source, expected);
     }
@@ -181,7 +182,7 @@ public class LemmatizeTokenFilterTests extends ESTokenStreamTestCase {
                 .build();
         ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
                 settings,
-                new BundlePlugin(Settings.EMPTY));
+                new BundlePlugin(Settings.EMPTY), new CommonAnalysisPlugin());
         Analyzer myanalyzer = analysis.indexAnalyzers.get("myanalyzer");
         assertAnalyzesTo(myanalyzer, source, expected);
     }

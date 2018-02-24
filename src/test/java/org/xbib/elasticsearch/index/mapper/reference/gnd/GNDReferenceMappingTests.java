@@ -7,6 +7,7 @@ import org.elasticsearch.action.search.SearchAction;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.WriteRequest;
+import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.plugins.Plugin;
@@ -15,8 +16,8 @@ import org.elasticsearch.test.ESSingleNodeTestCase;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 import static org.elasticsearch.common.io.Streams.copyToString;
 
@@ -29,7 +30,7 @@ public class GNDReferenceMappingTests extends ESSingleNodeTestCase {
 
     @Override
     protected Collection<Class<? extends Plugin>> getPlugins() {
-        return Collections.singletonList(BundlePlugin.class);
+        return Arrays.asList(BundlePlugin.class, CommonAnalysisPlugin.class);
     }
 
     public void testGND() throws Exception {

@@ -36,8 +36,6 @@ import org.xbib.elasticsearch.index.analysis.concat.ConcatTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.concat.PairTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.decompound.patricia.DecompoundTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.decompound.fst.FstDecompoundTokenFilterFactory;
-import org.xbib.elasticsearch.index.analysis.keyword.KeywordMarkerTokenFilterFactory;
-import org.xbib.elasticsearch.index.analysis.keyword.KeywordRepeatTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.lemmatize.LemmatizeTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.german.GermanNormalizationFilterFactory;
 import org.xbib.elasticsearch.index.analysis.hyphen.HyphenAnalyzerProvider;
@@ -54,13 +52,11 @@ import org.xbib.elasticsearch.index.analysis.icu.IcuTransformTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.icu.segmentation.IcuTokenizerFactory;
 import org.xbib.elasticsearch.index.analysis.naturalsort.NaturalSortKeyAnalyzerProvider;
 import org.xbib.elasticsearch.index.analysis.naturalsort.NaturalSortKeyTokenizerFactory;
-import org.xbib.elasticsearch.index.analysis.snowball.SnowballTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.sortform.SortformAnalyzerProvider;
 import org.xbib.elasticsearch.index.analysis.sortform.SortformTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberAnalyzerProvider;
 import org.xbib.elasticsearch.index.analysis.standardnumber.StandardnumberTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.symbolname.SymbolnameTokenFilterFactory;
-import org.xbib.elasticsearch.index.analysis.unique.UniqueTokenFilterFactory;
 import org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilter2Factory;
 import org.xbib.elasticsearch.index.analysis.worddelimiter.WordDelimiterFilterFactory;
 import org.xbib.elasticsearch.index.analysis.year.GregorianYearTokenFilterFactory;
@@ -107,10 +103,6 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
     public List<Setting<?>> getSettings() {
         return Arrays.asList(
                 new Setting<>("plugins.xbib.icu.enabled", "true", Function.identity(), Setting.Property.NodeScope),
-                new Setting<>("plugins.xbib.snowball.enabled", "true", Function.identity(), Setting.Property.NodeScope),
-                new Setting<>("plugins.xbib.unique.enabled", "true", Function.identity(), Setting.Property.NodeScope),
-                new Setting<>("plugins.xbib.keywordmarker.enabled", "true", Function.identity(), Setting.Property.NodeScope),
-                new Setting<>("plugins.xbib.keywordrepeat.enabled", "true", Function.identity(), Setting.Property.NodeScope),
                 new Setting<>("plugins.xbib.autophrase.enabled", "true", Function.identity(), Setting.Property.NodeScope),
                 new Setting<>("plugins.xbib.baseform.enabled", "true", Function.identity(), Setting.Property.NodeScope),
                 new Setting<>("plugins.xbib.concat.enabled", "true", Function.identity(), Setting.Property.NodeScope),
@@ -151,18 +143,6 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
             extra.put("icu_folding", IcuFoldingTokenFilterFactory::new);
             extra.put("icu_transform", IcuTransformTokenFilterFactory::new);
             extra.put("icu_numberformat", IcuNumberFormatTokenFilterFactory::new);
-        }
-        if (settings.getAsBoolean("plugins.xbib.snowball.enabled", true)) {
-            extra.put("snowball", SnowballTokenFilterFactory::new);
-        }
-        if (settings.getAsBoolean("plugins.xbib.unique.enabled", true)) {
-            extra.put("unique", UniqueTokenFilterFactory::new);
-        }
-        if (settings.getAsBoolean("plugins.xbib.keywordmarker.enabled", true)) {
-            extra.put("keyword_marker", KeywordMarkerTokenFilterFactory::new);
-        }
-        if (settings.getAsBoolean("plugins.xbib.keywordrepeat.enabled", true)) {
-            extra.put("keyword_repeat", KeywordRepeatTokenFilterFactory::new);
         }
         if (settings.getAsBoolean("plugins.xbib.autophrase.enabled", true)) {
             extra.put("auto_phrase", AutoPhrasingTokenFilterFactory::new);

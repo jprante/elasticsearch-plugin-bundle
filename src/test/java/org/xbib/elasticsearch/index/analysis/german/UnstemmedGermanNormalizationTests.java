@@ -2,6 +2,7 @@ package org.xbib.elasticsearch.index.analysis.german;
 
 import org.apache.lucene.analysis.Analyzer;
 
+import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.test.ESTestCase;
@@ -40,7 +41,7 @@ public class UnstemmedGermanNormalizationTests extends ESTokenStreamTestCase {
                 .build();
         ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
                 settings,
-                new BundlePlugin(Settings.EMPTY));
+                new BundlePlugin(Settings.EMPTY), new CommonAnalysisPlugin());
         Analyzer analyzer = analysis.indexAnalyzers.get("default");
         assertTokenStreamContents(analyzer.tokenStream(null, new StringReader(source)), expected);
     }
@@ -61,7 +62,7 @@ public class UnstemmedGermanNormalizationTests extends ESTokenStreamTestCase {
                 .build();
         ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
                 settings,
-                new BundlePlugin(Settings.EMPTY));
+                new BundlePlugin(Settings.EMPTY), new CommonAnalysisPlugin());
         Analyzer analyzer = analysis.indexAnalyzers.get("default");
         assertTokenStreamContents(analyzer.tokenStream(null, new StringReader(source)), expected);
     }
@@ -78,7 +79,7 @@ public class UnstemmedGermanNormalizationTests extends ESTokenStreamTestCase {
                 .build();
         ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
                 settings,
-                new BundlePlugin(Settings.EMPTY));
+                new BundlePlugin(Settings.EMPTY), new CommonAnalysisPlugin());
         Analyzer analyzer = analysis.indexAnalyzers.get("default");
         assertTokenStreamContents(analyzer.tokenStream(null, new StringReader(source)), expected);
     }
@@ -95,7 +96,7 @@ public class UnstemmedGermanNormalizationTests extends ESTokenStreamTestCase {
                 .build();
         ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
                 settings,
-                new BundlePlugin(Settings.EMPTY));
+                new BundlePlugin(Settings.EMPTY), new CommonAnalysisPlugin());
         Analyzer analyzer = analysis.indexAnalyzers.get("unstemmed");
         assertTokenStreamContents(analyzer.tokenStream("test", new StringReader(source)), expected);
     }
@@ -111,7 +112,7 @@ public class UnstemmedGermanNormalizationTests extends ESTokenStreamTestCase {
                 .build();
         ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
                 settings,
-                new BundlePlugin(Settings.EMPTY));
+                new BundlePlugin(Settings.EMPTY), new CommonAnalysisPlugin());
         Analyzer analyzer = analysis.indexAnalyzers.get("unstemmed");
         assertTokenStreamContents(analyzer.tokenStream("test", new StringReader(source)), expected);
     }
@@ -131,7 +132,7 @@ public class UnstemmedGermanNormalizationTests extends ESTokenStreamTestCase {
                 .build();
         ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
                 settings,
-                new BundlePlugin(Settings.EMPTY));
+                new BundlePlugin(Settings.EMPTY), new CommonAnalysisPlugin());
         Analyzer analyzer = analysis.indexAnalyzers.get("default");
         assertTokenStreamContents(analyzer.tokenStream(null, new StringReader(source)), expected);
     }

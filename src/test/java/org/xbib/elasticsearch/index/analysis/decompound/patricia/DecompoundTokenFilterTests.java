@@ -2,6 +2,7 @@ package org.xbib.elasticsearch.index.analysis.decompound.patricia;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
+import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
@@ -55,7 +56,7 @@ public class DecompoundTokenFilterTests extends ESTokenStreamTestCase {
                 .build();
         ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
                 settings,
-                new BundlePlugin(Settings.EMPTY));
+                new BundlePlugin(Settings.EMPTY), new CommonAnalysisPlugin());
         TokenFilterFactory tokenFilter = analysis.tokenFilter.get("decomp");
         Tokenizer tokenizer = analysis.tokenizer.get("standard").create();
         tokenizer.setReader(new StringReader(source));
@@ -80,8 +81,8 @@ public class DecompoundTokenFilterTests extends ESTokenStreamTestCase {
                 .build();
         ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
                 settings,
-                new BundlePlugin(Settings.EMPTY));
-        Analyzer analyzer =analysis.indexAnalyzers.get("with_subwords_only");
+                new BundlePlugin(Settings.EMPTY), new CommonAnalysisPlugin());
+        Analyzer analyzer = analysis.indexAnalyzers.get("with_subwords_only");
         assertNotNull(analyzer);
         assertTokenStreamContents(analyzer.tokenStream("test-field", source), expected);
     }

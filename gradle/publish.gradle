@@ -1,12 +1,13 @@
 
 task xbibUpload(type: Upload) {
+    group = 'publish'
     configuration = configurations.archives
     uploadDescriptor = true
     repositories {
         if (project.hasProperty('xbibUsername')) {
             mavenDeployer {
                 configuration = configurations.wagon
-                repository(url: uri('sftp://xbib.org/repository')) {
+                repository(url: uri(project.property('xbibUrl'))) {
                     authentication(userName: xbibUsername, privateKey: xbibPrivateKey)
                 }
             }
@@ -15,6 +16,7 @@ task xbibUpload(type: Upload) {
 }
 
 task sonatypeUpload(type: Upload) {
+    group = 'publish'
     configuration = configurations.archives
     uploadDescriptor = true
     repositories {
