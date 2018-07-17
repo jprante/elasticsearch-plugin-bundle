@@ -31,11 +31,11 @@ import java.util.Map;
 /**
  * Language detection field mapper.
  */
-public class LangdetectMapper extends TextFieldMapper {
+public class LangdetectMapper extends FieldMapper {
 
     public static final String CONTENT_TYPE = "langdetect";
 
-    public static final MappedFieldType FIELD_TYPE = new TextFieldType();
+    public static final MappedFieldType FIELD_TYPE = new TextFieldMapper.TextFieldType();
 
     static {
         FIELD_TYPE.setStored(true);
@@ -54,14 +54,12 @@ public class LangdetectMapper extends TextFieldMapper {
     public LangdetectMapper(String simpleName,
                             MappedFieldType fieldType,
                             MappedFieldType defaultFieldType,
-                            int positionIncrementGap,
                             Settings indexSettings,
                             MultiFields multiFields,
                             CopyTo copyTo,
                             LanguageTo languageTo,
                             LangdetectService langdetectService) {
-        super(simpleName, fieldType, defaultFieldType,
-                positionIncrementGap, false, indexSettings, multiFields, copyTo);
+        super(simpleName, fieldType, defaultFieldType, indexSettings, multiFields, copyTo);
         this.langdetectService = langdetectService;
         this.languageTo = languageTo;
     }
@@ -204,7 +202,7 @@ public class LangdetectMapper extends TextFieldMapper {
         }
     }
 
-    public static class Builder extends FieldMapper.Builder<Builder, TextFieldMapper> {
+    public static class Builder extends FieldMapper.Builder<Builder, LangdetectMapper> {
 
         protected int positionIncrementGap = -1;
 
@@ -302,7 +300,6 @@ public class LangdetectMapper extends TextFieldMapper {
             return new LangdetectMapper(name,
                     fieldType(),
                     defaultFieldType,
-                    positionIncrementGap,
                     context.indexSettings(),
                     multiFieldsBuilder.build(this, context),
                     copyTo,

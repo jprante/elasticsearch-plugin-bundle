@@ -34,7 +34,8 @@ public class StandardnumberMappingTests extends ESSingleNodeTestCase {
                 .mapperService().documentMapperParser()
                 .parse("someType", new CompressedXContent(mapping));
         String sampleText = "978-3-551-75213-0";
-        BytesReference json = XContentFactory.jsonBuilder().startObject().field("someField", sampleText).endObject().bytes();
+        BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder().startObject()
+                .field("someField", sampleText).endObject());
         SourceToParse sourceToParse = SourceToParse.source("some_index", "someType", "1", json, XContentType.JSON);
         ParseContext.Document doc = docMapper.parse(sourceToParse).rootDoc();
         assertEquals(2, doc.getFields("someField").length);
@@ -48,7 +49,8 @@ public class StandardnumberMappingTests extends ESSingleNodeTestCase {
                 .mapperService().documentMapperParser()
                 .parse("someType", new CompressedXContent(mapping));
         String sampleText = "Hello world";
-        BytesReference json = XContentFactory.jsonBuilder().startObject().field("someField", sampleText).endObject().bytes();
+        BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder()
+                .startObject().field("someField", sampleText).endObject());
         SourceToParse sourceToParse = SourceToParse.source("some_index", "someType", "1", json, XContentType.JSON);
         ParseContext.Document doc = docMapper.parse(sourceToParse).rootDoc();
         assertEquals(0, doc.getFields("someField").length);
@@ -58,7 +60,8 @@ public class StandardnumberMappingTests extends ESSingleNodeTestCase {
         DocumentMapper docMapper2 = createIndex("some_index2")
                 .mapperService().documentMapperParser()
                 .parse("someType", new CompressedXContent(builtMapping));
-        json = XContentFactory.jsonBuilder().startObject().field("someField", sampleText).endObject().bytes();
+        json = BytesReference.bytes(XContentFactory.jsonBuilder().startObject()
+                .field("someField", sampleText).endObject());
         sourceToParse = SourceToParse.source("some_index2", "someType", "1", json, XContentType.JSON);
         doc = docMapper2.parse(sourceToParse).rootDoc();
         assertEquals(0, doc.getFields("someField").length);

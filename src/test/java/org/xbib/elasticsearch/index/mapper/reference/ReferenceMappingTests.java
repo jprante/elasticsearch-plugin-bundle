@@ -90,9 +90,9 @@ public class ReferenceMappingTests extends ESSingleNodeTestCase {
         IndexService indexService = createIndex("some_index", Settings.EMPTY,
                 "some_type", getMapping("ref-mapping.json"));
         DocumentMapper docMapper = indexService.mapperService().documentMapper("some_type");
-        BytesReference json = jsonBuilder().startObject()
+        BytesReference json = BytesReference.bytes(jsonBuilder().startObject()
                 .field("someField", "1234")
-                .endObject().bytes();
+                .endObject());
         SourceToParse sourceToParse = SourceToParse.source("some_index", "some_type", "1", json, XContentType.JSON);
         ParseContext.Document doc = docMapper.parse(sourceToParse).rootDoc();
         assertNotNull(doc);
@@ -111,12 +111,12 @@ public class ReferenceMappingTests extends ESSingleNodeTestCase {
         IndexService indexService = createIndex("docs", Settings.EMPTY,
                 "docs", getMapping("ref-mapping-authorities.json"));
         DocumentMapper docMapper = indexService.mapperService().documentMapper("docs");
-        BytesReference json = jsonBuilder().startObject()
+        BytesReference json = BytesReference.bytes(jsonBuilder().startObject()
                 .field("title", "A title")
                 .field("dc.creator", "A creator")
                 .field("bib.contributor", "A contributor")
                 .field("authorID", "1")
-                .endObject().bytes();
+                .endObject());
         SourceToParse sourceToParse = SourceToParse.source("docs", "docs", "1", json, XContentType.JSON);
         ParseContext.Document doc = docMapper.parse(sourceToParse).rootDoc();
         for (IndexableField field : doc.getFields()) {
@@ -134,10 +134,10 @@ public class ReferenceMappingTests extends ESSingleNodeTestCase {
         IndexService indexService = createIndex("docs", Settings.EMPTY,
                 "docs", getMapping("ref-mapping-from-id.json"));
         DocumentMapper docMapper = indexService.mapperService().documentMapper("docs");
-        BytesReference json = jsonBuilder().startObject()
+        BytesReference json = BytesReference.bytes(jsonBuilder().startObject()
                 .field("title", "A title")
                 .field("authorID", "1")
-                .endObject().bytes();
+                .endObject());
         SourceToParse sourceToParse = SourceToParse.source("docs", "docs", "1", json, XContentType.JSON);
         ParseContext.Document doc = docMapper.parse(sourceToParse).rootDoc();
         assertEquals(1, doc.getFields("ref").length, 1);

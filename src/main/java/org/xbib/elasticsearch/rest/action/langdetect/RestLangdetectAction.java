@@ -5,6 +5,7 @@ import org.elasticsearch.common.CheckedConsumer;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.xcontent.DeprecationHandler;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.BaseRestHandler;
@@ -66,7 +67,8 @@ public class RestLangdetectAction extends BaseRestHandler {
         BytesReference content = restRequest.content();
         XContentType xContentType = XContentType.JSON;
         if (content.length() > 0) {
-            try (XContentParser parser = xContentType.xContent().createParser(restRequest.getXContentRegistry(), content)) {
+            try (XContentParser parser = xContentType.xContent().createParser(restRequest.getXContentRegistry(),
+                    DeprecationHandler.THROW_UNSUPPORTED_OPERATION, content.streamInput())) {
                 withParser.accept(parser);
             }
         } else {

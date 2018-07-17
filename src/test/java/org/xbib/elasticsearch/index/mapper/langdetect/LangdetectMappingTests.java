@@ -39,8 +39,8 @@ public class LangdetectMappingTests extends ESSingleNodeTestCase {
                 "someType", getMapping("simple-mapping.json"));
         DocumentMapper docMapper = indexService.mapperService().documentMapper("someType");
         String sampleText = copyToStringFromClasspath("english.txt");
-        BytesReference json = XContentFactory.jsonBuilder()
-                .startObject().field("someField", sampleText).endObject().bytes();
+        BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder()
+                .startObject().field("someField", sampleText).endObject());
         SourceToParse sourceToParse = SourceToParse.source("some_index", "someType", "1", json, XContentType.JSON);
         ParsedDocument doc = docMapper.parse(sourceToParse);
         assertEquals(1, doc.rootDoc().getFields("someField").length);
@@ -52,8 +52,8 @@ public class LangdetectMappingTests extends ESSingleNodeTestCase {
                 "someType", getMapping("base64-mapping.json"));
         DocumentMapper docMapper = indexService.mapperService().documentMapper("someType");
         String sampleBinary = copyToStringFromClasspath("base64.txt");
-        BytesReference json = XContentFactory.jsonBuilder()
-                .startObject().field("someField", sampleBinary).endObject().bytes();
+        BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder()
+                .startObject().field("someField", sampleBinary).endObject());
         SourceToParse sourceToParse = SourceToParse.source("some_index", "someType", "1", json, XContentType.JSON);
         ParsedDocument doc = docMapper.parse(sourceToParse);
         for (IndexableField field : doc.rootDoc().getFields()) {
@@ -70,7 +70,8 @@ public class LangdetectMappingTests extends ESSingleNodeTestCase {
                 .parse("someType", new CompressedXContent(mapping));
         //String sampleBinary = copyToStringFromClasspath("base64-2.txt");
         String sampleText = copyToStringFromClasspath("base64-2-decoded.txt");
-        BytesReference json = XContentFactory.jsonBuilder().startObject().field("content", sampleText).endObject().bytes();
+        BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder().startObject()
+                .field("content", sampleText).endObject());
         SourceToParse sourceToParse = SourceToParse.source("some_index", "someType", "1", json, XContentType.JSON);
         ParsedDocument doc = docMapper.parse(sourceToParse);
         for (IndexableField field : doc.rootDoc().getFields()) {
@@ -88,8 +89,8 @@ public class LangdetectMappingTests extends ESSingleNodeTestCase {
                 "someType", getMapping("mapping.json"));
         DocumentMapper docMapper = indexService.mapperService().documentMapper("someType");
         String sampleText = copyToStringFromClasspath("german.txt");
-        BytesReference json = XContentFactory.jsonBuilder()
-                .startObject().field("someField", sampleText).endObject().bytes();
+        BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder()
+                .startObject().field("someField", sampleText).endObject());
         SourceToParse sourceToParse = SourceToParse.source("some_index", "someType", "1", json, XContentType.JSON);
         ParsedDocument doc = docMapper.parse(sourceToParse);
         for (IndexableField field : doc.rootDoc().getFields()) {
@@ -104,8 +105,8 @@ public class LangdetectMappingTests extends ESSingleNodeTestCase {
                 "someType", getMapping("short-text-mapping.json"));
         DocumentMapper docMapper = indexService.mapperService().documentMapper("someType");
         String sampleText = copyToStringFromClasspath("english.txt");
-        BytesReference json = XContentFactory.jsonBuilder()
-                .startObject().field("someField", sampleText).endObject().bytes();
+        BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder()
+                .startObject().field("someField", sampleText).endObject());
         SourceToParse sourceToParse = SourceToParse.source("some_index", "someType", "1", json, XContentType.JSON);
         ParsedDocument doc = docMapper.parse(sourceToParse);
         for (IndexableField field : doc.rootDoc().getFields()) {
@@ -120,8 +121,8 @@ public class LangdetectMappingTests extends ESSingleNodeTestCase {
                 "someType", getMapping("mapping-to-fields.json"));
         DocumentMapper docMapper = indexService.mapperService().documentMapper("someType");
         String sampleText = copyToStringFromClasspath("english.txt");
-        BytesReference json = XContentFactory.jsonBuilder()
-                .startObject().field("someField", sampleText).endObject().bytes();
+        BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder()
+                .startObject().field("someField", sampleText).endObject());
         SourceToParse sourceToParse = SourceToParse.source("some_index", "someType", "1", json, XContentType.JSON);
         ParsedDocument doc = docMapper.parse(sourceToParse);
         assertEquals(1, doc.rootDoc().getFields("someField").length);

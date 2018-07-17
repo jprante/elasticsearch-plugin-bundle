@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * Standard number field mapper.
  */
-public class StandardnumberMapper extends TextFieldMapper {
+public class StandardnumberMapper extends FieldMapper {
 
     private static final Logger logger = LogManager.getLogger(StandardnumberMapper.class.getName());
 
@@ -44,8 +44,7 @@ public class StandardnumberMapper extends TextFieldMapper {
                                 MultiFields multiFields,
                                 CopyTo copyTo,
                                 StandardnumberService service) {
-        super(simpleName, fieldType, defaultFieldType,
-                -1, false, indexSettings, multiFields, copyTo);
+        super(simpleName, fieldType, defaultFieldType, indexSettings, multiFields, copyTo);
         this.settings = settings;
         this.service = service;
     }
@@ -102,7 +101,7 @@ public class StandardnumberMapper extends TextFieldMapper {
     }
 
     public static final class Defaults {
-        public static final TextFieldType FIELD_TYPE = new TextFieldType();
+        public static final MappedFieldType FIELD_TYPE = new TextFieldMapper.TextFieldType();
 
         static {
             FIELD_TYPE.setStored(true);
