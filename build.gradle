@@ -65,7 +65,7 @@ targetCompatibility = JavaVersion.VERSION_1_8
 
 test {
     enabled = false
-    include '**/*Test.*'
+    include '**/*Test*'
     systemProperty 'path.home', System.getProperty("user.dir")
     testLogging {
         showStandardStreams = false

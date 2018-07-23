@@ -12,6 +12,6 @@ public class UTR30DataFileGeneratorTest {
     @Test
     public void generateUTR30() throws Exception {
         UTR30DataFileGenerator utr30DataFileGenerator = new UTR30DataFileGenerator();
-        utr30DataFileGenerator.execute("release-60-2", "build/");
+        utr30DataFileGenerator.execute("release-62-1", "build/");
     }
 }

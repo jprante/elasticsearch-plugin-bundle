@@ -30,7 +30,8 @@ public class RBBIRuleCompilerTest {
             int pos1 = rbbi.lastIndexOf("/");
             int pos2 = rbbi.lastIndexOf(".rbbi");
             String basename = rbbi.substring(pos1, pos2);
-            OutputStream outputStream = Files.newOutputStream(Paths.get("build/" + basename + ".brk"));
+            System.err.println(basename);
+            OutputStream outputStream = Files.newOutputStream(Paths.get( "build" + basename + ".brk"));
             rbbiRuleCompiler.compile(inputStream, outputStream);
         }
     }
