@@ -6,7 +6,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "org.xbib.elasticsearch:gradle-plugin-elasticsearch-build:6.3.2.0"
+        classpath "org.xbib.elasticsearch:gradle-plugin-elasticsearch-build:6.3.2.1"
     }
 }
 
