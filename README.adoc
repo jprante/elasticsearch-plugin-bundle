@@ -32,6 +32,7 @@ The plugin code in each plugin is equivalent to the code in this combined bundle
 [frame="all"]
 |===
 | Plugin version | Elasticsearch version | Release date
+| 6.3.2.2  | 6.3.2     | Oct  2, 2018
 | 5.4.1.0  | 5.4.0     | Jun  1, 2017
 | 5.4.0.1  | 5.4.0     | May 12, 2017
 | 5.4.0.0  | 5.4.0     | May  4, 2017
@@ -614,7 +615,26 @@ GET _analyze
         }
     }
 
-# Example
+# Decompound
+
+This is an implementation of a word decompounder plugin for link:http://github.com/elasticsearch/elasticsearch[Elasticsearch].
+
+Compounding several words into one word is a property not all languages share.
+Compounding is used in German, Scandinavian Languages, Finnish and Korean.
+
+This code is a reworked implementation of the
+link:http://wortschatz.uni-leipzig.de/~cbiemann/software/toolbox/Baseforms%20Tool.htm[Baseforms Tool]
+found in the http://wortschatz.uni-leipzig.de/~cbiemann/software/toolbox/index.htm[ASV toolbox]
+of http://asv.informatik.uni-leipzig.de/staff/Chris_Biemann[Chris Biemann],
+Automatische Sprachverarbeitung of Leipzig University.
+
+Lucene comes with two compound word token filters, a dictionary- and a hyphenation-based variant.
+Both of them have a disadvantage, they require loading a word list in memory before they run.
+This decompounder does not require word lists, it can process german language text out of the box.
+The decompounder uses prebuilt _Compact Patricia Tries_ for efficient word segmentation provided
+by the ASV toolbox.
+
+## Decompound examples
 
 Try it out
 ----
@@ -630,7 +650,7 @@ GET _analyze
 }
 ----
 
-In the mapping, us a token filter of type "decompound"::
+In the mapping, use a token filter of type "decompound"::
 
   {
      "index":{
@@ -678,7 +698,7 @@ Also the Lucene german normalization token filter is provided::
 The input "Ein schöner Tag in Köln im Café an der Straßenecke" will be tokenized into 
 "Ein", "schoner", "Tag", "in", "Koln", "im", "Café", "an", "der", "Strassenecke".
 
-# Threshold
+## Threshold
 
 The decomposing algorithm knows about a threshold when to assume words as decomposed successfully or not.
 If the threshold is too low, words could silently disappear from being indexed. In this case, you have to adapt the
@@ -705,7 +725,7 @@ The default threshold value is 0.51. You can modify it in the settings::
          }
       }
       
-# Subwords
+## Subwords
       
 Sometimes only the decomposed subwords should be indexed. For this, you can use the parameter `"subwords_only": true`
 
@@ -729,7 +749,95 @@ Sometimes only the decomposed subwords should be indexed. For this, you can use 
       }
 
 
-## Langdetect
+## Caching
+
+The time consumed by the decompound computation may increase your overall indexing time drastically if applied in
+the billions. You can configure a least-frequently-used cache for mapping a token to the decompounded tokens
+with the following settings:
+
+`use_cache: true` - enables caching
+`cache_size` - sets cache size, default: 100000
+`cache_eviction_factor` - sets cache eviction factor, valida values are between 0.00 and 1.00, default: 0.90
+
+```
+{
+  "settings": {
+    "index": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0,
+      "analysis": {
+        "filter": {
+          "decomp":{
+            "type" : "decompound",
+            "use_payload": true,
+            "use_cache": true
+          }
+        },
+        "analyzer": {
+          "decomp": {
+            "type": "custom",
+            "tokenizer" : "standard",
+            "filter" : [
+              "decomp",
+              "lowercase"
+            ]
+          },
+          "lowercase": {
+            "type": "custom",
+            "tokenizer" : "standard",
+            "filter" : [
+              "lowercase"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "mappings": {
+    "_doc": {
+      "properties": {
+        "text": {
+          "type": "text",
+          "analyzer": "decomp",
+          "search_analyzer": "lowercase"
+        }
+      }
+    }
+  }
+}
+```
+
+## Exact phrase matches
+
+The usage of decompounds can lead to undesired results regarding phrase queries.
+After indexing, decompound tokens ca not be distinguished from original tokens.
+The outcome of a phrase query "Deutsche Bank" could be `Deutsche Spielbankgesellschaft`,
+what is clearly an unexpected result. To enable "exact" phrase queries, each decoumpound token is
+tagged with additional payload data.
+
+To evaluate this payload data, you can use the `exact_phrase` as a wrapper around a query
+containing your phrase queries.
+
+`use_payload` - if set to true, enable payload creation. Default: false
+
+ ```
+{
+  "query": {
+    "exact_phrase": {
+      "query": {
+        "query_string": {
+          "query": "\"deutsche bank\"",
+          "fields": [
+            "message"
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+# Langdetect
 
     curl -XDELETE 'localhost:9200/test'
 
@@ -797,7 +905,7 @@ Sometimes only the decomposed subwords should be indexed. For this, you can use 
     }
     '
 
-## Standardnumber
+# Standardnumber
 
 Try it out
 ----

@@ -23,6 +23,7 @@ import org.elasticsearch.plugins.ActionPlugin;
 import org.elasticsearch.plugins.AnalysisPlugin;
 import org.elasticsearch.plugins.MapperPlugin;
 import org.elasticsearch.plugins.Plugin;
+import org.elasticsearch.plugins.SearchPlugin;
 import org.elasticsearch.rest.RestController;
 import org.elasticsearch.rest.RestHandler;
 import org.elasticsearch.search.DocValueFormat;
@@ -70,12 +71,14 @@ import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapper;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapperModule;
 import org.xbib.elasticsearch.index.mapper.standardnumber.StandardnumberMapperTypeParser;
 import org.xbib.elasticsearch.common.standardnumber.StandardnumberService;
+import org.xbib.elasticsearch.index.query.decompound.ExactPhraseQueryBuilder;
 import org.xbib.elasticsearch.rest.action.isbnformat.RestISBNFormatterAction;
 import org.xbib.elasticsearch.rest.action.langdetect.RestLangdetectAction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +88,7 @@ import java.util.function.Supplier;
 /**
  * Bundle plugin.
  */
-public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin, ActionPlugin {
+public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin, SearchPlugin, ActionPlugin {
 
     private static final StandardnumberMapperTypeParser standardNumberTypeParser =
             new StandardnumberMapperTypeParser();
@@ -247,6 +250,13 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
             extra.put(IcuCollationKeyFieldMapper.CONTENT_TYPE, new IcuCollationKeyFieldMapper.TypeParser());
         }
         return extra;
+    }
+
+    @Override
+    public List<QuerySpec<?>> getQueries() {
+        return Collections.singletonList(new QuerySpec<>(ExactPhraseQueryBuilder.NAME,
+                ExactPhraseQueryBuilder::new,
+                ExactPhraseQueryBuilder::fromXContent));
     }
 
     @Override

@@ -72,9 +72,13 @@ test {
         exceptionFormat = 'full'
     }
 }
-randomizedTest.enabled = false
-esTest.enabled = true
-esTest.dependsOn jar
+randomizedTest {
+    enabled = false
+}
+esTest {
+    dependsOn jar
+    enabled = true
+}
 
 clean {
     delete fileTree('.') { include '.local*.log' }

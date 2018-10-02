@@ -26,3 +26,8 @@ The FSA in package org.xbib.elastixsearch.common.fsa which provides the dictiona
 the baseform tokenizer is a derived version of
 
 https://github.com/morfologik/morfologik-stemming/tree/master/morfologik-fsa/src/main/java/morfologik/fsa
+
+Thanks to GBI-Genios Deutsche Wirtschaftsdatenbank GmbH for adding the caching-functionality and the "Exact phrase matches".
+The implementation of an exact phrase match query can ignore/skip decompounded tokens while matching phrases.
+The LFU cache for the Patricia Decompounder was inspired by the use of ConcurrentHashMap cache
+in the original pull request: https://github.com/jprante/elasticsearch-analysis-decompound/pull/54/

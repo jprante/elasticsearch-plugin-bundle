@@ -1,0 +1,45 @@
+{
+  "settings": {
+    "index": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0,
+      "analysis": {
+        "filter": {
+          "decomp":{
+            "type" : "decompound",
+            "use_payload": true,
+            "use_cache": true
+          }
+        },
+        "analyzer": {
+          "decomp": {
+            "type": "custom",
+            "tokenizer" : "standard",
+            "filter" : [
+              "decomp",
+              "lowercase"
+            ]
+          },
+          "lowercase": {
+            "type": "custom",
+            "tokenizer" : "standard",
+            "filter" : [
+              "lowercase"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "mappings": {
+    "_doc": {
+      "properties": {
+        "text": {
+          "type": "text",
+          "analyzer": "decomp",
+          "search_analyzer": "lowercase"
+        }
+      }
+    }
+  }
+}
