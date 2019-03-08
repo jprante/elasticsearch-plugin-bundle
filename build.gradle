@@ -6,10 +6,11 @@ buildscript {
         }
     }
     dependencies {
-        classpath "org.xbib.elasticsearch:gradle-plugin-elasticsearch-build:6.3.2.1"
+        classpath "org.xbib.elasticsearch:gradle-plugin-elasticsearch-build:${project.property('elasticsearch-devkit.version')}"
     }
 }
 
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -42,9 +43,9 @@ apply plugin: 'org.xbib.gradle.plugin.asciidoctor'
 
 esplugin {
     description 'Plugin bundle for Elasticsearch'
-    classname 'org.xbib.elasticsearch.plugin.bundle.BundlePlugin'
     name 'elasticsearch-plugin-bundle'
     url 'https://github.com/jprante/elasticsearch-plugin-bundle'
+    classname 'org.xbib.elasticsearch.plugin.bundle.BundlePlugin'
 }
 
 configurations {
@@ -54,17 +55,79 @@ configurations {
 dependencies {
     compile "com.ibm.icu:icu4j:${project.property('icu4j.version')}"
     compile "org.xbib:standardnumber:${project.property('standardnumber.version')}"
-    testCompile "org.xbib.elasticsearch:elasticsearch-analysis-common:${project.property('xbib-elasticsearch-test.version')}"
-    testCompile "org.apache.logging.log4j:log4j-core:${project.property('log4j.version')}"
-    testCompile "org.elasticsearch.plugin:transport-netty4-client:${project.property('elasticsearch.version')}"
+    testCompile "org.xbib.elasticsearch:elasticsearch:${project.property('elasticsearch-server.version')}"
+    testCompile "org.xbib.elasticsearch:elasticsearch-analysis-common:${project.property('elasticsearch-analysis-common.version')}"
+    testCompile "org.xbib.elasticsearch:transport-netty4:${project.property('elasticsearch-transport-netty4.version')}"
     wagon "org.apache.maven.wagon:wagon-ssh:${project.property('wagon.version')}"
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+compileJava {
+}
+
+compileTestJava {
+}
+
+tasks.withType(Javadoc) {
+    options.addStringOption('Xdoclint:none', '-quiet')
+}
+
+afterEvaluate {
+    compileJava {
+        inputs.property("moduleName", 'org.xbib.elasticsearch.plugin.bundle')
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+        doFirst {
+            options.compilerArgs = [
+                    "-Xlint:-try",
+                    '--module-path', classpath.asPath
+
+            ]
+            classpath = files()
+        }
+    }
+    compileTestJava {
+        inputs.property("moduleName", 'org.xbib.elasticsearch.plugin.bundle.test')
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+        doFirst {
+            options.compilerArgs = [
+                    "-Xlint:-cast,-deprecation,-rawtypes,-try,-unchecked",
+                    "-proc:none",
+                    '--module-path', classpath.asPath
+            ]
+            classpath = files()
+        }
+    }
+    javadoc {
+        enabled = true
+        inputs.property("moduleName", 'org.xbib.elasticsearch.plugin.bundle')
+        doFirst {
+            options.addStringOption('-module-path', classpath.asPath)
+            classpath = files()
+        }
+    }
+    jar {
+        inputs.property("moduleName", 'org.xbib.elasticsearch.plugin.bundle')
+        manifest {
+            attributes(
+                    'Implementation-Title': "${project.group}#${project.name};${project.version}",
+                    'Implementation-Version': version,
+                    'Implementation-Vendor': "${user}",
+                    'Build-Date': ZonedDateTime.now(ZoneOffset.UTC),
+                    'Build-Java-Version': System.getProperty("java.version"),
+                    'X-Compile-Source-JDK': compileJava.targetCompatibility,
+                    'X-Compile-Target-JDK': compileJava.sourceCompatibility,
+                    'X-Compile-Elasticsearch-Version': version,
+                    'X-Compile-Lucene-Version': project.property('lucene.version'),
+                    'X-Compile-Elasticsearch-Snapshot': false
+            )
+        }
+    }
+}
 
 test {
     enabled = false
+    dependsOn jar, testJar
     include '**/*Test*'
     systemProperty 'path.home', System.getProperty("user.dir")
     testLogging {
@@ -72,12 +135,18 @@ test {
         exceptionFormat = 'full'
     }
 }
+
 randomizedTest {
     enabled = false
+    dependsOn jar, testJar
 }
+
 esTest {
-    dependsOn jar
     enabled = true
+    dependsOn jar, testJar
+    //systemProperty 'tests.class', 'org.xbib.elasticsearch.plugin.bundle.test.index.analysis.icu.IcuNumberFormatTests'
+    jvmArg '--add-reads=org.xbib.elasticsearch.randomizedtesting=org.xbib.elasticsearch.plugin.bundle'
+    jvmArg '--add-reads=org.xbib.elasticsearch.randomizedtesting=org.xbib.elasticsearch.plugin.bundle.test'
 }
 
 clean {
@@ -111,4 +180,5 @@ asciidoctor {
 }
 
 checkstyleMain.source = 'src/main/java'
+
 forbiddenPatterns.exclude('**/*.txt')

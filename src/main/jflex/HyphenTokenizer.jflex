@@ -1,4 +1,4 @@
-package org.xbib.elasticsearch.index.analysis.hyphen;
+package org.xbib.elasticsearch.plugin.bundle.index.analysis.hyphen;
 
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 

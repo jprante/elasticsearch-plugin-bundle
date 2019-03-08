@@ -1,0 +1,23 @@
+package org.xbib.elasticsearch.plugin.bundle.index.analysis.concat;
+
+import org.apache.lucene.analysis.TokenStream;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.env.Environment;
+import org.elasticsearch.index.IndexSettings;
+import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
+
+/**
+ * Concat token filter factory.
+ */
+public class ConcatTokenFilterFactory extends AbstractTokenFilterFactory {
+
+    public ConcatTokenFilterFactory(IndexSettings indexSettings, Environment environment, String name, Settings settings) {
+        super(indexSettings, name, settings);
+    }
+
+    @Override
+    public TokenStream create(TokenStream tokenStream) {
+        return new ConcatTokenFilter(tokenStream);
+
+    }
+}

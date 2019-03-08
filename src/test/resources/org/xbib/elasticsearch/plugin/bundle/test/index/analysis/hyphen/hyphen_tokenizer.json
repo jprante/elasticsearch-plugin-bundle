@@ -1,0 +1,15 @@
+{
+    "index":{
+        "analysis":{
+            "tokenizer" : {
+                "my_icu_tokenizer" : {
+                   "type" : "icu_tokenizer",
+                   "rulefiles" : "Latn:Latin-dont-break-on-hyphens.rbbi"
+                },
+                "my_hyphen_tokenizer" : {
+                    "type" : "hyphen"
+                }
+            }
+        }
+    }
+}
