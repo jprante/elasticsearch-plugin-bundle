@@ -23,6 +23,7 @@ module org.xbib.elasticsearch.plugin.bundle.test {
 
     opens org.xbib.elasticsearch.plugin.bundle.test.query.decompound;
     opens org.xbib.elasticsearch.plugin.bundle.test.index.analysis.icu.segmentation;
+    opens restapispec.test.analysis_icu;
 
     requires junit;
     requires hamcrest.all;

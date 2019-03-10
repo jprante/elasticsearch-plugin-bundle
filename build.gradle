@@ -45,7 +45,7 @@ esplugin {
     description 'Plugin bundle for Elasticsearch'
     name 'elasticsearch-plugin-bundle'
     url 'https://github.com/jprante/elasticsearch-plugin-bundle'
-    classname 'org.xbib.elasticsearch.plugin.bundle.BundlePlugin'
+    classname 'org.xbib.elasticsearch.plugin.bundle/org.xbib.elasticsearch.plugin.bundle.BundlePlugin'
 }
 
 configurations {
@@ -147,6 +147,20 @@ esTest {
     //systemProperty 'tests.class', 'org.xbib.elasticsearch.plugin.bundle.test.index.analysis.icu.IcuNumberFormatTests'
     jvmArg '--add-reads=org.xbib.elasticsearch.randomizedtesting=org.xbib.elasticsearch.plugin.bundle'
     jvmArg '--add-reads=org.xbib.elasticsearch.randomizedtesting=org.xbib.elasticsearch.plugin.bundle.test'
+}
+
+integTest {
+    enabled = false
+    dependsOn jar, testJar
+    // Execution failed for task ':integTestRunner'.
+    //> There were no executed tests: 1 suite (1 ignored), 0 tests
+    // --> "ignored" ? probably module graph loading problems
+    // IcuClientYamlTestSuiteIT rest-api-spec/test/analysis_icu
+
+    // Error occurred during initialization of boot layer
+    //java.lang.module.FindException: Error reading module: /Users/joerg/Projects/github/jprante/elasticsearch-plugin-bundle/build/classes/java/test
+    //Caused by: java.lang.module.InvalidModuleDescriptorException: Package restapispec.test.analysis_icu not found in module
+    // --> pack everything into jar/testJar and make integTestRunner module aware
 }
 
 clean {

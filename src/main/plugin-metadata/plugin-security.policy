@@ -1,4 +1,11 @@
-grant {
+grant codeBase "${codebase.elasticsearch-plugin-bundle}" {
+  permission java.io.FilePermission "*", "read";
+  permission java.lang.RuntimePermission "accessDeclaredMembers";
+  permission java.lang.RuntimePermission "getClassLoader";
+  permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+};
+
+grant codeBase "${codebase.icu4j}" {
   permission java.io.FilePermission "*", "read";
   permission java.lang.RuntimePermission "accessDeclaredMembers";
   permission java.lang.RuntimePermission "getClassLoader";
