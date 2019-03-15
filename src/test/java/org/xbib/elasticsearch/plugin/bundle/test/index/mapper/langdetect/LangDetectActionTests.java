@@ -5,7 +5,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.plugins.Plugin;
-import org.elasticsearch.testframework.ESSingleNodeTestCase;
+import org.elasticsearch.test.ESSingleNodeTestCase;
 import org.xbib.elasticsearch.plugin.bundle.action.langdetect.LangdetectRequestBuilder;
 import org.xbib.elasticsearch.plugin.bundle.action.langdetect.LangdetectResponse;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;

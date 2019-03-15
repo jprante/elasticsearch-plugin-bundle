@@ -1,7 +1,7 @@
 package org.xbib.elasticsearch.plugin.bundle.test.index.analysis.worddelimiter;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.testframework.analysis.MockTokenizer;
+import org.apache.lucene.analysis.MockTokenizer;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
@@ -11,8 +11,8 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
-import org.elasticsearch.testframework.ESTestCase;
-import org.elasticsearch.testframework.ESTokenStreamTestCase;
+import org.elasticsearch.test.ESTestCase;
+import org.elasticsearch.test.ESTokenStreamTestCase;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.worddelimiter.WordDelimiterFilter2;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.worddelimiter.WordDelimiterIterator;

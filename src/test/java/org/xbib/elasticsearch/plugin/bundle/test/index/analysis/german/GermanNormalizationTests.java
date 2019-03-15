@@ -6,8 +6,8 @@ import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
-import org.elasticsearch.testframework.ESTestCase;
-import org.elasticsearch.testframework.ESTokenStreamTestCase;
+import org.elasticsearch.test.ESTestCase;
+import org.elasticsearch.test.ESTokenStreamTestCase;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 import java.io.IOException;

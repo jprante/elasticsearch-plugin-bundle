@@ -5,7 +5,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.search.sort.SortOrder;
-import org.elasticsearch.testframework.ESSingleNodeTestCase;
+import org.elasticsearch.test.ESSingleNodeTestCase;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 import java.util.Collection;

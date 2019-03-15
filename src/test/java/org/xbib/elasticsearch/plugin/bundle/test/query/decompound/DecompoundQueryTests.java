@@ -23,10 +23,10 @@ import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.plugins.PluginInfo;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.testframework.ESIntegTestCase;
-import org.elasticsearch.testframework.StreamsUtils;
-import org.elasticsearch.testframework.hamcrest.ElasticsearchAssertions;
-import org.elasticsearch.transport.netty4.Netty4Plugin;
+import org.elasticsearch.test.ESIntegTestCase;
+import org.elasticsearch.test.StreamsUtils;
+import org.elasticsearch.test.hamcrest.ElasticsearchAssertions;
+import org.elasticsearch.transport.Netty4Plugin;
 import org.junit.Before;
 import org.xbib.elasticsearch.plugin.bundle.query.decompound.ExactPhraseQueryBuilder;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
@@ -40,8 +40,53 @@ public class DecompoundQueryTests extends ESIntegTestCase {
 
     @Before
     public void setup() throws Exception {
-        String indexBody =
-                StreamsUtils.copyToStringFromClasspath(getClass(),"decompound_query.json");
+        //String indexBody = StreamsUtils.copyToStringFromClasspath(getClass().getClassLoader(),
+        //        "/org/xbib/elasticsearch/plugin/bundle/test/query/decompound/decompound_query.json");
+        String indexBody = "{\n" +
+                "  \"settings\": {\n" +
+                "    \"index\": {\n" +
+                "      \"number_of_shards\": 1,\n" +
+                "      \"number_of_replicas\": 0,\n" +
+                "      \"analysis\": {\n" +
+                "        \"filter\": {\n" +
+                "          \"decomp\":{\n" +
+                "            \"type\" : \"decompound\",\n" +
+                "            \"use_payload\": true,\n" +
+                "            \"use_cache\": true\n" +
+                "          }\n" +
+                "        },\n" +
+                "        \"analyzer\": {\n" +
+                "          \"decomp\": {\n" +
+                "            \"type\": \"custom\",\n" +
+                "            \"tokenizer\" : \"standard\",\n" +
+                "            \"filter\" : [\n" +
+                "              \"decomp\",\n" +
+                "              \"lowercase\"\n" +
+                "            ]\n" +
+                "          },\n" +
+                "          \"lowercase\": {\n" +
+                "            \"type\": \"custom\",\n" +
+                "            \"tokenizer\" : \"standard\",\n" +
+                "            \"filter\" : [\n" +
+                "              \"lowercase\"\n" +
+                "            ]\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  },\n" +
+                "  \"mappings\": {\n" +
+                "    \"_doc\": {\n" +
+                "      \"properties\": {\n" +
+                "        \"text\": {\n" +
+                "          \"type\": \"text\",\n" +
+                "          \"analyzer\": \"decomp\",\n" +
+                "          \"search_analyzer\": \"lowercase\"\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
         prepareCreate("test").setSource(indexBody, XContentType.JSON).get();
         ensureGreen("test");
     }

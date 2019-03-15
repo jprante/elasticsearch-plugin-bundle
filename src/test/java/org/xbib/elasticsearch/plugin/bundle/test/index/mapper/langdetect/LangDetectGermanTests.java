@@ -13,7 +13,7 @@ import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.plugins.Plugin;
-import org.elasticsearch.testframework.ESSingleNodeTestCase;
+import org.elasticsearch.test.ESSingleNodeTestCase;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 import java.util.Collection;

@@ -1,6 +1,6 @@
 package org.xbib.elasticsearch.plugin.bundle.test.index.analysis.icu.segmentation;
 
-import org.elasticsearch.testframework.ESTestCase;
+import org.elasticsearch.test.ESTestCase;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.segmentation.CharArrayIterator;
 
 import java.text.CharacterIterator;

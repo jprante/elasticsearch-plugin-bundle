@@ -5,7 +5,7 @@ import org.elasticsearch.Version;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.IndexSettings;
-import org.elasticsearch.testframework.ESTokenStreamTestCase;
+import org.elasticsearch.test.ESTokenStreamTestCase;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.segmentation.IcuTokenizerFactory;
 
 import java.io.Reader;

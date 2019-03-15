@@ -16,8 +16,8 @@ import org.elasticsearch.index.mapper.DocumentMapper;
 import org.elasticsearch.index.mapper.ParsedDocument;
 import org.elasticsearch.index.mapper.SourceToParse;
 import org.elasticsearch.plugins.Plugin;
-import org.elasticsearch.testframework.ESSingleNodeTestCase;
-import org.elasticsearch.testframework.InternalSettingsPlugin;
+import org.elasticsearch.test.ESSingleNodeTestCase;
+import org.elasticsearch.test.InternalSettingsPlugin;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 import java.io.InputStreamReader;
@@ -60,6 +60,7 @@ public class LangdetectMappingTests extends ESSingleNodeTestCase {
             logger.info("testBinary {} = {} stored={}", field.name(), field.stringValue(), field.fieldType().stored());
         }
         assertTrue(doc.rootDoc().getFields("someField").length >= 1);
+        // why sometimes "de"?
         assertEquals("en", doc.rootDoc().getFields("someField")[0].stringValue());
     }
 

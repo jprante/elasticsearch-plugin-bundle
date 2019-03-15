@@ -6,7 +6,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "org.xbib.elasticsearch:gradle-plugin-elasticsearch-build:${project.property('elasticsearch-devkit.version')}"
+        classpath "org.elasticsearch.gradle:build-tools:6.3.2"
     }
 }
 
@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter
 plugins {
     id "org.sonarqube" version "2.6.1"
     id "io.codearte.nexus-staging" version "0.11.0"
-    id "org.xbib.gradle.plugin.jflex" version "1.1.0"
+    id "org.xbib.gradle.plugin.jflex" version "1.2.0"
     id "org.xbib.gradle.plugin.asciidoctor" version "1.5.6.0.1"
 }
 
@@ -37,16 +37,18 @@ printf "Date: %s\nHost: %s\nOS: %s %s %s\nJVM: %s %s %s %s\nGradle: %s Groovy: %
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
-apply plugin: 'org.xbib.gradle.plugin.elasticsearch.plugin'
+apply plugin: 'idea'
+apply plugin: 'elasticsearch.esplugin'
 apply plugin: 'org.xbib.gradle.plugin.jflex'
 apply plugin: 'org.xbib.gradle.plugin.asciidoctor'
 
 esplugin {
     description 'Plugin bundle for Elasticsearch'
     name 'elasticsearch-plugin-bundle'
-    url 'https://github.com/jprante/elasticsearch-plugin-bundle'
-    classname 'org.xbib.elasticsearch.plugin.bundle/org.xbib.elasticsearch.plugin.bundle.BundlePlugin'
+    classname 'org.xbib.elasticsearch.plugin.bundle.BundlePlugin'
 }
+licenseFile = rootProject.file('LICENSE.txt')
+noticeFile = rootProject.file('NOTICE.txt')
 
 configurations {
     wagon
@@ -55,9 +57,9 @@ configurations {
 dependencies {
     compile "com.ibm.icu:icu4j:${project.property('icu4j.version')}"
     compile "org.xbib:standardnumber:${project.property('standardnumber.version')}"
-    testCompile "org.xbib.elasticsearch:elasticsearch:${project.property('elasticsearch-server.version')}"
-    testCompile "org.xbib.elasticsearch:elasticsearch-analysis-common:${project.property('elasticsearch-analysis-common.version')}"
-    testCompile "org.xbib.elasticsearch:transport-netty4:${project.property('elasticsearch-transport-netty4.version')}"
+    testCompile "org.elasticsearch:elasticsearch:${project.property('elasticsearch.version')}"
+    testCompile "org.codelibs.elasticsearch.module:analysis-common:${project.property('elasticsearch.version')}"
+    testCompile "org.elasticsearch.plugin:transport-netty4-client:${project.property('elasticsearch.version')}"
     wagon "org.apache.maven.wagon:wagon-ssh:${project.property('wagon.version')}"
 }
 
@@ -71,96 +73,41 @@ tasks.withType(Javadoc) {
     options.addStringOption('Xdoclint:none', '-quiet')
 }
 
-afterEvaluate {
-    compileJava {
-        inputs.property("moduleName", 'org.xbib.elasticsearch.plugin.bundle')
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-        doFirst {
-            options.compilerArgs = [
-                    "-Xlint:-try",
-                    '--module-path', classpath.asPath
+jar {
+    manifest {
+        attributes(
+                'Implementation-Title': "${project.group}#${project.name};${project.version}",
+                'Implementation-Version': version,
+                'Implementation-Vendor': "xbib",
+                'Build-Date': ZonedDateTime.now(ZoneOffset.UTC),
+                'Build-Java-Version': System.getProperty("java.version"),
+                'X-Compile-Source-JDK': compileJava.targetCompatibility,
+                'X-Compile-Target-JDK': compileJava.sourceCompatibility,
+                'X-Compile-Elasticsearch-Version': version,
+                'X-Compile-Lucene-Version': project.property('lucene.version'),
+                'X-Compile-Elasticsearch-Snapshot': false
+        )
+    }
+}
 
-            ]
-            classpath = files()
-        }
+afterEvaluate {
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        options.compilerArgs << "-Xlint:none,-fallthrough" << "-Xdoclint:none"
     }
-    compileTestJava {
-        inputs.property("moduleName", 'org.xbib.elasticsearch.plugin.bundle.test')
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-        doFirst {
-            options.compilerArgs = [
-                    "-Xlint:-cast,-deprecation,-rawtypes,-try,-unchecked",
-                    "-proc:none",
-                    '--module-path', classpath.asPath
-            ]
-            classpath = files()
-        }
-    }
-    javadoc {
-        enabled = true
-        inputs.property("moduleName", 'org.xbib.elasticsearch.plugin.bundle')
-        doFirst {
-            options.addStringOption('-module-path', classpath.asPath)
-            classpath = files()
-        }
-    }
-    jar {
-        inputs.property("moduleName", 'org.xbib.elasticsearch.plugin.bundle')
-        manifest {
-            attributes(
-                    'Implementation-Title': "${project.group}#${project.name};${project.version}",
-                    'Implementation-Version': version,
-                    'Implementation-Vendor': "${user}",
-                    'Build-Date': ZonedDateTime.now(ZoneOffset.UTC),
-                    'Build-Java-Version': System.getProperty("java.version"),
-                    'X-Compile-Source-JDK': compileJava.targetCompatibility,
-                    'X-Compile-Target-JDK': compileJava.sourceCompatibility,
-                    'X-Compile-Elasticsearch-Version': version,
-                    'X-Compile-Lucene-Version': project.property('lucene.version'),
-                    'X-Compile-Elasticsearch-Snapshot': false
-            )
-        }
+
+    tasks.withType(Javadoc) {
+        options.addStringOption('Xdoclint:none', '-quiet')
     }
 }
 
 test {
-    enabled = false
-    dependsOn jar, testJar
-    include '**/*Test*'
-    systemProperty 'path.home', System.getProperty("user.dir")
-    testLogging {
-        showStandardStreams = false
-        exceptionFormat = 'full'
-    }
-}
-
-randomizedTest {
-    enabled = false
-    dependsOn jar, testJar
-}
-
-esTest {
     enabled = true
-    dependsOn jar, testJar
-    //systemProperty 'tests.class', 'org.xbib.elasticsearch.plugin.bundle.test.index.analysis.icu.IcuNumberFormatTests'
-    jvmArg '--add-reads=org.xbib.elasticsearch.randomizedtesting=org.xbib.elasticsearch.plugin.bundle'
-    jvmArg '--add-reads=org.xbib.elasticsearch.randomizedtesting=org.xbib.elasticsearch.plugin.bundle.test'
 }
 
 integTest {
-    enabled = false
-    dependsOn jar, testJar
-    // Execution failed for task ':integTestRunner'.
-    //> There were no executed tests: 1 suite (1 ignored), 0 tests
-    // --> "ignored" ? probably module graph loading problems
-    // IcuClientYamlTestSuiteIT rest-api-spec/test/analysis_icu
-
-    // Error occurred during initialization of boot layer
-    //java.lang.module.FindException: Error reading module: /Users/joerg/Projects/github/jprante/elasticsearch-plugin-bundle/build/classes/java/test
-    //Caused by: java.lang.module.InvalidModuleDescriptorException: Package restapispec.test.analysis_icu not found in module
-    // --> pack everything into jar/testJar and make integTestRunner module aware
+    enabled = true
 }
 
 clean {
@@ -195,4 +142,11 @@ asciidoctor {
 
 checkstyleMain.source = 'src/main/java'
 
-forbiddenPatterns.exclude('**/*.txt')
+// Java 11: Method not found while parsing signature: java.lang.Thread#stop(java.lang.Throwable)
+forbiddenApisMain.enabled = false
+forbiddenApisTest.enabled = false
+
+forbiddenPatterns.exclude('**/*.txt','**/*.brk','**/*.nrm','**/*.fst','**/*.tree')
+
+licenseHeaders.enabled = false
+

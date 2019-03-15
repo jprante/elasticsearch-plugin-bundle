@@ -9,7 +9,7 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.testframework.ESSingleNodeTestCase;
+import org.elasticsearch.test.ESSingleNodeTestCase;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 import java.io.InputStreamReader;

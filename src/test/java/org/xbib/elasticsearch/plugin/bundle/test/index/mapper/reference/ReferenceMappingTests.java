@@ -23,7 +23,7 @@ import org.elasticsearch.index.mapper.SourceToParse;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.testframework.ESSingleNodeTestCase;
+import org.elasticsearch.test.ESSingleNodeTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;

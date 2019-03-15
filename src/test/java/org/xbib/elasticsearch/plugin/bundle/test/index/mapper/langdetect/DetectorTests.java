@@ -1,7 +1,7 @@
 package org.xbib.elasticsearch.plugin.bundle.test.index.mapper.langdetect;
 
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.testframework.ESTestCase;
+import org.elasticsearch.test.ESTestCase;
 
 import org.xbib.elasticsearch.plugin.bundle.common.langdetect.LangProfile;
 import org.xbib.elasticsearch.plugin.bundle.common.langdetect.LangdetectService;
