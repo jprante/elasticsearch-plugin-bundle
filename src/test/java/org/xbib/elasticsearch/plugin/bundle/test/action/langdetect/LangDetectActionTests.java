@@ -1,4 +1,4 @@
-package org.xbib.elasticsearch.plugin.bundle.test.index.mapper.langdetect;
+package org.xbib.elasticsearch.plugin.bundle.test.action.langdetect;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.settings.Settings;
@@ -14,31 +14,24 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Language detecttion action test.
+ * Language detection action test.
  */
 public class LangDetectActionTests extends ESSingleNodeTestCase {
 
-    /** The plugin classes that should be added to the node. */
     @Override
     protected Collection<Class<? extends Plugin>> getPlugins() {
         return Collections.singletonList(BundlePlugin.class);
     }
 
-    public void testLangDetectProfile() throws Exception {
-        //startCluster();
-        //try {
-        // normal profile
-        LangdetectRequestBuilder langdetectRequestBuilder =
-                new LangdetectRequestBuilder(client())
+    public void testLangDetectProfile() {
+        LangdetectRequestBuilder langdetectRequestBuilder = new LangdetectRequestBuilder(client())
                         .setText("hello this is a test");
         LangdetectResponse response = langdetectRequestBuilder.execute().actionGet();
         assertFalse(response.getLanguages().isEmpty());
         assertEquals("en", response.getLanguages().get(0).getLanguage());
         assertNull(response.getProfile());
 
-        // short-text profile
-        LangdetectRequestBuilder langdetectProfileRequestBuilder =
-                new LangdetectRequestBuilder(client())
+        LangdetectRequestBuilder langdetectProfileRequestBuilder = new LangdetectRequestBuilder(client())
                         .setText("hello this is a test")
                         .setProfile("shorttext");
         response = langdetectProfileRequestBuilder.execute().actionGet();
@@ -47,7 +40,6 @@ public class LangDetectActionTests extends ESSingleNodeTestCase {
         assertEquals("en", response.getLanguages().get(0).getLanguage());
         assertEquals("shorttext", response.getProfile());
 
-        // again normal profile
         langdetectRequestBuilder = new LangdetectRequestBuilder(client())
                 .setText("hello this is a test");
         response = langdetectRequestBuilder.execute().actionGet();
@@ -55,18 +47,11 @@ public class LangDetectActionTests extends ESSingleNodeTestCase {
         assertFalse(response.getLanguages().isEmpty());
         assertEquals("en", response.getLanguages().get(0).getLanguage());
         assertNull(response.getProfile());
-        //} finally {
-        //    stopCluster();
-        //}
     }
 
     public void testSort() throws Exception {
-        //startCluster();
-        //try {
-
         Settings settings = Settings.builder()
                 .build();
-
         client().admin().indices().prepareCreate("test")
                 .setSettings(settings)
                 .addMapping("article",
@@ -123,8 +108,5 @@ public class LangDetectActionTests extends ESSingleNodeTestCase {
         assertEquals(1L, searchResponse.getHits().getTotalHits());
         assertEquals("Allons enfants de la Patrie, Le jour de gloire est arrivé!",
                 searchResponse.getHits().getAt(0).getSourceAsMap().get("content").toString());
-        //} finally {
-        //    stopCluster();
-        //}
     }
 }

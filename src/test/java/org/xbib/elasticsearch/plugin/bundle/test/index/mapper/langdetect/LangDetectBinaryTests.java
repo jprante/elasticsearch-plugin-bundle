@@ -10,6 +10,7 @@ import org.elasticsearch.action.search.SearchAction;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.WriteRequest;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.testframework.ESSingleNodeTestCase;
@@ -18,8 +19,6 @@ import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 import java.util.Arrays;
 import java.util.Collection;
-
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 /**
  * Language detection binary test.
@@ -36,7 +35,7 @@ public class LangDetectBinaryTests extends ESSingleNodeTestCase {
         try {
             CreateIndexRequestBuilder createIndexRequestBuilder =
                     new CreateIndexRequestBuilder(client(), CreateIndexAction.INSTANCE).setIndex("test");
-            createIndexRequestBuilder.addMapping("someType", jsonBuilder()
+            createIndexRequestBuilder.addMapping("someType", XContentFactory.jsonBuilder()
                     .startObject()
                     .startObject("properties")
                     .startObject("content")

@@ -8,7 +8,7 @@ import org.elasticsearch.client.ElasticsearchClient;
  */
 public class ISBNFormatAction extends Action<ISBNFormatRequest, ISBNFormatResponse, ISBNFormatRequestBuilder> {
 
-    public static final String NAME = "isbnformat";
+    public static final String NAME = "generic:isbnformat";
 
     public static final ISBNFormatAction INSTANCE = new ISBNFormatAction();
 

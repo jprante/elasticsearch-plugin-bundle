@@ -8,7 +8,7 @@ import org.elasticsearch.client.ElasticsearchClient;
  */
 public class LangdetectAction extends Action<LangdetectRequest, LangdetectResponse, LangdetectRequestBuilder> {
 
-    public static final String NAME = "langdetect";
+    public static final String NAME = "generic:langdetect";
 
     public static final LangdetectAction INSTANCE = new LangdetectAction();
 

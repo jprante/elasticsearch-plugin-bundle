@@ -1,5 +1,7 @@
 module org.xbib.elasticsearch.plugin.bundle.test {
 
+    exports org.xbib.elasticsearch.plugin.bundle.test.action.isbnformat;
+    exports org.xbib.elasticsearch.plugin.bundle.test.action.langdetect;
     exports org.xbib.elasticsearch.plugin.bundle.test.common.decompound.patricia;
     exports org.xbib.elasticsearch.plugin.bundle.test.index.analysis.autophrase;
     exports org.xbib.elasticsearch.plugin.bundle.test.index.analysis.baseform;

@@ -144,7 +144,7 @@ randomizedTest {
 esTest {
     enabled = true
     dependsOn jar, testJar
-    //systemProperty 'tests.class', 'org.xbib.elasticsearch.plugin.bundle.test.index.analysis.icu.IcuNumberFormatTests'
+    //systemProperty 'tests.class', 'org.xbib.elasticsearch.plugin.bundle.test.action.isbnformat.IsbnFormatTests'
     jvmArg '--add-reads=org.xbib.elasticsearch.randomizedtesting=org.xbib.elasticsearch.plugin.bundle'
     jvmArg '--add-reads=org.xbib.elasticsearch.randomizedtesting=org.xbib.elasticsearch.plugin.bundle.test'
 }

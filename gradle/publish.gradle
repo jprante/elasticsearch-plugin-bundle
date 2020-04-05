@@ -10,6 +10,11 @@ task xbibUpload(type: Upload) {
                 repository(url: uri(project.property('xbibUrl'))) {
                     authentication(userName: xbibUsername, privateKey: xbibPrivateKey)
                 }
+                pom.project {
+                    groupId project.group
+                    artifactId project.name
+                    version project.version
+                }
             }
         }
     }

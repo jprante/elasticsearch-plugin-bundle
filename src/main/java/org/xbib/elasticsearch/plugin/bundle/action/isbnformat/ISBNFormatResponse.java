@@ -30,9 +30,17 @@ public class ISBNFormatResponse extends ActionResponse implements StatusToXConte
         return this;
     }
 
+    public String getIsbn10() {
+        return isbn10;
+    }
+
     public ISBNFormatResponse setIsbn10Formatted(String value) {
         this.isbn10Formatted = value;
         return this;
+    }
+
+    public String getIsbn10Formatted() {
+        return isbn10Formatted;
     }
 
     public ISBNFormatResponse setIsbn13(String value) {
@@ -40,14 +48,26 @@ public class ISBNFormatResponse extends ActionResponse implements StatusToXConte
         return this;
     }
 
+    public String getIsbn13() {
+        return isbn13;
+    }
+
     public ISBNFormatResponse setIsbn13Formatted(String value) {
         this.isbn13Formatted = value;
         return this;
     }
 
+    public String getIsbn13Formatted(){
+        return isbn13Formatted;
+    }
+
     public ISBNFormatResponse setInvalid(String value) {
         this.invalid = value;
         return this;
+    }
+
+    public String getInvalid() {
+        return invalid;
     }
 
     @Override
