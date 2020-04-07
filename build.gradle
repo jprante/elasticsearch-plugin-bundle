@@ -196,3 +196,5 @@ asciidoctor {
 checkstyleMain.source = 'src/main/java'
 
 forbiddenPatterns.exclude('**/*.txt')
+
+licenseHeaders.enabled = false
