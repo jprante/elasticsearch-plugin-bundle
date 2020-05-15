@@ -115,7 +115,7 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
                 new Setting<>("plugins.xbib.hyphen.enabled", "true", Function.identity(), Setting.Property.NodeScope),
                 new Setting<>("plugins.xbib.sortform.enabled", "true", Function.identity(), Setting.Property.NodeScope),
                 new Setting<>("plugins.xbib.standardnumber.enabled", "true", Function.identity(), Setting.Property.NodeScope),
-                new Setting<>("plugins.xbib.fst_decompound.enabled", "true", Function.identity(), Setting.Property.NodeScope),
+                new Setting<>("plugins.xbib.fst_decompound.enabled", "false", Function.identity(), Setting.Property.NodeScope),
                 new Setting<>("plugins.xbib.worddelimiter.enabled", "true", Function.identity(), Setting.Property.NodeScope),
                 new Setting<>("plugins.xbib.worddelimiter2.enabled", "true", Function.identity(), Setting.Property.NodeScope),
                 new Setting<>("plugins.xbib.symbolname.enabled", "true", Function.identity(), Setting.Property.NodeScope),
@@ -175,7 +175,7 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
             extra.put("standardnumber", (indexSettings, environment, name, factorySettings) ->
                     new StandardnumberTokenFilterFactory(indexSettings, environment, name, factorySettings, standardNumberTypeParser));
         }
-        if (settings.getAsBoolean("plugins.xbib.fst_decompound.enabled", true)) {
+        if (settings.getAsBoolean("plugins.xbib.fst_decompound.enabled", false)) {
             extra.put("fst_decompound", FstDecompoundTokenFilterFactory::new);
         }
         if (settings.getAsBoolean("plugins.xbib.worddelimiter.enabled", true)) {
@@ -281,10 +281,10 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
                                              Supplier<DiscoveryNodes> nodesInCluster) {
         List<RestHandler> extra = new ArrayList<>();
         if (settings.getAsBoolean("plugins.xbib.isbnformat.enabled", true)) {
-            extra.add(new RestISBNFormatterAction(settings, restController));
+            extra.add(new RestISBNFormatterAction(restController));
         }
         if (settings.getAsBoolean("plugins.xbib.langdetect.enabled", true)) {
-            extra.add(new RestLangdetectAction(settings, restController));
+            extra.add(new RestLangdetectAction( restController));
         }
         return extra;
     }

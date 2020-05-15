@@ -7,7 +7,7 @@ import org.elasticsearch.index.analysis.CharFilterFactory;
 import org.elasticsearch.index.analysis.NamedAnalyzer;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.index.analysis.TokenizerFactory;
-import org.elasticsearch.testframework.ESTestCase;
+import org.elasticsearch.test.ESTestCase;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.segmentation.IcuTokenizerFactory;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.IcuFoldingTokenFilterFactory;

@@ -9,7 +9,7 @@ import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenizerFactory;
 import org.elasticsearch.index.analysis.CharFilterFactory;
 import org.elasticsearch.index.analysis.CustomAnalyzer;
-import org.elasticsearch.index.analysis.CustomAnalyzerProvider;
+import org.elasticsearch.index.analysis.XbibCustomAnalyzerProvider;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.index.analysis.TokenizerFactory;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.IcuCollationKeyAnalyzerProvider;
@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * Sort form analyzer provider.
  */
-public class SortformAnalyzerProvider extends CustomAnalyzerProvider {
+public class SortformAnalyzerProvider extends XbibCustomAnalyzerProvider {
 
     private final Settings analyzerSettings;
 
@@ -30,9 +30,11 @@ public class SortformAnalyzerProvider extends CustomAnalyzerProvider {
 
     private CustomAnalyzer customAnalyzer;
 
-    public SortformAnalyzerProvider(IndexSettings indexSettings, Environment environment, String name,
+    public SortformAnalyzerProvider(IndexSettings indexSettings,
+                                    Environment environment,
+                                    String name,
                                     Settings settings) {
-        super(indexSettings, name, settings, environment);
+        super(indexSettings, name, settings);
         this.tokenizerFactory = new SortformTokenizerFactory(indexSettings, name, settings);
         this.analyzerSettings = settings;
     }
@@ -63,7 +65,7 @@ public class SortformAnalyzerProvider extends CustomAnalyzerProvider {
         }
         int positionOffsetGap = analyzerSettings.getAsInt("position_offset_gap", 0);
         int offsetGap = analyzerSettings.getAsInt("offset_gap", -1);
-        this.customAnalyzer = new CustomAnalyzer(name(), tokenizerFactory,
+        this.customAnalyzer = new CustomAnalyzer(tokenizerFactory,
                 myCharFilters.toArray(new CharFilterFactory[myCharFilters.size()]),
                 myTokenFilters.toArray(new TokenFilterFactory[myTokenFilters.size()]),
                 positionOffsetGap,
@@ -83,7 +85,7 @@ public class SortformAnalyzerProvider extends CustomAnalyzerProvider {
         int bufferSize;
 
         SortformTokenizerFactory(IndexSettings indexSettings, String name, Settings settings) {
-            super(indexSettings, name, settings);
+            super(indexSettings, settings, name);
             Collator collator = IcuCollationKeyAnalyzerProvider.createCollator(settings);
             factory = new IcuCollationAttributeFactory(collator);
             bufferSize = settings.getAsInt("bufferSize", 256);

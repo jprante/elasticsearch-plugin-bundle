@@ -6,7 +6,6 @@ import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.util.AttributeFactory;
-import org.xbib.elasticsearch.plugin.bundle.index.analysis.hyphen.HyphenTokenizerImpl;
 
 import java.io.IOException;
 
@@ -71,8 +70,8 @@ public final class HyphenTokenizer extends Tokenizer {
             if (scanner.yylength() <= maxTokenLength) {
                 posIncrAtt.setPositionIncrement(skippedPositions + 1);
                 scanner.getText(termAtt);
-                final int start = scanner.yychar();
-                offsetAtt.setOffset(correctOffset(start), correctOffset(start + termAtt.length()));
+                final long start = scanner.yychar();
+                offsetAtt.setOffset(correctOffset((int) start), correctOffset((int) (start + termAtt.length())));
                 typeAtt.setType(HyphenTokenizer.TOKEN_TYPES[tokenType]);
                 return true;
             } else {
@@ -84,7 +83,7 @@ public final class HyphenTokenizer extends Tokenizer {
     @Override
     public void end() throws IOException {
         super.end();
-        int finalOffset = correctOffset(scanner.yychar() + scanner.yylength());
+        int finalOffset = correctOffset((int) (scanner.yychar() + scanner.yylength()));
         offsetAtt.setOffset(finalOffset, finalOffset);
         posIncrAtt.setPositionIncrement(posIncrAtt.getPositionIncrement() + skippedPositions);
     }

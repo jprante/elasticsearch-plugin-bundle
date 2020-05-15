@@ -4,11 +4,12 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.PostingsEnum;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermContext;
+import org.apache.lucene.index.TermStates;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.LeafSimScorer;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.similarities.Similarity;
+import org.apache.lucene.search.ScoreMode;
 import org.apache.lucene.search.spans.FilterSpans;
 import org.apache.lucene.search.spans.FilterSpans.AcceptStatus;
 import org.apache.lucene.search.spans.SpanCollector;
@@ -27,7 +28,8 @@ import java.util.Set;
 /**
  * Only return those matches that have a specific payload at the given position.
  *
- * Modified version of SpanPayloadCheckQuery which is able to process a null BytesRef in the payload to match list.
+ * Modified version of {@link org.apache.lucene.queries.payloads.SpanPayloadCheckQuery}
+ * which is able to process a null BytesRef in the payload to match list.
  */
 public class CustomSpanPayloadCheckQuery extends SpanQuery {
 
@@ -49,9 +51,9 @@ public class CustomSpanPayloadCheckQuery extends SpanQuery {
     }
 
     @Override
-    public SpanWeight createWeight(IndexSearcher searcher, boolean needsScores, float boost) throws IOException {
-        SpanWeight matchWeight = match.createWeight(searcher, false, boost);
-        return new SpanPayloadCheckWeight(searcher, needsScores ? getTermContexts(matchWeight) : null, matchWeight, boost);
+    public SpanWeight createWeight(IndexSearcher searcher, ScoreMode scoreMode, float boost) throws IOException {
+        SpanWeight matchWeight = match.createWeight(searcher, scoreMode, boost);
+        return new SpanPayloadCheckWeight(searcher, scoreMode.needsScores() ? getTermStates(matchWeight) : null, matchWeight, boost);
     }
 
     @Override
@@ -70,9 +72,11 @@ public class CustomSpanPayloadCheckQuery extends SpanQuery {
 
         final SpanWeight matchWeight;
 
-        public SpanPayloadCheckWeight(IndexSearcher searcher, Map<Term, TermContext> termContexts,
-                                      SpanWeight matchWeight, float boost) throws IOException {
-            super(CustomSpanPayloadCheckQuery.this, searcher, termContexts, boost);
+        public SpanPayloadCheckWeight(IndexSearcher searcher,
+                                      Map<Term, TermStates> termStates,
+                                      SpanWeight matchWeight,
+                                      float boost) throws IOException {
+            super(CustomSpanPayloadCheckQuery.this, searcher, termStates, boost);
             this.matchWeight = matchWeight;
         }
 
@@ -82,8 +86,8 @@ public class CustomSpanPayloadCheckQuery extends SpanQuery {
         }
 
         @Override
-        public void extractTermContexts(Map<Term, TermContext> contexts) {
-            matchWeight.extractTermContexts(contexts);
+        public void extractTermStates(Map<Term, TermStates> contexts) {
+            matchWeight.extractTermStates(contexts);
         }
 
         @Override
@@ -115,7 +119,7 @@ public class CustomSpanPayloadCheckQuery extends SpanQuery {
             if (spans == null) {
                 return null;
             }
-            final Similarity.SimScorer docScorer = getSimScorer(context);
+            final LeafSimScorer docScorer = getSimScorer(context);
             return new SpanScorer(this, spans, docScorer);
         }
 

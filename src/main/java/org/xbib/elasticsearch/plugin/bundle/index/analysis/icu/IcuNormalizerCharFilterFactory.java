@@ -7,7 +7,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractCharFilterFactory;
-import org.elasticsearch.index.analysis.MultiTermAwareComponent;
+import org.elasticsearch.index.analysis.NormalizingCharFilterFactory;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -15,11 +15,14 @@ import java.io.Reader;
 /**
  * ICU normalizer char filter factory.
  */
-public class IcuNormalizerCharFilterFactory extends AbstractCharFilterFactory implements MultiTermAwareComponent {
+public class IcuNormalizerCharFilterFactory
+        extends AbstractCharFilterFactory  implements NormalizingCharFilterFactory {
 
     private final Normalizer2 normalizer;
 
-    public IcuNormalizerCharFilterFactory(IndexSettings indexSettings, Environment environment, String name,
+    public IcuNormalizerCharFilterFactory(IndexSettings indexSettings,
+                                          Environment environment,
+                                          String name,
                                           Settings settings) {
         super(indexSettings, name);
         Normalizer2 base = Normalizer2.getInstance(getNormalizationResource(settings),
@@ -32,11 +35,6 @@ public class IcuNormalizerCharFilterFactory extends AbstractCharFilterFactory im
     @Override
     public Reader create(Reader reader) {
         return new IcuNormalizerCharFilter(reader, normalizer);
-    }
-
-    @Override
-    public Object getMultiTermComponent() {
-        return this;
     }
 
     protected InputStream getNormalizationResource(Settings settings) {

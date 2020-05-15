@@ -1,13 +1,15 @@
 package org.xbib.elasticsearch.plugin.bundle.test.index.analysis.icu.tools;
 
 import com.carrotsearch.randomizedtesting.annotations.SuppressForbidden;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.tools.UTR30DataFileGenerator;
 
 /**
  * UTR-30 data file generator test.
  */
-public class UTR30DataFileGeneratorTest {
+@Ignore
+public class TestUTR30DataFileGenerator {
 
     @SuppressForbidden(value = "execute this test to download utr30 files")
     @Test

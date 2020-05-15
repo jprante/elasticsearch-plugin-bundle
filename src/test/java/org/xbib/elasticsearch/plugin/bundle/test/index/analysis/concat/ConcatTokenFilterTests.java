@@ -3,8 +3,8 @@ package org.xbib.elasticsearch.plugin.bundle.test.index.analysis.concat;
 import org.apache.lucene.analysis.Analyzer;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
-import org.elasticsearch.testframework.ESTestCase;
-import org.elasticsearch.testframework.ESTokenStreamTestCase;
+import org.elasticsearch.test.ESTestCase;
+import org.elasticsearch.test.ESTokenStreamTestCase;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 /**

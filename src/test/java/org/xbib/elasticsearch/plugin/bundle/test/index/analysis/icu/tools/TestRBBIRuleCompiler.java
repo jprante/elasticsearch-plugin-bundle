@@ -1,6 +1,7 @@
 package org.xbib.elasticsearch.plugin.bundle.test.index.analysis.icu.tools;
 
 import com.carrotsearch.randomizedtesting.annotations.SuppressForbidden;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.tools.RBBIRuleCompiler;
 
@@ -13,7 +14,8 @@ import java.nio.file.Paths;
 /**
  * RBBI rule compiler test.
  */
-public class RBBIRuleCompilerTest {
+@Ignore
+public class TestRBBIRuleCompiler {
 
     @SuppressForbidden(value = "execute this test to create brk files")
     @Test

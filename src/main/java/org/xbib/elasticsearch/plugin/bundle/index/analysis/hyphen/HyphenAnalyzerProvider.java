@@ -5,9 +5,9 @@ import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.CharFilterFactory;
 import org.elasticsearch.index.analysis.CustomAnalyzer;
-import org.elasticsearch.index.analysis.CustomAnalyzerProvider;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.index.analysis.TokenizerFactory;
+import org.elasticsearch.index.analysis.XbibCustomAnalyzerProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * A Hyphen analyzer provider.
  */
-public class HyphenAnalyzerProvider extends CustomAnalyzerProvider {
+public class HyphenAnalyzerProvider extends XbibCustomAnalyzerProvider {
 
     private final Settings analyzerSettings;
 
@@ -26,15 +26,18 @@ public class HyphenAnalyzerProvider extends CustomAnalyzerProvider {
 
     private CustomAnalyzer customAnalyzer;
 
-    public HyphenAnalyzerProvider(IndexSettings indexSettings, Environment environment, String name, Settings settings) {
-        super(indexSettings, name, settings, environment);
+    public HyphenAnalyzerProvider(IndexSettings indexSettings,
+                                  Environment environment,
+                                  String name,
+                                  Settings settings) {
+        super(indexSettings, name, settings);
         this.tokenizerFactory = new HyphenTokenizerFactory(indexSettings, environment, name, settings);
         this.tokenFilterFactory = new HyphenTokenFilterFactory(indexSettings, environment, name, settings);
         this.analyzerSettings = settings;
     }
 
     @Override
-    public void build(final Map<String, TokenizerFactory> tokenizers,
+    protected void build(final Map<String, TokenizerFactory> tokenizers,
                       final Map<String, CharFilterFactory> charFilters,
                       final Map<String, TokenFilterFactory> tokenFilters) {
         List<CharFilterFactory> myCharFilters = new ArrayList<>();
@@ -60,12 +63,10 @@ public class HyphenAnalyzerProvider extends CustomAnalyzerProvider {
         }
         int positionOffsetGap = analyzerSettings.getAsInt("position_offset_gap", 0);
         int offsetGap = analyzerSettings.getAsInt("offset_gap", -1);
-        this.customAnalyzer = new CustomAnalyzer(name(), tokenizerFactory,
-                myCharFilters.toArray(new CharFilterFactory[myCharFilters.size()]),
-                myTokenFilters.toArray(new TokenFilterFactory[myTokenFilters.size()]),
-                positionOffsetGap,
-                offsetGap
-        );
+        this.customAnalyzer = new CustomAnalyzer(tokenizerFactory,
+                myCharFilters.toArray(new CharFilterFactory[0]),
+                myTokenFilters.toArray(new TokenFilterFactory[0]),
+                positionOffsetGap, offsetGap);
     }
 
     @Override

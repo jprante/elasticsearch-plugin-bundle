@@ -10,7 +10,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermInSetQuery;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.util.BytesRef;
-import org.elasticsearch.Version;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.geo.GeoPoint;
@@ -61,10 +60,10 @@ public class ReferenceMapper extends FieldMapper {
 
     private List<String> fields;
 
-    private FieldMapper contentMapper;
+    private final FieldMapper contentMapper;
 
     // override copyTo in FieldMapper
-    private CopyTo copyTo;
+    private final CopyTo copyTo;
 
     public ReferenceMapper(String simpleName,
                            MappedFieldType fieldType,
@@ -88,7 +87,7 @@ public class ReferenceMapper extends FieldMapper {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Mapper parse(ParseContext originalContext) throws IOException {
+    public void parse(ParseContext originalContext) throws IOException {
         String content = null;
         ParseContext context = originalContext;
         XContentParser parser = context.parser();
@@ -129,7 +128,7 @@ public class ReferenceMapper extends FieldMapper {
             }
         }
         if (content == null) {
-            return null;
+            return;
         }
         context = context.createExternalValueContext(content);
         contentMapper.parse(context);
@@ -176,7 +175,7 @@ public class ReferenceMapper extends FieldMapper {
             logger.warn("missing prerequisite: client={} index={} type={} fields={}",
                     client, index, type, fields);
         }
-        return null;
+        return;
     }
 
     @Override
@@ -185,8 +184,8 @@ public class ReferenceMapper extends FieldMapper {
     }
 
     @Override
-    protected void doMerge(Mapper mergeWith, boolean updateAllTypes) {
-        super.doMerge(mergeWith, updateAllTypes);
+    protected void doMerge(Mapper mergeWith) {
+        super.doMerge(mergeWith);
     }
 
     @Override
@@ -233,12 +232,12 @@ public class ReferenceMapper extends FieldMapper {
                 } else {
                     copyToContext = context.switchDoc(targetDoc);
                 }
-                // simplified - no dynamic field creation
-                FieldMapper fieldMapper = copyToContext.docMapper().mappers().getMapper(field);
-                if (fieldMapper != null) {
+                Mapper mapper = copyToContext.docMapper().mappers().getMapper(field);
+                if (mapper instanceof FieldMapper) {
+                    FieldMapper fieldMapper = (FieldMapper) mapper;
                     fieldMapper.parse(copyToContext);
                 } else {
-                    throw new MapperParsingException("attempt to copy value to non-existing field [" + field + "]");
+                    throw new MapperParsingException("attempt to copy value to non-existing or non-field field [" + field + "]");
                 }
             }
         }
@@ -284,8 +283,7 @@ public class ReferenceMapper extends FieldMapper {
         public Query termQuery(Object value, QueryShardContext context) {
             failIfNotIndexed();
             TermQuery query = new TermQuery(new Term(name(), indexedValueForSearch(value)));
-            if ((Float.compare(boost(), 1f) == 0) ||
-                    (context != null && context.indexVersionCreated().before(Version.V_5_0_0_alpha1))) {
+            if ((Float.compare(boost(), 1f) == 0)) {
                 return query;
             }
             return new BoostQuery(query, boost());

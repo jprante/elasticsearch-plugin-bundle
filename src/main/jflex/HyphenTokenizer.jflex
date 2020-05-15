@@ -21,7 +21,7 @@ public static final int CJ                = HyphenTokenizer.CJ;
 
 protected static final String[] TOKEN_TYPES = HyphenTokenizer.TOKEN_TYPES;
 
-public final int yychar() {
+public final long yychar() {
     return yychar;
 }
 

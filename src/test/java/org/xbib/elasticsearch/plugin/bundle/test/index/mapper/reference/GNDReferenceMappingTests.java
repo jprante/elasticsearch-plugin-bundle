@@ -7,15 +7,15 @@ import org.elasticsearch.action.search.SearchAction;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.WriteRequest;
-import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.testframework.ESSingleNodeTestCase;
+import org.elasticsearch.test.ESSingleNodeTestCase;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -30,7 +30,7 @@ public class GNDReferenceMappingTests extends ESSingleNodeTestCase {
 
     @Override
     protected Collection<Class<? extends Plugin>> getPlugins() {
-        return Arrays.asList(BundlePlugin.class, CommonAnalysisPlugin.class);
+        return Arrays.asList(BundlePlugin.class/*, CommonAnalysisPlugin.class*/);
     }
 
     public void testGND() throws Exception {
@@ -63,42 +63,40 @@ public class GNDReferenceMappingTests extends ESSingleNodeTestCase {
 
             SearchRequestBuilder searchRequestBuilder = new SearchRequestBuilder(client(), SearchAction.INSTANCE)
                     .setIndices("title")
-                    .setTypes("title")
-                    .setQuery(QueryBuilders.matchPhraseQuery("bib.namePersonal", "Tucholsky, Kurt"));
-
+                    .setQuery(QueryBuilders.matchPhraseQuery("bib.namePersonal", "Tucholsky, Kurt"))
+                    .setTrackTotalHits(true);
             SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
-
             logger.info("hits = {}", searchResponse.getHits().getTotalHits());
             for (SearchHit hit : searchResponse.getHits().getHits()) {
                 logger.info("kurt tucholsky = {}", hit.getSourceAsMap());
             }
-            assertEquals(1, searchResponse.getHits().getTotalHits());
+            assertEquals(1, searchResponse.getHits().getTotalHits().value);
 
             searchRequestBuilder = new SearchRequestBuilder(client(), SearchAction.INSTANCE)
                     .setIndices("title")
-                    .setTypes("title")
-                    .setQuery(QueryBuilders.matchPhraseQuery("bib.namePersonal", "Panter, Peter"));
+                    .setQuery(QueryBuilders.matchPhraseQuery("bib.namePersonal", "Panter, Peter"))
+                    .setTrackTotalHits(true);
             searchResponse = searchRequestBuilder.execute().actionGet();
-            logger.info("hits = {}", searchResponse.getHits().getTotalHits());
-            assertTrue(searchResponse.getHits().getTotalHits() > 0);
+            logger.info("hits = {}", searchResponse.getHits().getTotalHits().value);
+            assertTrue(searchResponse.getHits().getTotalHits().value > 0);
             for (SearchHit hit : searchResponse.getHits().getHits()) {
                 logger.info("peter panter = {}", hit.getSourceAsMap());
             }
-            assertEquals(1, searchResponse.getHits().getTotalHits());
+            assertEquals(1, searchResponse.getHits().getTotalHits().value);
 
             searchRequestBuilder = new SearchRequestBuilder(client(), SearchAction.INSTANCE)
                     .setIndices("title")
-                    .setTypes("title")
                     .setQuery(QueryBuilders.matchQuery("bib.namePersonal", "Panter, Peter"))
-                    .setExplain(true);
+                    .setExplain(true)
+                    .setTrackTotalHits(true);
             searchResponse = searchRequestBuilder.execute().actionGet();
-            logger.info("hits = {}", searchResponse.getHits().getTotalHits());
-            assertTrue(searchResponse.getHits().getTotalHits() > 0);
+            logger.info("hits = {}", searchResponse.getHits().getTotalHits().value);
+            assertTrue(searchResponse.getHits().getTotalHits().value > 0);
             for (SearchHit hit : searchResponse.getHits().getHits()) {
                 logger.info("schroeder = {}", hit.getSourceAsMap());
                 logger.info(hit.getExplanation().toString());
             }
-            assertEquals(1, searchResponse.getHits().getTotalHits());
+            assertEquals(1, searchResponse.getHits().getTotalHits().value);
 
             try {
                 client().admin().indices().prepareDelete("title", "gnd").execute().actionGet();
@@ -109,6 +107,6 @@ public class GNDReferenceMappingTests extends ESSingleNodeTestCase {
 
     @SuppressForbidden(reason = "accessing local resources from classpath")
     private String copyToStringFromClasspath(String path) throws Exception {
-        return copyToString(new InputStreamReader(getClass().getResource(path).openStream(), "UTF-8"));
+        return copyToString(new InputStreamReader(getClass().getResource(path).openStream(), StandardCharsets.UTF_8));
     }
 }

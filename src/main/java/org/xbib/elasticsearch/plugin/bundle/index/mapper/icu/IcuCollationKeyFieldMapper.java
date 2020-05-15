@@ -31,11 +31,11 @@ import org.elasticsearch.index.mapper.StringFieldType;
 import org.elasticsearch.index.mapper.TypeParsers;
 import org.elasticsearch.index.query.QueryShardContext;
 import org.elasticsearch.search.DocValueFormat;
-import org.joda.time.DateTimeZone;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.IcuCollationKeyAnalyzerProvider;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.IndexableBinaryStringTools;
 
 import java.io.IOException;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -87,8 +87,8 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
         }
 
         @Override
-        public void checkCompatibility(MappedFieldType otherFT, List<String> conflicts, boolean strict) {
-            super.checkCompatibility(otherFT, conflicts, strict);
+        public void checkCompatibility(MappedFieldType otherFT, List<String> conflicts) {
+            super.checkCompatibility(otherFT,conflicts);
             CollationFieldType other = (CollationFieldType) otherFT;
             if (!Objects.equals(collator, other.collator)) {
                 conflicts.add("mapper [" + name() + "] has different [collator]");
@@ -121,14 +121,6 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
             } else {
                 return new TermQuery(new Term(FieldNamesFieldMapper.NAME, name()));
             }
-        }
-
-        @Override
-        public Query nullValueQuery() {
-            if (nullValue() == null) {
-                return null;
-            }
-            return termQuery(nullValue(), null);
         }
 
         @Override
@@ -171,7 +163,7 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
         }
 
         @Override
-        public DocValueFormat docValueFormat(final String format, final DateTimeZone timeZone) {
+        public DocValueFormat docValueFormat(final String format, ZoneId timeZone) {
             return COLLATE_FORMAT;
         }
 
@@ -446,8 +438,8 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
     }
 
     @Override
-    protected void doMerge(Mapper mergeWith, boolean updateAllTypes) {
-        super.doMerge(mergeWith, updateAllTypes);
+    protected void doMerge(Mapper mergeWith) {
+        super.doMerge(mergeWith);
         List<String> conflicts = new ArrayList<>();
         IcuCollationKeyFieldMapper icuMergeWith = (IcuCollationKeyFieldMapper) mergeWith;
         if (!Objects.equals(collatorSettings.get("rules"), icuMergeWith.collatorSettings.get("rules"))) {

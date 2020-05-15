@@ -7,7 +7,7 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.cjk.CJKBigramFilter;
 import org.apache.lucene.util.AttributeFactory;
-import org.elasticsearch.testframework.ESTokenStreamTestCase;
+import org.elasticsearch.test.ESTokenStreamTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.segmentation.DefaultIcuTokenizerConfig;

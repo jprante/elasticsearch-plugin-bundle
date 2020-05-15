@@ -24,7 +24,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.BytesRef;
 import org.elasticsearch.common.Randomness;
-import org.elasticsearch.testframework.ESTestCase;
+import org.elasticsearch.test.ESTestCase;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.IcuCollationKeyAnalyzer;
 
 import java.io.IOException;

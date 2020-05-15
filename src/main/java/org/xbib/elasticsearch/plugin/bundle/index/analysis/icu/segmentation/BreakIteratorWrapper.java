@@ -96,7 +96,6 @@ abstract class BreakIteratorWrapper {
      * Generic BreakIterator wrapper: Either the rulestatus method is not
      * available or always returns 0. Calculate a rulestatus here so it behaves
      * like RuleBasedBreakIterator.
-     * <p/>
      * Note: This is slower than RuleBasedBreakIterator.
      */
     static final class BIWrapper extends BreakIteratorWrapper {

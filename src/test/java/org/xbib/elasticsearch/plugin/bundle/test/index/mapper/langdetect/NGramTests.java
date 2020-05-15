@@ -1,6 +1,6 @@
 package org.xbib.elasticsearch.plugin.bundle.test.index.mapper.langdetect;
 
-import org.elasticsearch.testframework.ESTestCase;
+import org.elasticsearch.test.ESTestCase;
 import org.xbib.elasticsearch.plugin.bundle.common.langdetect.NGram;
 
 public class NGramTests extends ESTestCase {

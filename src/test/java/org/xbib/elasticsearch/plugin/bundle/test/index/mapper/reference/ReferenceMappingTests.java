@@ -23,7 +23,7 @@ import org.elasticsearch.index.mapper.SourceToParse;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.testframework.ESSingleNodeTestCase;
+import org.elasticsearch.test.ESSingleNodeTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
@@ -93,13 +93,13 @@ public class ReferenceMappingTests extends ESSingleNodeTestCase {
         BytesReference json = BytesReference.bytes(jsonBuilder().startObject()
                 .field("someField", "1234")
                 .endObject());
-        SourceToParse sourceToParse = SourceToParse.source("some_index", "some_type", "1", json, XContentType.JSON);
+        SourceToParse sourceToParse = new SourceToParse("some_index", "some_type", "1", json, XContentType.JSON);
         ParseContext.Document doc = docMapper.parse(sourceToParse).rootDoc();
         assertNotNull(doc);
         for (IndexableField field : doc.getFields()) {
             logger.info("testRefMappings {} = {}", field.name(), field.stringValue());
         }
-        assertNotNull(docMapper.mappers().smartNameFieldMapper("someField"));
+        assertNotNull(docMapper.mappers().getMapper("someField"));
         assertEquals("1234", doc.getFields("someField")[0].stringValue());
         assertEquals(3, doc.getFields("ref").length);
         assertEquals("a", doc.getFields("ref")[0].stringValue());
@@ -117,7 +117,7 @@ public class ReferenceMappingTests extends ESSingleNodeTestCase {
                 .field("bib.contributor", "A contributor")
                 .field("authorID", "1")
                 .endObject());
-        SourceToParse sourceToParse = SourceToParse.source("docs", "docs", "1", json, XContentType.JSON);
+        SourceToParse sourceToParse = new SourceToParse("docs", "docs", "1", json, XContentType.JSON);
         ParseContext.Document doc = docMapper.parse(sourceToParse).rootDoc();
         for (IndexableField field : doc.getFields()) {
             logger.info("testRefInDoc {} = {}", field.name(), field.stringValue());
@@ -138,7 +138,7 @@ public class ReferenceMappingTests extends ESSingleNodeTestCase {
                 .field("title", "A title")
                 .field("authorID", "1")
                 .endObject());
-        SourceToParse sourceToParse = SourceToParse.source("docs", "docs", "1", json, XContentType.JSON);
+        SourceToParse sourceToParse = new SourceToParse("docs", "docs", "1", json, XContentType.JSON);
         ParseContext.Document doc = docMapper.parse(sourceToParse).rootDoc();
         assertEquals(1, doc.getFields("ref").length, 1);
         assertEquals("John Doe", doc.getFields("ref")[0].stringValue());
@@ -168,42 +168,50 @@ public class ReferenceMappingTests extends ESSingleNodeTestCase {
         // search in field 1, unreferenced value
         QueryBuilder queryBuilder = matchPhraseQuery("dc.creator", "A creator");
         SearchResponse searchResponse = client().prepareSearch("books")
-                .setQuery(queryBuilder).execute().actionGet();
+                .setQuery(queryBuilder)
+                .setTrackTotalHits(true)
+                .execute().actionGet();
         logger.info("unref hits = {}", searchResponse.getHits().getTotalHits());
         for (SearchHit hit : searchResponse.getHits().getHits()) {
             logger.info("{}", hit.getSourceAsMap());
         }
-        assertEquals(1, searchResponse.getHits().getTotalHits());
+        assertEquals(1L, searchResponse.getHits().getTotalHits().value);
 
         // search in field 1, referenced value
         queryBuilder = matchPhraseQuery("dc.creator", "John Doe");
         searchResponse = client().prepareSearch("books")
-                .setQuery(queryBuilder).execute().actionGet();
+                .setQuery(queryBuilder)
+                .setTrackTotalHits(true)
+                .execute().actionGet();
         logger.info("ref hits = {}", searchResponse.getHits().getTotalHits());
         for (SearchHit hit : searchResponse.getHits().getHits()) {
             logger.info("{}", hit.getSourceAsMap());
         }
-        assertEquals(1, searchResponse.getHits().getTotalHits());
+        assertEquals(1L, searchResponse.getHits().getTotalHits().value);
 
         // search in field 2, unreferenced value
         queryBuilder = matchPhraseQuery("bib.contributor", "A contributor");
         searchResponse = client().prepareSearch("books")
-                .setQuery(queryBuilder).execute().actionGet();
+                .setQuery(queryBuilder)
+                .setTrackTotalHits(true)
+                .execute().actionGet();
         logger.info("field 2 unref hits = {}", searchResponse.getHits().getTotalHits());
         for (SearchHit hit : searchResponse.getHits().getHits()) {
             logger.info("{}", hit.getSourceAsMap());
         }
-        assertEquals(1, searchResponse.getHits().getTotalHits());
+        assertEquals(1L, searchResponse.getHits().getTotalHits().value);
 
         // search in field 2, referenced value
         queryBuilder = matchPhraseQuery("bib.contributor", "John Doe");
         searchResponse = client().prepareSearch("books")
-                .setQuery(queryBuilder).execute().actionGet();
+                .setQuery(queryBuilder)
+                .setTrackTotalHits(true)
+                .execute().actionGet();
         logger.info("field 2 ref hits = {}", searchResponse.getHits().getTotalHits());
         for (SearchHit hit : searchResponse.getHits().getHits()) {
             logger.info("{}", hit.getSourceAsMap());
         }
-        assertEquals(1, searchResponse.getHits().getTotalHits());
+        assertEquals(1L, searchResponse.getHits().getTotalHits().value);
     }
 
     @SuppressForbidden(reason = "accessing local resources from classpath")

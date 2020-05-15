@@ -10,10 +10,11 @@ import org.elasticsearch.index.mapper.DocumentMapper;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.mapper.SourceToParse;
 import org.elasticsearch.plugins.Plugin;
-import org.elasticsearch.testframework.ESSingleNodeTestCase;
+import org.elasticsearch.test.ESSingleNodeTestCase;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -36,7 +37,7 @@ public class StandardnumberMappingTests extends ESSingleNodeTestCase {
         String sampleText = "978-3-551-75213-0";
         BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder().startObject()
                 .field("someField", sampleText).endObject());
-        SourceToParse sourceToParse = SourceToParse.source("some_index", "someType", "1", json, XContentType.JSON);
+        SourceToParse sourceToParse = new SourceToParse("some_index", "someType", "1", json, XContentType.JSON);
         ParseContext.Document doc = docMapper.parse(sourceToParse).rootDoc();
         assertEquals(2, doc.getFields("someField").length);
         assertEquals("978-3-551-75213-0", doc.getFields("someField")[0].stringValue());
@@ -51,7 +52,7 @@ public class StandardnumberMappingTests extends ESSingleNodeTestCase {
         String sampleText = "Hello world";
         BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder()
                 .startObject().field("someField", sampleText).endObject());
-        SourceToParse sourceToParse = SourceToParse.source("some_index", "someType", "1", json, XContentType.JSON);
+        SourceToParse sourceToParse = new SourceToParse("some_index", "someType", "1", json, XContentType.JSON);
         ParseContext.Document doc = docMapper.parse(sourceToParse).rootDoc();
         assertEquals(0, doc.getFields("someField").length);
         // re-parse it
@@ -62,13 +63,13 @@ public class StandardnumberMappingTests extends ESSingleNodeTestCase {
                 .parse("someType", new CompressedXContent(builtMapping));
         json = BytesReference.bytes(XContentFactory.jsonBuilder().startObject()
                 .field("someField", sampleText).endObject());
-        sourceToParse = SourceToParse.source("some_index2", "someType", "1", json, XContentType.JSON);
+        sourceToParse = new SourceToParse("some_index2", "someType", "1", json, XContentType.JSON);
         doc = docMapper2.parse(sourceToParse).rootDoc();
         assertEquals(0, doc.getFields("someField").length);
     }
 
     @SuppressForbidden(reason = "accessing local resources from classpath")
     private String copyToStringFromClasspath(String path) throws Exception {
-        return Streams.copyToString(new InputStreamReader(getClass().getResource(path).openStream(), "UTF-8"));
+        return Streams.copyToString(new InputStreamReader(getClass().getResource(path).openStream(), StandardCharsets.UTF_8));
     }
 }

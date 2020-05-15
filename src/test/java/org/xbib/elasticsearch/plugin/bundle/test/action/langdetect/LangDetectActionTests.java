@@ -5,7 +5,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.plugins.Plugin;
-import org.elasticsearch.testframework.ESSingleNodeTestCase;
+import org.elasticsearch.test.ESSingleNodeTestCase;
 import org.xbib.elasticsearch.plugin.bundle.action.langdetect.LangdetectRequestBuilder;
 import org.xbib.elasticsearch.plugin.bundle.action.langdetect.LangdetectResponse;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
@@ -97,15 +97,17 @@ public class LangDetectActionTests extends ESSingleNodeTestCase {
 
         searchResponse = client().prepareSearch()
                 .setQuery(QueryBuilders.termQuery("content", "de"))
+                .setTrackTotalHits(true)
                 .execute().actionGet();
-        assertEquals(1L, searchResponse.getHits().getTotalHits());
+        assertEquals(1L, searchResponse.getHits().getTotalHits().value);
         assertEquals("Einigkeit und Recht und Freiheit für das deutsche Vaterland!",
                 searchResponse.getHits().getAt(0).getSourceAsMap().get("content").toString());
 
         searchResponse = client().prepareSearch()
                 .setQuery(QueryBuilders.termQuery("content", "fr"))
+                .setTrackTotalHits(true)
                 .execute().actionGet();
-        assertEquals(1L, searchResponse.getHits().getTotalHits());
+        assertEquals(1L, searchResponse.getHits().getTotalHits().value);
         assertEquals("Allons enfants de la Patrie, Le jour de gloire est arrivé!",
                 searchResponse.getHits().getAt(0).getSourceAsMap().get("content").toString());
     }

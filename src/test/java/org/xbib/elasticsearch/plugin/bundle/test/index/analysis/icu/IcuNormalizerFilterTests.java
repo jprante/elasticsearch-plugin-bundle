@@ -2,10 +2,10 @@ package org.xbib.elasticsearch.plugin.bundle.test.index.analysis.icu;
 
 import com.ibm.icu.text.Normalizer2;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.testframework.analysis.MockTokenizer;
+import org.apache.lucene.analysis.MockTokenizer;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.KeywordTokenizer;
-import org.elasticsearch.testframework.ESTokenStreamTestCase;
+import org.elasticsearch.test.ESTokenStreamTestCase;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.IcuNormalizerFilter;
 
 /**

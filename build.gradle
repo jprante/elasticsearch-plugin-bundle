@@ -1,133 +1,105 @@
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+
 buildscript {
     repositories {
+        mavenCentral()
         jcenter()
-        maven {
-            url 'http://xbib.org/repository'
-        }
     }
     dependencies {
-        classpath "org.xbib.elasticsearch:gradle-plugin-elasticsearch-build:${project.property('elasticsearch-devkit.version')}"
+        classpath "org.elasticsearch.gradle:build-tools:${project.property('elasticsearch.version')}"
     }
 }
 
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-
 plugins {
-    id "org.sonarqube" version "2.6.1"
-    id "io.codearte.nexus-staging" version "0.11.0"
-    id "org.xbib.gradle.plugin.jflex" version "1.1.0"
+    id "org.sonarqube" version "2.8"
+    id "io.codearte.nexus-staging" version "0.21.1"
+    id "org.xbib.gradle.plugin.jflex" version "1.4.0"
     id "org.xbib.gradle.plugin.asciidoctor" version "1.5.6.0.1"
 }
 
-printf "Date: %s\nHost: %s\nOS: %s %s %s\nJVM: %s %s %s %s\nGradle: %s Groovy: %s Java: %s\n" +
-        "Build: group: ${project.group} name: ${project.name} version: ${project.version}\n",
-        ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
-        InetAddress.getLocalHost(),
-        System.getProperty("os.name"),
-        System.getProperty("os.arch"),
-        System.getProperty("os.version"),
-        System.getProperty("java.version"),
-        System.getProperty("java.vm.version"),
-        System.getProperty("java.vm.vendor"),
-        System.getProperty("java.vm.name"),
-        gradle.gradleVersion, GroovySystem.getVersion(), JavaVersion.current()
-
-apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'maven'
-apply plugin: 'signing'
-apply plugin: 'org.xbib.gradle.plugin.elasticsearch.plugin'
+apply plugin: 'elasticsearch.esplugin'
 apply plugin: 'org.xbib.gradle.plugin.jflex'
-apply plugin: 'org.xbib.gradle.plugin.asciidoctor'
+
+ext {
+    pluginName = 'bundle'
+    pluginClassname  = 'org.xbib.elasticsearch.plugin.bundle.BundlePlugin'
+    pluginDescription = 'A bundle of plugins for Elasticsearch'
+    user = 'jprante'
+    name = 'elasticsearch-plugin-bundle'
+    scmUrl = 'https://github.com/' + user + '/' + name
+    scmConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
+    scmDeveloperConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
+    licenseFile = rootProject.file('LICENSE.txt')
+    noticeFile = rootProject.file('NOTICE.txt')
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "build/generated-src/jflex"
+        }
+    }
+}
 
 esplugin {
     description 'Plugin bundle for Elasticsearch'
     name 'elasticsearch-plugin-bundle'
-    url 'https://github.com/jprante/elasticsearch-plugin-bundle'
-    classname 'org.xbib.elasticsearch.plugin.bundle/org.xbib.elasticsearch.plugin.bundle.BundlePlugin'
-}
-
-configurations {
-    wagon
+    classname 'org.xbib.elasticsearch.plugin.bundle.BundlePlugin'
 }
 
 dependencies {
-    compile "com.ibm.icu:icu4j:${project.property('icu4j.version')}"
-    compile "org.xbib:standardnumber:${project.property('standardnumber.version')}"
-    testCompile "org.xbib.elasticsearch:elasticsearch:${project.property('elasticsearch-server.version')}"
-    testCompile "org.xbib.elasticsearch:elasticsearch-analysis-common:${project.property('elasticsearch-analysis-common.version')}"
-    testCompile "org.xbib.elasticsearch:transport-netty4:${project.property('elasticsearch-transport-netty4.version')}"
-    wagon "org.apache.maven.wagon:wagon-ssh:${project.property('wagon.version')}"
+    implementation "com.ibm.icu:icu4j:${project.property('icu4j.version')}"
+    implementation "org.xbib:standardnumber:${project.property('standardnumber.version')}"
+    //compileOnly "org.elasticsearch:elasticsearch:${project.property('elasticsearch.version')}"
+    //testCompile "org.xbib.elasticsearch:elasticsearch-analysis-common:${project.property('elasticsearch-analysis-common.version')}"
+    //testCompile "org.xbib.elasticsearch:transport-netty4:${project.property('elasticsearch-transport-netty4.version')}"
+    testImplementation "org.codelibs.elasticsearch.module:analysis-common:${project.property('elasticsearch.version')}"
 }
 
 compileJava {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+    options.compilerArgs = [
+            "-Xlint:-try"
+    ]
 }
 
 compileTestJava {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+    options.compilerArgs = [
+            "-Xlint:-cast,-deprecation,-rawtypes,-try,-unchecked",
+            "-proc:none"
+    ]
 }
 
-tasks.withType(Javadoc) {
+javadoc {
+    enabled = true
     options.addStringOption('Xdoclint:none', '-quiet')
 }
 
-afterEvaluate {
-    compileJava {
-        inputs.property("moduleName", 'org.xbib.elasticsearch.plugin.bundle')
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-        doFirst {
-            options.compilerArgs = [
-                    "-Xlint:-try",
-                    '--module-path', classpath.asPath
-
-            ]
-            classpath = files()
-        }
-    }
-    compileTestJava {
-        inputs.property("moduleName", 'org.xbib.elasticsearch.plugin.bundle.test')
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-        doFirst {
-            options.compilerArgs = [
-                    "-Xlint:-cast,-deprecation,-rawtypes,-try,-unchecked",
-                    "-proc:none",
-                    '--module-path', classpath.asPath
-            ]
-            classpath = files()
-        }
-    }
-    javadoc {
-        enabled = true
-        inputs.property("moduleName", 'org.xbib.elasticsearch.plugin.bundle')
-        doFirst {
-            options.addStringOption('-module-path', classpath.asPath)
-            classpath = files()
-        }
-    }
-    jar {
-        inputs.property("moduleName", 'org.xbib.elasticsearch.plugin.bundle')
-        manifest {
-            attributes(
-                    'Implementation-Title': "${project.group}#${project.name};${project.version}",
-                    'Implementation-Version': version,
-                    'Implementation-Vendor': "${user}",
-                    'Build-Date': ZonedDateTime.now(ZoneOffset.UTC),
-                    'Build-Java-Version': System.getProperty("java.version"),
-                    'X-Compile-Source-JDK': compileJava.targetCompatibility,
-                    'X-Compile-Target-JDK': compileJava.sourceCompatibility,
-                    'X-Compile-Elasticsearch-Version': version,
-                    'X-Compile-Lucene-Version': project.property('lucene.version'),
-                    'X-Compile-Elasticsearch-Snapshot': false
-            )
-        }
+jar {
+    manifest {
+        attributes(
+                'Implementation-Title': "${project.group}#${project.name};${project.version}",
+                'Implementation-Version': "${project.version}",
+                'Implementation-Vendor': "${user}",
+                'Build-Date': ZonedDateTime.now(ZoneOffset.UTC),
+                'Build-Java-Version': System.getProperty("java.version"),
+                'X-Compile-Source-JDK': compileJava.targetCompatibility,
+                'X-Compile-Target-JDK': compileJava.sourceCompatibility,
+                'X-Compile-Elasticsearch-Version': project.property('elasticsearch.version'),
+                'X-Compile-Lucene-Version': project.property('lucene.version'),
+                'X-Compile-Elasticsearch-Snapshot': false
+        )
     }
 }
 
 test {
     enabled = false
-    dependsOn jar, testJar
     include '**/*Test*'
     systemProperty 'path.home', System.getProperty("user.dir")
     testLogging {
@@ -136,31 +108,9 @@ test {
     }
 }
 
-randomizedTest {
-    enabled = false
-    dependsOn jar, testJar
-}
-
-esTest {
-    enabled = true
-    dependsOn jar, testJar
-    //systemProperty 'tests.class', 'org.xbib.elasticsearch.plugin.bundle.test.action.isbnformat.IsbnFormatTests'
-    jvmArg '--add-reads=org.xbib.elasticsearch.randomizedtesting=org.xbib.elasticsearch.plugin.bundle'
-    jvmArg '--add-reads=org.xbib.elasticsearch.randomizedtesting=org.xbib.elasticsearch.plugin.bundle.test'
-}
-
 integTest {
     enabled = false
-    dependsOn jar, testJar
-    // Execution failed for task ':integTestRunner'.
-    //> There were no executed tests: 1 suite (1 ignored), 0 tests
-    // --> "ignored" ? probably module graph loading problems
-    // IcuClientYamlTestSuiteIT rest-api-spec/test/analysis_icu
-
-    // Error occurred during initialization of boot layer
-    //java.lang.module.FindException: Error reading module: /Users/joerg/Projects/github/jprante/elasticsearch-plugin-bundle/build/classes/java/test
-    //Caused by: java.lang.module.InvalidModuleDescriptorException: Package restapispec.test.analysis_icu not found in module
-    // --> pack everything into jar/testJar and make integTestRunner module aware
+    dependsOn jar
 }
 
 clean {
@@ -171,15 +121,102 @@ artifacts {
     archives sourcesJar, javadocJar
 }
 
+/*
 if (project.hasProperty('signing.keyId')) {
     signing {
         sign configurations.archives
     }
 }
+*/
+/*
+task xbibUpload(type: Upload) {
+    group = 'publish'
+    configuration = configurations.archives
+    uploadDescriptor = true
+    repositories {
+        if (project.hasProperty('xbibUsername')) {
+            mavenDeployer {
+                configuration = configurations.wagon
+                repository(url: uri(project.property('xbibUrl'))) {
+                    authentication(userName: xbibUsername, privateKey: xbibPrivateKey)
+                }
+                pom.project {
+                    groupId project.group
+                    artifactId project.name
+                    version project.version
+                }
+            }
+        }
+    }
+}
+*/
+/*task sonatypeUpload(type: Upload) {
+    group = 'publish'
+    configuration = configurations.archives
+    uploadDescriptor = true
+    repositories {
+        if (project.hasProperty('ossrhUsername')) {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                repository(url: uri(ossrhReleaseUrl)) {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+                snapshotRepository(url: uri(ossrhSnapshotUrl)) {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+                pom.project {
+                    groupId project.group
+                    artifactId project.name
+                    version project.version
+                    name project.name
+                    description pluginDescription
+                    packaging 'jar'
+                    inceptionYear '2012'
+                    url scmUrl
+                    organization {
+                        name 'xbib'
+                        url 'http://xbib.org'
+                    }
+                    developers {
+                        developer {
+                            id user
+                            name 'Jörg Prante'
+                            email 'joergprante@gmail.com'
+                            url 'https://github.com/jprante'
+                        }
+                    }
+                    scm {
+                        url scmUrl
+                        connection scmConnection
+                        developerConnection scmDeveloperConnection
+                    }
+                    licenses {
+                        license {
+                            name 'Affero GNU Public License Version 3'
+                            url 'http://www.gnu.org/licenses/agpl-3.0.html'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
-apply from: 'gradle/ext.gradle'
-apply from: 'gradle/publish.gradle'
-apply from: 'gradle/sourcequality.gradle'
+nexusStaging {
+    packageGroup = "org.xbib"
+}
+*/
+
+sonarqube {
+    properties {
+        property "sonar.projectName", "${project.group} ${project.name}"
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.tests", "src/test/java"
+        property "sonar.scm.provider", "git"
+        property "sonar.java.coveragePlugin", "jacoco"
+        property "sonar.junit.reportsPath", "build/test-results/test/"
+    }
+}
 
 asciidoctor {
     attributes toc: 'left',
@@ -194,7 +231,9 @@ asciidoctor {
 }
 
 checkstyleMain.source = 'src/main/java'
-
-forbiddenPatterns.exclude('**/*.txt')
-
+forbiddenPatterns.exclude('**/*.txt', '**/*.brk', '**/*.fst', '**/*.tree', '**/*.nrm')
 licenseHeaders.enabled = false
+dependencyLicenses.enabled = false
+thirdPartyAudit.enabled = false
+loggerUsageCheck.enabled = false
+testingConventions.enabled = false

@@ -17,11 +17,14 @@ public class StandardnumberTokenFilterFactory extends AbstractTokenFilterFactory
 
     private final StandardnumberService standardnumberService;
 
-    public StandardnumberTokenFilterFactory(IndexSettings indexSettings, Environment environment, String name,
-                                            Settings settings, StandardnumberMapper.TypeParser standardNumberTypeParser) {
+    public StandardnumberTokenFilterFactory(IndexSettings indexSettings,
+                                            Environment environment,
+                                            String name,
+                                            Settings settings,
+                                            StandardnumberMapper.TypeParser standardNumberTypeParser) {
         super(indexSettings, name, settings);
         this.settings = settings;
-        this.standardnumberService = new StandardnumberService(settings);
+        this.standardnumberService = new StandardnumberService();
         this.standardnumberService.setStandardNumberTypeParser(standardNumberTypeParser);
     }
 

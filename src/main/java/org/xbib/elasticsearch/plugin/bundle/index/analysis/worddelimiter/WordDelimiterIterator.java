@@ -48,20 +48,22 @@ public final class WordDelimiterIterator {
      * given SUBWORD_DELIM tokens). (Defaults to true)
      */
     private final boolean splitOnCaseChange;
+
     /**
      * If false, causes numeric changes to be ignored (subwords will only be generated
      * given SUBWORD_DELIM tokens). (Defaults to true)
      */
     private final boolean splitOnNumerics;
+
     /**
      * If true, causes trailing "'s" to be removed for each subword. (Defaults to true)
-     * <p/>
-     * "O'Neil's" => "O", "Neil"
+     * "O'Neil's" =&gt; "O", "Neil"
      */
     private final boolean stemEnglishPossessive;
     private final byte[] charTypeTable;
     char[] text;
     private int length;
+
     /**
      * start position of text, excluding leading delimiters
      */
@@ -92,7 +94,7 @@ public final class WordDelimiterIterator {
      * @param splitOnCaseChange     if true, causes "PowerShot" to be two tokens; ("Power-Shot" remains two parts
      *                              regards)
      * @param splitOnNumerics       if true, causes "j2se" to be three tokens; "j" "2" "se"
-     * @param stemEnglishPossessive if true, causes trailing "'s" to be removed for each subword: "O'Neil's" => "O",
+     * @param stemEnglishPossessive if true, causes trailing "'s" to be removed for each subword: "O'Neil's" =&gt; "O",
      *                              "Neil"
      */
     WordDelimiterIterator(byte[] charTypeTable, boolean splitOnCaseChange, boolean splitOnNumerics, boolean stemEnglishPossessive) {

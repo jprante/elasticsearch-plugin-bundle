@@ -1,6 +1,7 @@
 package org.xbib.elasticsearch.plugin.bundle.test.common.decompound.patricia;
 
 import com.carrotsearch.randomizedtesting.annotations.SuppressForbidden;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.xbib.elasticsearch.plugin.bundle.common.decompound.patricia.Decompounder;
 import org.xbib.elasticsearch.plugin.bundle.common.decompound.patricia.LFUCache;
@@ -15,7 +16,8 @@ import java.util.zip.GZIPInputStream;
 
 import static org.junit.Assert.assertTrue;
 
-public class DecompounderTest {
+@Ignore
+public class TestDecompounder {
 
     @SuppressForbidden(value = "execute this to test decompounder cache performance")
     @Test

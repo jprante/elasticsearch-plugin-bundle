@@ -9,7 +9,7 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.testframework.ESSingleNodeTestCase;
+import org.elasticsearch.test.ESSingleNodeTestCase;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 import java.io.InputStreamReader;
@@ -64,23 +64,25 @@ public class SimpleReferenceMappingTests extends ESSingleNodeTestCase {
         QueryBuilder queryBuilder = matchQuery("dc.creator", "first");
         SearchResponse searchResponse = client().prepareSearch("doc")
                 .setQuery(queryBuilder)
+                .setTrackTotalHits(true)
                 .execute().actionGet();
-        logger.info("first query, hits = {}", searchResponse.getHits().getTotalHits());
+        logger.info("first query, hits = {}", searchResponse.getHits().getTotalHits().value);
         for (SearchHit hit : searchResponse.getHits().getHits()) {
             logger.info("{}", hit.getSourceAsMap());
         }
-        assertEquals(1, searchResponse.getHits().getTotalHits());
+        assertEquals(1, searchResponse.getHits().getTotalHits().value);
 
         // search for "second" which comes from ref
         queryBuilder = matchQuery("dc.creator", "second");
         searchResponse = client().prepareSearch("doc")
                 .setQuery(queryBuilder)
+                .setTrackTotalHits(true)
                 .execute().actionGet();
-        logger.info("second query, hits = {}", searchResponse.getHits().getTotalHits());
+        logger.info("second query, hits = {}", searchResponse.getHits().getTotalHits().value);
         for (SearchHit hit : searchResponse.getHits().getHits()) {
             logger.info("{}", hit.getSourceAsMap());
         }
-        assertEquals(1, searchResponse.getHits().getTotalHits());
+        assertEquals(1, searchResponse.getHits().getTotalHits().value);
     }
 
     @SuppressForbidden(reason = "accessing local resources from classpath")

@@ -1,12 +1,14 @@
 package org.xbib.elasticsearch.plugin.bundle.test.common.decompound.patricia;
 
 import com.carrotsearch.randomizedtesting.annotations.SuppressForbidden;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.xbib.elasticsearch.plugin.bundle.common.decompound.patricia.LFUCache;
 
 import static org.junit.Assert.assertEquals;
 
-public class LFUCacheTest {
+@Ignore
+public class TestLFUCache {
 
     @SuppressForbidden(value = "execute this to test LFU cache")
     @Test

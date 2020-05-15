@@ -3,10 +3,9 @@ package org.xbib.elasticsearch.plugin.bundle.action.langdetect;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.support.ActionFilters;
 import org.elasticsearch.action.support.TransportAction;
-import org.elasticsearch.cluster.metadata.IndexNameExpressionResolver;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.threadpool.ThreadPool;
+import org.elasticsearch.tasks.Task;
 import org.elasticsearch.transport.TransportService;
 import org.xbib.elasticsearch.plugin.bundle.common.langdetect.LangdetectService;
 import org.xbib.elasticsearch.plugin.bundle.common.langdetect.Language;
@@ -22,17 +21,19 @@ public class TransportLangdetectAction extends TransportAction<LangdetectRequest
 
     private static final Map<String, LangdetectService> services = new HashMap<>();
 
+    private final Settings settings;
+
     @Inject
-    public TransportLangdetectAction(Settings settings, ThreadPool threadPool,
+    public TransportLangdetectAction(Settings settings,
                                      ActionFilters actionFilters,
-                                     IndexNameExpressionResolver indexNameExpressionResolver,
                                      TransportService transportService) {
-        super(settings, LangdetectAction.NAME, threadPool, actionFilters, indexNameExpressionResolver, transportService.getTaskManager());
+        super(LangdetectAction.NAME, actionFilters, transportService.getTaskManager());
+        this.settings = settings;
         services.put("", new LangdetectService(settings));
     }
 
     @Override
-    protected void doExecute(LangdetectRequest request, ActionListener<LangdetectResponse> listener) {
+    protected void doExecute(Task task, LangdetectRequest request, ActionListener<LangdetectResponse> listener) {
         String profile = request.getProfile();
         if (profile == null) {
             profile = "";

@@ -4,7 +4,6 @@ import org.elasticsearch.client.node.NodeClient;
 import org.elasticsearch.common.CheckedConsumer;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.DeprecationHandler;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -26,8 +25,8 @@ import static org.elasticsearch.rest.RestRequest.Method.POST;
 public class RestLangdetectAction extends BaseRestHandler {
 
     @Inject
-    public RestLangdetectAction(Settings settings, RestController controller) {
-        super(settings);
+    public RestLangdetectAction(RestController controller) {
+        super();
         controller.registerHandler(GET, "/_langdetect", this);
         controller.registerHandler(GET, "/_langdetect/{profile}", this);
         controller.registerHandler(POST, "/_langdetect", this);

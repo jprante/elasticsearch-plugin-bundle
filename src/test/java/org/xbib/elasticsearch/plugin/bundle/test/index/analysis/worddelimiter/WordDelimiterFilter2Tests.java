@@ -1,18 +1,17 @@
 package org.xbib.elasticsearch.plugin.bundle.test.index.analysis.worddelimiter;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.testframework.analysis.MockTokenizer;
+import org.apache.lucene.analysis.MockTokenizer;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.StopFilter;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
-import org.elasticsearch.testframework.ESTestCase;
-import org.elasticsearch.testframework.ESTokenStreamTestCase;
+import org.elasticsearch.test.ESTestCase;
+import org.elasticsearch.test.ESTokenStreamTestCase;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.worddelimiter.WordDelimiterFilter2;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.worddelimiter.WordDelimiterIterator;
@@ -23,6 +22,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.apache.lucene.analysis.standard.ClassicAnalyzer.STOP_WORDS_SET;
 import static org.xbib.elasticsearch.plugin.bundle.index.analysis.worddelimiter.WordDelimiterFilter2.ALL_PARTS_AT_SAME_POSITION;
 import static org.xbib.elasticsearch.plugin.bundle.index.analysis.worddelimiter.WordDelimiterFilter2.CATENATE_ALL;
 import static org.xbib.elasticsearch.plugin.bundle.index.analysis.worddelimiter.WordDelimiterFilter2.CATENATE_WORDS;
@@ -258,8 +258,7 @@ public class WordDelimiterFilter2Tests extends ESTokenStreamTestCase {
             @Override
             public TokenStreamComponents createComponents(String field) {
                 Tokenizer tokenizer = new MockTokenizer(MockTokenizer.WHITESPACE, false);
-                StopFilter filter = new StopFilter(tokenizer, StandardAnalyzer.STOP_WORDS_SET);
-                //filter.setEnablePositionIncrements(true);
+                StopFilter filter = new StopFilter(tokenizer, STOP_WORDS_SET);
                 return new TokenStreamComponents(tokenizer, new WordDelimiterFilter2(filter, flags, protWords));
             }
         };
@@ -288,7 +287,7 @@ public class WordDelimiterFilter2Tests extends ESTokenStreamTestCase {
             @Override
             public TokenStreamComponents createComponents(String field) {
                 Tokenizer tokenizer = new MockTokenizer(MockTokenizer.WHITESPACE, false);
-                StopFilter filter = new StopFilter(tokenizer, StandardAnalyzer.STOP_WORDS_SET);
+                StopFilter filter = new StopFilter(tokenizer, STOP_WORDS_SET);
                 return new TokenStreamComponents(tokenizer, new WordDelimiterFilter2(filter, flags4, protWords));
             }
         };
@@ -391,7 +390,7 @@ public class WordDelimiterFilter2Tests extends ESTokenStreamTestCase {
             @Override
             public TokenStreamComponents createComponents(String field) {
                 Tokenizer tokenizer = new MockTokenizer(MockTokenizer.WHITESPACE, false);
-                StopFilter filter = new StopFilter(tokenizer, StandardAnalyzer.STOP_WORDS_SET);
+                StopFilter filter = new StopFilter(tokenizer, STOP_WORDS_SET);
                 return new TokenStreamComponents(tokenizer, new WordDelimiterFilter2(filter, flags, protWords));
             }
         };
@@ -420,7 +419,7 @@ public class WordDelimiterFilter2Tests extends ESTokenStreamTestCase {
             @Override
             public TokenStreamComponents createComponents(String field) {
                 Tokenizer tokenizer = new MockTokenizer(MockTokenizer.WHITESPACE, false);
-                StopFilter filter = new StopFilter(tokenizer, StandardAnalyzer.STOP_WORDS_SET);
+                StopFilter filter = new StopFilter(tokenizer, STOP_WORDS_SET);
                 return new TokenStreamComponents(tokenizer, new WordDelimiterFilter2(filter, flags4, protWords));
             }
         };

@@ -4,7 +4,6 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.component.AbstractLifecycleComponent;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.Injector;
-import org.elasticsearch.common.settings.Settings;
 import org.xbib.elasticsearch.plugin.bundle.index.mapper.reference.ReferenceMapperTypeParser;
 
 /**
@@ -15,8 +14,8 @@ public class ReferenceService extends AbstractLifecycleComponent {
     private final Injector injector;
 
     @Inject
-    public ReferenceService(Settings settings, Injector injector) {
-        super(settings);
+    public ReferenceService(Injector injector) {
+        super();
         this.injector = injector;
     }
 

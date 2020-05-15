@@ -13,8 +13,8 @@ import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.plugins.Plugin;
-import org.elasticsearch.testframework.ESSingleNodeTestCase;
-import org.elasticsearch.testframework.InternalSettingsPlugin;
+import org.elasticsearch.test.ESSingleNodeTestCase;
+import org.elasticsearch.test.InternalSettingsPlugin;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 import java.util.Arrays;

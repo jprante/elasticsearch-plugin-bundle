@@ -3,7 +3,7 @@ package org.xbib.elasticsearch.plugin.bundle.test.index.analysis.autophrase;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.CharArraySet;
-import org.elasticsearch.testframework.ESTestCase;
+import org.elasticsearch.test.ESTestCase;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.autophrase.AutoPhrasingTokenFilter;
 
 import java.io.StringReader;

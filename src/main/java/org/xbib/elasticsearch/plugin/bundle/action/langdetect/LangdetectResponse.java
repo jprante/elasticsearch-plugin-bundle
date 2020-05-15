@@ -2,6 +2,8 @@ package org.xbib.elasticsearch.plugin.bundle.action.langdetect;
 
 import org.elasticsearch.action.ActionResponse;
 import org.elasticsearch.common.Strings;
+import org.elasticsearch.common.io.stream.StreamInput;
+import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.common.xcontent.StatusToXContentObject;
 import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.common.xcontent.XContentBuilder;
@@ -23,8 +25,12 @@ public class LangdetectResponse extends ActionResponse implements StatusToXConte
 
     private List<Language> languages = new ArrayList<>();
 
-    public String getProfile() {
-        return profile;
+    LangdetectResponse() {
+    }
+
+    LangdetectResponse(StreamInput streamInput) throws IOException {
+        this.profile = streamInput.readOptionalString();
+        this.languages = streamInput.readList(Language::new);
     }
 
     public LangdetectResponse setProfile(String profile) {
@@ -32,13 +38,17 @@ public class LangdetectResponse extends ActionResponse implements StatusToXConte
         return this;
     }
 
-    public List<Language> getLanguages() {
-        return languages;
+    public String getProfile() {
+        return profile;
     }
 
     public LangdetectResponse setLanguages(List<Language> languages) {
         this.languages = languages;
         return this;
+    }
+
+    public List<Language> getLanguages() {
+        return languages;
     }
 
     @Override
@@ -58,5 +68,11 @@ public class LangdetectResponse extends ActionResponse implements StatusToXConte
     @Override
     public RestStatus status() {
         return OK;
+    }
+
+    @Override
+    public void writeTo(StreamOutput out) throws IOException {
+        out.writeOptionalString(profile);
+        out.writeList(languages);
     }
 }

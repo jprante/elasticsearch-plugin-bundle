@@ -15,7 +15,6 @@ import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
@@ -23,10 +22,9 @@ import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.plugins.PluginInfo;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.testframework.ESIntegTestCase;
-import org.elasticsearch.testframework.StreamsUtils;
-import org.elasticsearch.testframework.hamcrest.ElasticsearchAssertions;
-import org.elasticsearch.transport.netty4.Netty4Plugin;
+import org.elasticsearch.test.ESIntegTestCase;
+import org.elasticsearch.test.StreamsUtils;
+import org.elasticsearch.test.hamcrest.ElasticsearchAssertions;
 import org.junit.Before;
 import org.xbib.elasticsearch.plugin.bundle.query.decompound.ExactPhraseQueryBuilder;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
@@ -35,13 +33,13 @@ public class DecompoundQueryTests extends ESIntegTestCase {
 
     @Override
     protected Collection<Class<? extends Plugin>> nodePlugins() {
-        return Arrays.asList(CommonAnalysisPlugin.class, Netty4Plugin.class, BundlePlugin.class);
+        return Arrays.asList(/*CommonAnalysisPlugin.class, Netty4Plugin.class, */BundlePlugin.class);
     }
 
     @Before
     public void setup() throws Exception {
         String indexBody =
-                StreamsUtils.copyToStringFromClasspath(getClass(),"decompound_query.json");
+                StreamsUtils.copyToStringFromClasspath(getClass().getClassLoader(),"decompound_query.json");
         prepareCreate("test").setSource(indexBody, XContentType.JSON).get();
         ensureGreen("test");
     }

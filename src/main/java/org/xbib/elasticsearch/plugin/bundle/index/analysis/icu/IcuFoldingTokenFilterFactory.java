@@ -20,11 +20,6 @@ public class IcuFoldingTokenFilterFactory extends IcuNormalizerTokenFilterFactor
     }
 
     @Override
-    public Object getMultiTermComponent() {
-        return this;
-    }
-
-    @Override
     protected String getNormalizationName(Settings settings) {
         return settings.get("normalization_name", "utr30");
     }

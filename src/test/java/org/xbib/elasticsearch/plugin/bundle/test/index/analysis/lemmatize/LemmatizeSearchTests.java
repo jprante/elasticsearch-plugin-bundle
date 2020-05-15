@@ -1,16 +1,14 @@
 package org.xbib.elasticsearch.plugin.bundle.test.index.analysis.lemmatize;
 
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.plugins.Plugin;
-import org.elasticsearch.testframework.ESSingleNodeTestCase;
+import org.elasticsearch.test.ESSingleNodeTestCase;
 import org.xbib.elasticsearch.plugin.bundle.BundlePlugin;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
@@ -22,7 +20,7 @@ public class LemmatizeSearchTests extends ESSingleNodeTestCase {
     /** The plugin classes that should be added to the node. */
     @Override
     protected Collection<Class<? extends Plugin>> getPlugins() {
-        return Arrays.asList(BundlePlugin.class, CommonAnalysisPlugin.class);
+        return Arrays.asList(BundlePlugin.class/*, CommonAnalysisPlugin.class*/);
     }
 
     public void testFstExpansionIndexAndSearchAnalyzer() throws Exception {

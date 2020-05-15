@@ -20,7 +20,7 @@ public class NaturalSortKeyTokenizerFactory extends AbstractTokenizerFactory {
 
     public NaturalSortKeyTokenizerFactory(IndexSettings indexSettings, Environment environment, String name,
                                           Settings settings) {
-        super(indexSettings, name, settings);
+        super(indexSettings, settings, name);
         Collator collator = NaturalSortKeyAnalyzerProvider.createCollator(settings);
         int digits = settings.getAsInt("digits", 1);
         int maxTokens = settings.getAsInt("maxTokens", 2);

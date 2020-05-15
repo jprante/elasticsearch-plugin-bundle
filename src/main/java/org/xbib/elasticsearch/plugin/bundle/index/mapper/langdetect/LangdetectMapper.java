@@ -160,11 +160,6 @@ public class LangdetectMapper extends FieldMapper {
     }
 
     @Override
-    protected void doMerge(Mapper mergeWith, boolean updateAllTypes) {
-        super.doMerge(mergeWith, updateAllTypes);
-    }
-
-    @Override
     protected void doXContentBody(XContentBuilder builder, boolean includeDefaults, Params params) throws IOException {
         super.doXContentBody(builder, includeDefaults, params);
         langdetectService.getSettings().toXContent(builder, params);
@@ -193,8 +188,9 @@ public class LangdetectMapper extends FieldMapper {
             } else {
                 copyToContext = context.switchDoc(targetDoc);
             }
-            FieldMapper fieldMapper = copyToContext.docMapper().mappers().getMapper(field.toString());
-            if (fieldMapper != null) {
+            Mapper mapper = copyToContext.docMapper().mappers().getMapper(field.toString());
+            if (mapper instanceof FieldMapper) {
+                FieldMapper fieldMapper = (FieldMapper) mapper;
                 fieldMapper.parse(copyToContext);
             } else {
                 throw new MapperParsingException("attempt to copy value to non-existing field [" + field + "]");

@@ -2,7 +2,7 @@ package org.xbib.elasticsearch.plugin.bundle.test.index.analysis.icu.segmentatio
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.util.AttributeFactory;
-import org.elasticsearch.testframework.ESTokenStreamTestCase;
+import org.elasticsearch.test.ESTokenStreamTestCase;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.segmentation.DefaultIcuTokenizerConfig;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.segmentation.IcuTokenizer;
 

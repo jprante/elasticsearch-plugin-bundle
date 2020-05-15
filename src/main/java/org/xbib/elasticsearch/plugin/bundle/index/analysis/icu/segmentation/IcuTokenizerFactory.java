@@ -28,7 +28,7 @@ public class IcuTokenizerFactory extends AbstractTokenizerFactory {
     protected final IcuTokenizerConfig config;
 
     public IcuTokenizerFactory(IndexSettings indexSettings, Environment environment, String name, Settings settings) {
-        super(indexSettings, name, settings);
+        super(indexSettings, settings, name);
         boolean cjkAsWords = settings.getAsBoolean("cjk_as_words", true);
         boolean myanmarAsWords = settings.getAsBoolean("myanmar_as_words", true);
         Map<Integer, String> tailored = new HashMap<>();

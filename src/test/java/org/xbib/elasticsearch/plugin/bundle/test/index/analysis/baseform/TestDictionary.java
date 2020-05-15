@@ -1,6 +1,7 @@
 package org.xbib.elasticsearch.plugin.bundle.test.index.analysis.baseform;
 
 import org.apache.lucene.util.SuppressForbidden;
+import org.junit.Ignore;
 import org.xbib.elasticsearch.plugin.bundle.common.fsa.Dictionary;
 
 import java.io.BufferedReader;
@@ -12,7 +13,8 @@ import java.nio.charset.StandardCharsets;
 /**
  * Dictionary tests.
  */
-public class DictionaryTest {
+@Ignore
+public class TestDictionary {
 
     @SuppressForbidden(reason = "accessing local resources from classpath")
     public void testVerifyDE() throws IOException {

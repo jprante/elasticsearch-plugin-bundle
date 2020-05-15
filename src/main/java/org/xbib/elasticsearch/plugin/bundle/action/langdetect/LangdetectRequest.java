@@ -2,7 +2,6 @@ package org.xbib.elasticsearch.plugin.bundle.action.langdetect;
 
 import org.elasticsearch.action.ActionRequest;
 import org.elasticsearch.action.ActionRequestValidationException;
-import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 
 import java.io.IOException;
@@ -43,13 +42,6 @@ public class LangdetectRequest extends ActionRequest {
     public LangdetectRequest setText(String text) {
         this.text = text;
         return this;
-    }
-
-    @Override
-    public void readFrom(StreamInput in) throws IOException {
-        super.readFrom(in);
-        text = in.readString();
-        profile = in.readOptionalString();
     }
 
     @Override

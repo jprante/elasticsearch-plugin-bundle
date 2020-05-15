@@ -1,12 +1,12 @@
 package org.xbib.elasticsearch.plugin.bundle.action.isbnformat;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.support.ActionFilters;
 import org.elasticsearch.action.support.TransportAction;
-import org.elasticsearch.cluster.metadata.IndexNameExpressionResolver;
 import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.threadpool.ThreadPool;
+import org.elasticsearch.tasks.Task;
 import org.elasticsearch.transport.TransportService;
 import org.xbib.elasticsearch.plugin.bundle.common.standardnumber.StandardnumberService;
 
@@ -15,21 +15,20 @@ import org.xbib.elasticsearch.plugin.bundle.common.standardnumber.Standardnumber
  */
 public class TransportISBNFormatAction extends TransportAction<ISBNFormatRequest, ISBNFormatResponse> {
 
+    private static final Logger logger = LogManager.getLogger(TransportISBNFormatAction.class);
+
     private final StandardnumberService standardnumberService;
 
     @Inject
-    public TransportISBNFormatAction(Settings settings, ThreadPool threadPool,
-                                     ActionFilters actionFilters,
-                                     IndexNameExpressionResolver indexNameExpressionResolver,
+    public TransportISBNFormatAction(ActionFilters actionFilters,
                                      TransportService transportService,
                                      StandardnumberService standardnumberService) {
-        super(settings, ISBNFormatAction.NAME, threadPool, actionFilters, indexNameExpressionResolver,
-                transportService.getTaskManager());
+        super(ISBNFormatAction.NAME, actionFilters, transportService.getTaskManager());
         this.standardnumberService = standardnumberService;
     }
 
     @Override
-    protected void doExecute(ISBNFormatRequest request, ActionListener<ISBNFormatResponse> listener) {
+    protected void doExecute(Task task, ISBNFormatRequest request, ActionListener<ISBNFormatResponse> listener) {
         ISBNFormatResponse response = new ISBNFormatResponse();
         try {
             standardnumberService.handle(request.getValue(), response);

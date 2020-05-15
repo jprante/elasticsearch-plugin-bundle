@@ -7,7 +7,7 @@ import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.util.AttributeFactory;
-import org.elasticsearch.testframework.ESTokenStreamTestCase;
+import org.elasticsearch.test.ESTokenStreamTestCase;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.IcuNormalizerFilter;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.tokenattributes.ScriptAttribute;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.segmentation.DefaultIcuTokenizerConfig;
