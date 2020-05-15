@@ -45,11 +45,8 @@ public class WordDelimiterFilter2Tests extends ESTokenStreamTestCase {
         ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
                 settings,
                 new BundlePlugin(Settings.EMPTY));
-
-        Tokenizer tokenizer = analysis.tokenizer.get("keyword").create();
-        tokenizer.setReader(new StringReader("foo-bar"));
+        Tokenizer tokenizer = keywordMockTokenizer(new StringReader("foo-bar"));
         TokenStream ts = analysis.tokenFilter.get("wd").create(tokenizer);
-
         assertTokenStreamContents(ts,
                 new String[]{"foo", "bar", "foobar"},
                 new int[]{0, 4, 0},

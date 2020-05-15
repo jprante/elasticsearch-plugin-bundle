@@ -62,9 +62,10 @@ public class LangDetectGermanTests extends ESSingleNodeTestCase {
             SearchRequestBuilder searchRequestBuilder = new SearchRequestBuilder(client(), SearchAction.INSTANCE)
                     .setIndices("test")
                     .setQuery(QueryBuilders.termQuery("content.language", "de"))
-                    .addStoredField("content.language");
+                    .addStoredField("content.language")
+                    .setTrackScores(true);
             SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
-            assertEquals(1L, searchResponse.getHits().getTotalHits());
+            assertEquals(1L, searchResponse.getHits().getTotalHits().value);
             assertEquals("de", searchResponse.getHits().getAt(0).field("content.language").getValue());
         } finally {
             DeleteIndexRequestBuilder deleteIndexRequestBuilder =

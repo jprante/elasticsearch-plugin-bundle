@@ -14,11 +14,11 @@
       "filter" : {
         "my_icu_folder_filter" : {
           "type" : "icu_folding",
-          "normalization_name" : "utr30"
+          "normalization_name" : "full"
         },
         "my_icu_folder_filter_with_exceptions" : {
           "type" : "icu_folding",
-          "normalization_name" : "utr30",
+          "normalization_name" : "full",
           "unicode_set_filter" : "[^åäöÅÄÖ]"
         }
       },

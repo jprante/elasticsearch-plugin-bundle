@@ -59,9 +59,10 @@ public class LangDetectBinaryTests extends ESSingleNodeTestCase {
             SearchRequestBuilder searchRequestBuilder = new SearchRequestBuilder(client(), SearchAction.INSTANCE)
                     .setIndices("test")
                     .setQuery(QueryBuilders.termQuery("content.language", "en"))
-                    .addStoredField("content.language");
+                    .addStoredField("content.language")
+                    .setTrackTotalHits(true);
             SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
-            assertEquals(1L, searchResponse.getHits().getTotalHits());
+            assertEquals(1L, searchResponse.getHits().getTotalHits().value);
             assertEquals("en", searchResponse.getHits().getAt(0).field("content.language").getValue());
         } finally {
             DeleteIndexRequestBuilder deleteIndexRequestBuilder =

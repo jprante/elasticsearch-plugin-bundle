@@ -2,6 +2,7 @@ package org.xbib.elasticsearch.plugin.bundle.test.index.mapper.langdetect;
 
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.util.SuppressForbidden;
+import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.compress.CompressedXContent;
 import org.elasticsearch.common.io.Streams;
@@ -32,7 +33,7 @@ public class LangdetectMappingTests extends ESSingleNodeTestCase {
     /** The plugin classes that should be added to the node. */
     @Override
     protected Collection<Class<? extends Plugin>> getPlugins() {
-        return pluginList(BundlePlugin.class, InternalSettingsPlugin.class);
+        return pluginList(BundlePlugin.class, InternalSettingsPlugin.class, CommonAnalysisPlugin.class);
     }
 
     public void testSimpleMapping() throws Exception {

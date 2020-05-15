@@ -1,6 +1,7 @@
 package org.xbib.elasticsearch.plugin.bundle.test.index.analysis.lemmatize;
 
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.plugins.Plugin;
@@ -20,7 +21,7 @@ public class LemmatizeSearchTests extends ESSingleNodeTestCase {
     /** The plugin classes that should be added to the node. */
     @Override
     protected Collection<Class<? extends Plugin>> getPlugins() {
-        return Arrays.asList(BundlePlugin.class/*, CommonAnalysisPlugin.class*/);
+        return Arrays.asList(BundlePlugin.class, CommonAnalysisPlugin.class);
     }
 
     public void testFstExpansionIndexAndSearchAnalyzer() throws Exception {
@@ -64,14 +65,16 @@ public class LemmatizeSearchTests extends ESSingleNodeTestCase {
         // libraries -> library
         SearchResponse searchResponse = client().prepareSearch()
                 .setQuery(QueryBuilders.matchQuery("content", "library"))
+                .setTrackTotalHits(true)
                 .execute().actionGet();
-        assertEquals(1L, searchResponse.getHits().getTotalHits());
+        assertEquals(1L, searchResponse.getHits().getTotalHits().value);
 
         // phrase search: academic libraries -> academic library
         searchResponse = client().prepareSearch()
                 .setQuery(QueryBuilders.matchPhraseQuery("content", "academic library"))
                 .setExplain(true)
+                .setTrackTotalHits(true)
                 .execute().actionGet();
-        assertEquals(1L, searchResponse.getHits().getTotalHits());
+        assertEquals(1L, searchResponse.getHits().getTotalHits().value);
     }
 }
