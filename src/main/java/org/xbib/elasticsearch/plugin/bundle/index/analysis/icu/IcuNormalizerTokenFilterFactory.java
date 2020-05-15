@@ -28,10 +28,8 @@ public class IcuNormalizerTokenFilterFactory
                                            String name,
                                            Settings settings) {
         super(indexSettings, name, settings);
-
         Normalizer2 base = Normalizer2.getInstance(getNormalizationResource(settings),
                 getNormalizationName(settings), getNormalizationMode(settings));
-
         String unicodeSetFilter = settings.get("unicode_set_filter");
         this.normalizer = unicodeSetFilter != null ?
                 new FilteredNormalizer2(base, new UnicodeSet(unicodeSetFilter).freeze()) : base;
@@ -43,11 +41,8 @@ public class IcuNormalizerTokenFilterFactory
     }
 
     protected InputStream getNormalizationResource(Settings settings) {
-        InputStream inputStream = null;
-        if ("utr30".equals(getNormalizationName(settings))) {
-            inputStream = getClass().getResourceAsStream("utr30.nrm");
-        }
-        return inputStream;
+        String string = getNormalizationName(settings);
+        return getClass().getResourceAsStream(string + ".nrm");
     }
 
     protected String getNormalizationName(Settings settings) {

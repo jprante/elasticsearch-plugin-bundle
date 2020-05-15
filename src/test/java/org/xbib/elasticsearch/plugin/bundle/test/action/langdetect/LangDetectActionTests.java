@@ -90,8 +90,9 @@ public class LangDetectActionTests extends ESSingleNodeTestCase {
 
         SearchResponse searchResponse = client().prepareSearch()
                 .setQuery(QueryBuilders.termQuery("content", "en"))
+                .setTrackTotalHits(true)
                 .execute().actionGet();
-        assertEquals(1L, searchResponse.getHits().getTotalHits());
+        assertEquals(1L, searchResponse.getHits().getTotalHits().value);
         assertEquals("Oh, say can you see by the dawn`s early light, What so proudly we hailed at the twilight`s last gleaming?",
                 searchResponse.getHits().getAt(0).getSourceAsMap().get("content").toString());
 

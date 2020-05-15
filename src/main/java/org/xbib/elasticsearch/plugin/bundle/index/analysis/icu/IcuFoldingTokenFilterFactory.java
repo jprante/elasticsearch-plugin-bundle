@@ -21,15 +21,12 @@ public class IcuFoldingTokenFilterFactory extends IcuNormalizerTokenFilterFactor
 
     @Override
     protected String getNormalizationName(Settings settings) {
-        return settings.get("normalization_name", "utr30");
+        return settings.get("normalization_name", "full");
     }
 
     @Override
     protected InputStream getNormalizationResource(Settings settings) {
-        InputStream inputStream = null;
-        if ("utr30".equals(getNormalizationName(settings))) {
-            inputStream = getClass().getResourceAsStream("utr30.nrm");
-        }
-        return inputStream;
+        String string = getNormalizationName(settings);
+        return getClass().getResourceAsStream(string + ".nrm");
     }
 }

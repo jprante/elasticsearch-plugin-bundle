@@ -99,7 +99,7 @@ jar {
 }
 
 test {
-    enabled = false
+    enabled = true
     include '**/*Test*'
     systemProperty 'path.home', System.getProperty("user.dir")
     testLogging {
@@ -231,6 +231,8 @@ asciidoctor {
 }
 
 checkstyleMain.source = 'src/main/java'
+// we use @Ignore
+forbiddenApisTest.enabled = false
 forbiddenPatterns.exclude('**/*.txt', '**/*.brk', '**/*.fst', '**/*.tree', '**/*.nrm')
 licenseHeaders.enabled = false
 dependencyLicenses.enabled = false

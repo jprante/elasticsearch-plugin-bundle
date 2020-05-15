@@ -38,11 +38,8 @@ public class IcuNormalizerCharFilterFactory
     }
 
     protected InputStream getNormalizationResource(Settings settings) {
-        InputStream inputStream = null;
-        if ("utr30".equals(getNormalizationName(settings))) {
-            inputStream = getClass().getResourceAsStream("utr30.nrm");
-        }
-        return inputStream;
+        String string = getNormalizationName(settings);
+        return getClass().getResourceAsStream(string + ".nrm");
     }
 
     protected String getNormalizationName(Settings settings) {
