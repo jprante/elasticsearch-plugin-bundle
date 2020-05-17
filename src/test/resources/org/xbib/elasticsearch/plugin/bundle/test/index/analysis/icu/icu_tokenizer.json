@@ -1,15 +1,19 @@
 {
-    "index":{
-        "analysis":{
-            "tokenizer" : {
-                "my_icu_tokenizer" : {
-                   "type" : "icu_tokenizer"
-                },
-                "my_hyphen_icu_tokenizer" : {
-                   "type" : "icu_tokenizer",
-                   "rulefiles" : "Latn:Latin-dont-break-on-hyphens.rbbi"
-                }
-            }
+  "index":{
+    "analysis":{
+      "tokenizer" : {
+        "my_icu_tokenizer" : {
+          "type" : "icu_tokenizer"
+        },
+        "my_hyphen_icu_tokenizer" : {
+          "type" : "icu_tokenizer",
+          "rulefiles" : "Latn:Latin-dont-break-on-hyphens.rbbi"
+        },
+        "my_whitespace_icu_tokenizer" : {
+          "type" : "icu_tokenizer",
+          "rulefiles" : "Latn:Latin-break-only-on-whitespace.rbbi"
         }
+      }
     }
+  }
 }

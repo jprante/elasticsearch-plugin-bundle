@@ -44,7 +44,6 @@ public class IcuNormalizeCharTests extends ESTokenStreamTestCase {
                 new BundlePlugin(Settings.EMPTY));
         Analyzer analyzer = analysis.indexAnalyzers.get("my_icu_analyzer");
         assertTokenStreamContents(analyzer.tokenStream("test", "This is a test"), new String[]{ "this", "is", "a", "test" });
-        assertTokenStreamContents(analyzer.tokenStream("test", "Ruß"), new String[]{ "russ" });
         assertTokenStreamContents(analyzer.tokenStream("test", "Jörg Prante"), new String[] { "jorg", "prante" });
         assertTokenStreamContents(analyzer.tokenStream("test", "ΜΆΪΟΣ"), new String[]{  "μαιοσ" });
         assertTokenStreamContents(analyzer.tokenStream("test", "Μάϊος"), new String[] { "μαιοσ" });
@@ -57,6 +56,7 @@ public class IcuNormalizeCharTests extends ESTokenStreamTestCase {
         assertTokenStreamContents(analyzer.tokenStream("test", "đis is cræzy"), new String[] { "dis", "is", "craezy" });
         assertTokenStreamContents(analyzer.tokenStream("test",  "ELİF"), new String[] { "elif" });
         assertTokenStreamContents(analyzer.tokenStream("test", "eli\u0307f"), new String[] { "elif" });
+        assertTokenStreamContents(analyzer.tokenStream("test", "Ruß"), new String[]{ "russ" });
     }
 
     public void testFoldingAnalyzerWithExceptions() throws Exception {

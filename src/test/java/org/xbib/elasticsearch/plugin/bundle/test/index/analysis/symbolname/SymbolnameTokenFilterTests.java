@@ -32,8 +32,7 @@ public class SymbolnameTokenFilterTests extends ESTokenStreamTestCase {
                 Settings.EMPTY,
                 new BundlePlugin(Settings.EMPTY));
         TokenFilterFactory tokenFilter = analysis.tokenFilter.get("symbolname");
-        Tokenizer tokenizer = analysis.tokenizer.get("whitespace").create();
-        tokenizer.setReader(new StringReader(source));
+        Tokenizer tokenizer = whitespaceMockTokenizer(new StringReader(source));
         assertTokenStreamContents(tokenFilter.create(tokenizer), expected);
     }
 
@@ -60,8 +59,7 @@ public class SymbolnameTokenFilterTests extends ESTokenStreamTestCase {
                 Settings.EMPTY,
                 new BundlePlugin(Settings.EMPTY));
         TokenFilterFactory tokenFilter = analysis.tokenFilter.get("symbolname");
-        Tokenizer tokenizer = analysis.tokenizer.get("whitespace").create();
-        tokenizer.setReader(new StringReader(source));
+        Tokenizer tokenizer = whitespaceMockTokenizer(new StringReader(source));
         assertTokenStreamContents(tokenFilter.create(tokenizer), expected);
     }
 
@@ -91,8 +89,7 @@ public class SymbolnameTokenFilterTests extends ESTokenStreamTestCase {
                 Settings.EMPTY,
                 new BundlePlugin(Settings.EMPTY));
         TokenFilterFactory tokenFilter = analysis.tokenFilter.get("symbolname");
-        Tokenizer tokenizer = analysis.tokenizer.get("whitespace").create();
-        tokenizer.setReader(new StringReader(source));
+        Tokenizer tokenizer = whitespaceMockTokenizer(new StringReader(source));
         assertTokenStreamContents(tokenFilter.create(tokenizer), expected);
     }
 }

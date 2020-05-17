@@ -54,15 +54,14 @@ public class IcuTokenizerTests extends ESTokenStreamTestCase {
         ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
                 settings,
                 new BundlePlugin(Settings.EMPTY));
-        Tokenizer tokenizer = analysis.tokenizer.get("my_hyphen_icu_tokenizer").create();
+        Tokenizer tokenizer = analysis.tokenizer.get("my_whitespace_icu_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         assertTokenStreamContents(tokenizer, expected);
     }
 
-    @AwaitsFix(bugUrl="THIS FAILS BUT WHY? only single digit ? expected:<3[-428-84350-9]> but was:<3[]")
     public void testIdentifierNonBreakSingleToken() throws Exception {
-        String source = "3-428-84350-9";
-        String[] expected = {"3-428-84350-9"};
+        String source = "3-428-84350-9 is an ISBN";
+        String[] expected = {"3-428-84350-9", "is", "an", "ISBN"};
         String resource = "icu_tokenizer.json";
         Settings settings = Settings.builder()
                 .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
@@ -70,7 +69,7 @@ public class IcuTokenizerTests extends ESTokenStreamTestCase {
         ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
                 settings,
                 new BundlePlugin(Settings.EMPTY));
-        Tokenizer tokenizer = analysis.tokenizer.get("my_hyphen_icu_tokenizer").create();
+        Tokenizer tokenizer = analysis.tokenizer.get("my_whitespace_icu_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         assertTokenStreamContents(tokenizer, expected);
     }
@@ -85,7 +84,7 @@ public class IcuTokenizerTests extends ESTokenStreamTestCase {
         ESTestCase.TestAnalysis analysis = ESTestCase.createTestAnalysis(new Index("test", "_na_"),
                 settings,
                 new BundlePlugin(Settings.EMPTY));
-        Tokenizer tokenizer = analysis.tokenizer.get("my_hyphen_icu_tokenizer").create();
+        Tokenizer tokenizer = analysis.tokenizer.get("my_whitespace_icu_tokenizer").create();
         tokenizer.setReader(new StringReader(source));
         assertTokenStreamContents(tokenizer, expected);
     }

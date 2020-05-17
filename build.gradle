@@ -51,11 +51,9 @@ esplugin {
 }
 
 dependencies {
-    implementation "com.ibm.icu:icu4j:${project.property('icu4j.version')}"
-    implementation "org.xbib:standardnumber:${project.property('standardnumber.version')}"
-    //compileOnly "org.elasticsearch:elasticsearch:${project.property('elasticsearch.version')}"
-    //testCompile "org.xbib.elasticsearch:elasticsearch-analysis-common:${project.property('elasticsearch-analysis-common.version')}"
-    //testCompile "org.xbib.elasticsearch:transport-netty4:${project.property('elasticsearch-transport-netty4.version')}"
+    // we must use "compile" and not "implementation" otherwise ES build does not detect dependencies
+    compile "com.ibm.icu:icu4j:${project.property('icu4j.version')}"
+    compile "org.xbib:standardnumber:${project.property('standardnumber.version')}"
     testImplementation "org.codelibs.elasticsearch.module:analysis-common:${project.property('elasticsearch.version')}"
 }
 
@@ -98,27 +96,18 @@ jar {
     }
 }
 
-test {
-    enabled = true
-    include '**/*Test*'
-    systemProperty 'path.home', System.getProperty("user.dir")
-    testLogging {
-        showStandardStreams = false
-        exceptionFormat = 'full'
-    }
-}
-
-integTest {
-    enabled = false
-    dependsOn jar
-}
-
 clean {
     delete fileTree('.') { include '.local*.log' }
 }
 
 artifacts {
     archives sourcesJar, javadocJar
+}
+
+restResources {
+    restApi {
+        includeCore '_common', 'indices', 'index', 'search'
+    }
 }
 
 /*

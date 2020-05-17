@@ -11,7 +11,9 @@ import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
  */
 public class SortformTokenFilterFactory extends AbstractTokenFilterFactory {
 
-    public SortformTokenFilterFactory(IndexSettings indexSettings, Environment environment, String name,
+    public SortformTokenFilterFactory(IndexSettings indexSettings,
+                                      Environment environment,
+                                      String name,
                                       Settings settings) {
         super(indexSettings, name, settings);
     }

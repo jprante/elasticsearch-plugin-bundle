@@ -59,8 +59,8 @@ public class NaturalSortKeyAttributeImpl extends CharTermAttributeImpl {
     public boolean equals(Object object) {
         return object instanceof NaturalSortKeyAttributeImpl &&
                 collator.equals(((NaturalSortKeyAttributeImpl)object).collator) &&
-                Integer.compare(digits, ((NaturalSortKeyAttributeImpl)object).digits) == 0 &&
-                Integer.compare(maxTokens, ((NaturalSortKeyAttributeImpl)object).maxTokens) == 0;
+                digits == ((NaturalSortKeyAttributeImpl) object).digits &&
+                maxTokens == ((NaturalSortKeyAttributeImpl) object).maxTokens;
     }
 
     @Override

@@ -22,7 +22,9 @@ public class NaturalSortKeyAnalyzerProvider extends AbstractIndexAnalyzerProvide
 
     private final int bufferSize;
 
-    public NaturalSortKeyAnalyzerProvider(IndexSettings indexSettings, Environment environment, String name,
+    public NaturalSortKeyAnalyzerProvider(IndexSettings indexSettings,
+                                          Environment environment,
+                                          String name,
                                           Settings settings) {
         super(indexSettings, name, settings);
         this.collator = createCollator(settings);

@@ -15,6 +15,7 @@ import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
@@ -33,13 +34,13 @@ public class DecompoundQueryTests extends ESIntegTestCase {
 
     @Override
     protected Collection<Class<? extends Plugin>> nodePlugins() {
-        return Arrays.asList(/*CommonAnalysisPlugin.class, Netty4Plugin.class, */BundlePlugin.class);
+        return Arrays.asList(CommonAnalysisPlugin.class, BundlePlugin.class);
     }
 
     @Before
     public void setup() throws Exception {
-        String indexBody =
-                StreamsUtils.copyToStringFromClasspath(getClass().getClassLoader(),"decompound_query.json");
+        String indexBody = StreamsUtils.copyToStringFromClasspath(getClass().getClassLoader(),
+                "org/xbib/elasticsearch/plugin/bundle/test/query/decompound/decompound_query.json");
         prepareCreate("test").setSource(indexBody, XContentType.JSON).get();
         ensureGreen("test");
     }
@@ -60,26 +61,36 @@ public class DecompoundQueryTests extends ESIntegTestCase {
 
     public void testNestedCommonPhraseQuery() throws Exception {
         List<IndexRequestBuilder> reqs = new ArrayList<>();
-        reqs.add(client().prepareIndex("test", "_doc", "1").setSource("text", "deutsche Spielbankgesellschaft"));
+        reqs.add(client().prepareIndex("test", "_doc", "1")
+                .setSource("text", "deutsche Spielbankgesellschaft"));
         indexRandom(true, false, reqs);
 
         QueryStringQueryBuilder queryStringQueryBuilder =
                 QueryBuilders.queryStringQuery("text:\"deutsche spielbankgesellschaft\"");
         ExactPhraseQueryBuilder exactPhraseQueryBuilder = new ExactPhraseQueryBuilder(queryStringQueryBuilder);
-        SearchResponse resp = client().prepareSearch("test").setQuery(exactPhraseQueryBuilder).get();
+        SearchResponse resp = client().prepareSearch("test")
+                .setQuery(exactPhraseQueryBuilder)
+                .setTrackTotalHits(true)
+                .execute().actionGet();
         ElasticsearchAssertions.assertHitCount(resp, 1L);
         assertHits(resp.getHits(), "1");
 
         QueryStringQueryBuilder queryStringQueryBuilder2 =
                 QueryBuilders.queryStringQuery("text:\"deutsche bank\"");
         ExactPhraseQueryBuilder exactPhraseQueryBuilder2 = new ExactPhraseQueryBuilder(queryStringQueryBuilder2);
-        SearchResponse resp2 = client().prepareSearch("test").setQuery(exactPhraseQueryBuilder2).get();
+        SearchResponse resp2 = client().prepareSearch("test")
+                .setQuery(exactPhraseQueryBuilder2)
+                .setTrackTotalHits(true)
+                .execute().actionGet();
         ElasticsearchAssertions.assertHitCount(resp2, 0L);
 
         QueryStringQueryBuilder queryStringQueryBuilder3 =
                 QueryBuilders.queryStringQuery("text:\"deutsche spielbankgesellschaft\" AND NOT text:\"deutsche bank\"");
         ExactPhraseQueryBuilder exactPhraseQueryBuilder3 = new ExactPhraseQueryBuilder(queryStringQueryBuilder3);
-        SearchResponse resp3 = client().prepareSearch("test").setQuery(exactPhraseQueryBuilder3).get();
+        SearchResponse resp3 = client().prepareSearch("test")
+                .setQuery(exactPhraseQueryBuilder3)
+                .setTrackTotalHits(true)
+                .execute().actionGet();
         ElasticsearchAssertions.assertHitCount(resp3, 1L);
         assertHits(resp3.getHits(), "1");
     }
@@ -88,15 +99,17 @@ public class DecompoundQueryTests extends ESIntegTestCase {
         List<IndexRequestBuilder> reqs = new ArrayList<>();
         reqs.add(client().prepareIndex("test", "_doc", "1").setSource("text", "deutsche Spielbankgesellschaft"));
         indexRandom(true, false, reqs);
-
         QueryStringQueryBuilder queryStringQueryBuilder = QueryBuilders.queryStringQuery("text:\"deutsche bank\"");
-        SearchResponse resp = client().prepareSearch("test").setQuery(queryStringQueryBuilder).get();
+        SearchResponse resp = client().prepareSearch("test")
+                .setQuery(queryStringQueryBuilder)
+                .setTrackTotalHits(true)
+                .execute().actionGet();
         ElasticsearchAssertions.assertHitCount(resp, 1L);
         assertHits(resp.getHits(), "1");
     }
 
     private void assertHits(SearchHits hits, String... ids) {
-        assertThat(hits.getTotalHits(), equalTo((long) ids.length));
+        assertThat(hits.getTotalHits().value, equalTo((long) ids.length));
         Set<String> hitIds = new HashSet<>();
         for (SearchHit hit : hits.getHits()) {
             hitIds.add(hit.getId());

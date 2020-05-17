@@ -1,31 +1,29 @@
-package org.xbib.elasticsearch.plugin.bundle.index.analysis.hyphen;
+package org.xbib.elasticsearch.plugin.bundle.index.analysis.sortform;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
+import org.elasticsearch.index.analysis.TokenizerFactory;
 import java.util.Collections;
 
-/**
- * Hyphen analyzer.
- */
-public class HyphenAnalyzer extends Analyzer {
+public class SortFormAnalyzer extends Analyzer {
 
-    private final HyphenTokenizerFactory tokenizerFactory;
+    private final TokenizerFactory tokenizerFactory;
 
-    private final HyphenTokenFilterFactory filterFactory;
+    private final SortformTokenFilterFactory tokenFilterFactory;
 
-    public HyphenAnalyzer(HyphenTokenizerFactory tokenizerFactory,
-                          HyphenTokenFilterFactory filterFactory) {
+    public SortFormAnalyzer(TokenizerFactory tokenizerFactory,
+                            SortformTokenFilterFactory tokenFilterFactory) {
         this.tokenizerFactory = tokenizerFactory;
-        this.filterFactory = filterFactory;
+        this.tokenFilterFactory = tokenFilterFactory;
     }
 
     @Override
     protected TokenStreamComponents createComponents(String fieldName) {
         Tokenizer tokenizer = tokenizerFactory.create();
         TokenStream tokenStream = tokenizer;
-        for (TokenFilterFactory tokenFilter : Collections.singletonList(filterFactory)) {
+        for (TokenFilterFactory tokenFilter : Collections.singletonList(tokenFilterFactory)) {
             tokenStream = tokenFilter.create(tokenStream);
         }
         return new TokenStreamComponents(tokenizer, tokenStream);

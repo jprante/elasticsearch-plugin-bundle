@@ -37,8 +37,8 @@ public class NaturalSortKeyAttributeFactory
     public boolean equals(Object object) {
         return object instanceof NaturalSortKeyAttributeFactory &&
                 collator.equals(((NaturalSortKeyAttributeFactory)object).collator) &&
-                Integer.compare(digits, ((NaturalSortKeyAttributeFactory)object).digits) == 0 &&
-                Integer.compare(maxTokens, ((NaturalSortKeyAttributeFactory)object).maxTokens) == 0;
+                digits == ((NaturalSortKeyAttributeFactory) object).digits &&
+                maxTokens == ((NaturalSortKeyAttributeFactory) object).maxTokens;
     }
 
     @Override

@@ -1,17 +1,18 @@
 {
-    "index":{
-        "analysis":{
-            "filter" : {
-                "wd" : {
-                   "type" : "worddelimiter2",
-                   "generate_word_parts" : true,
-                   "generate_number_parts" : true,
-                   "catenate_all" : true,
-                   "split_on_case_change" : true,
-                   "split_on_numerics" : true,
-                   "stem_english_possessive" : true
-                }
-            }
+  "index":{
+    "analysis":{
+      "filter" : {
+        "wd" : {
+          "type" : "worddelimiter2",
+          "generate_word_parts" : true,
+          "generate_number_parts" : true,
+          "catenate_all" : true,
+          "split_on_case_change" : true,
+          "split_on_numerics" : true,
+          "stem_english_possessive" : true,
+          "all_parts_at_same_position" : true
         }
+      }
     }
+  }
 }

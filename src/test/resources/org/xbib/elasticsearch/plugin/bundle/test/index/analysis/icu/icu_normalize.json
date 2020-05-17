@@ -4,11 +4,11 @@
       "char_filter" : {
         "my_icu_normalizer" : {
           "type" : "icu_normalizer",
-          "normalization_name" : "utr30"
+          "normalization_name" : "full"
         },
         "my_icu_normalizer_with_exceptions" : {
           "type" : "icu_normalizer",
-          "normalization_name" : "utr30",
+          "normalization_name" : "full",
           "unicode_set_filter" : "[^åäöÅÄÖ]"
         }
       },

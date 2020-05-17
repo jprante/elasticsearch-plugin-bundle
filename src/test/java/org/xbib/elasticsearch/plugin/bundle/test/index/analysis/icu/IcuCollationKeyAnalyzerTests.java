@@ -125,37 +125,6 @@ public class IcuCollationKeyAnalyzerTests extends ESTestCase {
         return new String(buffer, 0, end);
     }
 
-    /*static IndexSearcher newSearcher(IndexReader r) {
-        return newSearcher(r, true);
-    }
-
-    static IndexSearcher newSearcher(IndexReader r, boolean wrapWithAssertions) {
-        Random random = Randomness.get();
-        int threads = 0;
-        final ThreadPoolExecutor ex;
-        if (random.nextBoolean()) {
-            ex = null;
-        } else {
-            threads = randomIntBetween(random, 1, 8);
-            ex = new ThreadPoolExecutor(threads, threads, 0L, TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<Runnable>(),
-                    new NamedThreadFactory("LuceneTestCase"));
-        }
-        IndexSearcher ret;
-        if (wrapWithAssertions) {
-            ret = random.nextBoolean()
-                    ? new AssertingIndexSearcher(random, r, ex)
-                    : new AssertingIndexSearcher(random, r.getContext(), ex);
-        } else {
-            ret = random.nextBoolean()
-                    ? new IndexSearcher(r, ex)
-                    : new IndexSearcher(r.getContext(), ex);
-        }
-        ret.setSimilarity(new ClassicSimilarity());
-        return ret;
-    }
-    */
-
     private void testFarsiRangeFilterCollating(Analyzer analyzer, BytesRef firstBeg,
                                        BytesRef firstEnd, BytesRef secondBeg,
                                        BytesRef secondEnd) throws Exception {
