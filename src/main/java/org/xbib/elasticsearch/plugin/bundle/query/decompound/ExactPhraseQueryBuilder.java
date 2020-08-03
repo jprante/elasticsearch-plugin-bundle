@@ -1,5 +1,8 @@
 package org.xbib.elasticsearch.plugin.bundle.query.decompound;
 
+import java.io.IOException;
+import java.util.Objects;
+
 import org.apache.lucene.search.Query;
 import org.elasticsearch.common.ParseField;
 import org.elasticsearch.common.ParsingException;
@@ -11,9 +14,6 @@ import org.elasticsearch.index.query.AbstractQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryRewriteContext;
 import org.elasticsearch.index.query.QueryShardContext;
-
-import java.io.IOException;
-import java.util.Objects;
 
 public class ExactPhraseQueryBuilder extends AbstractQueryBuilder<ExactPhraseQueryBuilder> {
 

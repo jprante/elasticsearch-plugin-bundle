@@ -4,7 +4,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
-
 import java.util.Collections;
 
 /**

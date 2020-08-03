@@ -5,8 +5,8 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
-import org.xbib.elasticsearch.plugin.bundle.common.standardnumber.StandardnumberService;
 import org.xbib.elasticsearch.plugin.bundle.index.mapper.standardnumber.StandardnumberMapper;
+import org.xbib.elasticsearch.plugin.bundle.common.standardnumber.StandardnumberService;
 
 /**
  * Standard number token filter factory.

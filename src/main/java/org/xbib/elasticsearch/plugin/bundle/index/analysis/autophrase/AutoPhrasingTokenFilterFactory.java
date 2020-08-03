@@ -1,11 +1,11 @@
 package org.xbib.elasticsearch.plugin.bundle.index.analysis.autophrase;
 
-import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.WordlistLoader;
 import org.apache.lucene.analysis.core.StopFilter;
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.util.ResourceLoader;
 import org.apache.lucene.analysis.util.ResourceLoaderAware;
+import org.apache.lucene.analysis.WordlistLoader;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
