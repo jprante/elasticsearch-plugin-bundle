@@ -1,5 +1,13 @@
 package org.xbib.elasticsearch.plugin.bundle.common.fst;
 
+import org.apache.lucene.store.OutputStreamDataOutput;
+import org.apache.lucene.util.BytesRef;
+import org.apache.lucene.util.IntsRefBuilder;
+import org.apache.lucene.util.fst.Builder;
+import org.apache.lucene.util.fst.FST;
+import org.apache.lucene.util.fst.FST.INPUT_TYPE;
+import org.apache.lucene.util.fst.NoOutputs;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,14 +18,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.regex.Pattern;
-
-import org.apache.lucene.store.OutputStreamDataOutput;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.IntsRefBuilder;
-import org.apache.lucene.util.fst.Builder;
-import org.apache.lucene.util.fst.FST;
-import org.apache.lucene.util.fst.FST.INPUT_TYPE;
-import org.apache.lucene.util.fst.NoOutputs;
 
 
 /**

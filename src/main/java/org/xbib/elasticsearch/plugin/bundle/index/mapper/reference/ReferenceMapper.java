@@ -306,7 +306,7 @@ public class ReferenceMapper extends FieldMapper {
 
         @Override
         public Query fuzzyQuery(Object value, Fuzziness fuzziness, int prefixLength, int maxExpansions,
-                                boolean transpositions) {
+                                boolean transpositions, QueryShardContext context) {
             throw new UnsupportedOperationException();
         }
 
