@@ -8,7 +8,7 @@ import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.WriteRequest;
-import org.elasticsearch.cluster.metadata.MappingMetaData;
+import org.elasticsearch.cluster.metadata.MappingMetadata;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
@@ -162,7 +162,7 @@ public class ReferenceMappingTests extends ESSingleNodeTestCase {
                 .indices("books")
                 .types("test"))
                 .actionGet();
-        MappingMetaData md = getMappingsResponse.getMappings().get("books").get("test");
+        MappingMetadata md = getMappingsResponse.getMappings().get("books").get("test");
         logger.info("mappings={}", md.getSourceAsMap());
 
         // search in field 1, unreferenced value

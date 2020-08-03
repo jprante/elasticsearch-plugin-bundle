@@ -2,7 +2,7 @@ package org.xbib.elasticsearch.plugin.bundle.test.index.analysis.german;
 
 import org.apache.lucene.analysis.Tokenizer;
 import org.elasticsearch.Version;
-import org.elasticsearch.cluster.metadata.IndexMetaData;
+import org.elasticsearch.cluster.metadata.IndexMetadata;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
@@ -36,7 +36,7 @@ public class GermanNormalizationTests extends ESTokenStreamTestCase {
         };
         String resource = "german_normalization_analysis.json";
         Settings settings = Settings.builder()
-                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
+                .put(IndexMetadata.SETTING_VERSION_CREATED, Version.CURRENT)
                 .put("path.home", System.getProperty("path.home"))
                 .loadFromStream(resource, getClass().getResourceAsStream(resource), true)
                 .build();

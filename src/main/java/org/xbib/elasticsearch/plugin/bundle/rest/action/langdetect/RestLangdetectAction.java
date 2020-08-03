@@ -3,19 +3,20 @@ package org.xbib.elasticsearch.plugin.bundle.rest.action.langdetect;
 import org.elasticsearch.client.node.NodeClient;
 import org.elasticsearch.common.CheckedConsumer;
 import org.elasticsearch.common.bytes.BytesReference;
-import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.xcontent.DeprecationHandler;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.BaseRestHandler;
-import org.elasticsearch.rest.RestController;
 import org.elasticsearch.rest.RestRequest;
 import org.elasticsearch.rest.action.RestStatusToXContentListener;
 import org.xbib.elasticsearch.plugin.bundle.action.langdetect.LangdetectAction;
 import org.xbib.elasticsearch.plugin.bundle.action.langdetect.LangdetectRequest;
 
 import java.io.IOException;
+import java.util.List;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableList;
 import static org.elasticsearch.rest.RestRequest.Method.GET;
 import static org.elasticsearch.rest.RestRequest.Method.POST;
 
@@ -24,13 +25,12 @@ import static org.elasticsearch.rest.RestRequest.Method.POST;
  */
 public class RestLangdetectAction extends BaseRestHandler {
 
-    @Inject
-    public RestLangdetectAction(RestController controller) {
-        super();
-        controller.registerHandler(GET, "/_langdetect", this);
-        controller.registerHandler(GET, "/_langdetect/{profile}", this);
-        controller.registerHandler(POST, "/_langdetect", this);
-        controller.registerHandler(POST, "/_langdetect/{profile}", this);
+    @Override
+    public List<Route> routes() {
+        return unmodifiableList(asList(new Route(GET, "/_langdetect/health"),
+                                       new Route(GET, "/_langdetect/{profile}"),
+                                       new Route(POST, "/_langdetect"),
+                                       new Route(POST, "/_langdetect/{profile}")));
     }
 
     @Override
