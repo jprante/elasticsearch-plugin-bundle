@@ -1,16 +1,17 @@
 package org.xbib.elasticsearch.plugin.bundle.rest.action.isbnformat;
 
 import org.elasticsearch.client.node.NodeClient;
-import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.rest.BaseRestHandler;
-import org.elasticsearch.rest.RestController;
 import org.elasticsearch.rest.RestRequest;
 import org.elasticsearch.rest.action.RestStatusToXContentListener;
 import org.xbib.elasticsearch.plugin.bundle.action.isbnformat.ISBNFormatAction;
 import org.xbib.elasticsearch.plugin.bundle.action.isbnformat.ISBNFormatRequest;
 
 import java.io.IOException;
+import java.util.List;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableList;
 import static org.elasticsearch.rest.RestRequest.Method.GET;
 
 /**
@@ -18,11 +19,12 @@ import static org.elasticsearch.rest.RestRequest.Method.GET;
  */
 public class RestISBNFormatterAction extends BaseRestHandler {
 
-    @Inject
-    public RestISBNFormatterAction(RestController controller) {
-        super();
-        controller.registerHandler(GET, "/_isbn", this);
-        controller.registerHandler(GET, "/_isbn/{value}", this);
+    @Override
+    public List<Route> routes()
+    {
+        return unmodifiableList(asList(
+            new Route(GET, "/_isbn"),
+            new Route(GET, "/_isbn/{value}")));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.xbib.elasticsearch.plugin.bundle.test.query.decompound;
 
+import static org.elasticsearch.action.admin.cluster.node.info.NodesInfoRequest.Metric.PLUGINS;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
@@ -13,6 +14,7 @@ import java.util.Set;
 
 import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
+import org.elasticsearch.action.admin.cluster.node.info.PluginsAndModules;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
@@ -46,10 +48,10 @@ public class DecompoundQueryTests extends ESIntegTestCase {
     }
 
     public void testPluginIsLoaded() {
-        NodesInfoResponse response = client().admin().cluster().prepareNodesInfo().setPlugins(true).get();
+        NodesInfoResponse response = client().admin().cluster().prepareNodesInfo().addMetric(PLUGINS.metricName()).get();
         for (NodeInfo nodeInfo : response.getNodes()) {
             boolean pluginFound = false;
-            for (PluginInfo pluginInfo : nodeInfo.getPlugins().getPluginInfos()) {
+            for (PluginInfo pluginInfo : nodeInfo.getInfo(PluginsAndModules.class).getPluginInfos()) {
                 if (pluginInfo.getName().equals(BundlePlugin.class.getName())) {
                     pluginFound = true;
                     break;

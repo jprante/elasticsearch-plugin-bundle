@@ -21,6 +21,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.BytesRef;
 import org.elasticsearch.common.Randomness;
@@ -28,6 +29,7 @@ import org.elasticsearch.test.ESTestCase;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.IcuCollationKeyAnalyzer;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -128,7 +130,7 @@ public class IcuCollationKeyAnalyzerTests extends ESTestCase {
     private void testFarsiRangeFilterCollating(Analyzer analyzer, BytesRef firstBeg,
                                        BytesRef firstEnd, BytesRef secondBeg,
                                        BytesRef secondEnd) throws Exception {
-        Directory dir = new RAMDirectory();
+        Directory dir = new MMapDirectory(Files.createTempDirectory("icutest"));
         IndexWriter writer = new IndexWriter(dir, new IndexWriterConfig(analyzer));
         Document doc = new Document();
         doc.add(new TextField("content", "\u0633\u0627\u0628", Field.Store.YES));

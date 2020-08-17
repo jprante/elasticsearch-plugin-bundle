@@ -2,7 +2,7 @@ package org.xbib.elasticsearch.plugin.bundle.test.index.analysis.icu.segmentatio
 
 import org.apache.lucene.analysis.Tokenizer;
 import org.elasticsearch.Version;
-import org.elasticsearch.cluster.metadata.IndexMetaData;
+import org.elasticsearch.cluster.metadata.IndexMetadata;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.test.ESTokenStreamTestCase;
@@ -25,14 +25,14 @@ public class IcuTokenizerFactoryTests extends ESTokenStreamTestCase {
 
     private static IndexSettings indexSettings() {
         Settings settings = Settings.builder()
-                .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT) // required!
+                .put(IndexMetadata.SETTING_VERSION_CREATED, Version.CURRENT) // required!
                 .build();
-        IndexMetaData indexMetaData = IndexMetaData.builder("test")
+        IndexMetadata indexMetadata = IndexMetadata.builder("test")
                 .settings(settings)
                 .numberOfShards(1)
                 .numberOfReplicas(1)
                 .build();
-        return new IndexSettings(indexMetaData, settings);
+        return new IndexSettings(indexMetadata, settings);
     }
 
     public void testMixedText() throws Exception {
