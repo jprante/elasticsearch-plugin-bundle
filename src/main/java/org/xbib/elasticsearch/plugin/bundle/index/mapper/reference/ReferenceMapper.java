@@ -2,10 +2,9 @@ package org.xbib.elasticsearch.plugin.bundle.index.mapper.reference;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BoostQuery;
-import org.apache.lucene.search.MultiTermQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermInSetQuery;
 import org.apache.lucene.search.TermQuery;
@@ -14,8 +13,7 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.lucene.BytesRefs;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.unit.Fuzziness;
+import org.elasticsearch.common.lucene.Lucene;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.support.XContentMapValues;
@@ -24,7 +22,9 @@ import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
 import org.elasticsearch.index.mapper.ParseContext;
+import org.elasticsearch.index.mapper.SimpleMappedFieldType;
 import org.elasticsearch.index.mapper.TextFieldMapper;
+import org.elasticsearch.index.mapper.TextSearchInfo;
 import org.elasticsearch.index.mapper.TypeParsers;
 import org.elasticsearch.index.query.QueryShardContext;
 
@@ -44,7 +44,7 @@ public class ReferenceMapper extends FieldMapper {
 
     public static final String CONTENT_TYPE = "ref";
 
-    public static final MappedFieldType FIELD_TYPE = new ReferenceFieldType();
+    public static final FieldType FIELD_TYPE = new FieldType();
 
     static {
         FIELD_TYPE.freeze();
@@ -66,17 +66,16 @@ public class ReferenceMapper extends FieldMapper {
     private final CopyTo copyTo;
 
     public ReferenceMapper(String simpleName,
-                           MappedFieldType fieldType,
+                           FieldType fieldType,
                            MappedFieldType defaultFieldType,
                            Client client,
                            String refindex,
                            String reftype,
                            List<String> reffields,
                            FieldMapper contentMapper,
-                           Settings indexSettings,
                            MultiFields multiFields,
                            CopyTo copyTo) {
-        super(simpleName, fieldType, defaultFieldType, indexSettings, multiFields, COPYTO_EMPTY);
+        super(simpleName, fieldType, defaultFieldType, multiFields, COPYTO_EMPTY);
         this.copyTo = copyTo;
         this.client = client;
         this.index = refindex;
@@ -179,13 +178,13 @@ public class ReferenceMapper extends FieldMapper {
     }
 
     @Override
-    protected void parseCreateField(ParseContext parseContext, List<IndexableField> fields) {
-        // override
+    protected void mergeOptions(FieldMapper other, List<String> conflicts) {
+
     }
 
     @Override
-    protected void doMerge(Mapper mergeWith) {
-        super.doMerge(mergeWith);
+    protected void parseCreateField(ParseContext parseContext) {
+        // override
     }
 
     @Override
@@ -243,19 +242,12 @@ public class ReferenceMapper extends FieldMapper {
         }
     }
 
-    public static final class ReferenceFieldType extends MappedFieldType implements Cloneable {
+    public static final class ReferenceFieldType extends SimpleMappedFieldType {
 
-        public ReferenceFieldType() {
-            // nothing to instantiate
-        }
-
-        protected ReferenceFieldType(ReferenceMapper.ReferenceFieldType ref) {
-            super(ref);
-        }
-
-        @Override
-        public ReferenceMapper.ReferenceFieldType clone() {
-            return new ReferenceMapper.ReferenceFieldType(this);
+        public ReferenceFieldType(String name) {
+            super(name, true, true,
+                  new TextSearchInfo(FIELD_TYPE, null, Lucene.STANDARD_ANALYZER, Lucene.STANDARD_ANALYZER),
+                  Collections.emptyMap());
         }
 
         @Override
@@ -304,26 +296,10 @@ public class ReferenceMapper extends FieldMapper {
             throw new UnsupportedOperationException();
         }
 
-        @Override
-        public Query fuzzyQuery(Object value, Fuzziness fuzziness, int prefixLength, int maxExpansions,
-                                boolean transpositions, QueryShardContext context) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Query prefixQuery(String value, MultiTermQuery.RewriteMethod method, QueryShardContext context) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Query regexpQuery(String value, int flags, int maxDeterminizedStates,
-                                 MultiTermQuery.RewriteMethod method, QueryShardContext context) {
-            throw new UnsupportedOperationException();
-        }
     }
 
     @SuppressWarnings({"rawtypes"})
-    public static class Builder extends FieldMapper.Builder<Builder, ReferenceMapper> {
+    public static class Builder extends FieldMapper.Builder<Builder> {
 
         private FieldMapper.Builder contentBuilder;
 
@@ -336,7 +312,7 @@ public class ReferenceMapper extends FieldMapper {
         private List<String> refFields;
 
         public Builder(String name, Client client) {
-            super(name, FIELD_TYPE, FIELD_TYPE);
+            super(name, FIELD_TYPE);
             this.client = client;
             this.refFields = new LinkedList<>();
             this.contentBuilder = new TextFieldMapper.Builder(name);
@@ -365,16 +341,14 @@ public class ReferenceMapper extends FieldMapper {
         @Override
         public ReferenceMapper build(BuilderContext context) {
             FieldMapper contentMapper = (FieldMapper) contentBuilder.build(context);
-            setupFieldType(context);
             return new ReferenceMapper(name,
                     fieldType,
-                    defaultFieldType,
+                    new ReferenceFieldType(buildFullName(context)),
                     client,
                     refIndex,
                     refType,
                     refFields,
                     contentMapper,
-                    context.indexSettings(),
                     multiFieldsBuilder.build(this, context),
                     copyTo);
         }

@@ -44,7 +44,8 @@ public class FstDecompounder {
 
     public FstDecompounder(InputStream inputStream, List<String> glue) throws IOException {
         try {
-            this.surfaceForms = new FST<>(new InputStreamDataInput(inputStream), NoOutputs.getSingleton());
+            InputStreamDataInput input = new InputStreamDataInput(inputStream);
+            this.surfaceForms = new FST<>(input, input, NoOutputs.getSingleton());
             // set up glue morphemes
             this.glueMorphemes = createGlueMorphemes(glue != null && glue.size() > 0 ? glue :morphemes);
         } finally {
