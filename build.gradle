@@ -228,3 +228,5 @@ dependencyLicenses.enabled = false
 thirdPartyAudit.enabled = false
 loggerUsageCheck.enabled = false
 testingConventions.enabled = false
+//generatePomFileForNebulaPublication = false
+validateNebulaPom.enabled = false
