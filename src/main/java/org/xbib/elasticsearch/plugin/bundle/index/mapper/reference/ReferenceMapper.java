@@ -21,12 +21,15 @@ import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
+import org.elasticsearch.index.mapper.MapperService;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.mapper.SimpleMappedFieldType;
 import org.elasticsearch.index.mapper.TextFieldMapper;
 import org.elasticsearch.index.mapper.TextSearchInfo;
 import org.elasticsearch.index.mapper.TypeParsers;
+import org.elasticsearch.index.mapper.ValueFetcher;
 import org.elasticsearch.index.query.QueryShardContext;
+import org.elasticsearch.search.lookup.SearchLookup;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -245,9 +248,14 @@ public class ReferenceMapper extends FieldMapper {
     public static final class ReferenceFieldType extends SimpleMappedFieldType {
 
         public ReferenceFieldType(String name) {
-            super(name, true, true,
+            super(name, true, false, true,
                   new TextSearchInfo(FIELD_TYPE, null, Lucene.STANDARD_ANALYZER, Lucene.STANDARD_ANALYZER),
                   Collections.emptyMap());
+        }
+
+        @Override
+        public ValueFetcher valueFetcher(MapperService mapperService, SearchLookup searchLookup, String format) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
@@ -301,7 +309,7 @@ public class ReferenceMapper extends FieldMapper {
     @SuppressWarnings({"rawtypes"})
     public static class Builder extends FieldMapper.Builder<Builder> {
 
-        private FieldMapper.Builder contentBuilder;
+        private TextFieldMapper.Builder contentBuilder;
 
         private Client client;
 
@@ -315,7 +323,7 @@ public class ReferenceMapper extends FieldMapper {
             super(name, FIELD_TYPE);
             this.client = client;
             this.refFields = new LinkedList<>();
-            this.contentBuilder = new TextFieldMapper.Builder(name);
+            this.contentBuilder = new TextFieldMapper.Builder(name, () -> Lucene.STANDARD_ANALYZER);
         }
 
         public Builder refIndex(String refIndex) {

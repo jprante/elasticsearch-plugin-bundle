@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
+import org.apache.lucene.index.DocValuesType;
 import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BoostQuery;
@@ -24,10 +25,13 @@ import org.elasticsearch.index.mapper.FieldNamesFieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
+import org.elasticsearch.index.mapper.MapperService;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.mapper.SimpleMappedFieldType;
 import org.elasticsearch.index.mapper.TextSearchInfo;
+import org.elasticsearch.index.mapper.ValueFetcher;
 import org.elasticsearch.index.query.QueryShardContext;
+import org.elasticsearch.search.lookup.SearchLookup;
 import org.xbib.elasticsearch.plugin.bundle.common.langdetect.LangdetectService;
 import org.xbib.elasticsearch.plugin.bundle.common.langdetect.Language;
 import org.xbib.elasticsearch.plugin.bundle.common.langdetect.LanguageDetectionException;
@@ -55,6 +59,7 @@ public class LangdetectMapper extends FieldMapper {
     static {
         FIELD_TYPE.setStored(true);
         FIELD_TYPE.setOmitNorms(true);
+        FIELD_TYPE.setDocValuesType(DocValuesType.NONE);
         FIELD_TYPE.setIndexOptions(IndexOptions.DOCS);
         FIELD_TYPE.freeze();
     }
@@ -120,7 +125,7 @@ public class LangdetectMapper extends FieldMapper {
             }
         }
         try {
-            createFieldNamesField(context);
+            //createFieldNamesField(context);
             List<Language> langs = langdetectService.detectAll(value);
             for (Language lang : langs) {
                 Field field = new Field(fieldType().name(), lang.getLanguage(), fieldType);
@@ -132,16 +137,6 @@ public class LangdetectMapper extends FieldMapper {
         } catch (LanguageDetectionException e) {
             logger.warn("upps", e);
             context.createExternalValueContext("unknown");
-        }
-    }
-
-    protected void createFieldNamesField(ParseContext context) {
-        FieldNamesFieldMapper.FieldNamesFieldType fieldNamesFieldType = context.docMapper()
-                .metadataMapper(FieldNamesFieldMapper.class).fieldType();
-        if (fieldNamesFieldType != null && fieldNamesFieldType.isEnabled()) {
-            for (String fieldName : extractFieldNames(fieldType().name())) {
-                context.doc().add(new Field(FieldNamesFieldMapper.NAME, fieldName, fieldType));
-            }
         }
     }
 
@@ -334,7 +329,7 @@ public class LangdetectMapper extends FieldMapper {
     public static class LangdetectFieldType extends SimpleMappedFieldType {
 
         public LangdetectFieldType(String name) {
-            super(name, true, true, TextSearchInfo.NONE, Collections.emptyMap());
+            super(name, true, false, true, TextSearchInfo.NONE, Collections.emptyMap());
             setIndexAnalyzer(Lucene.KEYWORD_ANALYZER);
         }
 
@@ -343,6 +338,11 @@ public class LangdetectMapper extends FieldMapper {
          *  query factory methods such as {@link #termQuery}. */
         protected BytesRef indexedValueForSearch(Object value) {
             return BytesRefs.toBytesRef(value);
+        }
+
+        @Override
+        public ValueFetcher valueFetcher(MapperService mapperService, SearchLookup searchLookup, String format) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
