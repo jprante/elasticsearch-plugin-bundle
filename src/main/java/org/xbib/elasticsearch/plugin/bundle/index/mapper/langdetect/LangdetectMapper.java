@@ -125,7 +125,6 @@ public class LangdetectMapper extends FieldMapper {
             }
         }
         try {
-            //createFieldNamesField(context);
             List<Language> langs = langdetectService.detectAll(value);
             for (Language lang : langs) {
                 Field field = new Field(fieldType().name(), lang.getLanguage(), fieldType);
