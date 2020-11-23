@@ -76,7 +76,7 @@ public class FstCompiler {
         }
         final FST<Object> fst = builder.finish();
         try (OutputStreamDataOutput out = new OutputStreamDataOutput(outputStream)) {
-            fst.save(out);
+            fst.save(out, out);
         }
     }
 }

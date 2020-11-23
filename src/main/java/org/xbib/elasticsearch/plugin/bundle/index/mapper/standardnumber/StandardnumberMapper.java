@@ -3,9 +3,8 @@ package org.xbib.elasticsearch.plugin.bundle.index.mapper.standardnumber;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexOptions;
-import org.apache.lucene.index.IndexableField;
-import org.elasticsearch.common.lucene.Lucene;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
@@ -23,6 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static org.xbib.elasticsearch.plugin.bundle.index.mapper.standardnumber.StandardnumberMapper.Defaults.FIELD_TYPE;
+
 /**
  * Standard number field mapper.
  */
@@ -38,19 +39,23 @@ public class StandardnumberMapper extends FieldMapper {
 
     public StandardnumberMapper(Settings settings,
                                 String simpleName,
-                                MappedFieldType fieldType,
-                                MappedFieldType defaultFieldType,
-                                Settings indexSettings,
+                                FieldType fieldType,
+                                MappedFieldType mappedFieldType,
                                 MultiFields multiFields,
                                 CopyTo copyTo,
                                 StandardnumberService service) {
-        super(simpleName, fieldType, defaultFieldType, indexSettings, multiFields, copyTo);
+        super(simpleName, fieldType, mappedFieldType, multiFields, copyTo);
         this.settings = settings;
         this.service = service;
     }
 
     @Override
-    protected void parseCreateField(ParseContext context, List<IndexableField> fields) throws IOException {
+    protected void mergeOptions(FieldMapper other, List<String> conflicts) {
+
+    }
+
+    @Override
+    protected void parseCreateField(ParseContext context) throws IOException {
         if (context.externalValueSet()) {
             return;
         }
@@ -58,7 +63,7 @@ public class StandardnumberMapper extends FieldMapper {
         if (parser.currentToken() == XContentParser.Token.VALUE_NULL) {
             return;
         }
-        String value = fieldType().nullValueAsString();
+        String value = null;
         if (parser.currentToken() == XContentParser.Token.START_OBJECT) {
             XContentParser.Token token;
             String currentFieldName = null;
@@ -77,8 +82,8 @@ public class StandardnumberMapper extends FieldMapper {
         try {
             Collection<CharSequence> stdnums = service.lookup(settings, value);
             for (CharSequence stdnum : stdnums) {
-                Field field = new Field(fieldType().name(), stdnum.toString(), fieldType());
-                fields.add(field);
+                Field field = new Field(mappedFieldType.name(), stdnum, fieldType);
+                context.doc().add(field);
             }
         } catch (NumberFormatException e) {
             logger.trace(e.getMessage(), e);
@@ -101,54 +106,50 @@ public class StandardnumberMapper extends FieldMapper {
     }
 
     public static final class Defaults {
-        public static final MappedFieldType FIELD_TYPE = new TextFieldMapper.TextFieldType();
+        public static final FieldType FIELD_TYPE = new FieldType();
 
         static {
             FIELD_TYPE.setStored(true);
             FIELD_TYPE.setOmitNorms(true);
-            FIELD_TYPE.setIndexAnalyzer(Lucene.KEYWORD_ANALYZER);
-            FIELD_TYPE.setSearchAnalyzer(Lucene.KEYWORD_ANALYZER);
-            FIELD_TYPE.setName(MAPPER_TYPE);
-            FIELD_TYPE.freeze();
+            FIELD_TYPE.setIndexOptions(IndexOptions.DOCS);
             FIELD_TYPE.freeze();
         }
     }
 
-    public static class Builder extends FieldMapper.Builder<Builder, StandardnumberMapper> {
+    public static class Builder extends FieldMapper.Builder<Builder> {
 
         private Settings.Builder settingsBuilder = Settings.builder();
-
-        private StandardnumberService service;
+        private String nullValue;
+        private final StandardnumberService service;
 
         public Builder(String name, StandardnumberService service) {
-            super(name, Defaults.FIELD_TYPE, Defaults.FIELD_TYPE);
+            super(name, FIELD_TYPE);
             this.service = service;
             this.builder = this;
         }
 
         public Builder standardNumbers(String[] standardnumbers) {
             settingsBuilder.putList("standardnumbers", standardnumbers);
-            return this;
+            return builder;
+        }
+
+        public Builder nullValue(String nullValue) {
+            this.nullValue = nullValue;
+            return builder;
         }
 
         @Override
         public StandardnumberMapper build(BuilderContext context) {
             if (fieldType.indexOptions() != IndexOptions.NONE && !fieldType.tokenized()) {
-                defaultFieldType.setOmitNorms(true);
-                defaultFieldType.setIndexOptions(IndexOptions.DOCS);
-                if (!omitNormsSet && Float.compare(fieldType.boost(), 1.0f) == 0) {
-                    fieldType.setOmitNorms(true);
-                }
-                if (!indexOptionsSet) {
-                    fieldType.setIndexOptions(IndexOptions.DOCS);
-                }
+                fieldType.setOmitNorms(true);
+                fieldType.setIndexOptions(IndexOptions.DOCS);
             }
-            setupFieldType(context);
+
+            TextFieldMapper.TextFieldType ft = new TextFieldMapper.TextFieldType(name);
             return new StandardnumberMapper(settingsBuilder.build(),
                     name,
                     fieldType,
-                    defaultFieldType,
-                    context.indexSettings(),
+                    ft,
                     multiFieldsBuilder.build(this, context),
                     copyTo,
                     service);
