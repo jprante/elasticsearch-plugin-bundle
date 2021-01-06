@@ -2,6 +2,7 @@ package org.xbib.elasticsearch.plugin.bundle.index.mapper.reference;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BoostQuery;
@@ -17,6 +18,9 @@ import org.elasticsearch.common.lucene.Lucene;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.support.XContentMapValues;
+import org.elasticsearch.index.analysis.AnalyzerScope;
+import org.elasticsearch.index.analysis.IndexAnalyzers;
+import org.elasticsearch.index.analysis.NamedAnalyzer;
 import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
@@ -319,11 +323,20 @@ public class ReferenceMapper extends FieldMapper {
 
         private List<String> refFields;
 
+        private static final IndexAnalyzers INDEX_ANALYZERS = new IndexAnalyzers(
+            Collections.singletonMap(
+                "default",
+                new NamedAnalyzer("default", AnalyzerScope.INDEX, new StandardAnalyzer())
+            ),
+            Collections.emptyMap(),
+            Collections.emptyMap()
+        );
+
         public Builder(String name, Client client) {
             super(name, FIELD_TYPE);
             this.client = client;
             this.refFields = new LinkedList<>();
-            this.contentBuilder = new TextFieldMapper.Builder(name, () -> Lucene.STANDARD_ANALYZER);
+            this.contentBuilder = new TextFieldMapper.Builder(name, INDEX_ANALYZERS);
         }
 
         public Builder refIndex(String refIndex) {
