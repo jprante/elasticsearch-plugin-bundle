@@ -1,20 +1,37 @@
 package org.xbib.elasticsearch.plugin.bundle.index.mapper.langdetect;
 
 import com.fasterxml.jackson.core.Base64Variants;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.index.DocValuesType;
+import org.apache.lucene.index.IndexOptions;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BoostQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermInSetQuery;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.util.BytesRef;
+import org.elasticsearch.common.lucene.BytesRefs;
 import org.elasticsearch.common.lucene.Lucene;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.support.XContentMapValues;
+import org.elasticsearch.index.analysis.NamedAnalyzer;
 import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.index.mapper.FieldNamesFieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
+import org.elasticsearch.index.mapper.MapperService;
 import org.elasticsearch.index.mapper.ParseContext;
-import org.elasticsearch.index.mapper.TextFieldMapper;
+import org.elasticsearch.index.mapper.SimpleMappedFieldType;
+import org.elasticsearch.index.mapper.TextSearchInfo;
+import org.elasticsearch.index.mapper.ValueFetcher;
+import org.elasticsearch.index.query.QueryShardContext;
+import org.elasticsearch.search.lookup.SearchLookup;
 import org.xbib.elasticsearch.plugin.bundle.common.langdetect.LangdetectService;
 import org.xbib.elasticsearch.plugin.bundle.common.langdetect.Language;
 import org.xbib.elasticsearch.plugin.bundle.common.langdetect.LanguageDetectionException;
@@ -35,14 +52,15 @@ public class LangdetectMapper extends FieldMapper {
 
     public static final String CONTENT_TYPE = "langdetect";
 
-    public static final MappedFieldType FIELD_TYPE = new TextFieldMapper.TextFieldType();
+    public static final FieldType FIELD_TYPE = new FieldType();
+
+    private static final Logger logger = LogManager.getLogger(LangdetectMapper.class);
 
     static {
         FIELD_TYPE.setStored(true);
         FIELD_TYPE.setOmitNorms(true);
-        FIELD_TYPE.setIndexAnalyzer(Lucene.KEYWORD_ANALYZER);
-        FIELD_TYPE.setSearchAnalyzer(Lucene.KEYWORD_ANALYZER);
-        FIELD_TYPE.setName(CONTENT_TYPE);
+        FIELD_TYPE.setDocValuesType(DocValuesType.NONE);
+        FIELD_TYPE.setIndexOptions(IndexOptions.DOCS);
         FIELD_TYPE.freeze();
     }
 
@@ -52,14 +70,13 @@ public class LangdetectMapper extends FieldMapper {
     private ParseContext context;
 
     public LangdetectMapper(String simpleName,
-                            MappedFieldType fieldType,
-                            MappedFieldType defaultFieldType,
-                            Settings indexSettings,
+                            FieldType fieldType,
+                            MappedFieldType mappedFieldType,
                             MultiFields multiFields,
                             CopyTo copyTo,
                             LanguageTo languageTo,
                             LangdetectService langdetectService) {
-        super(simpleName, fieldType, defaultFieldType, indexSettings, multiFields, copyTo);
+        super(simpleName, fieldType, mappedFieldType, multiFields, copyTo);
         this.langdetectService = langdetectService;
         this.languageTo = languageTo;
     }
@@ -70,7 +87,11 @@ public class LangdetectMapper extends FieldMapper {
     }
 
     @Override
-    protected void parseCreateField(ParseContext context, List<IndexableField> fields) throws IOException {
+    protected void mergeOptions(FieldMapper other, List<String> conflicts) {
+    }
+
+    @Override
+    protected void parseCreateField(ParseContext context) throws IOException {
         String value;
         XContentParser parser = context.parser();
         if (context.externalValueSet()) {
@@ -104,32 +125,22 @@ public class LangdetectMapper extends FieldMapper {
             }
         }
         try {
-            createFieldNamesField(context, fields);
             List<Language> langs = langdetectService.detectAll(value);
             for (Language lang : langs) {
-                Field field = new Field(fieldType().name(), lang.getLanguage(), fieldType());
-                fields.add(field);
+                Field field = new Field(fieldType().name(), lang.getLanguage(), fieldType);
+                context.doc().add(field);
                 if (languageTo.languageToFields().containsKey(lang.getLanguage())) {
                     parseLanguageToFields(context, languageTo.languageToFields().get(lang.getLanguage()));
                 }
             }
         } catch (LanguageDetectionException e) {
+            logger.warn("upps", e);
             context.createExternalValueContext("unknown");
         }
     }
 
-    protected void createFieldNamesField(ParseContext context, List<IndexableField> fields) {
-        FieldNamesFieldMapper.FieldNamesFieldType fieldNamesFieldType = context.docMapper()
-                .metadataMapper(FieldNamesFieldMapper.class).fieldType();
-        if (fieldNamesFieldType != null && fieldNamesFieldType.isEnabled()) {
-            for (String fieldName : extractFieldNames(fieldType().name())) {
-                fields.add(new Field(FieldNamesFieldMapper.NAME, fieldName, fieldNamesFieldType));
-            }
-        }
-    }
-
     private static Iterable<String> extractFieldNames(final String fullPath) {
-        return () -> new Iterator<String>() {
+        return () -> new Iterator<>() {
 
             int endIndex = nextEndIndex(0);
 
@@ -198,7 +209,7 @@ public class LangdetectMapper extends FieldMapper {
         }
     }
 
-    public static class Builder extends FieldMapper.Builder<Builder, LangdetectMapper> {
+    public static class Builder extends FieldMapper.Builder<Builder> {
 
         protected int positionIncrementGap = -1;
 
@@ -207,8 +218,20 @@ public class LangdetectMapper extends FieldMapper {
         protected Settings.Builder settingsBuilder = Settings.builder();
 
         public Builder(String name) {
-            super(name, FIELD_TYPE, FIELD_TYPE);
+            super(name, FIELD_TYPE);
             this.builder = this;
+        }
+
+        public NamedAnalyzer indexAnalyzer() {
+            return indexAnalyzer;
+        }
+
+        public NamedAnalyzer searchAnalyzer() {
+            return searchAnalyzer;
+        }
+
+        public NamedAnalyzer searchQuoteAnalyzer() {
+            return searchQuoteAnalyzer;
         }
 
         public Builder positionIncrementGap(int positionIncrementGap) {
@@ -291,23 +314,72 @@ public class LangdetectMapper extends FieldMapper {
 
         @Override
         public LangdetectMapper build(BuilderContext context) {
-            setupFieldType(context);
             LangdetectService service = new LangdetectService(settingsBuilder.build());
             return new LangdetectMapper(name,
-                    fieldType(),
-                    defaultFieldType,
-                    context.indexSettings(),
-                    multiFieldsBuilder.build(this, context),
-                    copyTo,
-                    languageTo,
-                    service);
+                                        fieldType,
+                                        new LangdetectFieldType(buildFullName(context)),
+                                        multiFieldsBuilder.build(this, context),
+                                        copyTo,
+                                        languageTo,
+                                        service);
         }
+    }
+
+    public static class LangdetectFieldType extends SimpleMappedFieldType {
+
+        public LangdetectFieldType(String name) {
+            super(name, true, false, true, TextSearchInfo.NONE, Collections.emptyMap());
+            setIndexAnalyzer(Lucene.KEYWORD_ANALYZER);
+        }
+
+        /** Returns the indexed value used to construct search "values".
+         *  This method is used for the default implementations of most
+         *  query factory methods such as {@link #termQuery}. */
+        protected BytesRef indexedValueForSearch(Object value) {
+            return BytesRefs.toBytesRef(value);
+        }
+
+        @Override
+        public ValueFetcher valueFetcher(MapperService mapperService, SearchLookup searchLookup, String format) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String typeName() {
+            return CONTENT_TYPE;
+        }
+
+        @Override
+        public Query existsQuery(QueryShardContext context) {
+            return new TermQuery(new Term(FieldNamesFieldMapper.NAME, name()));
+        }
+
+        @Override
+        public Query termQuery(Object value, QueryShardContext context) {
+            failIfNotIndexed();
+            Query query = new TermQuery(new Term(name(), indexedValueForSearch(value)));
+            if (boost() != 1f) {
+                query = new BoostQuery(query, boost());
+            }
+            return query;
+        }
+
+        @Override
+        public Query termsQuery(List<?> values, QueryShardContext context) {
+            failIfNotIndexed();
+            BytesRef[] bytesRefs = new BytesRef[values.size()];
+            for (int i = 0; i < bytesRefs.length; i++) {
+                bytesRefs[i] = indexedValueForSearch(values.get(i));
+            }
+            return new TermInSetQuery(name(), bytesRefs);
+        }
+
     }
 
     public static class TypeParser implements Mapper.TypeParser {
 
         @Override
-        public Mapper.Builder<?, ?> parse(String name, Map<String, Object> mapping, ParserContext parserContext) {
+        public Mapper.Builder<?> parse(String name, Map<String, Object> mapping, ParserContext parserContext) {
             Builder builder = new Builder(name);
             Iterator<Map.Entry<String, Object>> iterator = mapping.entrySet().iterator();
             while (iterator.hasNext()) {
@@ -325,14 +397,14 @@ public class LangdetectMapper extends FieldMapper {
                             throw new MapperParsingException("position_increment_gap less than 0 aren't allowed.");
                         }
                         builder.positionIncrementGap(newPositionIncrementGap);
-                        if (builder.fieldType().indexAnalyzer() == null) {
-                            builder.fieldType().setIndexAnalyzer(parserContext.getIndexAnalyzers().getDefaultIndexAnalyzer());
+                        if (builder.indexAnalyzer() == null) {
+                            builder.indexAnalyzer(parserContext.getIndexAnalyzers().getDefaultIndexAnalyzer());
                         }
-                        if (builder.fieldType().searchAnalyzer() == null) {
-                            builder.fieldType().setSearchAnalyzer(parserContext.getIndexAnalyzers().getDefaultSearchAnalyzer());
+                        if (builder.searchAnalyzer() == null) {
+                            builder.searchAnalyzer(parserContext.getIndexAnalyzers().getDefaultSearchAnalyzer());
                         }
-                        if (builder.fieldType().searchQuoteAnalyzer() == null) {
-                            builder.fieldType().setSearchQuoteAnalyzer(parserContext.getIndexAnalyzers().getDefaultSearchQuoteAnalyzer());
+                        if (builder.searchQuoteAnalyzer() == null) {
+                            builder.searchQuoteAnalyzer(parserContext.getIndexAnalyzers().getDefaultSearchQuoteAnalyzer());
                         }
                         iterator.remove();
                         break;
