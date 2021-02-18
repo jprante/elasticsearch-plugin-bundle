@@ -31,13 +31,13 @@ import org.xbib.elasticsearch.plugin.bundle.action.isbnformat.ISBNFormatAction;
 import org.xbib.elasticsearch.plugin.bundle.action.isbnformat.TransportISBNFormatAction;
 import org.xbib.elasticsearch.plugin.bundle.action.langdetect.LangdetectAction;
 import org.xbib.elasticsearch.plugin.bundle.action.langdetect.TransportLangdetectAction;
+import org.xbib.elasticsearch.plugin.bundle.common.standardnumber.StandardnumberService;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.autophrase.AutoPhrasingTokenFilterFactory;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.baseform.BaseformTokenFilterFactory;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.concat.ConcatTokenFilterFactory;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.concat.PairTokenFilterFactory;
-import org.xbib.elasticsearch.plugin.bundle.index.analysis.decompound.patricia.DecompoundTokenFilterFactory;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.decompound.fst.FstDecompoundTokenFilterFactory;
-import org.xbib.elasticsearch.plugin.bundle.index.analysis.lemmatize.LemmatizeTokenFilterFactory;
+import org.xbib.elasticsearch.plugin.bundle.index.analysis.decompound.patricia.DecompoundTokenFilterFactory;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.german.GermanNormalizationFilterFactory;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.hyphen.HyphenAnalyzerProvider;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.hyphen.HyphenTokenFilterFactory;
@@ -51,6 +51,7 @@ import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.IcuNormalizerToke
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.IcuNumberFormatTokenFilterFactory;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.IcuTransformTokenFilterFactory;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.segmentation.IcuTokenizerFactory;
+import org.xbib.elasticsearch.plugin.bundle.index.analysis.lemmatize.LemmatizeTokenFilterFactory;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.naturalsort.NaturalSortKeyAnalyzerProvider;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.naturalsort.NaturalSortKeyTokenizerFactory;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.sortform.SortformAnalyzerProvider;
@@ -65,12 +66,8 @@ import org.xbib.elasticsearch.plugin.bundle.index.mapper.icu.IcuCollationKeyFiel
 import org.xbib.elasticsearch.plugin.bundle.index.mapper.langdetect.LangdetectMapper;
 import org.xbib.elasticsearch.plugin.bundle.index.mapper.reference.ReferenceMapper;
 import org.xbib.elasticsearch.plugin.bundle.index.mapper.reference.ReferenceMapperModule;
-import org.xbib.elasticsearch.plugin.bundle.index.mapper.reference.ReferenceMapperTypeParser;
-import org.xbib.elasticsearch.plugin.bundle.common.reference.ReferenceService;
 import org.xbib.elasticsearch.plugin.bundle.index.mapper.standardnumber.StandardnumberMapper;
 import org.xbib.elasticsearch.plugin.bundle.index.mapper.standardnumber.StandardnumberMapperModule;
-import org.xbib.elasticsearch.plugin.bundle.index.mapper.standardnumber.StandardnumberMapperTypeParser;
-import org.xbib.elasticsearch.plugin.bundle.common.standardnumber.StandardnumberService;
 import org.xbib.elasticsearch.plugin.bundle.query.decompound.ExactPhraseQueryBuilder;
 import org.xbib.elasticsearch.plugin.bundle.rest.action.isbnformat.RestISBNFormatterAction;
 import org.xbib.elasticsearch.plugin.bundle.rest.action.langdetect.RestLangdetectAction;
@@ -90,11 +87,9 @@ import java.util.function.Supplier;
  */
 public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin, SearchPlugin, ActionPlugin {
 
-    private static final StandardnumberMapperTypeParser standardNumberTypeParser =
-            new StandardnumberMapperTypeParser();
+    private final StandardnumberMapper.TypeParser standardNumberTypeParser = StandardnumberMapper.newTypeParser();
 
-    private static final ReferenceMapperTypeParser referenceMapperTypeParser =
-            new ReferenceMapperTypeParser();
+    private final ReferenceMapper.TypeParser referenceMapperTypeParser = ReferenceMapper.PARSER;
 
     private final Settings settings;
 
@@ -244,10 +239,10 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
             extra.put(ReferenceMapper.CONTENT_TYPE, referenceMapperTypeParser);
         }
         if (settings.getAsBoolean("plugins.xbib.langdetect.enabled", true)) {
-            extra.put(LangdetectMapper.CONTENT_TYPE, new LangdetectMapper.TypeParser());
+            extra.put(LangdetectMapper.CONTENT_TYPE, LangdetectMapper.PARSER);
         }
         if (settings.getAsBoolean("plugins.xbib.icu.enabled", true)) {
-            extra.put(IcuCollationKeyFieldMapper.CONTENT_TYPE, new IcuCollationKeyFieldMapper.TypeParser());
+            extra.put(IcuCollationKeyFieldMapper.CONTENT_TYPE, IcuCollationKeyFieldMapper.PARSER);
         }
         return extra;
     }
@@ -304,9 +299,6 @@ public class BundlePlugin extends Plugin implements AnalysisPlugin, MapperPlugin
     @Override
     public Collection<Class<? extends LifecycleComponent>> getGuiceServiceClasses() {
         Collection<Class<? extends LifecycleComponent>> extra = new ArrayList<>();
-        if (settings.getAsBoolean("plugins.xbib.reference.enabled", true)) {
-            extra.add(ReferenceService.class);
-        }
         if (settings.getAsBoolean("plugins.xbib.standardnumber.enabled", true)) {
             extra.add(StandardnumberService.class);
         }

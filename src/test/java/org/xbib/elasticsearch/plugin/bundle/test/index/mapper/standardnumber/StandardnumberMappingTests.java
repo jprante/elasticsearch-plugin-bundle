@@ -32,8 +32,8 @@ public class StandardnumberMappingTests extends ESSingleNodeTestCase {
     public void testSimpleStandardNumber() throws Exception {
         String mapping = copyToStringFromClasspath("mapping.json");
         DocumentMapper docMapper = createIndex("some_index")
-                .mapperService().documentMapperParser()
-                .parse("someType", new CompressedXContent(mapping));
+                .mapperService()
+                .parse("someType", new CompressedXContent(mapping), false);
         String sampleText = "978-3-551-75213-0";
         BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder().startObject()
                 .field("someField", sampleText).endObject());
@@ -47,8 +47,8 @@ public class StandardnumberMappingTests extends ESSingleNodeTestCase {
     public void testNonStandardnumber() throws Exception {
         String mapping = copyToStringFromClasspath("mapping.json");
         DocumentMapper docMapper = createIndex("some_index")
-                .mapperService().documentMapperParser()
-                .parse("someType", new CompressedXContent(mapping));
+                .mapperService()
+                .parse("someType", new CompressedXContent(mapping), false);
         String sampleText = "Hello world";
         BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder()
                 .startObject().field("someField", sampleText).endObject());
@@ -59,8 +59,8 @@ public class StandardnumberMappingTests extends ESSingleNodeTestCase {
         String builtMapping = docMapper.mappingSource().string();
         logger.warn("testNonStandardnumber: built mapping =" + builtMapping);
         DocumentMapper docMapper2 = createIndex("some_index2")
-                .mapperService().documentMapperParser()
-                .parse("someType", new CompressedXContent(builtMapping));
+                .mapperService()
+                .parse("someType", new CompressedXContent(builtMapping), false);
         json = BytesReference.bytes(XContentFactory.jsonBuilder().startObject()
                 .field("someField", sampleText).endObject());
         sourceToParse = new SourceToParse("some_index2", "someType", "1", json, XContentType.JSON);

@@ -27,7 +27,7 @@ public class TransportLangdetectAction extends TransportAction<LangdetectRequest
     public TransportLangdetectAction(Settings settings,
                                      ActionFilters actionFilters,
                                      TransportService transportService) {
-        super(LangdetectAction.NAME, actionFilters, transportService.getTaskManager());
+        super(LangdetectAction.NAME, actionFilters, transportService.getLocalNodeConnection(), transportService.getTaskManager());
         this.settings = settings;
         services.put("", new LangdetectService(settings));
     }

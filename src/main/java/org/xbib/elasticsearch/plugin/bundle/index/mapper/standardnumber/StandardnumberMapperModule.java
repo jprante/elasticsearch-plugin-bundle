@@ -8,16 +8,16 @@ import org.xbib.elasticsearch.plugin.bundle.common.standardnumber.Standardnumber
  */
 public class StandardnumberMapperModule extends AbstractModule {
 
-    private final StandardnumberMapperTypeParser typeParser;
+    private final StandardnumberMapper.TypeParser typeParser;
 
-    public StandardnumberMapperModule(StandardnumberMapperTypeParser typeParser) {
+    public StandardnumberMapperModule(StandardnumberMapper.TypeParser typeParser) {
         this.typeParser = typeParser;
     }
 
     @Override
     protected void configure() {
         bind(StandardnumberService.class).asEagerSingleton();
-        bind(StandardnumberMapperTypeParser.class).toInstance(typeParser);
+        bind(StandardnumberMapper.TypeParser.class).toInstance(typeParser);
     }
 
 }

@@ -68,8 +68,8 @@ public class LangdetectMappingTests extends ESSingleNodeTestCase {
     public void testBinary2() throws Exception {
         String mapping = copyToStringFromClasspath("base64-2-mapping.json");
         DocumentMapper docMapper = createIndex("some_index")
-                .mapperService().documentMapperParser()
-                .parse("someType", new CompressedXContent(mapping));
+                .mapperService()
+                .parse("someType", new CompressedXContent(mapping), false);
         //String sampleBinary = copyToStringFromClasspath("base64-2.txt");
         String sampleText = copyToStringFromClasspath("base64-2-decoded.txt");
         BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder().startObject()

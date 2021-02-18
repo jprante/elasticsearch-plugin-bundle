@@ -16,22 +16,23 @@ import org.apache.lucene.util.BytesRef;
 import org.elasticsearch.common.lucene.BytesRefs;
 import org.elasticsearch.common.lucene.Lucene;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.support.XContentMapValues;
+import org.elasticsearch.index.analysis.IndexAnalyzers;
 import org.elasticsearch.index.analysis.NamedAnalyzer;
+import org.elasticsearch.index.mapper.ContentPath;
 import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.index.mapper.FieldNamesFieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.index.mapper.MapperParsingException;
-import org.elasticsearch.index.mapper.MapperService;
 import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.mapper.SimpleMappedFieldType;
 import org.elasticsearch.index.mapper.TextSearchInfo;
 import org.elasticsearch.index.mapper.ValueFetcher;
 import org.elasticsearch.index.query.QueryShardContext;
-import org.elasticsearch.search.lookup.SearchLookup;
 import org.xbib.elasticsearch.plugin.bundle.common.langdetect.LangdetectService;
 import org.xbib.elasticsearch.plugin.bundle.common.langdetect.Language;
 import org.xbib.elasticsearch.plugin.bundle.common.langdetect.LanguageDetectionException;
@@ -40,10 +41,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * Language detection field mapper.
@@ -52,33 +54,65 @@ public class LangdetectMapper extends FieldMapper {
 
     public static final String CONTENT_TYPE = "langdetect";
 
-    public static final FieldType FIELD_TYPE = new FieldType();
-
     private static final Logger logger = LogManager.getLogger(LangdetectMapper.class);
 
-    static {
-        FIELD_TYPE.setStored(true);
-        FIELD_TYPE.setOmitNorms(true);
-        FIELD_TYPE.setDocValuesType(DocValuesType.NONE);
-        FIELD_TYPE.setIndexOptions(IndexOptions.DOCS);
-        FIELD_TYPE.freeze();
+    final FieldType fieldType;
+
+    public static class Defaults {
+        public static final FieldType FIELD_TYPE = new FieldType();
+        public static final int NTRIALS = 7;
+        public static final double ALPHA = 0.5;
+        public static final double ALPHA_WIDTH = 0.05;
+        public static final int ITERATION_LIMIT = 10_000;
+        public static final double PROB_THRESHOLD = 0.1;
+        public static final double CONV_THRESHOLD = 0.99999;
+        public static final int BASE_FREQ = 10_000;
+
+        static {
+            FIELD_TYPE.setStored(true);
+            FIELD_TYPE.setOmitNorms(true);
+            FIELD_TYPE.setDocValuesType(DocValuesType.NONE);
+            FIELD_TYPE.setIndexOptions(IndexOptions.DOCS);
+            FIELD_TYPE.freeze();
+        }
     }
 
-    private final LangdetectService langdetectService;
+    private static LangdetectMapper toType(FieldMapper in) {
+        return (LangdetectMapper) in;
+    }
 
-    private final LanguageTo languageTo;
-    private ParseContext context;
+    private static Builder builder(FieldMapper in) {
+        return toType(in).builder;
+    }
+
+    private final Builder builder;
+
+    private LangdetectService langdetectService = null;
+    private LanguageTo languageTo = null;
 
     public LangdetectMapper(String simpleName,
                             FieldType fieldType,
                             MappedFieldType mappedFieldType,
                             MultiFields multiFields,
                             CopyTo copyTo,
-                            LanguageTo languageTo,
-                            LangdetectService langdetectService) {
-        super(simpleName, fieldType, mappedFieldType, multiFields, copyTo);
-        this.langdetectService = langdetectService;
-        this.languageTo = languageTo;
+                            Builder builder) {
+        super(simpleName, mappedFieldType, Lucene.KEYWORD_ANALYZER, multiFields, copyTo);
+        this.fieldType = fieldType;
+        this.builder = builder;
+    }
+
+    public LangdetectService getLangdetectService() {
+        return Objects.requireNonNullElseGet(langdetectService, () -> {
+            langdetectService = new LangdetectService(builder.settingsBuilder.build());
+            return langdetectService;
+        });
+    }
+
+    public LanguageTo getLanguageTo() {
+        return Objects.requireNonNullElseGet(languageTo, () -> {
+            languageTo = LanguageTo.builder().add(builder.languageToMap.getValue()).build();
+            return languageTo;
+        });
     }
 
     @Override
@@ -87,7 +121,8 @@ public class LangdetectMapper extends FieldMapper {
     }
 
     @Override
-    protected void mergeOptions(FieldMapper other, List<String> conflicts) {
+    public FieldMapper.Builder getMergeBuilder() {
+        return new LangdetectMapper.Builder(simpleName(), builder.indexAnalyzers).init(this);
     }
 
     @Override
@@ -102,7 +137,7 @@ public class LangdetectMapper extends FieldMapper {
         if (value == null) {
             return;
         }
-        boolean isBinary = langdetectService.getSettings().getAsBoolean("binary", false);
+        boolean isBinary = getLangdetectService().getSettings().getAsBoolean("binary", false);
         if (isBinary) {
             try {
                 byte[] b = parser.binaryValue();
@@ -125,12 +160,12 @@ public class LangdetectMapper extends FieldMapper {
             }
         }
         try {
-            List<Language> langs = langdetectService.detectAll(value);
+            List<Language> langs = getLangdetectService().detectAll(value);
             for (Language lang : langs) {
                 Field field = new Field(fieldType().name(), lang.getLanguage(), fieldType);
                 context.doc().add(field);
-                if (languageTo.languageToFields().containsKey(lang.getLanguage())) {
-                    parseLanguageToFields(context, languageTo.languageToFields().get(lang.getLanguage()));
+                if (getLanguageTo().languageToFields().containsKey(lang.getLanguage())) {
+                    parseLanguageToFields(context, getLanguageTo().languageToFields().get(lang.getLanguage()));
                 }
             }
         } catch (LanguageDetectionException e) {
@@ -139,42 +174,17 @@ public class LangdetectMapper extends FieldMapper {
         }
     }
 
-    private static Iterable<String> extractFieldNames(final String fullPath) {
-        return () -> new Iterator<>() {
-
-            int endIndex = nextEndIndex(0);
-
-            private int nextEndIndex(int index) {
-                while (index < fullPath.length() && fullPath.charAt(index) != '.') {
-                    index += 1;
-                }
-                return index;
-            }
-
-            @Override
-            public boolean hasNext() {
-                return endIndex <= fullPath.length();
-            }
-
-            @Override
-            public String next() {
-                final String result = fullPath.substring(0, endIndex);
-                endIndex = nextEndIndex(endIndex + 1);
-                return result;
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
-    }
-
     @Override
     protected void doXContentBody(XContentBuilder builder, boolean includeDefaults, Params params) throws IOException {
-        super.doXContentBody(builder, includeDefaults, params);
-        langdetectService.getSettings().toXContent(builder, params);
-        languageTo.toXContent(builder, params);
+        builder.field("type", contentType());
+        Builder mergeBuilder = new Builder(simpleName(), this.builder.indexAnalyzers);
+        mergeBuilder.init(this);
+        mergeBuilder.toXContent(builder, includeDefaults);
+        multiFields.toXContent(builder, params);
+        if (null != copyTo) {
+            copyTo.toXContent(builder, params);
+        }
+        getLanguageTo().toXContent(builder, params);
     }
 
     @SuppressWarnings("unchecked")
@@ -209,119 +219,216 @@ public class LangdetectMapper extends FieldMapper {
         }
     }
 
-    public static class Builder extends FieldMapper.Builder<Builder> {
-
-        protected int positionIncrementGap = -1;
-
-        protected LanguageTo languageTo = LanguageTo.builder().build();
+    public static class Builder extends FieldMapper.Builder {
 
         protected Settings.Builder settingsBuilder = Settings.builder();
 
-        public Builder(String name) {
-            super(name, FIELD_TYPE);
-            this.builder = this;
-        }
+        private final Parameter<Boolean> store = Parameter.storeParam(
+            m -> builder(m).store.getValue(),
+            false
+        );
 
-        public NamedAnalyzer indexAnalyzer() {
-            return indexAnalyzer;
-        }
+        final Parameter<Integer> nTrial = Parameter.intParam(
+            "number_of_trials",
+            true,
+            m -> {
+                Parameter<Integer> nTrial = builder(m).nTrial;
+                Integer value = nTrial.getValue();
+                builder(m).settingsBuilder.put(nTrial.name, value);
+                return value;
+            },
+            Defaults.NTRIALS
+        );
+        private final Parameter<Double> alpha = Parameter.doubleParam(
+            "alpha",
+            true,
+            m -> {
+                Parameter<Double> alpha = builder(m).alpha;
+                Double value = alpha.getValue();
+                builder(m).settingsBuilder.put(alpha.name, value);
+                return value;
+            },
+            Defaults.ALPHA
+        );
+        private final Parameter<Double> alphaWidth = Parameter.doubleParam(
+            "alpha_width",
+            true,
+            m -> {
+                Parameter<Double> alphaWidth = builder(m).alphaWidth;
+                Double value = alphaWidth.getValue();
+                builder(m).settingsBuilder.put(alphaWidth.name, value);
+                return value;
+            },
+            Defaults.ALPHA_WIDTH
+        );
+        private final Parameter<Integer> iterationLimit = Parameter.intParam(
+            "iteration_limit",
+            true,
+            m -> {
+                Parameter<Integer> iterationLimit = builder(m).iterationLimit;
+                Integer value = iterationLimit.getValue();
+                builder(m).settingsBuilder.put(iterationLimit.name, value);
+                return value;
+            },
+            Defaults.ITERATION_LIMIT
+        );
+        private final Parameter<Double> probThreshold = Parameter.doubleParam(
+            "prob_threshold",
+            true,
+            m -> {
+                Parameter<Double> probThreshold = builder(m).probThreshold;
+                Double value = probThreshold.getValue();
+                builder(m).settingsBuilder.put(probThreshold.name, value);
+                return value;
+            },
+            Defaults.PROB_THRESHOLD
+        );
+        private final Parameter<Double> convThreshold = Parameter.doubleParam(
+            "conv_threshold",
+            true,
+            m -> {
+                Parameter<Double> convThreshold = builder(m).convThreshold;
+                Double value = convThreshold.getValue();
+                builder(m).settingsBuilder.put(convThreshold.name, value);
+                return value;
+            },
+            Defaults.CONV_THRESHOLD
+        );
+        private final Parameter<Integer> baseFreq = Parameter.intParam(
+            "base_freq",
+            true,
+            m -> {
+                Parameter<Integer> baseFreq = builder(m).baseFreq;
+                Integer value = baseFreq.getValue();
+                builder(m).settingsBuilder.put(baseFreq.name, value);
+                return value;
+            },
+            Defaults.BASE_FREQ
+        );
+        private final Parameter<String> filterPattern = Parameter.stringParam(
+            "pattern",
+            true,
+            m -> {
+                Parameter<String> filterPattern = builder(m).filterPattern;
+                String value = filterPattern.getValue();
+                builder(m).settingsBuilder.put(filterPattern.name, value);
+                return value;
+            },
+            null
+        );
+        private final Parameter<Integer> max = Parameter.intParam(
+            "max",
+            true,
+            m -> {
+                Parameter<Integer> max = builder(m).max;
+                Integer value = max.getValue();
+                builder(m).settingsBuilder.put(max.name, value);
+                return value;
+            },
+            Integer.MAX_VALUE
+        );
+        private final Parameter<String> profile = Parameter.stringParam(
+            "profile",
+            true,
+            m -> {
+                Parameter<String> profile = builder(m).profile;
+                String value = profile.getValue();
+                builder(m).settingsBuilder.put(profile.name, value);
+                return value;
+            },
+            null
+        );
+        private final Parameter<Boolean> binary = Parameter.boolParam(
+            "binary",
+            true,
+            m -> {
+                Parameter<Boolean> binary = builder(m).binary;
+                Boolean value = binary.getValue();
+                builder(m).settingsBuilder.put(binary.name, value);
+                return value;
+            },
+            false
+        );
 
-        public NamedAnalyzer searchAnalyzer() {
-            return searchAnalyzer;
-        }
+        private final Parameter<Map<String, Object>> map = mapParam(
+            "map",
+            true,
+            m -> {
+                Map<String, Object> map = builder(m).map.getValue();
+                for (Map.Entry<String, Object> entry : map.entrySet()) {
+                    builder(m).settingsBuilder.put("map." + entry.getKey(), (String) entry.getValue());
+                }
+                return map;
+            },
+            Collections.emptyMap()
+        );
 
-        public NamedAnalyzer searchQuoteAnalyzer() {
-            return searchQuoteAnalyzer;
-        }
+        private final Parameter<List<String>> languages = listParam(
+            "languages",
+            true,
+            m -> {
+                List<String> value = builder(m).languages.getValue();
+                settingsBuilder.putList("languages", value);
+                return value;
+            },
+            Collections.emptyList()
+        );
 
-        public Builder positionIncrementGap(int positionIncrementGap) {
-            this.positionIncrementGap = positionIncrementGap;
-            return this;
-        }
+        private final Parameter<Map<String, Object>> languageToMap = mapParam(
+            "language_to",
+            true,
+            m -> builder(m).languageToMap.getValue(),
+            Collections.emptyMap()
+        ).neverSerialize();
 
-        public Builder ntrials(int trials) {
-            settingsBuilder.put("number_of_trials", trials);
-            return this;
-        }
+        private final Parameter<Integer> positionIncrementGap = Parameter.intParam(
+            "position_increment_gap",
+            true,
+            m -> builder(m).positionIncrementGap.getValue(),
+            -1
+        );
 
-        public Builder alpha(double alpha) {
-            settingsBuilder.put("alpha", alpha);
-            return this;
-        }
+        final IndexAnalyzers indexAnalyzers;
+        final NamedAnalyzer indexAnalyzer;
+        final NamedAnalyzer searchAnalyzer;
+        final NamedAnalyzer searchQuoteAnalyzer;
 
-        public Builder alphaWidth(double alphaWidth) {
-            settingsBuilder.put("alpha_width", alphaWidth);
-            return this;
-        }
-
-        public Builder iterationLimit(int iterationLimit) {
-            settingsBuilder.put("iteration_limit", iterationLimit);
-            return this;
-        }
-
-        public Builder probThreshold(double probThreshold) {
-            settingsBuilder.put("prob_threshold", probThreshold);
-            return this;
-        }
-
-        public Builder convThreshold(double convThreshold) {
-            settingsBuilder.put("conv_threshold", convThreshold);
-            return this;
-        }
-
-        public Builder baseFreq(int baseFreq) {
-            settingsBuilder.put("base_freq", baseFreq);
-            return this;
-        }
-
-        public Builder pattern(String pattern) {
-            settingsBuilder.put("pattern", pattern);
-            return this;
-        }
-
-        public Builder max(int max) {
-            settingsBuilder.put("max", max);
-            return this;
-        }
-
-        public Builder binary(boolean binary) {
-            settingsBuilder.put("binary", binary);
-            return this;
-        }
-
-        public Builder map(Map<String, Object> map) {
-            for (Map.Entry<String, Object> entry : map.entrySet()) {
-                settingsBuilder.put("map." + entry.getKey(), (String) entry.getValue());
-            }
-            return this;
-        }
-
-        public Builder languages(String[] languages) {
-            List<String> list = Arrays.asList(languages);
-            settingsBuilder.putList("languages", list);
-            return this;
-        }
-
-        public Builder profile(String profile) {
-            settingsBuilder.put("profile", profile);
-            return this;
-        }
-
-        public Builder languageTo(LanguageTo languageTo) {
-            this.languageTo = languageTo;
-            return this;
+        public Builder(String name, IndexAnalyzers indexAnalyzers) {
+            super(name);
+            this.indexAnalyzers = indexAnalyzers;
+            this.indexAnalyzer = indexAnalyzers.getDefaultIndexAnalyzer();
+            this.searchAnalyzer = indexAnalyzers.getDefaultSearchAnalyzer();
+            this.searchQuoteAnalyzer = indexAnalyzers.getDefaultSearchQuoteAnalyzer();
         }
 
         @Override
-        public LangdetectMapper build(BuilderContext context) {
-            LangdetectService service = new LangdetectService(settingsBuilder.build());
+        protected List<Parameter<?>> getParameters() {
+            return Arrays.asList(store, positionIncrementGap,
+                                 nTrial, alpha, alphaWidth, iterationLimit, probThreshold, convThreshold,
+                                 baseFreq, filterPattern, max, binary, map, languages, profile, languageToMap);
+        }
+
+        public NamedAnalyzer indexAnalyzer() {
+            return indexAnalyzer();
+        }
+
+        public NamedAnalyzer searchAnalyzer() {
+            return searchAnalyzer();
+        }
+
+        public NamedAnalyzer searchQuoteAnalyzer() {
+            return searchQuoteAnalyzer();
+        }
+
+        @Override
+        public LangdetectMapper build(ContentPath context) {
             return new LangdetectMapper(name,
-                                        fieldType,
+                                        Defaults.FIELD_TYPE,
                                         new LangdetectFieldType(buildFullName(context)),
                                         multiFieldsBuilder.build(this, context),
-                                        copyTo,
-                                        languageTo,
-                                        service);
+                                        copyTo.build(),
+                                        this
+                                        );
         }
     }
 
@@ -329,7 +436,6 @@ public class LangdetectMapper extends FieldMapper {
 
         public LangdetectFieldType(String name) {
             super(name, true, false, true, TextSearchInfo.NONE, Collections.emptyMap());
-            setIndexAnalyzer(Lucene.KEYWORD_ANALYZER);
         }
 
         /** Returns the indexed value used to construct search "values".
@@ -340,7 +446,7 @@ public class LangdetectMapper extends FieldMapper {
         }
 
         @Override
-        public ValueFetcher valueFetcher(MapperService mapperService, SearchLookup searchLookup, String format) {
+        public ValueFetcher valueFetcher(QueryShardContext context, String format) {
             throw new UnsupportedOperationException();
         }
 
@@ -376,110 +482,10 @@ public class LangdetectMapper extends FieldMapper {
 
     }
 
-    public static class TypeParser implements Mapper.TypeParser {
+    public static final FieldMapper.TypeParser PARSER
+        = new FieldMapper.TypeParser((n, c) -> new LangdetectMapper.Builder(n, c.getIndexAnalyzers()));
 
-        @Override
-        public Mapper.Builder<?> parse(String name, Map<String, Object> mapping, ParserContext parserContext) {
-            Builder builder = new Builder(name);
-            Iterator<Map.Entry<String, Object>> iterator = mapping.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, Object> entry = iterator.next();
-                String fieldName = entry.getKey();
-                Object fieldNode = entry.getValue();
-                switch (fieldName) {
-                    case "analyzer":
-                    case "include_in_all":
-                        iterator.remove();
-                        break;
-                    case "position_increment_gap":
-                        int newPositionIncrementGap = XContentMapValues.nodeIntegerValue(fieldNode, -1);
-                        if (newPositionIncrementGap < 0) {
-                            throw new MapperParsingException("position_increment_gap less than 0 aren't allowed.");
-                        }
-                        builder.positionIncrementGap(newPositionIncrementGap);
-                        if (builder.indexAnalyzer() == null) {
-                            builder.indexAnalyzer(parserContext.getIndexAnalyzers().getDefaultIndexAnalyzer());
-                        }
-                        if (builder.searchAnalyzer() == null) {
-                            builder.searchAnalyzer(parserContext.getIndexAnalyzers().getDefaultSearchAnalyzer());
-                        }
-                        if (builder.searchQuoteAnalyzer() == null) {
-                            builder.searchQuoteAnalyzer(parserContext.getIndexAnalyzers().getDefaultSearchQuoteAnalyzer());
-                        }
-                        iterator.remove();
-                        break;
-                    case "store":
-                        builder.store(XContentMapValues.nodeBooleanValue(fieldNode));
-                        iterator.remove();
-                        break;
-                    case "number_of_trials":
-                        builder.ntrials(XContentMapValues.nodeIntegerValue(fieldNode));
-                        iterator.remove();
-                        break;
-                    case "alpha":
-                        builder.alpha(XContentMapValues.nodeDoubleValue(fieldNode));
-                        iterator.remove();
-                        break;
-                    case "alpha_width":
-                        builder.alphaWidth(XContentMapValues.nodeDoubleValue(fieldNode));
-                        iterator.remove();
-                        break;
-                    case "iteration_limit":
-                        builder.iterationLimit(XContentMapValues.nodeIntegerValue(fieldNode));
-                        iterator.remove();
-                        break;
-                    case "prob_threshold":
-                        builder.probThreshold(XContentMapValues.nodeDoubleValue(fieldNode));
-                        iterator.remove();
-                        break;
-                    case "conv_threshold":
-                        builder.convThreshold(XContentMapValues.nodeDoubleValue(fieldNode));
-                        iterator.remove();
-                        break;
-                    case "base_freq":
-                        builder.baseFreq(XContentMapValues.nodeIntegerValue(fieldNode));
-                        iterator.remove();
-                        break;
-                    case "pattern":
-                        builder.pattern(XContentMapValues.nodeStringValue(fieldNode, null));
-                        iterator.remove();
-                        break;
-                    case "max":
-                        builder.max(XContentMapValues.nodeIntegerValue(fieldNode));
-                        iterator.remove();
-                        break;
-                    case "binary":
-                        builder.binary(XContentMapValues.nodeBooleanValue(fieldNode));
-                        iterator.remove();
-                        break;
-                    case "map":
-                        builder.map(XContentMapValues.nodeMapValue(fieldNode, "map"));
-                        iterator.remove();
-                        break;
-                    case "languages":
-                        builder.languages(XContentMapValues.nodeStringArrayValue(fieldNode));
-                        iterator.remove();
-                        break;
-                    case "profile":
-                        builder.profile(XContentMapValues.nodeStringValue(fieldNode, null));
-                        iterator.remove();
-                        break;
-                    case "language_to" :
-                        Map<String, Object> map = XContentMapValues.nodeMapValue(fieldNode, null);
-                        LanguageTo.Builder languageToBuilder = LanguageTo.builder();
-                        languageToBuilder.add(map);
-                        builder.languageTo(languageToBuilder.build());
-                        iterator.remove();
-                        break;
-                    default:
-                        break;
-                }
-            }
-            return builder;
-        }
-    }
-
-    public static class LanguageTo {
+    public static class LanguageTo implements ToXContent {
 
         private final Map<String, Object> languageToFields;
 
@@ -523,6 +529,32 @@ public class LangdetectMapper extends FieldMapper {
         public Map<String, Object> languageToFields() {
             return languageToFields;
         }
+    }
+
+    public static Parameter<Map<String, Object>> mapParam(
+        String name, boolean updateable,
+        Function<FieldMapper, Map<String, Object>> initializer, Map<String, Object> defaultValue)
+    {
+        return new Parameter<>(
+            name,
+            updateable,
+            () -> defaultValue,
+            (n, c, o) -> XContentMapValues.nodeMapValue(o, "map"),
+            initializer
+        );
+    }
+
+    public static Parameter<List<String>> listParam(
+        String name, boolean updateable,
+        Function<FieldMapper, List<String>> initializer, List<String> defaultValue)
+    {
+        return new Parameter<>(
+            name,
+            updateable,
+            () -> defaultValue,
+            (n, c, o) -> Arrays.asList(XContentMapValues.nodeStringArrayValue(o)),
+            initializer
+        );
     }
 
 }

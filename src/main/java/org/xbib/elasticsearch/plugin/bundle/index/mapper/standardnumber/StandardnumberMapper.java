@@ -9,6 +9,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.support.XContentMapValues;
+import org.elasticsearch.index.mapper.ContentPath;
 import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
 import org.elasticsearch.index.mapper.Mapper;
@@ -18,6 +19,7 @@ import org.xbib.elasticsearch.plugin.bundle.common.standardnumber.Standardnumber
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,7 @@ public class StandardnumberMapper extends FieldMapper {
     private final Settings settings;
 
     private final StandardnumberService service;
+    final FieldType fieldType;
 
     public StandardnumberMapper(Settings settings,
                                 String simpleName,
@@ -44,14 +47,15 @@ public class StandardnumberMapper extends FieldMapper {
                                 MultiFields multiFields,
                                 CopyTo copyTo,
                                 StandardnumberService service) {
-        super(simpleName, fieldType, mappedFieldType, multiFields, copyTo);
+        super(simpleName, mappedFieldType, multiFields, copyTo);
         this.settings = settings;
         this.service = service;
+        this.fieldType = fieldType;
     }
 
     @Override
-    protected void mergeOptions(FieldMapper other, List<String> conflicts) {
-
+    public FieldMapper.Builder getMergeBuilder() {
+        return new StandardnumberMapper.Builder(simpleName(), service).init(this);
     }
 
     @Override
@@ -116,42 +120,36 @@ public class StandardnumberMapper extends FieldMapper {
         }
     }
 
-    public static class Builder extends FieldMapper.Builder<Builder> {
+    public static class Builder extends FieldMapper.Builder {
 
-        private Settings.Builder settingsBuilder = Settings.builder();
-        private String nullValue;
+        public Settings.Builder settingsBuilder = Settings.builder();
         private final StandardnumberService service;
 
         public Builder(String name, StandardnumberService service) {
-            super(name, FIELD_TYPE);
+            super(name);
             this.service = service;
-            this.builder = this;
         }
 
         public Builder standardNumbers(String[] standardnumbers) {
             settingsBuilder.putList("standardnumbers", standardnumbers);
-            return builder;
-        }
-
-        public Builder nullValue(String nullValue) {
-            this.nullValue = nullValue;
-            return builder;
+            return this;
         }
 
         @Override
-        public StandardnumberMapper build(BuilderContext context) {
-            if (fieldType.indexOptions() != IndexOptions.NONE && !fieldType.tokenized()) {
-                fieldType.setOmitNorms(true);
-                fieldType.setIndexOptions(IndexOptions.DOCS);
-            }
+        protected List<Parameter<?>> getParameters() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public StandardnumberMapper build(ContentPath context) {
 
             TextFieldMapper.TextFieldType ft = new TextFieldMapper.TextFieldType(name);
             return new StandardnumberMapper(settingsBuilder.build(),
                     name,
-                    fieldType,
+                    FIELD_TYPE,
                     ft,
                     multiFieldsBuilder.build(this, context),
-                    copyTo,
+                    copyTo.build(),
                     service);
         }
     }
@@ -184,5 +182,9 @@ public class StandardnumberMapper extends FieldMapper {
             }
             return builder;
         }
+    }
+
+    public static TypeParser newTypeParser() {
+        return new TypeParser();
     }
 }

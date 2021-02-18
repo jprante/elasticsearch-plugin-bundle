@@ -3,10 +3,11 @@ package org.xbib.elasticsearch.plugin.bundle.common.standardnumber;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.common.component.AbstractLifecycleComponent;
+import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
 import org.xbib.elasticsearch.plugin.bundle.action.isbnformat.ISBNFormatResponse;
-import org.xbib.elasticsearch.plugin.bundle.index.mapper.standardnumber.StandardnumberMapper;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.standardnumber.StandardnumberTokenFilter;
+import org.xbib.elasticsearch.plugin.bundle.index.mapper.standardnumber.StandardnumberMapper;
 import org.xbib.standardnumber.ISBN;
 import org.xbib.standardnumber.NoSuchStandardNumberException;
 import org.xbib.standardnumber.StandardNumber;
@@ -26,11 +27,8 @@ public class StandardnumberService extends AbstractLifecycleComponent {
     private static final List<String> DEFAULT_STANDARD_NUMBERS =
             Arrays.asList("isbn", "issn", "ismn", "isni",  "orcid", "ppn", "zdb");
 
-    /**
-     * Called from StandardnumberTokenFilterFactory.
-     * @param standardNumberTypeParser the type parser
-     */
-    public void setStandardNumberTypeParser(StandardnumberMapper.TypeParser standardNumberTypeParser) {
+    @Inject
+    public StandardnumberService(StandardnumberMapper.TypeParser standardNumberTypeParser) {
         standardNumberTypeParser.setService(this);
     }
 

@@ -5,8 +5,8 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
-import org.xbib.elasticsearch.plugin.bundle.index.mapper.standardnumber.StandardnumberMapper;
 import org.xbib.elasticsearch.plugin.bundle.common.standardnumber.StandardnumberService;
+import org.xbib.elasticsearch.plugin.bundle.index.mapper.standardnumber.StandardnumberMapper;
 
 /**
  * Standard number token filter factory.
@@ -24,8 +24,7 @@ public class StandardnumberTokenFilterFactory extends AbstractTokenFilterFactory
                                             StandardnumberMapper.TypeParser standardNumberTypeParser) {
         super(indexSettings, name, settings);
         this.settings = settings;
-        this.standardnumberService = new StandardnumberService();
-        this.standardnumberService.setStandardNumberTypeParser(standardNumberTypeParser);
+        this.standardnumberService = new StandardnumberService(standardNumberTypeParser);
     }
 
     @Override

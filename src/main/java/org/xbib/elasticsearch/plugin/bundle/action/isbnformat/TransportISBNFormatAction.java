@@ -23,7 +23,7 @@ public class TransportISBNFormatAction extends TransportAction<ISBNFormatRequest
     public TransportISBNFormatAction(ActionFilters actionFilters,
                                      TransportService transportService,
                                      StandardnumberService standardnumberService) {
-        super(ISBNFormatAction.NAME, actionFilters, transportService.getTaskManager());
+        super(ISBNFormatAction.NAME, actionFilters, transportService.getLocalNodeConnection(), transportService.getTaskManager());
         this.standardnumberService = standardnumberService;
     }
 

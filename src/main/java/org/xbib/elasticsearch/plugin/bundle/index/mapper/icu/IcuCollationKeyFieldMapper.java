@@ -2,6 +2,8 @@ package org.xbib.elasticsearch.plugin.bundle.index.mapper.icu;
 
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RawCollationKey;
+import com.ibm.icu.text.RuleBasedCollator;
+import com.ibm.icu.util.ULocale;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.SortedSetDocValuesField;
@@ -14,40 +16,33 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.util.BytesRef;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.common.lucene.Lucene;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.Fuzziness;
-import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
-import org.elasticsearch.common.xcontent.support.XContentMapValues;
 import org.elasticsearch.index.fielddata.IndexFieldData;
 import org.elasticsearch.index.fielddata.plain.SortedSetOrdinalsIndexFieldData;
+import org.elasticsearch.index.mapper.ContentPath;
 import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.index.mapper.FieldNamesFieldMapper;
-import org.elasticsearch.index.mapper.KeywordFieldMapper;
 import org.elasticsearch.index.mapper.MappedFieldType;
-import org.elasticsearch.index.mapper.Mapper;
-import org.elasticsearch.index.mapper.MapperParsingException;
-import org.elasticsearch.index.mapper.MapperService;
 import org.elasticsearch.index.mapper.ParseContext;
+import org.elasticsearch.index.mapper.SourceValueFetcher;
 import org.elasticsearch.index.mapper.StringFieldType;
+import org.elasticsearch.index.mapper.TextParams;
 import org.elasticsearch.index.mapper.TextSearchInfo;
-import org.elasticsearch.index.mapper.TypeParsers;
 import org.elasticsearch.index.mapper.ValueFetcher;
 import org.elasticsearch.index.query.QueryShardContext;
 import org.elasticsearch.search.DocValueFormat;
 import org.elasticsearch.search.aggregations.support.CoreValuesSourceType;
 import org.elasticsearch.search.lookup.SearchLookup;
-import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.IcuCollationKeyAnalyzerProvider;
 import org.xbib.elasticsearch.plugin.bundle.index.analysis.icu.IndexableBinaryStringTools;
 
 import java.io.IOException;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
 /**
@@ -57,35 +52,49 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
 
     public static final String CONTENT_TYPE = "icu_collation_key";
 
-    public static final FieldType FIELD_TYPE = new FieldType();
-
-    public static class Defaults {
-
-        static {
-            FIELD_TYPE.setTokenized(false);
-            FIELD_TYPE.setOmitNorms(true);
-            FIELD_TYPE.setIndexOptions(IndexOptions.DOCS);
-            FIELD_TYPE.freeze();
-        }
-    }
-
     public static final class CollationFieldType extends StringFieldType {
 
         private final Collator collator;
+        private final String nullValue;
+        private final int ignoreAbove;
 
-        public CollationFieldType(String name, boolean isSearchable, boolean hasDocValues, Collator collator, Map<String, String> meta) {
-            super(name, true, false, true, TextSearchInfo.SIMPLE_MATCH_ONLY, meta);
-            setIndexAnalyzer(Lucene.KEYWORD_ANALYZER);
+        public CollationFieldType(String name, boolean isSearchable, boolean isStored, boolean hasDocValues,
+                                  Collator collator, String nullValue, int ignoreAbove, Map<String, String> meta) {
+            super(name, isSearchable, isStored, hasDocValues, TextSearchInfo.SIMPLE_MATCH_ONLY, meta);
             this.collator = collator;
+            this.nullValue = nullValue;
+            this.ignoreAbove = ignoreAbove;
+        }
+
+        public CollationFieldType(String name, boolean searchable, Collator collator) {
+            this(name, searchable, false, true, collator, null, Integer.MAX_VALUE, Collections.emptyMap());
         }
 
         public CollationFieldType(String name, Collator collator) {
-            this(name, true, true, collator, Collections.emptyMap());
+            this(name, true, false, true, collator, null, Integer.MAX_VALUE, Collections.emptyMap());
         }
 
         @Override
-        public ValueFetcher valueFetcher(MapperService mapperService, SearchLookup searchLookup, String format) {
-            throw new UnsupportedOperationException();
+        public String typeName() {
+            return CONTENT_TYPE;
+        }
+
+        @Override
+        public ValueFetcher valueFetcher(QueryShardContext context, String format) {
+            if (format != null) {
+                throw new IllegalArgumentException("Field [" + name() + "] of type [" + typeName() + "] doesn't support formats.");
+            }
+
+            return new SourceValueFetcher(name(), context, nullValue) {
+                @Override
+                protected String parseSourceValue(Object value) {
+                    String keywordValue = value.toString();
+                    if (keywordValue.length() > ignoreAbove) {
+                        return null;
+                    }
+                    return keywordValue;
+                }
+            };
         }
 
         @Override
@@ -108,11 +117,6 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
             CollationFieldType that = (CollationFieldType) o;
 
             return collator != null ? collator.equals(that.collator) : that.collator == null;
-        }
-
-        @Override
-        public String typeName() {
-            return CONTENT_TYPE;
         }
 
         public Collator collator() {
@@ -153,24 +157,27 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
         @Override
         public Query fuzzyQuery(Object value, Fuzziness fuzziness, int prefixLength, int maxExpansions,
                                 boolean transpositions, QueryShardContext context) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("[fuzzy] queries are not supported on [" + CONTENT_TYPE + "] fields.");
         }
 
         @Override
         public Query prefixQuery(String value, MultiTermQuery.RewriteMethod method, boolean caseInsensitive, QueryShardContext context) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("[prefix] queries are not supported on [" + CONTENT_TYPE + "] fields.");
         }
 
         @Override
         public Query regexpQuery(String value, int syntaxFlags, int matchFlags, int maxDeterminizedStates,
                                  MultiTermQuery.RewriteMethod method, QueryShardContext context) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("[regexp] queries are not supported on [" + CONTENT_TYPE + "] fields.");
         }
 
+        /*
         @Override
-        public DocValueFormat docValueFormat(final String format, ZoneId timeZone) {
-            return COLLATE_FORMAT;
+        public Query wildcardQuery(
+            String value, MultiTermQuery.RewriteMethod method, boolean caseInsensitive, QueryShardContext context) {
+            throw new UnsupportedOperationException("[wildcard] queries are not supported on [" + CONTENT_TYPE + "] fields.");
         }
+        */
 
         public static DocValueFormat COLLATE_FORMAT = new DocValueFormat() {
             @Override
@@ -183,31 +190,11 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
             }
 
             @Override
-            public String format(long value) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public String format(double value) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
             public String format(BytesRef value) {
                 int encodedLength = IndexableBinaryStringTools.getEncodedLength(value.bytes, value.offset, value.length);
                 char[] encoded = new char[encodedLength];
                 IndexableBinaryStringTools.encode(value.bytes, value.offset, value.length, encoded, 0, encodedLength);
                 return new String(encoded, 0, encodedLength);
-            }
-
-            @Override
-            public long parseLong(String value, boolean roundUp, LongSupplier now) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public double parseDouble(String value, boolean roundUp, LongSupplier now) {
-                throw new UnsupportedOperationException();
             }
 
             @Override
@@ -219,217 +206,260 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
                 return new BytesRef(decoded);
             }
         };
+
+        @Override
+        public DocValueFormat docValueFormat(final String format, final ZoneId timeZone) {
+            return COLLATE_FORMAT;
+        }
+
     }
 
-    public static class Builder extends FieldMapper.Builder<Builder> {
-        private Settings.Builder settingsBuilder;
-        protected String nullValue;
+    private static IcuCollationKeyFieldMapper toType(FieldMapper in) {
+        return (IcuCollationKeyFieldMapper) in;
+    }
+    
+    public static class Builder extends FieldMapper.Builder {
+
+        final Parameter<Boolean> indexed = Parameter.indexParam(m -> toType(m).indexed, true);
+        final Parameter<Boolean> hasDocValues = Parameter.docValuesParam(m -> toType(m).hasDocValues, true);
+        final Parameter<Boolean> stored = Parameter.storeParam(m -> toType(m).fieldType.stored(), false);
+
+        final Parameter<String> indexOptions
+            = Parameter.restrictedStringParam("index_options", false, m -> toType(m).indexOptions, "docs", "freqs");
+        final Parameter<Boolean> hasNorms = TextParams.norms(false, m -> !toType(m).fieldType.omitNorms());
+
+        final Parameter<Map<String, String>> meta = Parameter.metaParam();
+
+        final Parameter<String> rules
+            = Parameter.stringParam("rules", false, m -> toType(m).params.rules, null).acceptsNull();
+        final Parameter<String> language
+            = Parameter.stringParam("language", false, m -> toType(m).params.language, null).acceptsNull();
+        final Parameter<String> country
+            = Parameter.stringParam("country", false, m -> toType(m).params.country, null).acceptsNull();
+        final Parameter<String> variant
+            = Parameter.stringParam("variant", false, m -> toType(m).params.variant, null).acceptsNull();
+        final Parameter<String> strength
+            = Parameter.stringParam("strength", false, m -> toType(m).params.strength, null).acceptsNull();
+        final Parameter<String> decomposition
+            = Parameter.stringParam("decomposition", false, m -> toType(m).params.decomposition, null)
+                       .acceptsNull();
+        final Parameter<String> alternate
+            = Parameter.stringParam("alternate", false, m -> toType(m).params.alternate, null).acceptsNull();
+        final Parameter<Boolean> caseLevel = Parameter.boolParam("case_level", false, m -> toType(m).params.caseLevel, false);
+        final Parameter<String> caseFirst
+            = Parameter.stringParam("case_first", false, m -> toType(m).params.caseFirst, null).acceptsNull();
+        final Parameter<Boolean> numeric = Parameter.boolParam("numeric", false, m -> toType(m).params.numeric, false);
+        final Parameter<String> variableTop
+            = Parameter.stringParam("variable_top", false, m -> toType(m).params.variableTop, null).acceptsNull();
+        final Parameter<Boolean> hiraganaQuaternaryMode
+            = Parameter.boolParam("hiragana_quaternary_mode", false, m -> toType(m).params.hiraganaQuaternaryMode, false).acceptsNull();
+
+
+        final Parameter<Integer> ignoreAbove
+            = Parameter.intParam("ignore_above", true, m -> toType(m).ignoreAbove, Integer.MAX_VALUE)
+                       .setValidator(v -> {
+                           if (v < 0) {
+                               throw new IllegalArgumentException("[ignore_above] must be positive, got [" + v + "]");
+                           }
+                       });
+        final Parameter<String> nullValue
+            = Parameter.stringParam("null_value", false, m -> toType(m).nullValue, null).acceptsNull();
 
         public Builder(String name) {
-            super(name, FIELD_TYPE);
-            builder = this;
-            this.settingsBuilder = Settings.builder();
+            super(name);
+        }
+
+        Builder nullValue(String nullValue) {
+            this.nullValue.setValue(nullValue);
+            return this;
+        }
+
+        Builder ignoreAbove(int ignoreAbove) {
+            this.ignoreAbove.setValue(ignoreAbove);
+            return this;
         }
 
         @Override
-        public Builder indexOptions(IndexOptions indexOptions) {
-            if (indexOptions.compareTo(IndexOptions.DOCS_AND_FREQS) > 0) {
-                throw new IllegalArgumentException("The [" + CONTENT_TYPE + "] field does not support positions, got [index_options]="
-                    + indexOptionToString(indexOptions));
-            }
-            return super.indexOptions(indexOptions);
+        protected List<Parameter<?>> getParameters() {
+            return Arrays.asList(indexed, hasDocValues, stored, indexOptions, hasNorms,
+                                 rules, language, country, variant, strength, decomposition, alternate,
+                                 caseLevel, caseFirst, numeric, variableTop, hiraganaQuaternaryMode,
+                                 ignoreAbove, nullValue, meta);
         }
 
-        public String rules() {
-            return settingsBuilder.get("rules");
+        private CollatorParams collatorParams() {
+            CollatorParams params = new CollatorParams();
+            params.rules = rules.getValue();
+            params.language = language.getValue();
+            params.country = country.getValue();
+            params.variant = variant.getValue();
+            params.strength = strength.getValue();
+            params.decomposition = decomposition.getValue();
+            params.alternate = alternate.getValue();
+            params.caseLevel = caseLevel.getValue();
+            params.caseFirst = caseFirst.getValue();
+            params.numeric = numeric.getValue();
+            params.variableTop = variableTop.getValue();
+            params.hiraganaQuaternaryMode = hiraganaQuaternaryMode.getValue();
+            return params;
         }
 
-        public Builder rules(final String rules) {
-            settingsBuilder.put("rules", rules);
-            return this;
+        private FieldType buildFieldType() {
+            FieldType ft = new FieldType();
+            ft.setTokenized(false);
+            ft.setOmitNorms(hasNorms.getValue() == false);
+            ft.setIndexOptions(TextParams.toIndexOptions(indexed.getValue(), indexOptions.getValue()));
+            ft.setStored(stored.getValue());
+            return ft;
         }
+        @Override
+        public IcuCollationKeyFieldMapper build(ContentPath contentPath) {
+            final CollatorParams params = collatorParams();
+            final Collator collator = params.buildCollator();
+            CollationFieldType ft = new CollationFieldType(buildFullName(contentPath), indexed.getValue(),
+                                                           stored.getValue(), hasDocValues.getValue(), collator, nullValue.getValue(), ignoreAbove.getValue(),
+                                                           meta.getValue());
+            return new IcuCollationKeyFieldMapper(name, buildFieldType(), ft,
+                                                      multiFieldsBuilder.build(this, contentPath), copyTo.build(), collator, this);
+        }
+    }
 
-        public String language() {
-            return settingsBuilder.get("language");
-        }
+    public static final TypeParser PARSER = new TypeParser((n, c) -> new Builder(n));
 
-        public Builder language(final String language) {
-            settingsBuilder.put("language", language);
-            return this;
-        }
-
-        public String country() {
-            return settingsBuilder.get("country");
-        }
-
-        public Builder country(final String country) {
-            settingsBuilder.put("country", country);
-            return this;
-        }
-
-        public String variant() {
-            return settingsBuilder.get("variant");
-        }
-
-        public Builder variant(final String variant) {
-            settingsBuilder.put("variant", variant);
-            return this;
-        }
-
-        public String strength() {
-            return settingsBuilder.get("strength");
-        }
-
-        public Builder strength(final String strength) {
-            settingsBuilder.put("strength", strength);
-            return this;
-        }
-
-        public String decomposition() {
-            return settingsBuilder.get("decomposition");
-        }
-
-        public Builder decomposition(final String decomposition) {
-            settingsBuilder.put("decomposition", decomposition);
-            return this;
-        }
-
-        public String alternate() {
-            return settingsBuilder.get("alternate");
-        }
-
-        public Builder alternate(final String alternate) {
-            settingsBuilder.put("alternate", alternate);
-            return this;
-        }
-
-        public boolean caseLevel() {
-            return settingsBuilder.get("case_level") != null && Boolean.parseBoolean(settingsBuilder.get("case_level"));
-        }
-
-        public Builder caseLevel(final boolean caseLevel) {
-            settingsBuilder.put("case_level", caseLevel);
-            return this;
-        }
-
-        public String caseFirst() {
-            return settingsBuilder.get("case_first");
-        }
-
-        public Builder caseFirst(final String caseFirst) {
-            settingsBuilder.put("case_first", caseFirst);
-            return this;
-        }
-
-        public boolean numeric() {
-            return settingsBuilder.get("numeric") != null && Boolean.parseBoolean(settingsBuilder.get("numeric"));
-        }
-
-        public Builder numeric(final boolean numeric) {
-            settingsBuilder.put("numeric", numeric);
-            return this;
-        }
-
-        public Builder nullValue(String nullValue) {
-            this.nullValue = nullValue;
-            return this;
-        }
+    private static class CollatorParams {
+        private String rules;
+        private String language;
+        private String country;
+        private String variant;
+        private String strength;
+        private String decomposition;
+        private String alternate;
+        private boolean caseLevel;
+        private String caseFirst;
+        private boolean numeric;
+        private String variableTop;
+        private boolean hiraganaQuaternaryMode;
 
         public Collator buildCollator() {
-            return IcuCollationKeyAnalyzerProvider.createCollator(settingsBuilder.build());
-        }
-
-        @Override
-        public IcuCollationKeyFieldMapper build(BuilderContext context) {
-            final Collator collator = buildCollator();
-            CollationFieldType ft = new CollationFieldType(buildFullName(context), indexed, hasDocValues, collator, meta);
-            return new IcuCollationKeyFieldMapper(name, fieldType, ft,
-                multiFieldsBuilder.build(this, context), copyTo, settingsBuilder.build(), collator, nullValue);
-        }
-    }
-
-    public static class TypeParser implements Mapper.TypeParser {
-        @Override
-        public Mapper.Builder<?> parse(String name, Map<String, Object> node, ParserContext parserContext)
-            throws MapperParsingException {
-            Builder builder = new Builder(name);
-            TypeParsers.parseField(builder, name, node, parserContext);
-            for (Iterator<Map.Entry<String, Object>> iterator = node.entrySet().iterator(); iterator.hasNext(); ) {
-                Map.Entry<String, Object> entry = iterator.next();
-                String fieldName = entry.getKey();
-                Object fieldNode = entry.getValue();
-                switch (fieldName) {
-                    case "null_value":
-                        if (fieldNode == null) {
-                            throw new MapperParsingException("property [null_value] cannot be null");
+            Collator collator;
+            if (rules != null) {
+                try {
+                    collator = new RuleBasedCollator(rules);
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("Failed to parse collation rules", e);
+                }
+            } else {
+                if (language != null) {
+                    ULocale locale;
+                    if (country != null) {
+                        if (variant != null) {
+                            locale = new ULocale(language, country, variant);
+                        } else {
+                            locale = new ULocale(language, country);
                         }
-                        builder.nullValue(fieldNode.toString());
-                        iterator.remove();
-                        break;
-                    case "norms":
-                        builder.omitNorms(!XContentMapValues.nodeBooleanValue(fieldNode));
-                        iterator.remove();
-                        break;
-                    case "rules":
-                        builder.rules(XContentMapValues.nodeStringValue(fieldNode, null));
-                        iterator.remove();
-                        break;
-                    case "language":
-                        builder.language(XContentMapValues.nodeStringValue(fieldNode, null));
-                        iterator.remove();
-                        break;
-                    case "country":
-                        builder.country(XContentMapValues.nodeStringValue(fieldNode, null));
-                        iterator.remove();
-                        break;
-                    case "variant":
-                        builder.variant(XContentMapValues.nodeStringValue(fieldNode, null));
-                        iterator.remove();
-                        break;
-                    case "strength":
-                        builder.strength(XContentMapValues.nodeStringValue(fieldNode, null));
-                        iterator.remove();
-                        break;
-                    case "decomposition":
-                        builder.decomposition(XContentMapValues.nodeStringValue(fieldNode, null));
-                        iterator.remove();
-                        break;
-                    case "alternate":
-                        builder.alternate(XContentMapValues.nodeStringValue(fieldNode, null));
-                        iterator.remove();
-                        break;
-                    case "case_level":
-                        builder.caseLevel(XContentMapValues.nodeBooleanValue(fieldNode));
-                        iterator.remove();
-                        break;
-                    case "case_first":
-                        builder.caseFirst(XContentMapValues.nodeStringValue(fieldNode, null));
-                        iterator.remove();
-                        break;
-                    case "numeric":
-                        builder.numeric(XContentMapValues.nodeBooleanValue(fieldNode));
-                        iterator.remove();
-                        break;
-                    default:
-                        break;
+                    } else {
+                        locale = new ULocale(language);
+                    }
+                    collator = Collator.getInstance(locale);
+                } else {
+                    collator = Collator.getInstance(ULocale.ROOT);
                 }
             }
-            return builder;
+
+            // set the strength flag, otherwise it will be the default.
+            if (strength != null) {
+                if (strength.equalsIgnoreCase("primary")) {
+                    collator.setStrength(Collator.PRIMARY);
+                } else if (strength.equalsIgnoreCase("secondary")) {
+                    collator.setStrength(Collator.SECONDARY);
+                } else if (strength.equalsIgnoreCase("tertiary")) {
+                    collator.setStrength(Collator.TERTIARY);
+                } else if (strength.equalsIgnoreCase("quaternary")) {
+                    collator.setStrength(Collator.QUATERNARY);
+                } else if (strength.equalsIgnoreCase("identical")) {
+                    collator.setStrength(Collator.IDENTICAL);
+                } else {
+                    throw new IllegalArgumentException("Invalid strength: " + strength);
+                }
+            }
+
+            // set the decomposition flag, otherwise it will be the default.
+            if (decomposition != null) {
+                if (decomposition.equalsIgnoreCase("no")) {
+                    collator.setDecomposition(Collator.NO_DECOMPOSITION);
+                } else if (decomposition.equalsIgnoreCase("canonical")) {
+                    collator.setDecomposition(Collator.CANONICAL_DECOMPOSITION);
+                } else {
+                    throw new IllegalArgumentException("Invalid decomposition: " + decomposition);
+                }
+            }
+
+            // expert options: concrete subclasses are always a RuleBasedCollator
+            RuleBasedCollator rbc = (RuleBasedCollator) collator;
+            if (alternate != null) {
+                if (alternate.equalsIgnoreCase("shifted")) {
+                    rbc.setAlternateHandlingShifted(true);
+                } else if (alternate.equalsIgnoreCase("non-ignorable")) {
+                    rbc.setAlternateHandlingShifted(false);
+                } else {
+                    throw new IllegalArgumentException("Invalid alternate: " + alternate);
+                }
+            }
+
+            if (caseLevel) {
+                rbc.setCaseLevel(true);
+            }
+
+            if (caseFirst != null) {
+                if (caseFirst.equalsIgnoreCase("lower")) {
+                    rbc.setLowerCaseFirst(true);
+                } else if (caseFirst.equalsIgnoreCase("upper")) {
+                    rbc.setUpperCaseFirst(true);
+                } else {
+                    throw new IllegalArgumentException("Invalid caseFirst: " + caseFirst);
+                }
+            }
+
+            if (numeric) {
+                rbc.setNumericCollation(true);
+            }
+
+            if (variableTop != null) {
+                rbc.setVariableTop(variableTop);
+            }
+
+            if (hiraganaQuaternaryMode) {
+                rbc.setHiraganaQuaternary(true);
+            }
+
+            // freeze so thread-safe
+            return collator.freeze();
         }
     }
 
-    private final Settings collatorSettings;
+    private final int ignoreAbove;
     private final Collator collator;
+    private final CollatorParams params;
     private final String nullValue;
+    private final FieldType fieldType;
+    private final boolean indexed;
+    private final boolean hasDocValues;
+    private final String indexOptions;
 
-    protected IcuCollationKeyFieldMapper(String simpleName, FieldType fieldType, MappedFieldType defaultFieldType,
-                                         MultiFields multiFields,
-                                         CopyTo copyTo, Settings collatorSettings, Collator collator, String nullValue) {
-        super(simpleName, fieldType, defaultFieldType, multiFields, copyTo);
+    protected IcuCollationKeyFieldMapper(String simpleName, FieldType fieldType,
+                                             MappedFieldType mappedFieldType,
+                                             MultiFields multiFields, CopyTo copyTo,
+                                             Collator collator, Builder builder) {
+        super(simpleName, mappedFieldType, Lucene.KEYWORD_ANALYZER, multiFields, copyTo);
         assert collator.isFrozen();
-        this.collatorSettings = collatorSettings;
+        this.fieldType = fieldType;
+        this.params = builder.collatorParams();
+        this.ignoreAbove = builder.ignoreAbove.getValue();
         this.collator = collator;
-        this.nullValue = nullValue;
+        this.nullValue = builder.nullValue.getValue();
+        this.indexed = builder.indexed.getValue();
+        this.hasDocValues = builder.hasDocValues.getValue();
+        this.indexOptions = builder.indexOptions.getValue();
     }
 
     @Override
@@ -443,86 +473,8 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
     }
 
     @Override
-    protected void mergeOptions(FieldMapper other, List<String> conflicts) {
-        IcuCollationKeyFieldMapper icuMergeWith = (IcuCollationKeyFieldMapper) other;
-        if (!Objects.equals(collator, icuMergeWith.collator)) {
-            conflicts.add("mapper [" + name() + "] has different [collator]");
-        }
-        if (!Objects.equals(collatorSettings.get("rules"), icuMergeWith.collatorSettings.get("rules"))) {
-            conflicts.add("Cannot update rules setting for [" + CONTENT_TYPE + "]");
-        }
-        if (!Objects.equals(collatorSettings.get("language"), icuMergeWith.collatorSettings.get("language"))) {
-            conflicts.add("Cannot update language setting for [" + CONTENT_TYPE + "]");
-        }
-        if (!Objects.equals(collatorSettings.get("country"), icuMergeWith.collatorSettings.get("country"))) {
-            conflicts.add("Cannot update country setting for [" + CONTENT_TYPE + "]");
-        }
-        if (!Objects.equals(collatorSettings.get("variant"), icuMergeWith.collatorSettings.get("variant"))) {
-            conflicts.add("Cannot update variant setting for [" + CONTENT_TYPE + "]");
-        }
-        if (!Objects.equals(collatorSettings.get("strength"), icuMergeWith.collatorSettings.get("strength"))) {
-            conflicts.add("Cannot update strength setting for [" + CONTENT_TYPE + "]");
-        }
-        if (!Objects.equals(collatorSettings.get("decomposition"), icuMergeWith.collatorSettings.get("decomposition"))) {
-            conflicts.add("Cannot update decomposition setting for [" + CONTENT_TYPE + "]");
-        }
-        if (!Objects.equals(collatorSettings.get("alternate"), icuMergeWith.collatorSettings.get("alternate"))) {
-            conflicts.add("Cannot update alternate setting for [" + CONTENT_TYPE + "]");
-        }
-        if (collatorSettings.getAsBoolean("case_level", true) != icuMergeWith.collatorSettings.getAsBoolean("case_level", true)) {
-            conflicts.add("Cannot update case_level setting for [" + CONTENT_TYPE + "]");
-        }
-        if (!Objects.equals(collatorSettings.get("case_first"), icuMergeWith.collatorSettings.get("case_first"))) {
-            conflicts.add("Cannot update case_first setting for [" + CONTENT_TYPE + "]");
-        }
-        if (collatorSettings.getAsBoolean("numeric", true) != icuMergeWith.collatorSettings.getAsBoolean("numeric", true)) {
-            conflicts.add("Cannot update numeric setting for [" + CONTENT_TYPE + "]");
-        }
-    }
-
-
-    @Override
-    protected void doXContentBody(XContentBuilder builder, boolean includeDefaults, Params params) throws IOException {
-        super.doXContentBody(builder, includeDefaults, params);
-        if (fieldType.indexOptions() != IndexOptions.NONE && (includeDefaults || fieldType.indexOptions() != IndexOptions.DOCS)) {
-            builder.field("index_options", indexOptionToString(fieldType.indexOptions()));
-        }
-        if (nullValue != null) {
-            builder.field("null_value", nullValue);
-        }
-        if (includeDefaults || fieldType.omitNorms() != KeywordFieldMapper.Defaults.FIELD_TYPE.omitNorms()) {
-            builder.field("norms", fieldType.omitNorms() == false);
-        }
-        if (includeDefaults) {
-            builder.field("rules", collatorSettings.get("rules"));
-        }
-        if (includeDefaults) {
-            builder.field("language", collatorSettings.get("language"));
-        }
-        if (includeDefaults) {
-            builder.field("country", collatorSettings.get("country"));
-        }
-        if (includeDefaults) {
-            builder.field("variant", collatorSettings.get("variant"));
-        }
-        if (includeDefaults) {
-            builder.field("strength", collatorSettings.get("strength"));
-        }
-        if (includeDefaults) {
-            builder.field("decomposition", collatorSettings.get("decomposition"));
-        }
-        if (includeDefaults) {
-            builder.field("alternate", collatorSettings.get("alternate"));
-        }
-        if (includeDefaults) {
-            builder.field("case_level", collatorSettings.getAsBoolean("case_level", false));
-        }
-        if (includeDefaults) {
-            builder.field("case_first", collatorSettings.get("case_first"));
-        }
-        if (includeDefaults) {
-            builder.field("numeric", collatorSettings.getAsBoolean("numeric", false));
-        }
+    public FieldMapper.Builder getMergeBuilder() {
+        return new Builder(simpleName()).init(this);
     }
 
     @Override
@@ -538,16 +490,20 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
                 value = parser.textOrNull();
             }
         }
-        if (value == null) {
+
+        if (value == null || value.length() > ignoreAbove) {
             return;
         }
+
         RawCollationKey key = collator.getRawCollationKey(value, null);
         final BytesRef binaryValue = new BytesRef(key.bytes, 0, key.size);
+
         if (fieldType.indexOptions() != IndexOptions.NONE || fieldType.stored()) {
             Field field = new Field(mappedFieldType.name(), binaryValue, fieldType);
             context.doc().add(field);
         }
-        if (fieldType().hasDocValues()) {
+
+        if (hasDocValues) {
             context.doc().add(new SortedSetDocValuesField(fieldType().name(), binaryValue));
         } else if (fieldType.indexOptions() != IndexOptions.NONE || fieldType.stored()) {
             createFieldNamesField(context);

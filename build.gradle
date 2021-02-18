@@ -16,6 +16,7 @@ plugins {
     id "io.codearte.nexus-staging" version "0.21.1"
     id "org.xbib.gradle.plugin.jflex" version "1.4.0"
     id "org.xbib.gradle.plugin.asciidoctor" version "1.5.6.0.1"
+    id 'checkstyle'
 }
 
 apply plugin: 'java-library'
@@ -222,11 +223,13 @@ asciidoctor {
 
 checkstyleMain.source = 'src/main/java'
 // we use @Ignore
-forbiddenApisTest.enabled = false
-forbiddenPatterns.exclude('**/*.txt', '**/*.brk', '**/*.fst', '**/*.tree', '**/*.nrm')
-licenseHeaders.enabled = false
-dependencyLicenses.enabled = false
-thirdPartyAudit.enabled = false
-loggerUsageCheck.enabled = false
-testingConventions.enabled = false
+//forbiddenApisTest.enabled = false
+//tasks.named("forbiddenPatterns").configure {
+//	exclude('**/*.txt', '**/*.brk', '**/*.fst', '**/*.tree', '**/*.nrm')
+//}
+//licenseHeaders.enabled = false
+//dependencyLicenses.enabled = false
+//thirdPartyAudit.enabled = false
+//loggerUsageCheck.enabled = false
+//testingConventions.enabled = false
 validateNebulaPom.enabled = false
