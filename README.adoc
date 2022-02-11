@@ -7,6 +7,8 @@ image:https://img.shields.io/badge/License-Apache%202.0-blue.svg[title="Apache L
 image:https://img.shields.io/twitter/url/https/twitter.com/xbib.svg?style=social&label=Follow%20%40xbib[title="Twitter", link="https://twitter.com/xbib"]
 image:https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif[title="PayPal", link="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GVHFQYZ9WZ8HG"]
 
+IMPORTANT: Because this Elasticsearch plugin is licensed under AGPL 3.0 which is not compatible to SSPL or Elastic License 2.0, the last version supported is Elasticsearch 7.10.2. Sorry for inconvenience and thank you for your understanding.
+
 This plugin is the combination of the following plugins:
 
 - elasticsearch-analysis-autophrase
