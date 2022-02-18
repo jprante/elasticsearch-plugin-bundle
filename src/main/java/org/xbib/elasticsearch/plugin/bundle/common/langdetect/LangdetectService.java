@@ -111,7 +111,6 @@ public class LangdetectService {
     private static final Pattern word = Pattern.compile("[\\P{IsWord}]", Pattern.UNICODE_CHARACTER_CLASS);
 
     private static final Settings DEFAULT_SETTINGS = Settings.builder()
-            .putList("languages", DEFAULT_LANGUAGES)
             .putList("languages_short_text", DEFAULT_LANGUAGES_SHORT_TEXT)
             .build();
 
@@ -170,7 +169,7 @@ public class LangdetectService {
             return;
         }
         List<String> keys = "shorttext".equals(profile) ?
-                settings.getAsList("languages_short_text", Arrays.asList(DEFAULT_LANGUAGES_SHORT_TEXT)) :
+                settings.getAsList("languages_short_text", settings.getAsList("languages", Arrays.asList(DEFAULT_LANGUAGES_SHORT_TEXT))) :
                 settings.getAsList("languages", Arrays.asList(DEFAULT_LANGUAGES));
         int index = 0;
         int size = keys.size();
