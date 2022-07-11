@@ -220,7 +220,7 @@ asciidoctor {
             'source-highlighter': 'coderay'
 }
 
-checkstyleMain.source = 'src/main/java'
+//checkstyleMain.source = 'src/main/java'
 // we use @Ignore
 forbiddenApisTest.enabled = false
 forbiddenPatterns.exclude('**/*.txt', '**/*.brk', '**/*.fst', '**/*.tree', '**/*.nrm')
