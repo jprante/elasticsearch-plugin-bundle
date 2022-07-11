@@ -1,4 +1,4 @@
-= ICU Analysis for Elasticsearch
+= ICU Analysis for Opensearch
 Jörg Prante
 Version 1.0
 :sectnums:
@@ -6,16 +6,16 @@ Version 1.0
 :toclevels: 4
 :!toc-title: Content
 :experimental:
-:description: ICU analysis for Elasticsearch
-:keywords: Elasticsearch, Plugin, ICU analysis
+:description: ICU analysis for Opensearch
+:keywords: Opensearch, Plugin, ICU analysis
 :icons: font
 
 This International Components for Unicode (ICU) analysis plugin adds
-support for ICU 58.2 to Elasticsearch.
+support for ICU 58.2 to Opensearch.
 
 ICU 58.2 supports Unicode 9.0 and CLDR 30.0.2.
 
-It is a drop-in replacement for the mainline Elasticsearch ICU plugin and extends
+It is a drop-in replacement for the mainline Opensearch ICU plugin and extends
 it by new features and options. There is no dependency on Lucene ICU, the
 functionality is included in this plugin as well.
 
@@ -30,7 +30,7 @@ http://unicode.org/reports/tr29/
 The specification determines default segmentation boundaries between certain significant text elements:
 grapheme clusters (“user-perceived characters”), words, and sentences.
 
-The default (non-ICU) tokenization of Elasticearch follows UAX#29.
+The default (non-ICU) tokenization of Opensearch follows UAX#29.
 
 The ICU tokenzation, as implemented by `icu_tokenizer`, adds some
 features as described in http://userguide.icu-project.org/boundaryanalysis
@@ -554,7 +554,7 @@ to ensure a fully folded and normalized result.
 ICU uses binary encoded files prepared by the program `gennorm2` to perform character foldings.
 The input to `gennorm2` is a list of `txt` files specifying the foldings.
 
-For the Elasticsearch ICU plugin, the files `nfc.txt`, `nfkc.txt`, and `nfkc_cf.txt`
+For the Opensearch ICU plugin, the files `nfc.txt`, `nfkc.txt`, and `nfkc_cf.txt`
 are downloaded from
 
 - http://source.icu-project.org/repos/icu/icu/tags/release-58-1/source/data/unidata/norm2/nfc.txt
@@ -562,14 +562,14 @@ are downloaded from
 - http://source.icu-project.org/repos/icu/icu/tags/release-58-1/source/data/unidata/norm2/nfkc_cf.txt
 
 There is a download tool which is not exposed  for API use,
-see `org.xbib.elasticsearch.index.analysis.icu.tools.UTR30DataFileGenerator`
+see `org.xbib.opensearch.index.analysis.icu.tools.UTR30DataFileGenerator`
 
 Together with the files `BasicFoldings.txt`, `DiacriticFolding.txt`, `DingbatFolding.txt`,
 `HanRadicalFolding.txt`, and `NativeDigitFolding.txt` they are used on Fedora Linux 25 as input for the program
 `gennorm2` as provided under http://download.icu-project.org/files/icu4c/58.2/icu4c-58_2-Fedora25-x64.tgz
 
 The output file is named `utr30.nrm` and included in this plugin, being configured as the default folding
-for the Elasticsearch char/token filter `icu_folding`.
+for the Opensearch char/token filter `icu_folding`.
 
 As to this time, there is only this one folding as specified by `utr30.nrm` configured in the plugin,
 but it is possible to add other foldings as well in future versions.

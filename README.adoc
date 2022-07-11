@@ -1,4 +1,4 @@
-# A plugin bundle for Elastisearch
+# A plugin bundle for Opensearch
 
 image:https://api.travis-ci.org/jprante/elasticsearch-plugin-bundle.svg[title="Build status", link="https://travis-ci.org/jprante/elasticsearch-plugin-bundle/"]
 image:https://img.shields.io/sonar/http/nemo.sonarqube.com/org.xbib.elasticsearch.plugin%3Aelasticsearch-plugin-bundle/coverage.svg?style=flat-square[title="Coverage", link="https://sonarqube.com/dashboard/index?id=org.xbib.elasticsearch.plugin%3Aelasticsearch-plugin-bundle"]
@@ -9,22 +9,22 @@ image:https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif[title="PayPa
 
 This plugin is the combination of the following plugins:
 
-- elasticsearch-analysis-autophrase
-- elasticsearch-analysis-baseform
-- elasticsearch-analysis-concat
-- elasticsearch-analysis-decompound
-- elasticsearch-analysis-german
-- elasticsearch-analysis-hyphen
-- elasticsearch-analysis-icu
-- elasticsearch-analysis-naturalsort
-- elasticsearch-analysis-reference
-- elasticsearch-analysis-sortform
-- elasticsearch-analysis-standardnumber
-- elasticsearch-analysis-symbolname
-- elasticsearch-analysis-worddelimiter
-- elasticsearch-analysis-year
-- elasticsearch-mapper-crypt
-- elasticsearch-mapper-langdetect
+- opensearch-analysis-autophrase
+- opensearch-analysis-baseform
+- opensearch-analysis-concat
+- opensearch-analysis-decompound
+- opensearch-analysis-german
+- opensearch-analysis-hyphen
+- opensearch-analysis-icu
+- opensearch-analysis-naturalsort
+- opensearch-analysis-reference
+- opensearch-analysis-sortform
+- opensearch-analysis-standardnumber
+- opensearch-analysis-symbolname
+- opensearch-analysis-worddelimiter
+- opensearch-analysis-year
+- opensearch-mapper-crypt
+- opensearch-mapper-langdetect
 
 The plugin code in each plugin is equivalent to the code in this combined bundle plugin.
 
