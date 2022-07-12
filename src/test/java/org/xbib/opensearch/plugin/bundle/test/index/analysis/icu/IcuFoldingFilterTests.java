@@ -14,6 +14,7 @@ import java.io.StringReader;
 /**
  * ICU folding filter tests.
  */
+@SuppressWarnings("InvisibleCharacter")
 public class IcuFoldingFilterTests extends OpenSearchTokenStreamTestCase {
 
     public void testFoldingCharFilter() throws Exception {
