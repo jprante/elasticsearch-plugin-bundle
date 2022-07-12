@@ -4,10 +4,10 @@ import org.apache.lucene.store.InputStreamDataInput;
 import org.apache.lucene.util.IntsRef;
 import org.apache.lucene.util.IntsRefBuilder;
 import org.apache.lucene.util.UnicodeUtil;
-import org.apache.lucene.util.fst.Builder;
 import org.apache.lucene.util.fst.FST;
 import org.apache.lucene.util.fst.FST.BytesReader;
 import org.apache.lucene.util.fst.FST.INPUT_TYPE;
+import org.apache.lucene.util.fst.FSTCompiler;
 import org.apache.lucene.util.fst.NoOutputs;
 
 import java.io.IOException;
@@ -58,14 +58,14 @@ public class FstDecompounder {
             glue.set(i, new StringBuilder(glue.get(i)).reverse().toString());
         }
         Collections.sort(glue);
-        final Builder<Object> builder = new Builder<>(INPUT_TYPE.BYTE4, NoOutputs.getSingleton());
+        final FSTCompiler<Object> fstCompiler = new FSTCompiler<>(INPUT_TYPE.BYTE4, NoOutputs.getSingleton());
         final Object nothing = NoOutputs.getSingleton().getNoOutput();
         IntsRefBuilder intsBuilder = new IntsRefBuilder();
         for (String morpheme : glue) {
             fromUTF16ToUTF32(morpheme, intsBuilder);
-            builder.add(intsBuilder.get(), nothing);
+            fstCompiler.add(intsBuilder.get(), nothing);
         }
-        return builder.finish();
+        return fstCompiler.compile();
     }
 
     public List<String> decompound(String word) {

@@ -1,5 +1,13 @@
 package org.xbib.opensearch.plugin.bundle.common.fst;
 
+import org.apache.lucene.store.OutputStreamDataOutput;
+import org.apache.lucene.util.BytesRef;
+import org.apache.lucene.util.IntsRefBuilder;
+import org.apache.lucene.util.fst.FST;
+import org.apache.lucene.util.fst.FST.INPUT_TYPE;
+import org.apache.lucene.util.fst.FSTCompiler;
+import org.apache.lucene.util.fst.NoOutputs;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,14 +18,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.regex.Pattern;
-
-import org.apache.lucene.store.OutputStreamDataOutput;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.IntsRefBuilder;
-import org.apache.lucene.util.fst.Builder;
-import org.apache.lucene.util.fst.FST;
-import org.apache.lucene.util.fst.FST.INPUT_TYPE;
-import org.apache.lucene.util.fst.NoOutputs;
 
 
 /**
@@ -67,14 +67,14 @@ public class FstCompiler {
         words.toArray(all);
         Arrays.sort(all, BytesRef::compareTo);
         final Object nothing = NoOutputs.getSingleton().getNoOutput();
-        final Builder<Object> builder = new Builder<>(INPUT_TYPE.BYTE4, NoOutputs.getSingleton());
+        final FSTCompiler<Object> fstCompiler = new FSTCompiler<>(INPUT_TYPE.BYTE4, NoOutputs.getSingleton());
         final IntsRefBuilder intsRef = new IntsRefBuilder();
         for (BytesRef bytesRef : all) {
             intsRef.clear();
             intsRef.copyUTF8Bytes(bytesRef);
-            builder.add(intsRef.get(), nothing);
+            fstCompiler.add(intsRef.get(), nothing);
         }
-        final FST<Object> fst = builder.finish();
+        final FST<Object> fst = fstCompiler.compile();
         try (OutputStreamDataOutput out = new OutputStreamDataOutput(outputStream)) {
             fst.save(out, out);
         }

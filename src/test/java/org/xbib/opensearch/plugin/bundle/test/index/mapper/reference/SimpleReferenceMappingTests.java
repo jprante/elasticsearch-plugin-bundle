@@ -41,9 +41,9 @@ public class SimpleReferenceMappingTests extends OpenSearchSingleNodeTestCase {
         }
         client().admin().indices().prepareCreate("ref")
                 .setSettings(copyToStringFromClasspath("ref-simple-settings.json"), XContentType.JSON)
-                .addMapping("ref", copyToStringFromClasspath("ref-simple-mapping.json"), XContentType.JSON)
+                .setMapping(copyToStringFromClasspath("ref-simple-mapping.json"))
                 .execute().actionGet();
-        client().prepareIndex("ref", "ref", "1")
+        client().prepareIndex("ref").setId("1")
                 .setSource(copyToStringFromClasspath("ref-simple-document.json"), XContentType.JSON)
                 .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).execute().actionGet();
 
@@ -54,9 +54,9 @@ public class SimpleReferenceMappingTests extends OpenSearchSingleNodeTestCase {
         }
         client().admin().indices().prepareCreate("doc")
                 .setSettings(copyToStringFromClasspath("doc-simple-settings.json"), XContentType.JSON)
-                .addMapping("doc", copyToStringFromClasspath("doc-simple-mapping.json"), XContentType.JSON)
+                .setMapping(copyToStringFromClasspath("doc-simple-mapping.json"))
                 .execute().actionGet();
-        client().prepareIndex("doc", "doc", "1")
+        client().prepareIndex("doc").setId("1")
                 .setSource(copyToStringFromClasspath("doc-simple-document.json"), XContentType.JSON)
                 .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).execute().actionGet();
 

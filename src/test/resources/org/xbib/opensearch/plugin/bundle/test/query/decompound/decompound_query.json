@@ -32,13 +32,11 @@
     }
   },
   "mappings": {
-    "_doc": {
-      "properties": {
-        "text": {
-          "type": "text",
-          "analyzer": "decomp",
-          "search_analyzer": "lowercase"
-        }
+    "properties": {
+      "text": {
+        "type": "text",
+        "analyzer": "decomp",
+        "search_analyzer": "lowercase"
       }
     }
   }

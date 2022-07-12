@@ -17,8 +17,8 @@ import org.opensearch.index.mapper.DocumentMapper;
 import org.opensearch.index.mapper.ParsedDocument;
 import org.opensearch.index.mapper.SourceToParse;
 import org.opensearch.plugins.Plugin;
-import org.opensearch.test.OpenSearchSingleNodeTestCase;
 import org.opensearch.test.InternalSettingsPlugin;
+import org.opensearch.test.OpenSearchSingleNodeTestCase;
 import org.xbib.opensearch.plugin.bundle.BundlePlugin;
 
 import java.io.InputStreamReader;
@@ -39,11 +39,11 @@ public class LangdetectMappingTests extends OpenSearchSingleNodeTestCase {
     public void testSimpleMapping() throws Exception {
         IndexService indexService = createIndex("some_index", Settings.EMPTY,
                 "someType", getMapping("simple-mapping.json"));
-        DocumentMapper docMapper = indexService.mapperService().documentMapper("someType");
+        DocumentMapper docMapper = indexService.mapperService().documentMapper();
         String sampleText = copyToStringFromClasspath("english.txt");
         BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder()
                 .startObject().field("someField", sampleText).endObject());
-        SourceToParse sourceToParse = new SourceToParse("some_index", "someType", "1", json, XContentType.JSON);
+        SourceToParse sourceToParse = new SourceToParse("some_index", "1", json, XContentType.JSON);
         ParsedDocument doc = docMapper.parse(sourceToParse);
         assertEquals(1, doc.rootDoc().getFields("someField").length);
         assertEquals("en", doc.rootDoc().getFields("someField")[0].stringValue());
@@ -52,11 +52,11 @@ public class LangdetectMappingTests extends OpenSearchSingleNodeTestCase {
     public void testBinary() throws Exception {
         IndexService indexService = createIndex("some_index", Settings.EMPTY,
                 "someType", getMapping("base64-mapping.json"));
-        DocumentMapper docMapper = indexService.mapperService().documentMapper("someType");
+        DocumentMapper docMapper = indexService.mapperService().documentMapper();
         String sampleBinary = copyToStringFromClasspath("base64.txt");
         BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder()
                 .startObject().field("someField", sampleBinary).endObject());
-        SourceToParse sourceToParse = new SourceToParse("some_index", "someType", "1", json, XContentType.JSON);
+        SourceToParse sourceToParse = new SourceToParse("some_index", "1", json, XContentType.JSON);
         ParsedDocument doc = docMapper.parse(sourceToParse);
         for (IndexableField field : doc.rootDoc().getFields()) {
             logger.info("testBinary {} = {} stored={}", field.name(), field.stringValue(), field.fieldType().stored());
@@ -74,7 +74,7 @@ public class LangdetectMappingTests extends OpenSearchSingleNodeTestCase {
         String sampleText = copyToStringFromClasspath("base64-2-decoded.txt");
         BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder().startObject()
                 .field("content", sampleText).endObject());
-        SourceToParse sourceToParse = new SourceToParse("some_index", "someType", "1", json, XContentType.JSON);
+        SourceToParse sourceToParse = new SourceToParse("some_index", "1", json, XContentType.JSON);
         ParsedDocument doc = docMapper.parse(sourceToParse);
         for (IndexableField field : doc.rootDoc().getFields()) {
             logger.info("binary2 {} = {} stored={}", field.name(), field.stringValue(), field.fieldType().stored());
@@ -89,11 +89,11 @@ public class LangdetectMappingTests extends OpenSearchSingleNodeTestCase {
                 .build();
         IndexService indexService = createIndex("some_index", settings,
                 "someType", getMapping("mapping.json"));
-        DocumentMapper docMapper = indexService.mapperService().documentMapper("someType");
+        DocumentMapper docMapper = indexService.mapperService().documentMapper();
         String sampleText = copyToStringFromClasspath("german.txt");
         BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder()
                 .startObject().field("someField", sampleText).endObject());
-        SourceToParse sourceToParse = new SourceToParse("some_index", "someType", "1", json, XContentType.JSON);
+        SourceToParse sourceToParse = new SourceToParse("some_index", "1", json, XContentType.JSON);
         ParsedDocument doc = docMapper.parse(sourceToParse);
         for (IndexableField field : doc.rootDoc().getFields()) {
             logger.info("custom {} = {} stored={}", field.name(), field.stringValue(), field.fieldType().stored());
@@ -105,11 +105,11 @@ public class LangdetectMappingTests extends OpenSearchSingleNodeTestCase {
     public void testShortTextProfile() throws Exception {
         IndexService indexService = createIndex("some_index", Settings.EMPTY,
                 "someType", getMapping("short-text-mapping.json"));
-        DocumentMapper docMapper = indexService.mapperService().documentMapper("someType");
+        DocumentMapper docMapper = indexService.mapperService().documentMapper();
         String sampleText = copyToStringFromClasspath("english.txt");
         BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder()
                 .startObject().field("someField", sampleText).endObject());
-        SourceToParse sourceToParse = new SourceToParse("some_index", "someType", "1", json, XContentType.JSON);
+        SourceToParse sourceToParse = new SourceToParse("some_index", "1", json, XContentType.JSON);
         ParsedDocument doc = docMapper.parse(sourceToParse);
         for (IndexableField field : doc.rootDoc().getFields()) {
             logger.info("shorttext {} = {} stored={}", field.name(), field.stringValue(), field.fieldType().stored());
@@ -121,11 +121,11 @@ public class LangdetectMappingTests extends OpenSearchSingleNodeTestCase {
     public void testToFields() throws Exception {
         IndexService indexService = createIndex("some_index", Settings.EMPTY,
                 "someType", getMapping("mapping-to-fields.json"));
-        DocumentMapper docMapper = indexService.mapperService().documentMapper("someType");
+        DocumentMapper docMapper = indexService.mapperService().documentMapper();
         String sampleText = copyToStringFromClasspath("english.txt");
         BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder()
                 .startObject().field("someField", sampleText).endObject());
-        SourceToParse sourceToParse = new SourceToParse("some_index", "someType", "1", json, XContentType.JSON);
+        SourceToParse sourceToParse = new SourceToParse("some_index", "1", json, XContentType.JSON);
         ParsedDocument doc = docMapper.parse(sourceToParse);
         assertEquals(1, doc.rootDoc().getFields("someField").length);
         assertEquals("en", doc.rootDoc().getFields("someField")[0].stringValue());

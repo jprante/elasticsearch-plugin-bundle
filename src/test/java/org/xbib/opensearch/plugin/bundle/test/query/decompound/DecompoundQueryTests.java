@@ -1,23 +1,13 @@
 package org.xbib.opensearch.plugin.bundle.test.query.decompound;
 
-import static org.opensearch.action.admin.cluster.node.info.NodesInfoRequest.Metric.PLUGINS;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.core.Is.is;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import org.junit.Before;
 import org.opensearch.action.admin.cluster.node.info.NodeInfo;
 import org.opensearch.action.admin.cluster.node.info.NodesInfoResponse;
 import org.opensearch.action.admin.cluster.node.info.PluginsAndModules;
 import org.opensearch.action.index.IndexRequestBuilder;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.analysis.common.CommonAnalysisPlugin;
+import org.opensearch.common.unit.TimeValue;
 import org.opensearch.common.xcontent.XContentType;
 import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.index.query.QueryStringQueryBuilder;
@@ -28,9 +18,21 @@ import org.opensearch.search.SearchHits;
 import org.opensearch.test.OpenSearchIntegTestCase;
 import org.opensearch.test.StreamsUtils;
 import org.opensearch.test.hamcrest.OpenSearchAssertions;
-import org.junit.Before;
-import org.xbib.opensearch.plugin.bundle.query.decompound.ExactPhraseQueryBuilder;
 import org.xbib.opensearch.plugin.bundle.BundlePlugin;
+import org.xbib.opensearch.plugin.bundle.query.decompound.ExactPhraseQueryBuilder;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.core.Is.is;
+import static org.opensearch.action.admin.cluster.node.info.NodesInfoRequest.Metric.PLUGINS;
+import static org.opensearch.test.hamcrest.OpenSearchAssertions.assertAcked;
 
 public class DecompoundQueryTests extends OpenSearchIntegTestCase {
 
@@ -41,10 +43,15 @@ public class DecompoundQueryTests extends OpenSearchIntegTestCase {
 
     @Before
     public void setup() throws Exception {
-        String indexBody = StreamsUtils.copyToStringFromClasspath(getClass().getClassLoader(),
-                "org/xbib/opensearch/plugin/bundle/test/query/decompound/decompound_query.json");
-        prepareCreate("test").setSource(indexBody, XContentType.JSON).get();
-        ensureGreen("test");
+        String indexSettings = StreamsUtils.copyToStringFromClasspath(
+            getClass().getClassLoader(),
+            "org/xbib/opensearch/plugin/bundle/test/query/decompound/decompound-settings.json"
+        );
+        assertAcked(prepareCreate("test")
+                        .setSettings(indexSettings, XContentType.JSON)
+                        .setMapping("text", "type=text,analyzer=decomp,search_analyzer=lowercase"));
+
+        ensureGreen(TimeValue.timeValueSeconds(30), "test");
     }
 
     public void testPluginIsLoaded() {
@@ -63,7 +70,7 @@ public class DecompoundQueryTests extends OpenSearchIntegTestCase {
 
     public void testNestedCommonPhraseQuery() throws Exception {
         List<IndexRequestBuilder> reqs = new ArrayList<>();
-        reqs.add(client().prepareIndex("test", "_doc", "1")
+        reqs.add(client().prepareIndex("test").setId("1")
                 .setSource("text", "deutsche Spielbankgesellschaft"));
         indexRandom(true, false, reqs);
 
@@ -99,7 +106,7 @@ public class DecompoundQueryTests extends OpenSearchIntegTestCase {
 
     public void testCommonPhraseQuery() throws Exception {
         List<IndexRequestBuilder> reqs = new ArrayList<>();
-        reqs.add(client().prepareIndex("test", "_doc", "1").setSource("text", "deutsche Spielbankgesellschaft"));
+        reqs.add(client().prepareIndex("test").setId("1").setSource("text", "deutsche Spielbankgesellschaft"));
         indexRandom(true, false, reqs);
         QueryStringQueryBuilder queryStringQueryBuilder = QueryBuilders.queryStringQuery("text:\"deutsche bank\"");
         SearchResponse resp = client().prepareSearch("test")

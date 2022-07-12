@@ -6,9 +6,9 @@ import org.opensearch.common.xcontent.XContentFactory;
 import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.plugins.Plugin;
 import org.opensearch.test.OpenSearchSingleNodeTestCase;
+import org.xbib.opensearch.plugin.bundle.BundlePlugin;
 import org.xbib.opensearch.plugin.bundle.action.langdetect.LangdetectRequestBuilder;
 import org.xbib.opensearch.plugin.bundle.action.langdetect.LangdetectResponse;
-import org.xbib.opensearch.plugin.bundle.BundlePlugin;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -54,33 +54,30 @@ public class LangDetectActionTests extends OpenSearchSingleNodeTestCase {
                 .build();
         client().admin().indices().prepareCreate("test")
                 .setSettings(settings)
-                .addMapping("article",
-                        XContentFactory.jsonBuilder().startObject()
-                                .startObject("article")
-                                .startObject("properties")
-                                .startObject("content")
-                                .field("type", "langdetect")
-                                .array("languages", "de", "en", "fr")
-                                .endObject()
-                                .endObject()
-                                .endObject()
-                                .endObject())
+                .setMapping(XContentFactory.jsonBuilder().startObject()
+                                           .startObject("properties")
+                                           .startObject("content")
+                                           .field("type", "langdetect")
+                                           .array("languages", "de", "en", "fr")
+                                           .endObject()
+                                           .endObject()
+                                           .endObject())
                 .execute().actionGet();
 
         client().admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
 
-        client().prepareIndex("test", "article", "1")
+        client().prepareIndex("test").setId("1")
                 .setSource(XContentFactory.jsonBuilder().startObject()
                         .field("title", "Some title")
                         .field("content", "Oh, say can you see by the dawn`s early light, " +
                                 "What so proudly we hailed at the twilight`s last gleaming?")
                         .endObject()).execute().actionGet();
-        client().prepareIndex("test", "article", "2")
+        client().prepareIndex("test").setId("2")
                 .setSource(XContentFactory.jsonBuilder().startObject()
                         .field("title", "Ein Titel")
                         .field("content", "Einigkeit und Recht und Freiheit für das deutsche Vaterland!")
                         .endObject()).execute().actionGet();
-        client().prepareIndex("test", "article", "3")
+        client().prepareIndex("test").setId("3")
                 .setSource(XContentFactory.jsonBuilder().startObject()
                         .field("title", "Un titre")
                         .field("content", "Allons enfants de la Patrie, Le jour de gloire est arrivé!")

@@ -13,8 +13,8 @@ import org.opensearch.action.support.WriteRequest;
 import org.opensearch.common.xcontent.XContentFactory;
 import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.plugins.Plugin;
-import org.opensearch.test.OpenSearchSingleNodeTestCase;
 import org.opensearch.test.InternalSettingsPlugin;
+import org.opensearch.test.OpenSearchSingleNodeTestCase;
 import org.xbib.opensearch.plugin.bundle.BundlePlugin;
 
 import java.util.Arrays;
@@ -35,7 +35,7 @@ public class LangDetectBinaryTests extends OpenSearchSingleNodeTestCase {
         try {
             CreateIndexRequestBuilder createIndexRequestBuilder =
                     new CreateIndexRequestBuilder(client(), CreateIndexAction.INSTANCE).setIndex("test");
-            createIndexRequestBuilder.addMapping("someType", XContentFactory.jsonBuilder()
+            createIndexRequestBuilder.setMapping(XContentFactory.jsonBuilder()
                     .startObject()
                     .startObject("properties")
                     .startObject("content")
@@ -51,7 +51,7 @@ public class LangDetectBinaryTests extends OpenSearchSingleNodeTestCase {
                     .endObject());
             createIndexRequestBuilder.execute().actionGet();
             IndexRequestBuilder indexRequestBuilder = new IndexRequestBuilder(client(), IndexAction.INSTANCE)
-                    .setIndex("test").setType("someType").setId("1")
+                    .setIndex("test").setId("1")
                     //\"God Save the Queen\" (alternatively \"God Save the King\"
                     .setSource("content", "IkdvZCBTYXZlIHRoZSBRdWVlbiIgKGFsdGVybmF0aXZlbHkgIkdvZCBTYXZlIHRoZSBLaW5nIg==");
             indexRequestBuilder.setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)

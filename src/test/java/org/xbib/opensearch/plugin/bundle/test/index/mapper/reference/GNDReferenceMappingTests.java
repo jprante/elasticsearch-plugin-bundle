@@ -42,22 +42,22 @@ public class GNDReferenceMappingTests extends OpenSearchSingleNodeTestCase {
             }
             client().admin().indices().prepareCreate("gnd")
                     .setSettings(copyToStringFromClasspath("gnd-settings.json"), XContentType.JSON)
-                    .addMapping("gnd", copyToStringFromClasspath("gnd-mapping.json"), XContentType.JSON)
+                    .setMapping(copyToStringFromClasspath("gnd-mapping.json"))
                     .execute().actionGet();
-            client().prepareIndex("gnd", "gnd", "11862444X")
+            client().prepareIndex("gnd").setId("11862444X")
                     .setSource(copyToStringFromClasspath("gnd-document.json"), XContentType.JSON)
                     .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                     .execute().actionGet();
 
             client().admin().indices().prepareCreate("title")
                     .setSettings(copyToStringFromClasspath("title-settings.json"), XContentType.JSON)
-                    .addMapping("title", copyToStringFromClasspath("title-mapping.json"), XContentType.JSON)
+                    .setMapping(copyToStringFromClasspath("title-mapping.json"))
                     .execute().actionGet();
-            client().prepareIndex("title", "title", "(DE-605)008427902")
+            client().prepareIndex("title").setId("(DE-605)008427902")
                     .setSource(copyToStringFromClasspath("title-document-1.json"), XContentType.JSON)
                     .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                     .execute().actionGet();
-            client().prepareIndex("title", "title", "(DE-605)017215715")
+            client().prepareIndex("title").setId("(DE-605)017215715")
                     .setSource(copyToStringFromClasspath("title-document-2.json"), XContentType.JSON)
                     .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                     .execute().actionGet();

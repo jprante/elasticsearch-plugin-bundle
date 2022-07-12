@@ -20,9 +20,9 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
-import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.BytesRef;
 import org.opensearch.common.Randomness;
 import org.opensearch.test.OpenSearchTestCase;
@@ -166,7 +166,7 @@ public class IcuCollationKeyAnalyzerTests extends OpenSearchTestCase {
     private void testFarsiRangeQueryCollating(Analyzer analyzer, BytesRef firstBeg,
                                       BytesRef firstEnd, BytesRef secondBeg,
                                       BytesRef secondEnd) throws Exception {
-        Directory dir = new RAMDirectory();
+        Directory dir = new ByteBuffersDirectory();
         IndexWriter writer = new IndexWriter(dir, new IndexWriterConfig(analyzer));
         Document doc = new Document();
 
@@ -194,7 +194,7 @@ public class IcuCollationKeyAnalyzerTests extends OpenSearchTestCase {
     private void testFarsiTermRangeQuery(Analyzer analyzer, BytesRef firstBeg,
                                  BytesRef firstEnd, BytesRef secondBeg, BytesRef secondEnd) throws Exception {
 
-        Directory farsiIndex = new RAMDirectory();
+        Directory farsiIndex = new ByteBuffersDirectory();
         IndexWriter writer = new IndexWriter(farsiIndex, new IndexWriterConfig(analyzer));
         Document doc = new Document();
         doc.add(new TextField("content", "\u0633\u0627\u0628", Field.Store.YES));

@@ -1,11 +1,9 @@
 {
-  "someType" : {
-    "properties" : {
-      "someField":{
-        "type" : "langdetect",
-        "languages": [ "en", "fr", "de", "it", "es" ],
-        "binary" : true
-      }
+  "properties" : {
+    "someField":{
+      "type" : "langdetect",
+      "languages": [ "en", "fr", "de", "it", "es" ],
+      "binary" : true
     }
   }
 }

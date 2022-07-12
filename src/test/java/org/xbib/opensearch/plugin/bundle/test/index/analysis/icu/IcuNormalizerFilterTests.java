@@ -2,9 +2,9 @@ package org.xbib.opensearch.plugin.bundle.test.index.analysis.icu;
 
 import com.ibm.icu.text.Normalizer2;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.MockTokenizer;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.KeywordTokenizer;
+import org.apache.lucene.tests.analysis.MockTokenizer;
 import org.opensearch.test.OpenSearchTokenStreamTestCase;
 import org.xbib.opensearch.plugin.bundle.index.analysis.icu.IcuNormalizerFilter;
 

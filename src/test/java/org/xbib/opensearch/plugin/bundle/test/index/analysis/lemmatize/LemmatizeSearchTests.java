@@ -34,7 +34,7 @@ public class LemmatizeSearchTests extends OpenSearchSingleNodeTestCase {
 
         client().admin().indices().prepareCreate("test")
                 .setSettings(settings)
-                .addMapping("type1", jsonBuilder().startObject()
+                .setMapping(jsonBuilder().startObject()
                         .startObject("properties")
                         .startObject("content")
                         .field("type", "text")
@@ -53,7 +53,7 @@ public class LemmatizeSearchTests extends OpenSearchSingleNodeTestCase {
         };
 
         for (String word : words) {
-            client().prepareIndex("test", "type1")
+            client().prepareIndex("test")
                     .setSource(jsonBuilder().startObject()
                             .field("content", word)
                             .endObject())

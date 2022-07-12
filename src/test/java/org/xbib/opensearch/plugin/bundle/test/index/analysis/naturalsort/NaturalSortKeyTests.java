@@ -31,8 +31,7 @@ public class NaturalSortKeyTests extends OpenSearchSingleNodeTestCase {
 
         client().admin().indices().prepareCreate("test")
                 .setSettings(settings)
-                .addMapping("type1", XContentFactory.jsonBuilder().startObject()
-                        .startObject("type1")
+                .setMapping(XContentFactory.jsonBuilder().startObject()
                         .startObject("properties")
                         .startObject("points")
                         .field("type", "text")
@@ -42,7 +41,6 @@ public class NaturalSortKeyTests extends OpenSearchSingleNodeTestCase {
                         .field("type", "text")
                         .field("analyzer", "naturalsort")
                         .field("fielddata", true)
-                        .endObject()
                         .endObject()
                         .endObject()
                         .endObject()
@@ -57,7 +55,7 @@ public class NaturalSortKeyTests extends OpenSearchSingleNodeTestCase {
         };
 
         for (String word : words) {
-            client().prepareIndex("test", "type1")
+            client().prepareIndex("test")
                     .setSource(XContentFactory.jsonBuilder().startObject()
                             .field("points", word)
                             .endObject()).execute().actionGet();
@@ -88,8 +86,7 @@ public class NaturalSortKeyTests extends OpenSearchSingleNodeTestCase {
 
         client().admin().indices().prepareCreate("test")
                 .setSettings(settings)
-                .addMapping("type1", XContentFactory.jsonBuilder().startObject()
-                        .startObject("type1")
+                .setMapping(XContentFactory.jsonBuilder().startObject()
                         .startObject("properties")
                         .startObject("points")
                         .field("type", "text")
@@ -99,7 +96,6 @@ public class NaturalSortKeyTests extends OpenSearchSingleNodeTestCase {
                         .field("type", "text")
                         .field("analyzer", "naturalsort")
                         .field("fielddata", true)
-                        .endObject()
                         .endObject()
                         .endObject()
                         .endObject()
@@ -114,7 +110,7 @@ public class NaturalSortKeyTests extends OpenSearchSingleNodeTestCase {
         };
 
         for (String word : words) {
-            client().prepareIndex("test", "type1")
+            client().prepareIndex("test")
                     .setSource(XContentFactory.jsonBuilder().startObject().field("points", word).endObject()).execute().actionGet();
         }
 
@@ -158,8 +154,7 @@ public class NaturalSortKeyTests extends OpenSearchSingleNodeTestCase {
 
         client().admin().indices().prepareCreate("test")
                 .setSettings(settings)
-                .addMapping("type1", XContentFactory.jsonBuilder().startObject()
-                        .startObject("type1")
+                .setMapping(XContentFactory.jsonBuilder().startObject()
                         .startObject("properties")
                         .startObject("notation")
                         .field("type", "text")
@@ -169,7 +164,6 @@ public class NaturalSortKeyTests extends OpenSearchSingleNodeTestCase {
                         .field("type", "text")
                         .field("analyzer", "naturalsort")
                         .field("fielddata", true)
-                        .endObject()
                         .endObject()
                         .endObject()
                         .endObject()
@@ -184,7 +178,7 @@ public class NaturalSortKeyTests extends OpenSearchSingleNodeTestCase {
         };
 
         for (String notation : notations) {
-            client().prepareIndex("test", "type1")
+            client().prepareIndex("test")
                     .setSource(XContentFactory.jsonBuilder().startObject()
                             .field("notation", notation)
                             .endObject()).execute().actionGet();

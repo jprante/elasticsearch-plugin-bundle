@@ -37,7 +37,7 @@ public class StandardnumberMappingTests extends OpenSearchSingleNodeTestCase {
         String sampleText = "978-3-551-75213-0";
         BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder().startObject()
                 .field("someField", sampleText).endObject());
-        SourceToParse sourceToParse = new SourceToParse("some_index", "someType", "1", json, XContentType.JSON);
+        SourceToParse sourceToParse = new SourceToParse("some_index", "1", json, XContentType.JSON);
         ParseContext.Document doc = docMapper.parse(sourceToParse).rootDoc();
         assertEquals(2, doc.getFields("someField").length);
         assertEquals("978-3-551-75213-0", doc.getFields("someField")[0].stringValue());
@@ -52,7 +52,7 @@ public class StandardnumberMappingTests extends OpenSearchSingleNodeTestCase {
         String sampleText = "Hello world";
         BytesReference json = BytesReference.bytes(XContentFactory.jsonBuilder()
                 .startObject().field("someField", sampleText).endObject());
-        SourceToParse sourceToParse = new SourceToParse("some_index", "someType", "1", json, XContentType.JSON);
+        SourceToParse sourceToParse = new SourceToParse("some_index", "1", json, XContentType.JSON);
         ParseContext.Document doc = docMapper.parse(sourceToParse).rootDoc();
         assertEquals(0, doc.getFields("someField").length);
         // re-parse it
@@ -63,7 +63,7 @@ public class StandardnumberMappingTests extends OpenSearchSingleNodeTestCase {
                 .parse("someType", new CompressedXContent(builtMapping));
         json = BytesReference.bytes(XContentFactory.jsonBuilder().startObject()
                 .field("someField", sampleText).endObject());
-        sourceToParse = new SourceToParse("some_index2", "someType", "1", json, XContentType.JSON);
+        sourceToParse = new SourceToParse("some_index2", "1", json, XContentType.JSON);
         doc = docMapper2.parse(sourceToParse).rootDoc();
         assertEquals(0, doc.getFields("someField").length);
     }

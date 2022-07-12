@@ -1,29 +1,27 @@
 {
-  "doc": {
-    "properties": {
-      "author": {
-        "properties": {
-          "authorName": {
-            "type": "text"
-          },
-          "authorID": {
-            "type": "ref",
-            "ref_index": "ref",
-            "ref_type": "ref",
-            "ref_fields": [
-              "author"
-            ],
-            "copy_to": [
-              "dc.creator"
-            ]
-          }
+  "properties": {
+    "author": {
+      "properties": {
+        "authorName": {
+          "type": "text"
+        },
+        "authorID": {
+          "type": "ref",
+          "ref_index": "ref",
+          "ref_type": "ref",
+          "ref_fields": [
+            "author"
+          ],
+          "copy_to": [
+            "dc.creator"
+          ]
         }
-      },
-      "dc": {
-        "properties": {
-          "creator": {
-            "type": "text"
-          }
+      }
+    },
+    "dc": {
+      "properties": {
+        "creator": {
+          "type": "text"
         }
       }
     }

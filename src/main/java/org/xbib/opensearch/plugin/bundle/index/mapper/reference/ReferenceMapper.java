@@ -25,7 +25,6 @@ import org.opensearch.index.mapper.FieldMapper;
 import org.opensearch.index.mapper.MappedFieldType;
 import org.opensearch.index.mapper.Mapper;
 import org.opensearch.index.mapper.MapperParsingException;
-import org.opensearch.index.mapper.MapperService;
 import org.opensearch.index.mapper.ParseContext;
 import org.opensearch.index.mapper.SimpleMappedFieldType;
 import org.opensearch.index.mapper.TextFieldMapper;
@@ -142,7 +141,6 @@ public class ReferenceMapper extends FieldMapper {
             try {
                 GetResponse response = client.prepareGet()
                         .setIndex(index)
-                        .setType(type)
                         .setId(content)
                         .execute()
                         .actionGet();
@@ -258,7 +256,7 @@ public class ReferenceMapper extends FieldMapper {
         }
 
         @Override
-        public ValueFetcher valueFetcher(MapperService mapperService, SearchLookup searchLookup, String format) {
+        public ValueFetcher valueFetcher(QueryShardContext context, SearchLookup searchLookup, String format) {
             throw new UnsupportedOperationException();
         }
 

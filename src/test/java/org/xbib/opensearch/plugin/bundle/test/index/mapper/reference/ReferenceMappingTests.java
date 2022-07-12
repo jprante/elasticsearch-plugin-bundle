@@ -4,6 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.util.SuppressForbidden;
+import org.junit.After;
+import org.junit.Before;
 import org.opensearch.action.admin.indices.mapping.get.GetMappingsRequest;
 import org.opensearch.action.admin.indices.mapping.get.GetMappingsResponse;
 import org.opensearch.action.search.SearchResponse;
@@ -24,8 +26,6 @@ import org.opensearch.index.query.QueryBuilder;
 import org.opensearch.plugins.Plugin;
 import org.opensearch.search.SearchHit;
 import org.opensearch.test.OpenSearchSingleNodeTestCase;
-import org.junit.After;
-import org.junit.Before;
 import org.xbib.opensearch.plugin.bundle.BundlePlugin;
 
 import java.io.InputStreamReader;
@@ -57,7 +57,7 @@ public class ReferenceMappingTests extends OpenSearchSingleNodeTestCase {
         } catch (Exception e) {
             logger.warn("unable to delete 'test' index");
         }
-        client().prepareIndex("test", "test", "1234")
+        client().prepareIndex("test").setId("1234")
                 .setSource(jsonBuilder().startObject().array("myfield", "a","b","c").endObject())
                 .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                 .execute().actionGet();
@@ -66,7 +66,7 @@ public class ReferenceMappingTests extends OpenSearchSingleNodeTestCase {
         } catch (Exception e) {
             logger.warn("unable to delete 'authorities' index");
         }
-        client().prepareIndex("authorities", "persons", "1")
+        client().prepareIndex("authorities").setId("1")
                 .setSource(jsonBuilder().startObject().field("author", "John Doe").endObject())
                 .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                 .execute().actionGet();
@@ -89,11 +89,11 @@ public class ReferenceMappingTests extends OpenSearchSingleNodeTestCase {
     public void testRefMappings() throws Exception {
         IndexService indexService = createIndex("some_index", Settings.EMPTY,
                 "some_type", getMapping("ref-mapping.json"));
-        DocumentMapper docMapper = indexService.mapperService().documentMapper("some_type");
+        DocumentMapper docMapper = indexService.mapperService().documentMapper();
         BytesReference json = BytesReference.bytes(jsonBuilder().startObject()
                 .field("someField", "1234")
                 .endObject());
-        SourceToParse sourceToParse = new SourceToParse("some_index", "some_type", "1", json, XContentType.JSON);
+        SourceToParse sourceToParse = new SourceToParse("some_index", "1", json, XContentType.JSON);
         ParseContext.Document doc = docMapper.parse(sourceToParse).rootDoc();
         assertNotNull(doc);
         for (IndexableField field : doc.getFields()) {
@@ -110,14 +110,14 @@ public class ReferenceMappingTests extends OpenSearchSingleNodeTestCase {
     public void testRefInDoc() throws Exception {
         IndexService indexService = createIndex("docs", Settings.EMPTY,
                 "docs", getMapping("ref-mapping-authorities.json"));
-        DocumentMapper docMapper = indexService.mapperService().documentMapper("docs");
+        DocumentMapper docMapper = indexService.mapperService().documentMapper();
         BytesReference json = BytesReference.bytes(jsonBuilder().startObject()
                 .field("title", "A title")
                 .field("dc.creator", "A creator")
                 .field("bib.contributor", "A contributor")
                 .field("authorID", "1")
                 .endObject());
-        SourceToParse sourceToParse = new SourceToParse("docs", "docs", "1", json, XContentType.JSON);
+        SourceToParse sourceToParse = new SourceToParse("docs", "1", json, XContentType.JSON);
         ParseContext.Document doc = docMapper.parse(sourceToParse).rootDoc();
         for (IndexableField field : doc.getFields()) {
             logger.info("testRefInDoc {} = {}", field.name(), field.stringValue());
@@ -133,12 +133,12 @@ public class ReferenceMappingTests extends OpenSearchSingleNodeTestCase {
     public void testRefFromID() throws Exception {
         IndexService indexService = createIndex("docs", Settings.EMPTY,
                 "docs", getMapping("ref-mapping-from-id.json"));
-        DocumentMapper docMapper = indexService.mapperService().documentMapper("docs");
+        DocumentMapper docMapper = indexService.mapperService().documentMapper();
         BytesReference json = BytesReference.bytes(jsonBuilder().startObject()
                 .field("title", "A title")
                 .field("authorID", "1")
                 .endObject());
-        SourceToParse sourceToParse = new SourceToParse("docs", "docs", "1", json, XContentType.JSON);
+        SourceToParse sourceToParse = new SourceToParse("docs", "1", json, XContentType.JSON);
         ParseContext.Document doc = docMapper.parse(sourceToParse).rootDoc();
         assertEquals(1, doc.getFields("ref").length, 1);
         assertEquals("John Doe", doc.getFields("ref")[0].stringValue());
@@ -151,18 +151,17 @@ public class ReferenceMappingTests extends OpenSearchSingleNodeTestCase {
             logger.warn("unable to delete index 'books'");
         }
         client().admin().indices().prepareCreate("books")
-                .addMapping("test", copyToStringFromClasspath("ref-mapping-books-test.json"), XContentType.JSON)
+                .setMapping(copyToStringFromClasspath("ref-mapping-books-test.json"))
                 .execute().actionGet();
-        client().prepareIndex("books", "test", "1")
+        client().prepareIndex("books").setId("1")
                 .setSource(copyToStringFromClasspath("ref-doc-book.json"), XContentType.JSON)
                 .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).execute().actionGet();
 
         // get mappings
         GetMappingsResponse getMappingsResponse= client().admin().indices().getMappings(new GetMappingsRequest()
-                .indices("books")
-                .types("test"))
+                .indices("books"))
                 .actionGet();
-        MappingMetadata md = getMappingsResponse.getMappings().get("books").get("test");
+        MappingMetadata md = getMappingsResponse.getMappings().get("books");
         logger.info("mappings={}", md.getSourceAsMap());
 
         // search in field 1, unreferenced value

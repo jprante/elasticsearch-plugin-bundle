@@ -49,13 +49,13 @@ public class LangDetectGermanTests extends OpenSearchSingleNodeTestCase {
                     .endObject();
             CreateIndexRequestBuilder createIndexRequestBuilder =
                     new CreateIndexRequestBuilder(client(), CreateIndexAction.INSTANCE);
-            createIndexRequestBuilder.setIndex("test").addMapping("someType", builder).execute().actionGet();
+            createIndexRequestBuilder.setIndex("test").setMapping(builder).execute().actionGet();
             String source = "Einigkeit und Recht und Freiheit\n" +
                     "für das deutsche Vaterland!\n" +
                     "Danach lasst uns alle streben\n" +
                     "brüderlich mit Herz und Hand!";
             IndexRequestBuilder indexRequestBuilder = new IndexRequestBuilder(client(), IndexAction.INSTANCE)
-                    .setIndex("test").setType("someType").setId("1")
+                    .setIndex("test").setId("1")
                     .setSource("content", source);
             indexRequestBuilder.setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                     .execute().actionGet();

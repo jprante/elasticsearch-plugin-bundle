@@ -1,14 +1,14 @@
 package org.xbib.opensearch.plugin.bundle.test.index.analysis.worddelimiter;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.MockTokenizer;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.StopFilter;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.apache.lucene.util.LuceneTestCase;
+import org.apache.lucene.tests.analysis.MockTokenizer;
+import org.apache.lucene.tests.util.LuceneTestCase;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.index.Index;
 import org.opensearch.test.OpenSearchTestCase;
@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.apache.lucene.analysis.standard.ClassicAnalyzer.STOP_WORDS_SET;
+import static org.apache.lucene.analysis.classic.ClassicAnalyzer.STOP_WORDS_SET;
 
 /**
  * Word delimiter filter 2 tests.
