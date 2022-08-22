@@ -8,6 +8,7 @@ import org.apache.lucene.document.SortedSetDocValuesField;
 import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.DocValuesFieldExistsQuery;
+import org.apache.lucene.search.FieldExistsQuery;
 import org.apache.lucene.search.MultiTermQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
@@ -121,7 +122,7 @@ public class IcuCollationKeyFieldMapper extends FieldMapper {
         @Override
         public Query existsQuery(QueryShardContext context) {
             if (hasDocValues()) {
-                return new DocValuesFieldExistsQuery(name());
+                return new FieldExistsQuery(name());
             } else {
                 return new TermQuery(new Term(FieldNamesFieldMapper.NAME, name()));
             }
