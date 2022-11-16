@@ -1,5 +1,6 @@
 package org.xbib.opensearch.plugin.bundle.index.analysis.worddelimiter;
 
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -9,7 +10,6 @@ import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.util.ArrayUtil;
 
 import java.io.IOException;
-import java.util.Set;
 
 /**
  * Splits words into subwords and performs optional transformations
@@ -59,7 +59,7 @@ public final class WordDelimiterFilter2 extends TokenFilter implements WordDelim
     /**
      * If not null is the set of tokens to protect from being delimited
      */
-    private final Set<String> protWords;
+    private final CharArraySet protWords;
 
     private final int flags;
 
@@ -103,7 +103,7 @@ public final class WordDelimiterFilter2 extends TokenFilter implements WordDelim
      * @param configurationFlags Flags configuring the filter
      * @param protWords          If not null is the set of tokens to protect from being delimited
      */
-    public WordDelimiterFilter2(TokenStream in, byte[] charTypeTable, int configurationFlags, Set<String> protWords) {
+    public WordDelimiterFilter2(TokenStream in, byte[] charTypeTable, int configurationFlags, CharArraySet protWords) {
         super(in);
         this.flags = configurationFlags;
         this.protWords = protWords;
@@ -120,7 +120,7 @@ public final class WordDelimiterFilter2 extends TokenFilter implements WordDelim
      * @param configurationFlags Flags configuring the filter
      * @param protWords          If not null is the set of tokens to protect from being delimited
      */
-    public WordDelimiterFilter2(TokenStream in, int configurationFlags, Set<String> protWords) {
+    public WordDelimiterFilter2(TokenStream in, int configurationFlags, CharArraySet protWords) {
         this(in, WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE, configurationFlags, protWords);
     }
 

@@ -1,6 +1,7 @@
 package org.xbib.opensearch.plugin.bundle.test.index.analysis.worddelimiter;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
@@ -20,8 +21,6 @@ import org.xbib.opensearch.plugin.bundle.index.analysis.worddelimiter.WordDelimi
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.apache.lucene.analysis.classic.ClassicAnalyzer.STOP_WORDS_SET;
 
@@ -162,7 +161,7 @@ public class WordDelimiterFilter2Tests extends OpenSearchTokenStreamTestCase {
                 WordDelimiterFilter2.SPLIT_ON_CASE_CHANGE |
                 WordDelimiterFilter2.SPLIT_ON_NUMERICS |
                 WordDelimiterFilter2.STEM_ENGLISH_POSSESSIVE;
-        final Set<String> protWords = new HashSet<String>(Collections.singletonList("NUTCH"));
+        final CharArraySet protWords = new CharArraySet(Collections.singletonList("NUTCH"), false);
 
     /* analyzer that uses whitespace + wdf */
         Analyzer a = new Analyzer() {
@@ -309,7 +308,7 @@ public class WordDelimiterFilter2Tests extends OpenSearchTokenStreamTestCase {
                 WordDelimiterFilter2.SPLIT_ON_NUMERICS |
                 WordDelimiterFilter2.STEM_ENGLISH_POSSESSIVE |
                 WordDelimiterFilter2.ALL_PARTS_AT_SAME_POSITION;
-        final Set<String> protWords = new HashSet<>(Collections.singletonList("NUTCH"));
+        final CharArraySet protWords = new CharArraySet(Collections.singletonList("NUTCH"), false);
 
     /* analyzer that uses whitespace + wdf */
         Analyzer a = new Analyzer() {

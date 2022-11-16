@@ -1,5 +1,6 @@
 package org.xbib.opensearch.plugin.bundle.index.analysis.worddelimiter;
 
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.TokenStream;
 import org.opensearch.OpenSearchException;
 import org.opensearch.common.settings.Settings;
@@ -7,8 +8,9 @@ import org.opensearch.env.Environment;
 import org.opensearch.index.IndexSettings;
 import org.opensearch.index.analysis.AbstractTokenFilterFactory;
 import org.opensearch.index.analysis.Analysis;
+import org.opensearch.index.analysis.MappingRule;
 
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,7 +29,7 @@ public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory imple
 
     private final char[] out = new char[256];
 
-    private Set<String> protectedWords = null;
+    private CharArraySet protectedWords = null;
 
     private int flags;
 
@@ -43,7 +45,13 @@ public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory imple
         // . => DIGIT
         // \u002C => DIGIT
         // \u200D => ALPHANUM
-        List<String> charTypeTableValues = Analysis.getWordList(environment, settings, "type_table");
+        //List<String> charTypeTableValues = Analysis.getWordList(environment, settings, "type_table");
+        List<MappingRule<Character, Byte>> charTypeTableValues = Analysis.parseWordList(
+            environment,
+            settings,
+            "type_table",
+            this::parse
+        );
         if (charTypeTableValues == null) {
             this.typeTable = WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE;
         } else {
@@ -69,8 +77,18 @@ public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory imple
         // If 1, causes trailing "'s" to be removed for each subword: "O'Neil's" => "O", "Neil"
         flags |= getFlag(STEM_ENGLISH_POSSESSIVE, settings, "stem_english_possessive", true);
         // If not null is the set of tokens to protect from being delimited
-        List<String> protoWords = Analysis.getWordList(environment, settings, "protected_words");
-        protectedWords = protoWords == null ? null : new HashSet<>(protoWords);
+        CharArraySet protoWords = Analysis.getWordSet(environment, settings, "protected_words");
+        protectedWords = protoWords == null ? null : CharArraySet.copy(protoWords);
+    }
+
+    MappingRule<Character, Byte> parse(String rule) {
+        Matcher m = typePattern.matcher(rule);
+        if (!m.find()) throw new RuntimeException("Invalid mapping rule: [" + rule + "]");
+        String lhs = parseString(m.group(1).trim());
+        Byte rhs = parseType(m.group(2).trim());
+        if (lhs.length() != 1) throw new RuntimeException("Invalid mapping rule: [" + rule + "]. Only a single character is allowed.");
+        if (rhs == null) throw new RuntimeException("Invalid mapping rule: [" + rule + "]. Illegal type.");
+        return new MappingRule<>(lhs.charAt(0), rhs);
     }
 
     public WordDelimiterFilter2 create(TokenStream input) {
@@ -82,6 +100,24 @@ public class WordDelimiterFilterFactory extends AbstractTokenFilterFactory imple
             return flag;
         }
         return 0;
+    }
+
+    /**
+     * parses a list of MappingCharFilter style rules into a custom byte[] type table
+     */
+    protected byte[] parseTypes(Collection<MappingRule<Character, Byte>> rules) {
+        SortedMap<Character, Byte> typeMap = new TreeMap<>();
+        for (MappingRule<Character, Byte> rule : rules) {
+            typeMap.put(rule.getLeft(), rule.getRight());
+        }
+
+        // ensure the table is always at least as big as DEFAULT_WORD_DELIM_TABLE for performance
+        byte types[] = new byte[Math.max(typeMap.lastKey() + 1, WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE.length)];
+        for (int i = 0; i < types.length; i++)
+            types[i] = WordDelimiterIterator.getType(i);
+        for (Map.Entry<Character, Byte> mapping : typeMap.entrySet())
+            types[mapping.getKey()] = mapping.getValue();
+        return types;
     }
 
     // parses a list of MappingCharFilter style rules into a custom byte[] type table
