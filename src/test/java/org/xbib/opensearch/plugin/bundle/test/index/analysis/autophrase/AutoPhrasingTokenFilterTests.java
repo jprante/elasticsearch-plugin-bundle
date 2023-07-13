@@ -1,8 +1,8 @@
 package org.xbib.opensearch.plugin.bundle.test.index.analysis.autophrase;
 
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.analysis.CharArraySet;
 import org.opensearch.test.OpenSearchTestCase;
 import org.xbib.opensearch.plugin.bundle.index.analysis.autophrase.AutoPhrasingTokenFilter;
 

@@ -7,9 +7,9 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.cjk.CJKBigramFilter;
 import org.apache.lucene.util.AttributeFactory;
-import org.opensearch.test.OpenSearchTokenStreamTestCase;
 import org.junit.After;
 import org.junit.Before;
+import org.opensearch.test.OpenSearchTokenStreamTestCase;
 import org.xbib.opensearch.plugin.bundle.index.analysis.icu.segmentation.DefaultIcuTokenizerConfig;
 import org.xbib.opensearch.plugin.bundle.index.analysis.icu.segmentation.IcuTokenizer;
 

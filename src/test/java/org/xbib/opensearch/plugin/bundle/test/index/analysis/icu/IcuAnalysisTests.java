@@ -8,12 +8,12 @@ import org.opensearch.index.analysis.NamedAnalyzer;
 import org.opensearch.index.analysis.TokenFilterFactory;
 import org.opensearch.index.analysis.TokenizerFactory;
 import org.opensearch.test.OpenSearchTestCase;
-import org.xbib.opensearch.plugin.bundle.index.analysis.icu.segmentation.IcuTokenizerFactory;
 import org.xbib.opensearch.plugin.bundle.BundlePlugin;
 import org.xbib.opensearch.plugin.bundle.index.analysis.icu.IcuFoldingTokenFilterFactory;
 import org.xbib.opensearch.plugin.bundle.index.analysis.icu.IcuNormalizerCharFilterFactory;
 import org.xbib.opensearch.plugin.bundle.index.analysis.icu.IcuNormalizerTokenFilterFactory;
 import org.xbib.opensearch.plugin.bundle.index.analysis.icu.IcuTransformTokenFilterFactory;
+import org.xbib.opensearch.plugin.bundle.index.analysis.icu.segmentation.IcuTokenizerFactory;
 
 import java.io.IOException;
 

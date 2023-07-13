@@ -9,9 +9,9 @@ import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.util.AttributeFactory;
 import org.opensearch.test.OpenSearchTokenStreamTestCase;
 import org.xbib.opensearch.plugin.bundle.index.analysis.icu.IcuNormalizerFilter;
-import org.xbib.opensearch.plugin.bundle.index.analysis.icu.tokenattributes.ScriptAttribute;
 import org.xbib.opensearch.plugin.bundle.index.analysis.icu.segmentation.DefaultIcuTokenizerConfig;
 import org.xbib.opensearch.plugin.bundle.index.analysis.icu.segmentation.IcuTokenizer;
+import org.xbib.opensearch.plugin.bundle.index.analysis.icu.tokenattributes.ScriptAttribute;
 
 import java.io.StringReader;
 import java.util.Arrays;

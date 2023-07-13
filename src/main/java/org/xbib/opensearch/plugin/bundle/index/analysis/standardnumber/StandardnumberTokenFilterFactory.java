@@ -5,8 +5,8 @@ import org.opensearch.common.settings.Settings;
 import org.opensearch.env.Environment;
 import org.opensearch.index.IndexSettings;
 import org.opensearch.index.analysis.AbstractTokenFilterFactory;
-import org.xbib.opensearch.plugin.bundle.index.mapper.standardnumber.StandardnumberMapper;
 import org.xbib.opensearch.plugin.bundle.common.standardnumber.StandardnumberService;
+import org.xbib.opensearch.plugin.bundle.index.mapper.standardnumber.StandardnumberMapper;
 
 /**
  * Standard number token filter factory.

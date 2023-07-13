@@ -2,7 +2,6 @@ package org.xbib.opensearch.plugin.bundle.test.index.mapper.langdetect;
 
 import org.opensearch.common.settings.Settings;
 import org.opensearch.test.OpenSearchTestCase;
-
 import org.xbib.opensearch.plugin.bundle.common.langdetect.LangProfile;
 import org.xbib.opensearch.plugin.bundle.common.langdetect.LangdetectService;
 
