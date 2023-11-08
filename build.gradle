@@ -4,32 +4,32 @@ import java.time.ZonedDateTime
 buildscript {
     repositories {
         mavenCentral()
-        jcenter()
+        gradlePluginPortal()
     }
     dependencies {
-        classpath "org.elasticsearch.gradle:build-tools:${project.property('elasticsearch.version')}"
+        classpath "org.opensearch.gradle:build-tools:${project.property('opensearch.version')}"
     }
 }
 
 plugins {
-    id "org.sonarqube" version "2.8"
-    id "io.codearte.nexus-staging" version "0.21.1"
-    id "org.xbib.gradle.plugin.jflex" version "1.4.0"
-    id "org.xbib.gradle.plugin.asciidoctor" version "1.5.6.0.1"
+    id "org.sonarqube" version "3.4.0.2513"
+    id "io.codearte.nexus-staging" version "0.30.0"
+    id "org.xbib.gradle.plugin.jflex" version "1.6.0"
+    id "org.xbib.gradle.plugin.asciidoctor" version "2.5.2.1"
 }
 
 apply plugin: 'java-library'
-apply plugin: 'maven'
-apply plugin: 'elasticsearch.esplugin'
+apply plugin: 'maven-publish'
+apply plugin: 'opensearch.opensearchplugin'
 apply plugin: 'org.xbib.gradle.plugin.jflex'
-apply plugin: 'elasticsearch.rest-resources'
+apply plugin: 'opensearch.rest-resources'
 
 ext {
     pluginName = 'bundle'
-    pluginClassname  = 'org.xbib.elasticsearch.plugin.bundle.BundlePlugin'
-    pluginDescription = 'A bundle of plugins for Elasticsearch'
+    pluginClassname  = 'org.xbib.opensearch.plugin.bundle.BundlePlugin'
+    pluginDescription = 'A bundle of plugins for Opensearch'
     user = 'jprante'
-    name = 'elasticsearch-plugin-bundle'
+    name = 'opensearch-plugin-bundle'
     scmUrl = 'https://github.com/' + user + '/' + name
     scmConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
     scmDeveloperConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
@@ -45,17 +45,16 @@ sourceSets {
     }
 }
 
-esplugin {
-    description 'Plugin bundle for Elasticsearch'
-    name 'elasticsearch-plugin-bundle'
-    classname 'org.xbib.elasticsearch.plugin.bundle.BundlePlugin'
+opensearchplugin {
+    description 'Plugin bundle for Opensearch'
+    name 'opensearch-plugin-bundle'
+    classname 'org.xbib.opensearch.plugin.bundle.BundlePlugin'
 }
 
 dependencies {
-    // we must use "compile" and not "implementation" otherwise ES build does not detect dependencies
-    compile "com.ibm.icu:icu4j:${project.property('icu4j.version')}"
-    compile "org.xbib:standardnumber:${project.property('standardnumber.version')}"
-    testImplementation "org.codelibs.elasticsearch.module:analysis-common:${project.property('elasticsearch.version')}"
+    implementation "com.ibm.icu:icu4j:${project.property('icu4j.version')}"
+    implementation "org.xbib:standardnumber:${project.property('standardnumber.version')}"
+    testImplementation "org.opensearch.plugin:analysis-common:${project.property('opensearch.version')}"
 }
 
 compileJava {
@@ -90,9 +89,9 @@ jar {
                 'Build-Java-Version': System.getProperty("java.version"),
                 'X-Compile-Source-JDK': compileJava.targetCompatibility,
                 'X-Compile-Target-JDK': compileJava.sourceCompatibility,
-                'X-Compile-Elasticsearch-Version': project.property('elasticsearch.version'),
+                'X-Compile-Opensearch-Version': project.property('opensearch.version'),
                 'X-Compile-Lucene-Version': project.property('lucene.version'),
-                'X-Compile-Elasticsearch-Snapshot': false
+                'X-Compile-Opensearch-Snapshot': false
         )
     }
 }
@@ -220,7 +219,7 @@ asciidoctor {
             'source-highlighter': 'coderay'
 }
 
-checkstyleMain.source = 'src/main/java'
+//checkstyleMain.source = 'src/main/java'
 // we use @Ignore
 forbiddenApisTest.enabled = false
 forbiddenPatterns.exclude('**/*.txt', '**/*.brk', '**/*.fst', '**/*.tree', '**/*.nrm')

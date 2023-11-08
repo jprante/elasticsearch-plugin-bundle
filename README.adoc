@@ -1,4 +1,4 @@
-# A plugin bundle for Elastisearch
+# A plugin bundle for Opensearch
 
 image:https://api.travis-ci.org/jprante/elasticsearch-plugin-bundle.svg[title="Build status", link="https://travis-ci.org/jprante/elasticsearch-plugin-bundle/"]
 image:https://img.shields.io/sonar/http/nemo.sonarqube.com/org.xbib.elasticsearch.plugin%3Aelasticsearch-plugin-bundle/coverage.svg?style=flat-square[title="Coverage", link="https://sonarqube.com/dashboard/index?id=org.xbib.elasticsearch.plugin%3Aelasticsearch-plugin-bundle"]
@@ -9,101 +9,45 @@ image:https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif[title="PayPa
 
 This plugin is the combination of the following plugins:
 
-- elasticsearch-analysis-autophrase
-- elasticsearch-analysis-baseform
-- elasticsearch-analysis-concat
-- elasticsearch-analysis-decompound
-- elasticsearch-analysis-german
-- elasticsearch-analysis-hyphen
-- elasticsearch-analysis-icu
-- elasticsearch-analysis-naturalsort
-- elasticsearch-analysis-reference
-- elasticsearch-analysis-sortform
-- elasticsearch-analysis-standardnumber
-- elasticsearch-analysis-symbolname
-- elasticsearch-analysis-worddelimiter
-- elasticsearch-analysis-year
-- elasticsearch-mapper-crypt
-- elasticsearch-mapper-langdetect
+- opensearch-analysis-autophrase
+- opensearch-analysis-baseform
+- opensearch-analysis-concat
+- opensearch-analysis-decompound
+- opensearch-analysis-german
+- opensearch-analysis-hyphen
+- opensearch-analysis-icu
+- opensearch-analysis-naturalsort
+- opensearch-analysis-reference
+- opensearch-analysis-sortform
+- opensearch-analysis-standardnumber
+- opensearch-analysis-symbolname
+- opensearch-analysis-worddelimiter
+- opensearch-analysis-year
+- opensearch-mapper-crypt
+- opensearch-mapper-langdetect
 
 The plugin code in each plugin is equivalent to the code in this combined bundle plugin.
 
 .Compatibility matrix
 [frame="all"]
 |===
-| Plugin version | Elasticsearch version | Release date
-| 6.3.2.2  | 6.3.2     | Oct  2, 2018
-| 5.4.1.0  | 5.4.0     | Jun  1, 2017
-| 5.4.0.1  | 5.4.0     | May 12, 2017
-| 5.4.0.0  | 5.4.0     | May  4, 2017
-| 5.3.1.0  | 5.3.1     | Apr 25, 2017
-| 5.3.0.0  | 5.3.0     | Apr  4, 2017
-| 5.2.2.0  | 5.2.2     | Mar  2, 2017
-| 5.2.1.0  | 5.2.1     | Feb 27, 2017
-| 5.1.1.2  | 5.1.1     | Feb 27, 2017
-| 5.1.1.0  | 5.1.1     | Dec 31, 2016
-| 2.3.4.0  | 2.3.4     | Jul 30, 2016
-| 2.3.3.0  | 2.3.3     | May 23, 2016
-| 2.3.2.0  | 2.3.2     | May 11, 2016
-| 2.2.0.6  | 2.2.0     | Mar 25, 2016
-| 2.2.0.3  | 2.2.0     | Mar  6, 2016
-| 2.2.0.2  | 2.2.0     | Mar  3, 2016
-| 2.2.0.1  | 2.2.0     | Feb 22, 2016
-| 2.2.0.0  | 2.2.0     | Feb  8, 2016
-| 2.1.1.2  | 2.1.1     | Dec 30, 2015
-| 2.1.1.0  | 2.1.1     | Dec 21, 2015
-| 2.1.0.0  | 2.1.0     | Nov 27, 2015
-| 2.0.0.0  | 2.0.0     | Oct 28, 2015
-| 1.6.0.0  | 1.6.0     | Jun 30, 2015
-| 1.5.2.1  | 1.5.2     | Jun 30, 2015
-| 1.5.2.0  | 1.5.2     | Apr 27, 2015
-| 1.5.1.0  | 1.5.1     | Apr 23, 2015
-| 1.5.0.0  | 1.5.0     | Mar 31, 2015
-| 1.4.4.0  | 1.4.4     | Apr 26, 2015
-| 1.4.0.6  | 1.4.0     | Feb 23, 2015
-| 1.4.0.5  | 1.4.0     | Jan 28, 2015
-| 1.4.0.4  | 1.4.0     | Jan 19, 2015
-| 1.4.0.3  | 1.4.0     | Dec 16, 2014
-| 1.4.0.1  | 1.4.0     | Nov 10, 2014
+| Plugin version | Opensearch version | Release date
+| 2.1.0.0  | 2.1.0     | Jul 12, 2022
+| 2.0.1.0  | 2.0.1     | Jul 12, 2022
+| 1.3.3.0  | 1.3.3     | Jul 12, 2022
+| 1.0.0.0  | 1.0.0     | Jul 12, 2022
 |===
 
 
 ## Installation
 
-### Elasticsearch 5.x
+### Opensearch 1.x, 2.x
 
 [source]
 ----
-./bin/elasticsearch-plugin install http://search.maven.org/remotecontent?filepath=org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/5.4.0.0/elasticsearch-plugin-bundle-5.4.0-plugin.zip
+opensearch-plugin install -b https://github.com/grmblfrz/elasticsearch-plugin-bundle/releases/download/opensearch-2.1.0/opensearch-plugin-bundle-2.1.0.0.zip
 ----
 
-or
-
-[source]
-----
-./bin/elasticsearch-plugin install http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/5.3.0.0/elasticsearch-plugin-bundle-5.3.0.0-plugin.zip
-----
-Do not forget to restart the node after installing.
-
-### Elasticsearch 2.x
-
-[source]
-----
-./bin/plugin install 'http://search.maven.org/remotecontent?filepath=org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/2.3.3.0/elasticsearch-plugin-bundle-2.3.3.0-plugin.zip'
-----
-or
-[source]
-----
-./bin/plugin install 'http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/2.3.4.0/elasticsearch-plugin-bundle-2.3.4.0-plugin.zip'
-----
-Do not forget to restart the node after installing.
-
-### Elasticsearch 1.x
-
-[source]
-----
-./bin/plugin -install bundle -url http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-plugin-bundle/1.6.0.0/elasticsearch-plugin-bundle-1.6.0.0-plugin.zip
-----
 Do not forget to restart the node after installing.
 
 # Documentation
@@ -130,7 +74,7 @@ More to come.
 
 ## German normalizer
 
-The `german_normalizer` is equivalent to Elasticsearch `german_normalization`. It performs umlaut treatment
+The `german_normalizer` is equivalent to OpenSearch `german_normalization`. It performs umlaut treatment
 with vocal expansion which is typical for german language.
 
 [source]
@@ -617,7 +561,7 @@ GET _analyze
 
 # Decompound
 
-This is an implementation of a word decompounder plugin for link:http://github.com/elasticsearch/elasticsearch[Elasticsearch].
+This is an implementation of a word decompounder plugin for link:http://github.com/opensearch-project/OpenSearch[OpenSearch].
 
 Compounding several words into one word is a property not all languages share.
 Compounding is used in German, Scandinavian Languages, Finnish and Korean.
@@ -673,7 +617,7 @@ In the mapping, use a token filter of type "decompound"::
 "Die Jahresfeier der Rechtsanwaltskanzleien auf dem Donaudampfschiff hat viel Ökosteuer gekostet" will be tokenized into 
 "Die", "Die", "Jahresfeier", "Jahr", "feier", "der", "der", "Rechtsanwaltskanzleien", "Recht", "anwalt", "kanzlei", "auf", "auf", "dem",  "dem", "Donaudampfschiff", "Donau", "dampf", "schiff", "hat", "hat", "viel", "viel", "Ökosteuer", "Ökosteuer", "gekostet", "gekosten"
 
-It is recommended to add the `Unique token filter <http://www.elasticsearch.org/guide/reference/index-modules/analysis/unique-tokenfilter.html>`_ to skip tokens that occur more than once.
+It is recommended to add the `Unique token filter https://www.elastic.co/guide/en/elasticsearch/reference/7.10/analysis-unique-tokenfilter.html to skip tokens that occur more than once.
 
 Also the Lucene german normalization token filter is provided::
 

@@ -1,0 +1,13 @@
+{
+  "properties": {
+    "content": {
+      "type": "text",
+      "fields" : {
+        "language": {
+          "type": "langdetect",
+          "binary": true
+        }
+      }
+    }
+  }
+}
