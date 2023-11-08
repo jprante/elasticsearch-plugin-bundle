@@ -1,10 +1,10 @@
 package org.xbib.opensearch.plugin.bundle.action.langdetect;
 
-import org.opensearch.action.ActionListener;
 import org.opensearch.action.support.ActionFilters;
 import org.opensearch.action.support.TransportAction;
 import org.opensearch.common.inject.Inject;
 import org.opensearch.common.settings.Settings;
+import org.opensearch.core.action.ActionListener;
 import org.opensearch.tasks.Task;
 import org.opensearch.transport.TransportService;
 import org.xbib.opensearch.plugin.bundle.common.langdetect.LangdetectService;

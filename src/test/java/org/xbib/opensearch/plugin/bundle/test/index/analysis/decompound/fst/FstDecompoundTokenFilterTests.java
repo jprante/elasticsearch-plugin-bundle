@@ -3,7 +3,7 @@ package org.xbib.opensearch.plugin.bundle.test.index.analysis.decompound.fst;
 import org.apache.lucene.analysis.Analyzer;
 import org.junit.Ignore;
 import org.opensearch.common.settings.Settings;
-import org.opensearch.index.Index;
+import org.opensearch.core.index.Index;
 import org.opensearch.test.OpenSearchTestCase;
 import org.opensearch.test.OpenSearchTokenStreamTestCase;
 import org.xbib.opensearch.plugin.bundle.BundlePlugin;

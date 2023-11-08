@@ -2,8 +2,8 @@ package org.xbib.opensearch.plugin.bundle.rest.action.langdetect;
 
 import org.opensearch.client.node.NodeClient;
 import org.opensearch.common.CheckedConsumer;
-import org.opensearch.common.bytes.BytesReference;
 import org.opensearch.common.xcontent.XContentType;
+import org.opensearch.core.common.bytes.BytesReference;
 import org.opensearch.core.xcontent.DeprecationHandler;
 import org.opensearch.core.xcontent.XContentParser;
 import org.opensearch.rest.BaseRestHandler;

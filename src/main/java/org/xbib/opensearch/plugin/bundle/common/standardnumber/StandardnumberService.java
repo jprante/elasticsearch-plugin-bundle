@@ -2,7 +2,7 @@ package org.xbib.opensearch.plugin.bundle.common.standardnumber;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.common.component.AbstractLifecycleComponent;
+import org.opensearch.common.lifecycle.AbstractLifecycleComponent;
 import org.opensearch.common.settings.Settings;
 import org.xbib.opensearch.plugin.bundle.action.isbnformat.ISBNFormatResponse;
 import org.xbib.opensearch.plugin.bundle.index.analysis.standardnumber.StandardnumberTokenFilter;

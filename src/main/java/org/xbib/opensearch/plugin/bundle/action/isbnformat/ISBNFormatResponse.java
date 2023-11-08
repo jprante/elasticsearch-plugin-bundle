@@ -1,16 +1,16 @@
 package org.xbib.opensearch.plugin.bundle.action.isbnformat;
 
-import org.opensearch.action.ActionResponse;
-import org.opensearch.common.io.stream.StreamInput;
-import org.opensearch.common.io.stream.StreamOutput;
 import org.opensearch.common.xcontent.StatusToXContentObject;
+import org.opensearch.core.action.ActionResponse;
+import org.opensearch.core.common.io.stream.StreamInput;
+import org.opensearch.core.common.io.stream.StreamOutput;
+import org.opensearch.core.rest.RestStatus;
 import org.opensearch.core.xcontent.ToXContent;
 import org.opensearch.core.xcontent.XContentBuilder;
-import org.opensearch.rest.RestStatus;
 
 import java.io.IOException;
 
-import static org.opensearch.rest.RestStatus.OK;
+import static org.opensearch.core.rest.RestStatus.OK;
 
 /**
  * ISBN format response.

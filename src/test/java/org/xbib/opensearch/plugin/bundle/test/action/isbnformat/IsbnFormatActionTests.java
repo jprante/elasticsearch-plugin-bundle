@@ -2,8 +2,8 @@ package org.xbib.opensearch.plugin.bundle.test.action.isbnformat;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.common.Strings;
 import org.opensearch.common.xcontent.XContentFactory;
+import org.opensearch.core.common.Strings;
 import org.opensearch.core.xcontent.ToXContent;
 import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.plugins.Plugin;
@@ -32,7 +32,7 @@ public class IsbnFormatActionTests extends OpenSearchSingleNodeTestCase {
         isbnFormatRequestBuilder.setValue("3442151473");
         ISBNFormatResponse isbnFormatResponse = isbnFormatRequestBuilder.execute().actionGet();
         XContentBuilder builder = XContentFactory.jsonBuilder();
-        logger.info("{}", Strings.toString(isbnFormatResponse.toXContent(builder, ToXContent.EMPTY_PARAMS)));
+        logger.info("{}", isbnFormatResponse.toXContent(builder, ToXContent.EMPTY_PARAMS).toString());
         assertEquals("3442151473", isbnFormatResponse.getIsbn10());
         assertEquals("3-442-15147-3", isbnFormatResponse.getIsbn10Formatted());
         assertEquals("9783442151479", isbnFormatResponse.getIsbn13());

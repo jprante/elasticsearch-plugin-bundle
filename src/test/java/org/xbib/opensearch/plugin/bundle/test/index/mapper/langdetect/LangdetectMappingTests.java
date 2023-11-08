@@ -3,7 +3,7 @@ package org.xbib.opensearch.plugin.bundle.test.index.mapper.langdetect;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.util.SuppressForbidden;
 import org.opensearch.analysis.common.CommonAnalysisPlugin;
-import org.opensearch.common.bytes.BytesReference;
+import org.opensearch.core.common.bytes.BytesReference;
 import org.opensearch.common.compress.CompressedXContent;
 import org.opensearch.common.io.Streams;
 import org.opensearch.common.settings.Settings;
