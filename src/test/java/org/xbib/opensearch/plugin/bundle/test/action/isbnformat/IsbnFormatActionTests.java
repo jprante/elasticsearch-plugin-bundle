@@ -3,7 +3,6 @@ package org.xbib.opensearch.plugin.bundle.test.action.isbnformat;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.common.xcontent.XContentFactory;
-import org.opensearch.core.common.Strings;
 import org.opensearch.core.xcontent.ToXContent;
 import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.plugins.Plugin;

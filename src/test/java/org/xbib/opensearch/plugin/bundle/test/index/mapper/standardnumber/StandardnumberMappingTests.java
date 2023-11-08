@@ -1,11 +1,11 @@
 package org.xbib.opensearch.plugin.bundle.test.index.mapper.standardnumber;
 
 import org.apache.lucene.util.SuppressForbidden;
-import org.opensearch.core.common.bytes.BytesReference;
 import org.opensearch.common.compress.CompressedXContent;
 import org.opensearch.common.io.Streams;
 import org.opensearch.common.xcontent.XContentFactory;
 import org.opensearch.common.xcontent.XContentType;
+import org.opensearch.core.common.bytes.BytesReference;
 import org.opensearch.index.mapper.DocumentMapper;
 import org.opensearch.index.mapper.ParseContext;
 import org.opensearch.index.mapper.SourceToParse;
