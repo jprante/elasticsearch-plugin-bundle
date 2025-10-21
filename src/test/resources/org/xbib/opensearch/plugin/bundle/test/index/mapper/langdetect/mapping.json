@@ -1,0 +1,11 @@
+{
+  "properties" : {
+    "someField":{
+      "type" : "langdetect",
+      "languages" : [ "de", "en", "fr", "nl", "it" ],
+      "map" : {
+        "de" : "Deutsch"
+      }
+    }
+  }
+}

@@ -4,32 +4,30 @@ import java.time.ZonedDateTime
 buildscript {
     repositories {
         mavenCentral()
-        jcenter()
+        gradlePluginPortal()
     }
     dependencies {
-        classpath "org.elasticsearch.gradle:build-tools:${project.property('elasticsearch.version')}"
+        classpath "org.opensearch.gradle:build-tools:${project.property('opensearch.version')}"
     }
 }
 
 plugins {
-    id "org.sonarqube" version "2.8"
-    id "io.codearte.nexus-staging" version "0.21.1"
-    id "org.xbib.gradle.plugin.jflex" version "1.4.0"
-    id "org.xbib.gradle.plugin.asciidoctor" version "1.5.6.0.1"
+    id "org.xbib.gradle.plugin.jflex" version "3.0.2"
+    id "org.xbib.gradle.plugin.asciidoctor" version "3.0.2"
 }
 
 apply plugin: 'java-library'
-apply plugin: 'maven'
-apply plugin: 'elasticsearch.esplugin'
+apply plugin: 'maven-publish'
+apply plugin: 'opensearch.opensearchplugin'
 apply plugin: 'org.xbib.gradle.plugin.jflex'
-apply plugin: 'elasticsearch.rest-resources'
+apply plugin: 'opensearch.rest-resources'
 
 ext {
     pluginName = 'bundle'
-    pluginClassname  = 'org.xbib.elasticsearch.plugin.bundle.BundlePlugin'
-    pluginDescription = 'A bundle of plugins for Elasticsearch'
+    pluginClassname  = 'org.xbib.opensearch.plugin.bundle.BundlePlugin'
+    pluginDescription = 'A bundle of plugins for Opensearch'
     user = 'jprante'
-    name = 'elasticsearch-plugin-bundle'
+    name = 'opensearch-plugin-bundle'
     scmUrl = 'https://github.com/' + user + '/' + name
     scmConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
     scmDeveloperConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
@@ -45,30 +43,53 @@ sourceSets {
     }
 }
 
-esplugin {
-    description 'Plugin bundle for Elasticsearch'
-    name 'elasticsearch-plugin-bundle'
-    classname 'org.xbib.elasticsearch.plugin.bundle.BundlePlugin'
+opensearchplugin {
+    description = 'Plugin bundle for Opensearch'
+    name = 'opensearch-plugin-bundle'
+    classname = 'org.xbib.opensearch.plugin.bundle.BundlePlugin'
+}
+
+configurations {
+    agent
+}
+
+task prepareAgent(type: Copy) {
+    from(configurations.agent)
+    into "$buildDir/agent"
 }
 
 dependencies {
-    // we must use "compile" and not "implementation" otherwise ES build does not detect dependencies
-    compile "com.ibm.icu:icu4j:${project.property('icu4j.version')}"
-    compile "org.xbib:standardnumber:${project.property('standardnumber.version')}"
-    testImplementation "org.codelibs.elasticsearch.module:analysis-common:${project.property('elasticsearch.version')}"
+    implementation "com.ibm.icu:icu4j:${project.property('icu4j.version')}"
+    implementation "org.xbib:standardnumber:${project.property('standardnumber.version')}"
+    testImplementation "org.opensearch.plugin:analysis-common:${project.property('opensearch.version')}"
+    agent "org.opensearch:opensearch-agent-bootstrap:${project.property('opensearch.version')}"
+    agent "org.opensearch:opensearch-agent:${project.property('opensearch.version')}"
+    agent "net.bytebuddy:byte-buddy:${project.property('bytebuddy.version')}"
+}
+
+
+tasks.withType(Test) {
+    dependsOn prepareAgent
+    jvmArgs += ["-javaagent:" + project.layout.buildDirectory.file("agent/opensearch-agent-${project.property('opensearch.version')}.jar").get()]
+}
+
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(21))
+  }
 }
 
 compileJava {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
     options.compilerArgs = [
             "-Xlint:-try"
     ]
 }
 
 compileTestJava {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
     options.compilerArgs = [
             "-Xlint:-cast,-deprecation,-rawtypes,-try,-unchecked",
             "-proc:none"
@@ -78,6 +99,7 @@ compileTestJava {
 javadoc {
     enabled = true
     options.addStringOption('Xdoclint:none', '-quiet')
+    dependsOn('generateJflex')
 }
 
 jar {
@@ -90,9 +112,9 @@ jar {
                 'Build-Java-Version': System.getProperty("java.version"),
                 'X-Compile-Source-JDK': compileJava.targetCompatibility,
                 'X-Compile-Target-JDK': compileJava.sourceCompatibility,
-                'X-Compile-Elasticsearch-Version': project.property('elasticsearch.version'),
+                'X-Compile-Opensearch-Version': project.property('opensearch.version'),
                 'X-Compile-Lucene-Version': project.property('lucene.version'),
-                'X-Compile-Elasticsearch-Snapshot': false
+                'X-Compile-Opensearch-Snapshot': false
         )
     }
 }
@@ -195,7 +217,6 @@ task xbibUpload(type: Upload) {
 nexusStaging {
     packageGroup = "org.xbib"
 }
-*/
 
 sonarqube {
     properties {
@@ -207,6 +228,7 @@ sonarqube {
         property "sonar.junit.reportsPath", "build/test-results/test/"
     }
 }
+*/
 
 asciidoctor {
     attributes toc: 'left',
@@ -220,7 +242,7 @@ asciidoctor {
             'source-highlighter': 'coderay'
 }
 
-checkstyleMain.source = 'src/main/java'
+//checkstyleMain.source = 'src/main/java'
 // we use @Ignore
 forbiddenApisTest.enabled = false
 forbiddenPatterns.exclude('**/*.txt', '**/*.brk', '**/*.fst', '**/*.tree', '**/*.nrm')
@@ -230,3 +252,13 @@ thirdPartyAudit.enabled = false
 loggerUsageCheck.enabled = false
 testingConventions.enabled = false
 validateNebulaPom.enabled = false
+
+tasks.named('sourcesJar').configure {
+    dependsOn('generateJflex')
+}
+tasks.named('filepermissions').configure {
+    dependsOn('generateJflex')
+}
+tasks.named('forbiddenPatterns').configure {
+    dependsOn('generateJflex')
+}

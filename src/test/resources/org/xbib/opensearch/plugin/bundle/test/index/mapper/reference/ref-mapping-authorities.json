@@ -1,0 +1,28 @@
+{
+    "properties" : {
+        "authorID": {
+            "type" : "ref",
+            "ref_index" : "authorities",
+            "ref_type" : "persons",
+            "ref_fields" : [ "author" ],
+            "copy_to" : [
+                "dc.creator",
+                "bib.contributor"
+            ]
+        },
+        "dc" : {
+            "properties" : {
+                "creator" : {
+                    "type" : "text"
+                }
+            }
+        },
+        "bib" : {
+            "properties" : {
+                "contributor" : {
+                    "type" : "text"
+                }
+            }
+        }
+    }
+}

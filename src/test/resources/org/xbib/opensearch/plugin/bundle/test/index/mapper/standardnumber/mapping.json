@@ -1,0 +1,8 @@
+{
+  "properties" : {
+    "someField":{
+      "type" : "standardnumber",
+      "standardnumbers" : "isbn"
+    }
+  }
+}
