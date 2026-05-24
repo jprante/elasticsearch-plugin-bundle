@@ -209,7 +209,7 @@ POST /test/docs/_search?explain
 
 ## International components for Unicode
 
-The plugin contains an extended version of the Lucene ICU functionality with a dependancy on ICU 58.2
+The plugin contains an extended version of the Lucene ICU functionality with a dependency on ICU 58.2
 
 Available are `icu_collation`, `icu_folding`, `icu_tokenizer`, `icu_numberformat`, `icu_transform`
 
